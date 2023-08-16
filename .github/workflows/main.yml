@@ -33,11 +33,15 @@ jobs:
         run: |
           VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
           gh release create refs/tags/"$VERSION" --title "Release $VERSION" --repo mogenius/punq
+        env:
+          GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
       - name: Check if release exists
         run: |
           VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
           gh release view "$VERSION" --repo mogenius/punq
+        env:
+          GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
       - name: Upload tarballs
         run: |
@@ -47,6 +51,8 @@ jobs:
           for tarball in builds/*.tar.gz; do
             gh release upload "$VERSION" "$tarball" --repo mogenius/punq
           done
+        env:
+          GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
       - name: UPDATE BREW
         run: |
