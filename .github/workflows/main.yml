@@ -58,6 +58,9 @@ jobs:
         run: |
           VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
           ./release.sh
+          git config --global user.email "punq@mogenius.com"
+          git config --global user.name "punq"
+          git config --global credential.helper cache
           git add punq.rb
           git commit -m "$VERSION"
           git push
