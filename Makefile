@@ -39,25 +39,25 @@ test:
 	$(GOTEST) -v ./...
 
 darwin_arm64:
-	GOOS=darwin GOARCH=arm64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-darwin-arm64 -v &
+	GOOS=darwin GOARCH=arm64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-darwin-arm64 -v
 
 darwin_amd64:
-	GOOS=darwin GOARCH=amd64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-darwin-amd64 -v &
+	GOOS=darwin GOARCH=amd64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-darwin-amd64 -v
 
 linux_amd64:
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-linux-amd64 -v &
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-linux-amd64 -v
 
 linux_386:
-	GOOS=linux GOARCH=386 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-linux-386 -v &
+	GOOS=linux GOARCH=386 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-linux-386 -v
 
 linux_arm64:
-	GOOS=linux GOARCH=arm64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-linux-arm64 -v &
+	GOOS=linux GOARCH=arm64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-linux-arm64 -v
 
 linux_arm:
-	GOOS=linux GOARCH=arm GOARM=7 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-linux-arm -v &
+	GOOS=linux GOARCH=arm GOARM=7 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-linux-arm -v
 
 windows_amd64:
-	GOOS=windows GOARCH=amd64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-windows-amd64 -v &
+	GOOS=windows GOARCH=amd64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-windows-amd64 -v
 
 windows_386:
 	GOOS=windows GOARCH=386 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-windows-386 -v
