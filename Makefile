@@ -39,10 +39,10 @@ test:
 	$(GOTEST) -v ./...
 
 darwin_arm64:
-	GOOS=darwin GOARCH=arm64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-darwin-arm64 -v 
+	GOOS=darwin GOARCH=arm64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-darwin-arm64 -v &
 
 darwin_amd64:
-	GOOS=darwin GOARCH=amd64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-darwin-amd64 -v 
+	GOOS=darwin GOARCH=amd64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-darwin-amd64 -v &
 
 linux_amd64:
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-linux-amd64 -v &

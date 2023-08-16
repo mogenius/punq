@@ -1,5 +1,6 @@
 tmp
 bin
+builds
 
 build-push-ghcr.sh
 build-client.sh
