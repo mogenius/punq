@@ -1,0 +1,4 @@
+misc:
+  stage: prod
+  debug: false
+  ignore_namespaces: ["kube-system"]

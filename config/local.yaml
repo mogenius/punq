@@ -1,0 +1,4 @@
+misc:
+  stage: local
+  debug: true
+  ignore_namespaces: ["kube-system"]

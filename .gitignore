@@ -1,0 +1,12 @@
+tmp
+bin
+
+build-push-ghcr.sh
+build-client.sh
+
+.DS_Store
+
+node_modules
+ui/package-lock.json
+punq
+ui/dist
