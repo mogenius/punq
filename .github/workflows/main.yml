@@ -17,19 +17,26 @@ jobs:
       - name: Execute make all
         run: make all
 
-      - name: Package artefacts
-        run: |
-          for file in builds/*; do
-            tar -czvf builds/$(basename "$file").tar.gz -C builds $(basename "$file")
-          done
-          ls -lisa builds
-
       - name: Create Tag
         run: |
           VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
           echo "$VERSION"
           git tag $VERSION
           git push --tags
+
+      - name: Create release
+        run: |
+          VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
+          gh release create refs/tags/"$VERSION" --title "Release $VERSION" --repo mogenius/punq
+
+      - name: Upload binaries
+        run: |
+          VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
+          echo "$VERSION"
+          ls -lisa builds
+          for build in builds/*; do
+            gh release upload "$VERSION" "$build" --repo mogenius/punq
+          done
 
       - name: Create release in another repo
         run: |
@@ -44,6 +51,13 @@ jobs:
           gh release view "$VERSION" --repo mogenius/homebrew-punq
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
+
+      - name: Package artefacts
+        run: |
+          for file in builds/*; do
+            tar -czvf builds/$(basename "$file").tar.gz -C builds $(basename "$file")
+          done
+          ls -lisa builds
 
       - name: Upload tarballs
         run: |
