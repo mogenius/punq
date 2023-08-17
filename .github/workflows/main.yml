@@ -28,6 +28,8 @@ jobs:
         run: |
           VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
           gh release create refs/tags/"$VERSION" --title "Release $VERSION" --repo mogenius/punq
+        env:
+          GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
       - name: Upload binaries
         run: |
