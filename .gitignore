@@ -1,6 +1,7 @@
 tmp
 bin
 builds
+punq.rb
 
 build-push-ghcr.sh
 build-client.sh

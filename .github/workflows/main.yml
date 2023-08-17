@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    # tags:
+    #   - "v*.*.*"
 
 jobs:
   build:
@@ -22,24 +24,24 @@ jobs:
           done
           ls -lisa builds
 
-      # - name: Create Tag
-      #   run: |
-      #     VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
-      #     echo "$VERSION"
-      #     git tag $VERSION
-      #     git push --tags
-
-      - name: Create release
+      - name: Create Tag
         run: |
           VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
-          gh release create refs/tags/"$VERSION" --title "Release $VERSION" --repo mogenius/punq
+          echo "$VERSION"
+          git tag $VERSION
+          git push --tags
+
+      - name: Create release in another repo
+        run: |
+          VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
+          gh release create refs/tags/"$VERSION" --title "Release $VERSION" --repo mogenius/homebrew-punq
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
       - name: Check if release exists
         run: |
           VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
-          gh release view "$VERSION" --repo mogenius/punq
+          gh release view "$VERSION" --repo mogenius/homebrew-punq
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
@@ -49,7 +51,7 @@ jobs:
           echo "$VERSION"
           ls -lisa builds
           for tarball in builds/*.tar.gz; do
-            gh release upload "$VERSION" "$tarball" --repo mogenius/punq
+            gh release upload "$VERSION" "$tarball" --repo mogenius/homebrew-punq
           done
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
@@ -58,9 +60,14 @@ jobs:
         run: |
           VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
           ./release.sh
-          git config --global user.email "punq@mogenius.com"
-          git config --global user.name "punq"
+          git config --global user.email "mogenius-cli@mogenius.com"
+          git config --global user.name "mogenius-cli"
           git config --global credential.helper cache
-          git add punq.rb
+          git clone https://${{secrets.PUNQ_TOKEN}}@github.com/mogenius/homebrew-punq
+          cd homebrew-punq
+          cp ../punq.rb .
+          git add .
           git commit -m "$VERSION"
           git push
+        env:
+          GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
