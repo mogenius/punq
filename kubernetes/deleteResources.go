@@ -2,9 +2,10 @@ package kubernetes
 
 import (
 	"context"
-	"punq/version"
 
-	"punq/logger"
+	"github.com/mogenius/punq/version"
+
+	"github.com/mogenius/punq/logger"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )

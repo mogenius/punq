@@ -4,8 +4,9 @@ import (
 	"context"
 	"os/exec"
 
-	"punq/logger"
-	"punq/utils"
+	"github.com/mogenius/punq/utils"
+
+	"github.com/mogenius/punq/logger"
 
 	v1 "k8s.io/api/coordination/v1"
 

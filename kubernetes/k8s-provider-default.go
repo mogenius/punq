@@ -2,8 +2,10 @@ package kubernetes
 
 import (
 	"path/filepath"
-	"punq/logger"
-	"punq/utils"
+
+	"github.com/mogenius/punq/utils"
+
+	"github.com/mogenius/punq/logger"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"

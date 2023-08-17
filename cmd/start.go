@@ -7,11 +7,12 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"punq/kubernetes"
 	"syscall"
 
-	"punq/logger"
-	"punq/utils"
+	"github.com/mogenius/punq/kubernetes"
+
+	"github.com/mogenius/punq/logger"
+	"github.com/mogenius/punq/utils"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"

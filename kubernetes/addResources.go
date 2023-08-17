@@ -3,9 +3,11 @@ package kubernetes
 import (
 	"context"
 
-	"punq/logger"
-	"punq/utils"
-	"punq/version"
+	"github.com/mogenius/punq/version"
+
+	"github.com/mogenius/punq/utils"
+
+	"github.com/mogenius/punq/logger"
 
 	core "k8s.io/api/core/v1"
 	rbac "k8s.io/api/rbac/v1"

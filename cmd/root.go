@@ -12,7 +12,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "punq",
+	Use:   "github.com/mogenius/punq",
 	Short: "Collect traffic data using pcap from a machine.",
 	Long: `
 Use punq to manage the workloads of your kubernetes clusters relatively neat. 🚀`,

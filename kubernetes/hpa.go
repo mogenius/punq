@@ -4,8 +4,9 @@ import (
 	"context"
 	"os/exec"
 
-	"punq/logger"
-	"punq/utils"
+	"github.com/mogenius/punq/utils"
+
+	"github.com/mogenius/punq/logger"
 
 	v2 "k8s.io/api/autoscaling/v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

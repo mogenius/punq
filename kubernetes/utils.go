@@ -4,12 +4,17 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
-	"punq/dtos"
-	"punq/logger"
-	"punq/structs"
-	"punq/utils"
-	"punq/version"
 	"time"
+
+	"github.com/mogenius/punq/version"
+
+	"github.com/mogenius/punq/utils"
+
+	"github.com/mogenius/punq/structs"
+
+	"github.com/mogenius/punq/logger"
+
+	"github.com/mogenius/punq/dtos"
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

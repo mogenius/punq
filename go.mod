@@ -1,4 +1,4 @@
-module punq
+module github.com/mogenius/punq
 
 go 1.21
 

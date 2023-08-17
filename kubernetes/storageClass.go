@@ -3,8 +3,10 @@ package kubernetes
 import (
 	"context"
 	"os/exec"
-	"punq/logger"
-	"punq/utils"
+
+	"github.com/mogenius/punq/utils"
+
+	"github.com/mogenius/punq/logger"
 
 	storage "k8s.io/api/storage/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

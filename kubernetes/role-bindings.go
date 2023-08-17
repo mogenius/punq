@@ -4,8 +4,8 @@ import (
 	"context"
 	"os/exec"
 
-	"punq/logger"
-	"punq/utils"
+	"github.com/mogenius/punq/logger"
+	"github.com/mogenius/punq/utils"
 
 	v1 "k8s.io/api/rbac/v1"
 

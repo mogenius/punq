@@ -3,8 +3,9 @@ package kubernetes
 import (
 	"os/exec"
 
-	"punq/logger"
-	"punq/utils"
+	"github.com/mogenius/punq/utils"
+
+	"github.com/mogenius/punq/logger"
 )
 
 // func AllCustomResourceDefinitions(namespaceName string) K8sWorkloadResult {

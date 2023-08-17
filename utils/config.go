@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"punq/logger"
-	"punq/version"
 	"strings"
+
+	"github.com/mogenius/punq/version"
+
+	"github.com/mogenius/punq/logger"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )

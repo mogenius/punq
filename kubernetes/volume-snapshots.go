@@ -4,8 +4,8 @@ import (
 	"context"
 	"os/exec"
 
-	"punq/logger"
-	"punq/utils"
+	"github.com/mogenius/punq/logger"
+	"github.com/mogenius/punq/utils"
 
 	storage "k8s.io/api/storage/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

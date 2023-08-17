@@ -2,8 +2,9 @@ package structs
 
 import (
 	"fmt"
-	"punq/utils"
 	"time"
+
+	"github.com/mogenius/punq/utils"
 
 	"github.com/fatih/color"
 	"github.com/google/uuid"

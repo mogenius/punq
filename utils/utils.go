@@ -9,10 +9,12 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"punq/logger"
-	"punq/version"
 	"runtime"
 	"strings"
+
+	"github.com/mogenius/punq/version"
+
+	"github.com/mogenius/punq/logger"
 
 	jsoniter "github.com/json-iterator/go"
 )

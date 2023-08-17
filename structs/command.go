@@ -2,9 +2,11 @@ package structs
 
 import (
 	"os/exec"
-	"punq/logger"
-	"punq/utils"
 	"time"
+
+	"github.com/mogenius/punq/utils"
+
+	"github.com/mogenius/punq/logger"
 )
 
 type Command struct {

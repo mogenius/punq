@@ -5,9 +5,10 @@ import (
 	"context"
 	"io"
 	"io/ioutil"
-	"punq/logger"
-	"punq/utils"
 	"time"
+
+	"github.com/mogenius/punq/logger"
+	"github.com/mogenius/punq/utils"
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

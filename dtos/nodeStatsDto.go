@@ -2,7 +2,8 @@ package dtos
 
 import (
 	"fmt"
-	"punq/utils"
+
+	"github.com/mogenius/punq/utils"
 )
 
 type NodeStat struct {

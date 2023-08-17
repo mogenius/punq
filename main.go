@@ -2,8 +2,9 @@ package main
 
 import (
 	"embed"
-	"punq/cmd"
-	"punq/logger"
+
+	"github.com/mogenius/punq/cmd"
+	"github.com/mogenius/punq/logger"
 )
 
 // //go:embed ui/dist/punq/*

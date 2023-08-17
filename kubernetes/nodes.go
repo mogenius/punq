@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
-	"punq/dtos"
-	"punq/logger"
-	"punq/utils"
+
+	"github.com/mogenius/punq/dtos"
+	"github.com/mogenius/punq/logger"
+	"github.com/mogenius/punq/utils"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )

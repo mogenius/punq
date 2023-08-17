@@ -5,7 +5,8 @@ package cmd
 
 import (
 	"fmt"
-	"punq/version"
+
+	"github.com/mogenius/punq/version"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"

@@ -6,8 +6,9 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"punq/kubernetes"
-	"punq/utils"
+
+	"github.com/mogenius/punq/kubernetes"
+	"github.com/mogenius/punq/utils"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"

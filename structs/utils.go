@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"punq/logger"
 	"time"
+
+	"github.com/mogenius/punq/logger"
 
 	"github.com/gookit/color"
 	jsoniter "github.com/json-iterator/go"
