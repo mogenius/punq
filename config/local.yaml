@@ -1,4 +1,10 @@
+kubernetes:
+  cluster_name: your-cluster-name
+  own_namespace: punq
+  run_in_cluster: true
+
 misc:
   stage: local
   debug: true
+  check_for_updates: 86400
   ignore_namespaces: ["kube-system"]

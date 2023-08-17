@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"embed"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -99,42 +98,6 @@ func ContainsInt(v int, a []int) bool {
 	return false
 }
 
-func MountPath(namespaceName string, volumeName string, defaultReturnValue string) string {
-	if CONFIG.Kubernetes.RunInCluster {
-		return fmt.Sprintf("%s/%s_%s", CONFIG.Misc.DefaultMountPath, namespaceName, volumeName)
-	} else {
-		pwd, err := os.Getwd()
-		pwd += "/temp"
-		if err != nil {
-			logger.Log.Errorf("StatsMogeniusNfsVolume PWD Err: %s", err.Error())
-		} else {
-			return pwd
-		}
-	}
-	return defaultReturnValue
-}
-
-func StorageClassForClusterProvider(clusterProvider string) string {
-	var nfsStorageClassStr string = "default"
-	// TODO: "DOCKER_ENTERPRISE", "DOKS", "LINODE", "IBM", "ACK", "OKE", "OPEN_SHIFT"
-	switch clusterProvider {
-	case "EKS":
-		nfsStorageClassStr = "gp2"
-	case "GKE":
-		nfsStorageClassStr = "standard-rwo"
-	case "AKS":
-		nfsStorageClassStr = "default"
-	case "OTC":
-		nfsStorageClassStr = "csi-disk"
-	case "BRING_YOUR_OWN":
-		nfsStorageClassStr = "default"
-	default:
-		logger.Log.Errorf("CLUSTERPROVIDER '%s' HAS NOT BEEN TESTED YET! Returning 'default'.", clusterProvider)
-		nfsStorageClassStr = "default"
-	}
-	return nfsStorageClassStr
-}
-
 func OpenBrowser(url string) {
 	var err error
 
@@ -220,11 +183,8 @@ func Remove[T any](slice []T, s int) []T {
 
 func HttpHeader(additionalName string) http.Header {
 	return http.Header{
-		"x-authorization":  []string{CONFIG.Kubernetes.ApiKey},
-		"x-cluster-mfa-id": []string{CONFIG.Kubernetes.ClusterMfaId},
-		"x-app":            []string{fmt.Sprintf("%s%s", APP_NAME, additionalName)},
-		"x-app-version":    []string{version.Ver},
-		"x-cluster-name":   []string{CONFIG.Kubernetes.ClusterName}}
+		"x-app":         []string{fmt.Sprintf("%s%s", APP_NAME, additionalName)},
+		"x-app-version": []string{version.Ver}}
 }
 
 func CreateDirIfNotExist(dir string) {
@@ -251,45 +211,6 @@ func DeleteDirIfExist(dir string) {
 	}
 }
 
-func GetVolumeMountsForK8sManager() ([]Volume, error) {
-	result := []Volume{}
-
-	// Create an http client
-	client := &http.Client{}
-
-	// Create a new request using http
-	url := fmt.Sprintf("%s/storage/k8s/cluster-project-storage/list", CONFIG.ApiServer.Http_Server)
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return result, err
-	}
-
-	// Add headers to the http request
-	req.Header = HttpHeader("")
-	// TODO: REMOVE - THIS IS JUST FOR DEBUGGING
-	// if CONFIG.Misc.Debug && CONFIG.Misc.Stage == "local" {
-	// 	req.Header["x-authorization"] = []string{"mo_7bf5c2b5-d7bc-4f0e-b8fc-b29d09108928_0hkga6vjum3p1mvezith"}
-	// 	req.Header["x-cluster-mfa-id"] = []string{"a141bd85-c986-402c-9475-5bdc4679293b"}
-	// }
-
-	// Send the request and get a response
-	resp, err := client.Do(req)
-	if err != nil {
-		return result, err
-	}
-	defer resp.Body.Close()
-
-	// Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return result, err
-	}
-
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
-	err = json.Unmarshal(body, &result)
-	return result, err
-}
-
 // parseIPs parses a slice of IP address strings into a slice of net.IP.
 func parseIPs(ips []string) ([]net.IP, error) {
 	var parsed []net.IP
@@ -302,45 +223,3 @@ func parseIPs(ips []string) ([]net.IP, error) {
 	}
 	return parsed, nil
 }
-
-// // FindSmallestSubnet finds the smallest subnet that includes all given IP addresses.
-// func FindSmallestSubnet(ipStrings []string) *net.IPNet {
-// 	ips, err := parseIPs(ipStrings)
-// 	if err != nil {
-// 		fmt.Println("Error parsing IP addresses:", err)
-// 		return nil
-// 	}
-
-// 	sort.Slice(ips, func(i, j int) bool {
-// 		return bytes.Compare(ips[i], ips[j]) < 0
-// 	})
-// 	minIP, maxIP := ips[0], ips[len(ips)-1]
-
-// 	mask := net.CIDRMask(commonPrefixLen(minIP, maxIP), 32)
-// 	return &net.IPNet{IP: minIP, Mask: mask}
-// }
-
-// func LastIpMinusOne(network *net.IPNet) net.IP {
-// 	var ip net.IP
-// 	for i := 0; i < len(network.IP); i++ {
-// 		ip = append(ip, network.IP[i]|(^network.Mask[i]))
-// 	}
-// 	if ip4 := ip.To4(); ip4 != nil {
-// 		ip4[3]--
-// 		return ip4
-// 	}
-// 	ip[15]--
-// 	return ip
-// }
-
-// // commonPrefixLen finds the length of the common prefix of a and b in bits.
-// func commonPrefixLen(a, b net.IP) (cpl int) {
-// 	for i := 0; i < 4; i++ {
-// 		diff := uint(a[i] ^ b[i])
-// 		for diff != 0 {
-// 			diff >>= 1
-// 			cpl++
-// 		}
-// 	}
-// 	return 32 - cpl
-// }

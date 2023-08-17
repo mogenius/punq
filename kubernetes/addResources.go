@@ -2,18 +2,16 @@ package kubernetes
 
 import (
 	"context"
-	"os"
-	"time"
 
 	"punq/logger"
+	"punq/utils"
+	"punq/version"
 
 	core "k8s.io/api/core/v1"
-	v1 "k8s.io/api/core/v1"
 	rbac "k8s.io/api/rbac/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	applyconfapp "k8s.io/client-go/applyconfigurations/apps/v1"
 	applyconfcore "k8s.io/client-go/applyconfigurations/core/v1"
 	applyconfmeta "k8s.io/client-go/applyconfigurations/meta/v1"
@@ -27,11 +25,12 @@ func Deploy() {
 
 	applyNamespace(provider)
 	addRbac(provider)
-	addRedisService(provider)
-	addRedis(provider)
-	addDaemonSet(provider)
-	time.Sleep(3 * time.Second) // TODO: <-- this is realy dumb. find a better solution
-	go StartPortForward(provider, false)
+	addDeployment(provider)
+	// TODO
+	// _, err = CreateClusterSecretIfNotExist(false)
+	// if err != nil {
+	// 	logger.Log.Fatalf("Error Creating cluster secret. Aborting: %s.", err.Error())
+	// }
 }
 
 func addRbac(kubeProvider *KubeProvider) error {
@@ -48,7 +47,7 @@ func addRbac(kubeProvider *KubeProvider) error {
 			{
 				APIGroups: []string{"", "extensions", "apps"},
 				Resources: RBACRESOURCES,
-				Verbs:     []string{"list", "get", "watch"},
+				Verbs:     []string{"list", "get", "watch", "create", "update"},
 			},
 		},
 	}
@@ -72,19 +71,19 @@ func addRbac(kubeProvider *KubeProvider) error {
 
 	// CREATE RBAC
 	logger.Log.Info("Creating punq RBAC ...")
-	_, err := kubeProvider.ClientSet.CoreV1().ServiceAccounts(NAMESPACE).Create(context.TODO(), serviceAccount, metav1.CreateOptions{})
+	_, err := kubeProvider.ClientSet.CoreV1().ServiceAccounts(NAMESPACE).Create(context.TODO(), serviceAccount, MoCreateOptions())
 	if err != nil && !k8serrors.IsAlreadyExists(err) {
 		return err
 	}
-	_, err = kubeProvider.ClientSet.RbacV1().ClusterRoles().Create(context.TODO(), clusterRole, metav1.CreateOptions{})
+	_, err = kubeProvider.ClientSet.RbacV1().ClusterRoles().Create(context.TODO(), clusterRole, MoCreateOptions())
 	if err != nil && !k8serrors.IsAlreadyExists(err) {
 		return err
 	}
-	_, err = kubeProvider.ClientSet.RbacV1().ClusterRoleBindings().Create(context.TODO(), clusterRoleBinding, metav1.CreateOptions{})
+	_, err = kubeProvider.ClientSet.RbacV1().ClusterRoleBindings().Create(context.TODO(), clusterRoleBinding, MoCreateOptions())
 	if err != nil && !k8serrors.IsAlreadyExists(err) {
 		return err
 	}
-	logger.Log.Info("Created punq RBAC.")
+	logger.Log.Info("Created punq/structs RBAC.")
 	return nil
 }
 
@@ -95,129 +94,124 @@ func applyNamespace(kubeProvider *KubeProvider) {
 
 	applyOptions := metav1.ApplyOptions{
 		Force:        true,
-		FieldManager: REDISSERVICENAME,
+		FieldManager: version.Name,
 	}
 
-	logger.Log.Info("Creating punq namespace ...")
+	logger.Log.Info("Creating punq/structs namespace ...")
 	result, err := serviceClient.Apply(context.TODO(), namespace, applyOptions)
 	if err != nil {
 		logger.Log.Error(err)
 	}
-	logger.Log.Info("Created punq namespace", result.GetObjectMeta().GetName(), ".")
+	logger.Log.Info("Created punq/structs namespace", result.GetObjectMeta().GetName(), ".")
 }
 
-func addDaemonSet(kubeProvider *KubeProvider) {
-	daemonSetClient := kubeProvider.ClientSet.AppsV1().DaemonSets(NAMESPACE)
+// func CreateClusterSecretIfNotExist(runsInCluster bool) (utils.ClusterSecret, error) {
+// 	var kubeProvider *KubeProvider
+// 	var err error
+// 	if runsInCluster {
+// 		kubeProvider, err = NewKubeProviderInCluster()
+// 	} else {
+// 		kubeProvider, err = NewKubeProviderLocal()
+// 	}
 
-	daemonsetContainer := applyconfcore.Container()
-	daemonsetContainer.WithName(DAEMONSETNAME)
-	daemonsetContainer.WithImage(DAEMONSETIMAGE)
-	daemonsetContainer.WithImagePullPolicy(core.PullAlways)
-	daemonsetContainer.WithEnv(
-		applyconfcore.EnvVar().WithName("STAGE").WithValue(os.Getenv("STAGE")),
-		applyconfcore.EnvVar().WithName("REDIS_SERVICE_NAME").WithValue(os.Getenv("REDIS_SERVICE_NAME")),
-		applyconfcore.EnvVar().WithName("REDIS_PORT").WithValue(os.Getenv("REDIS_PORT")),
-		applyconfcore.EnvVar().WithName("API_HOST").WithValue(os.Getenv("API_HOST")),
-		applyconfcore.EnvVar().WithName("API_PORT").WithValue(os.Getenv("API_PORT")),
-		applyconfcore.EnvVar().WithName("OWN_NODE_NAME").WithValueFrom(
-			applyconfcore.EnvVarSource().WithFieldRef(
-				applyconfcore.ObjectFieldSelector().WithAPIVersion("v1").WithFieldPath("spec.nodeName"),
-			),
-		),
-		applyconfcore.EnvVar().WithName("OWN_POD_NAME").WithValueFrom(
-			applyconfcore.EnvVarSource().WithFieldRef(
-				applyconfcore.ObjectFieldSelector().WithAPIVersion("v1").WithFieldPath("metadata.name"),
-			),
-		),
-		applyconfcore.EnvVar().WithName("OWN_NAMESPACE").WithValueFrom(
-			applyconfcore.EnvVarSource().WithFieldRef(
-				applyconfcore.ObjectFieldSelector().WithAPIVersion("v1").WithFieldPath("metadata.namespace"),
-			),
-		),
-	)
+// 	if err != nil {
+// 		logger.Log.Errorf("CreateClusterSecretIfNotExist ERROR: %s", err.Error())
+// 	}
 
-	caps := applyconfcore.Capabilities().WithDrop("ALL")
+// 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(NAMESPACE)
 
-	caps = caps.WithAdd("NET_RAW")
-	caps = caps.WithAdd("NET_ADMIN")
-	caps = caps.WithAdd("SYS_ADMIN")
-	caps = caps.WithAdd("SYS_PTRACE")
-	caps = caps.WithAdd("DAC_OVERRIDE")
-	caps = caps.WithAdd("SYS_RESOURCE")
-	daemonsetContainer.WithSecurityContext(applyconfcore.SecurityContext().WithCapabilities(caps))
+// 	existingSecret, getErr := secretClient.Get(context.TODO(), NAMESPACE, metav1.GetOptions{})
+// 	return writeMogeniusSecret(secretClient, runsInCluster, existingSecret, getErr)
+// }
 
-	agentResourceLimits := core.ResourceList{
-		"cpu":               resource.MustParse("1000m"),
-		"memory":            resource.MustParse("512Mi"),
-		"ephemeral-storage": resource.MustParse("100Mi"),
-	}
-	agentResourceRequests := core.ResourceList{
-		"cpu":               resource.MustParse("500m"),
-		"memory":            resource.MustParse("128Mi"),
-		"ephemeral-storage": resource.MustParse("10Mi"),
-	}
-	agentResources := applyconfcore.ResourceRequirements().WithRequests(agentResourceRequests).WithLimits(agentResourceLimits)
-	daemonsetContainer.WithResources(agentResources)
+// func writeMogeniusSecret(secretClient v1.SecretInterface, runsInCluster bool, existingSecret *core.Secret, getErr error) (utils.ClusterSecret, error) {
+// 	// CREATE NEW SECRET
+// 	apikey := os.Getenv("api_key")
+// 	if apikey == "" {
+// 		if runsInCluster {
+// 			logger.Log.Fatal("Environment Variable 'api_key' is missing.")
+// 		} else {
+// 			apikey = utils.CONFIG.Kubernetes.ApiKey
+// 		}
+// 	}
+// 	clusterName := os.Getenv("cluster_name")
+// 	if clusterName == "" {
+// 		if runsInCluster {
+// 			logger.Log.Fatal("Environment Variable 'cluster_name' is missing.")
+// 		} else {
+// 			clusterName = utils.CONFIG.Kubernetes.ClusterName
+// 		}
+// 	}
 
-	// Host procfs is needed inside the container because we need access to
-	//	the network namespaces of processes on the machine.
-	//
-	procfsVolume := applyconfcore.Volume()
-	procfsVolume.WithName(PROCFSVOLUMENAME).WithHostPath(applyconfcore.HostPathVolumeSource().WithPath("/proc"))
-	procfsVolumeMount := applyconfcore.VolumeMount().WithName(PROCFSVOLUMENAME).WithMountPath(PROCFSMOUNTPATH).WithReadOnly(true)
-	daemonsetContainer.WithVolumeMounts(procfsVolumeMount)
+// 	clusterSecret := utils.ClusterSecret{
+// 		ApiKey:       apikey,
+// 		ClusterMfaId: uuid.New().String(),
+// 		ClusterName:  clusterName,
+// 	}
 
-	// We need access to /sys in order to install certain eBPF tracepoints
-	//
-	sysfsVolume := applyconfcore.Volume()
-	sysfsVolume.WithName(SYSFSVOLUMENAME).WithHostPath(applyconfcore.HostPathVolumeSource().WithPath("/sys"))
-	sysfsVolumeMount := applyconfcore.VolumeMount().WithName(SYSFSVOLUMENAME).WithMountPath(SYSFSMOUNTPATH).WithReadOnly(true)
-	daemonsetContainer.WithVolumeMounts(sysfsVolumeMount)
+// 	// This prevents lokal k8s-manager installations from overwriting cluster secrets
+// 	if !runsInCluster {
+// 		return clusterSecret, nil
+// 	}
 
-	podSpec := applyconfcore.PodSpec()
-	podSpec.WithHostNetwork(true)
-	podSpec.WithDNSPolicy(core.DNSClusterFirstWithHostNet)
-	podSpec.WithTerminationGracePeriodSeconds(0)
-	podSpec.WithServiceAccountName(SERVICEACCOUNTNAME)
+// 	secret := utils.InitSecret()
+// 	secret.ObjectMeta.Name = NAMESPACE
+// 	secret.ObjectMeta.Namespace = NAMESPACE
+// 	delete(secret.StringData, "PRIVATE_KEY") // delete example data
+// 	secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
+// 	secret.StringData["api-key"] = clusterSecret.ApiKey
+// 	secret.StringData["cluster-name"] = clusterSecret.ClusterName
 
-	podSpec.WithContainers(daemonsetContainer)
-	podSpec.WithVolumes(procfsVolume, sysfsVolume)
+// 	if existingSecret == nil || getErr != nil {
+// 		logger.Log.Info("Creating new mogenius secret ...")
+// 		result, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
+// 		if err != nil {
+// 			logger.Log.Error(err)
+// 			return clusterSecret, err
+// 		}
+// 		logger.Log.Info("Created new mogenius secret", result.GetObjectMeta().GetName(), ".")
+// 	} else {
+// 		if string(existingSecret.Data["api-key"]) != clusterSecret.ApiKey ||
+// 			string(existingSecret.Data["cluster-name"]) != clusterSecret.ClusterName {
+// 			logger.Log.Info("Updating existing mogenius secret ...")
+// 			// keep existing mfa-id if possible
+// 			if string(existingSecret.Data["cluster-mfa-id"]) != "" {
+// 				clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
+// 				secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
+// 			}
+// 			result, err := secretClient.Update(context.TODO(), &secret, MoUpdateOptions())
+// 			if err != nil {
+// 				logger.Log.Error(err)
+// 				return clusterSecret, err
+// 			}
+// 			logger.Log.Info("Updated mogenius secret", result.GetObjectMeta().GetName(), ".")
+// 		} else {
+// 			clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
+// 			logger.Log.Info("Using existing mogenius secret.")
+// 		}
+// 	}
 
-	applyOptions := metav1.ApplyOptions{
-		Force:        true,
-		FieldManager: DAEMONSETNAME,
-	}
+// 	return clusterSecret, nil
+// }
 
-	labelSelector := applyconfmeta.LabelSelector()
-	labelSelector.WithMatchLabels(map[string]string{"app": DAEMONSETNAME})
-
-	podTemplate := applyconfcore.PodTemplateSpec()
-	podTemplate.WithLabels(map[string]string{
-		"app": DAEMONSETNAME,
-	})
-	podTemplate.WithSpec(podSpec)
-
-	daemonSet := applyconfapp.DaemonSet(DAEMONSETNAME, NAMESPACE)
-	daemonSet.WithSpec(applyconfapp.DaemonSetSpec().WithSelector(labelSelector).WithTemplate(podTemplate))
-
-	// Create DaemonSet
-	logger.Log.Info("Creating punq daemonset ...")
-	result, err := daemonSetClient.Apply(context.TODO(), daemonSet, applyOptions)
-	if err != nil {
-		logger.Log.Error(err)
-	}
-	logger.Log.Info("Created punq daemonset.", result.GetObjectMeta().GetName(), ".")
-}
-
-func addRedis(kubeProvider *KubeProvider) {
+func addDeployment(kubeProvider *KubeProvider) {
 	deploymentClient := kubeProvider.ClientSet.AppsV1().Deployments(NAMESPACE)
 
 	deploymentContainer := applyconfcore.Container()
-	deploymentContainer.WithName(REDISNAME)
-	deploymentContainer.WithImage(REDISIMAGE)
-	deploymentContainer.WithEnv(
-		applyconfcore.EnvVar().WithName("STAGE").WithValue(os.Getenv("STAGE")),
-	)
+	deploymentContainer.WithImagePullPolicy(core.PullAlways)
+	deploymentContainer.WithName(version.Name)
+	deploymentContainer.WithImage(DEPLOYMENTIMAGE)
+
+	envVars := []applyconfcore.EnvVarApplyConfiguration{}
+	envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
+		Name:  utils.Pointer("cluster_name"),
+		Value: utils.Pointer("TestClusterFromCode"),
+	})
+	envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
+		Name:  utils.Pointer("api_key"),
+		Value: utils.Pointer("94E23575-A689-4F88-8D67-215A274F4E6E"), // dont worry. this is a test key
+	})
+	deploymentContainer.Env = envVars
 	agentResourceLimits := core.ResourceList{
 		"cpu":               resource.MustParse("300m"),
 		"memory":            resource.MustParse("256Mi"),
@@ -230,7 +224,7 @@ func addRedis(kubeProvider *KubeProvider) {
 	}
 	agentResources := applyconfcore.ResourceRequirements().WithRequests(agentResourceRequests).WithLimits(agentResourceLimits)
 	deploymentContainer.WithResources(agentResources)
-	deploymentContainer.WithPorts(applyconfcore.ContainerPort().WithContainerPort(REDISPORT).WithProtocol(v1.ProtocolTCP).WithName("redis"))
+	deploymentContainer.WithName(version.Name)
 
 	podSpec := applyconfcore.PodSpec()
 	podSpec.WithTerminationGracePeriodSeconds(0)
@@ -240,50 +234,26 @@ func addRedis(kubeProvider *KubeProvider) {
 
 	applyOptions := metav1.ApplyOptions{
 		Force:        true,
-		FieldManager: REDISNAME,
+		FieldManager: version.Name,
 	}
 
 	labelSelector := applyconfmeta.LabelSelector()
-	labelSelector.WithMatchLabels(map[string]string{"app": REDISNAME})
+	labelSelector.WithMatchLabels(map[string]string{"app": version.Name})
 
 	podTemplate := applyconfcore.PodTemplateSpec()
 	podTemplate.WithLabels(map[string]string{
-		"app": REDISNAME,
+		"app": version.Name,
 	})
 	podTemplate.WithSpec(podSpec)
 
-	deployment := applyconfapp.Deployment(REDISNAME, NAMESPACE)
+	deployment := applyconfapp.Deployment(version.Name, NAMESPACE)
 	deployment.WithSpec(applyconfapp.DeploymentSpec().WithSelector(labelSelector).WithTemplate(podTemplate))
 
-	// Create Redis Deployment
-	logger.Log.Info("Creating punq redis ...")
+	// Create Deployment
+	logger.Log.Info("Creating punq/structs deployment ...")
 	result, err := deploymentClient.Apply(context.TODO(), deployment, applyOptions)
 	if err != nil {
 		logger.Log.Error(err)
 	}
-	logger.Log.Info("Created punq redis.", result.GetObjectMeta().GetName(), ".")
-}
-
-func addRedisService(kubeProvider *KubeProvider) {
-	serviceClient := kubeProvider.ClientSet.CoreV1().Services(NAMESPACE)
-
-	serviceSpec := applyconfcore.ServiceSpec()
-	serviceSpec.WithSelector(map[string]string{"app": REDISNAME})
-	serviceSpec.WithPorts(applyconfcore.ServicePort().WithPort(REDISPORT).WithTargetPort(intstr.FromString(REDISTARGETPORT)).WithProtocol(v1.ProtocolTCP))
-
-	applyOptions := metav1.ApplyOptions{
-		Force:        true,
-		FieldManager: REDISSERVICENAME,
-	}
-
-	service := applyconfcore.Service(REDISSERVICENAME, NAMESPACE)
-	service.WithSpec(serviceSpec)
-
-	// Create Redis Deployment
-	logger.Log.Info("Creating punq redis service ...")
-	result, err := serviceClient.Apply(context.TODO(), service, applyOptions)
-	if err != nil {
-		logger.Log.Error(err)
-	}
-	logger.Log.Info("Created punqdis service", result.GetObjectMeta().GetName(), ".")
+	logger.Log.Info("Created punq/structs deployment.", result.GetObjectMeta().GetName(), ".")
 }
