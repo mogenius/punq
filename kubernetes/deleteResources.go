@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"punq/version"
 
 	"punq/logger"
 
@@ -14,65 +15,43 @@ func Remove() {
 		panic(err)
 	}
 
-	removeDaemonset(provider)
+	// namespace is not deleted on purpose
 	removeRbac(provider)
-	removeRedis(provider)
-	removeRedisService(provider)
+	removeDeployment(provider)
+	// secret is not deleted on purpose
 }
 
-func removeDaemonset(kubeProvider *KubeProvider) {
-	daemonSetClient := kubeProvider.ClientSet.AppsV1().DaemonSets(NAMESPACE)
-
-	// DELETE DaemonSet
-	logger.Log.Info("Deleting punq daemonset ...")
-	deletePolicy := metav1.DeletePropagationForeground
-	err := daemonSetClient.Delete(context.TODO(), DAEMONSETNAME, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
-	if err != nil {
-		logger.Log.Error(err)
-	}
-	logger.Log.Info("Deleted punq daemonset.")
-}
-
-func removeRedis(kubeProvider *KubeProvider) {
+func removeDeployment(kubeProvider *KubeProvider) {
 	deploymentClient := kubeProvider.ClientSet.AppsV1().Deployments(NAMESPACE)
 
-	// DELETE REDIS
-	logger.Log.Info("Deleting punq redis ...")
+	// DELETE Deployment
+	logger.Log.Infof("Deleting %s deployment ...", version.Name)
 	deletePolicy := metav1.DeletePropagationForeground
-	err := deploymentClient.Delete(context.TODO(), REDISNAME, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
+	err := deploymentClient.Delete(context.TODO(), version.Name, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
 		logger.Log.Error(err)
+		return
 	}
-	logger.Log.Info("Deleted punq redis.")
-}
-
-func removeRedisService(kubeProvider *KubeProvider) {
-	serviceClient := kubeProvider.ClientSet.CoreV1().Services(NAMESPACE)
-
-	// DELETE REDIS
-	logger.Log.Info("Deleting punq redis service ...")
-	deletePolicy := metav1.DeletePropagationForeground
-	err := serviceClient.Delete(context.TODO(), REDISSERVICENAME, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
-	if err != nil {
-		logger.Log.Error(err)
-	}
-	logger.Log.Info("Deleted punq redis service.")
+	logger.Log.Infof("Deleted %s deployment.", version.Name)
 }
 
 func removeRbac(kubeProvider *KubeProvider) {
 	// CREATE RBAC
-	logger.Log.Info("Deleting punq RBAC ...")
+	logger.Log.Infof("Deleting %s RBAC ...", version.Name)
 	err := kubeProvider.ClientSet.CoreV1().ServiceAccounts(NAMESPACE).Delete(context.TODO(), SERVICEACCOUNTNAME, metav1.DeleteOptions{})
 	if err != nil {
 		logger.Log.Error(err)
+		return
 	}
 	err = kubeProvider.ClientSet.RbacV1().ClusterRoles().Delete(context.TODO(), CLUSTERROLENAME, metav1.DeleteOptions{})
 	if err != nil {
 		logger.Log.Error(err)
+		return
 	}
 	err = kubeProvider.ClientSet.RbacV1().ClusterRoleBindings().Delete(context.TODO(), CLUSTERROLEBINDINGNAME, metav1.DeleteOptions{})
 	if err != nil {
 		logger.Log.Error(err)
+		return
 	}
-	logger.Log.Info("Deleted punq RBAC.")
+	logger.Log.Infof("Deleted %s RBAC.", version.Name)
 }
