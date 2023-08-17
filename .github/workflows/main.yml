@@ -39,6 +39,8 @@ jobs:
           for build in builds/*; do
             gh release upload "$VERSION" "$build" --repo mogenius/punq
           done
+        env:
+          GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
       - name: Create release in another repo
         run: |
