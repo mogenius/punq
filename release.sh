@@ -13,7 +13,7 @@ SHA256_LINUX_386=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-linux-386.tar.gz |
 cat <<EOF > punq.rb
 class Punq < Formula
   desc "View your kubernetes workloads relativly neat!"
-  homepage "https://punq-k8s.io"
+  homepage "https://punq.dev"
   
   on_macos do
     if Hardware::CPU.arm?
