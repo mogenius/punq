@@ -27,7 +27,9 @@ jobs:
       - name: Create Tag
         run: |
           VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "$VERSION"
+          echo ${{ env.VERSION }}
           git tag $VERSION
           git push --tags
 
@@ -64,8 +66,8 @@ jobs:
         with:
           file: Dockerfile-Operator
           context: .
-          tags: |
-            type=semver,pattern={{version}}
+          push: true
+          tags: your-dockerhub-username/your-repo-name:${{ env.DOCKER_TAG }}
 
       - name: Package artefacts
         run: |
