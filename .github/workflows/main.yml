@@ -48,13 +48,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
-      - name: Check if release exists
-        run: |
-          VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
-          gh release view "$VERSION" --repo mogenius/homebrew-punq
-        env:
-          GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
-      
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
