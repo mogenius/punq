@@ -28,33 +28,28 @@ jobs:
         run: |
           VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "$VERSION"
-          echo ${{ env.VERSION }}
-          git tag $VERSION
+          echo "${{ env.VERSION }}"
+          git tag ${{ env.VERSION }}
           git push --tags
 
       - name: Create release
         run: |
-          VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
-          gh release create refs/tags/"$VERSION" --title "Release $VERSION" --repo mogenius/punq
+          gh release create refs/tags/${{ env.VERSION }} --title "Release ${{ env.VERSION }}" --repo mogenius/punq
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
       - name: Upload binaries
         run: |
-          VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
-          echo "$VERSION"
           ls -lisa builds
           for build in builds/*; do
-            gh release upload "$VERSION" "$build" --repo mogenius/punq
+            gh release upload ${{ env.VERSION }} "$build" --repo mogenius/punq
           done
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
       - name: Create release in another repo
         run: |
-          VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
-          gh release create refs/tags/"$VERSION" --title "Release $VERSION" --repo mogenius/homebrew-punq
+          gh release create refs/tags/${{ env.VERSION }} --title "Release ${{ env.VERSION }}" --repo mogenius/homebrew-punq
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
@@ -67,7 +62,7 @@ jobs:
           file: Dockerfile-Operator
           context: .
           push: true
-          tags: your-dockerhub-username/your-repo-name:${{ env.DOCKER_TAG }}
+          tags: mogenius/punq:${{ env.VERSION }}
 
       - name: Package artefacts
         run: |
@@ -78,18 +73,15 @@ jobs:
 
       - name: Upload tarballs
         run: |
-          VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
-          echo "$VERSION"
           ls -lisa builds
           for tarball in builds/*.tar.gz; do
-            gh release upload "$VERSION" "$tarball" --repo mogenius/homebrew-punq
+            gh release upload ${{ env.VERSION }} "$tarball" --repo mogenius/homebrew-punq
           done
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
       - name: UPDATE BREW
         run: |
-          VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
           ./release.sh
           git config --global user.email "mogenius-cli@mogenius.com"
           git config --global user.name "mogenius-cli"
@@ -98,7 +90,7 @@ jobs:
           cd homebrew-punq
           cp ../punq.rb .
           git add .
-          git commit -m "$VERSION"
+          git commit -m "${{ env.VERSION }}"
           git push
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
