@@ -18,8 +18,8 @@ jobs:
       #
       - name: npm run build
         run: |
-          mkdir dist
-          cp index.html dist/index.html
+          mkdir ui/dist
+          cp ui/index.html ui/dist/index.html
 
       - name: Execute make all
         run: make all
