@@ -1,7 +1,7 @@
 package version
 
 var (
-	Ver            = "1.1.11"
+	Ver            = "1.1.12"
 	Name           = "punq"
 	Branch         = "develop"
 	GitCommitHash  = "" // ldflags
