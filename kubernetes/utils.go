@@ -65,7 +65,7 @@ const (
 
 var (
 	NAMESPACE       = utils.CONFIG.Kubernetes.OwnNamespace
-	DEPLOYMENTIMAGE = fmt.Sprintf("ghcr.io/mogenius/%s:%s", version.Name, version.Ver)
+	DEPLOYMENTIMAGE = fmt.Sprintf("ghcr.io/mogenius/%s:%s", version.Name, version.OperatorVersion)
 
 	SERVICEACCOUNTNAME     = fmt.Sprintf("%s-service-account-app", version.Name)
 	CLUSTERROLENAME        = fmt.Sprintf("%s--cluster-role-app", version.Name)

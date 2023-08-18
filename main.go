@@ -5,17 +5,29 @@ import (
 
 	"github.com/mogenius/punq/cmd"
 	"github.com/mogenius/punq/logger"
+	"github.com/mogenius/punq/services"
+	"github.com/mogenius/punq/utils"
 )
 
-// //go:embed ui/dist/punq/*
+//go:embed ui/dist/*
 var htmlDirFs embed.FS
 
+//go:embed config/local.yaml
+var localConfig string
+
 //go:embed config/dev.yaml
-var defaultEnvFile string
+var devConfig string
+
+//go:embed config/prod.yaml
+var prodConfig string
 
 func main() {
-	// utils.DefaultEnvFile = defaultEnvFile
-	// api.HtmlDirFs = htmlDirFs
+	utils.DefaultConfigLocalFile = localConfig
+	utils.DefaultConfigClusterFileDev = devConfig
+	utils.DefaultConfigClusterFileProd = prodConfig
+
+	services.HtmlDirFs = htmlDirFs
+
 	logger.Init()
 	cmd.Execute()
 }

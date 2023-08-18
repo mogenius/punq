@@ -21,6 +21,10 @@ type ClusterSecret struct {
 }
 
 type Config struct {
+	Browser struct {
+		Host string `yaml:"host" env:"browser_host" env-description:"Host of the browser app."`
+		Port string `yaml:"port" env:"browser_port" env-description:"Port of the browser app."`
+	} `yaml:"browser"`
 	Kubernetes struct {
 		ClusterName  string `yaml:"cluster_name" env:"cluster_name" env-description:"The Name of the Kubernetes Cluster"`
 		OwnNamespace string `yaml:"own_namespace" env:"OWN_NAMESPACE" env-description:"The Namespace of mogenius platform"`
@@ -87,6 +91,10 @@ func InitConfigYaml(showDebug bool, customConfigName *string, loadClusterConfig 
 }
 
 func PrintSettings() {
+	logger.Log.Infof("BROWSER")
+	logger.Log.Infof("Host:                     %s", CONFIG.Browser.Host)
+	logger.Log.Infof("Port:                     %s", CONFIG.Browser.Port)
+
 	logger.Log.Infof("KUBERNETES")
 	logger.Log.Infof("ClusterName:              %s", CONFIG.Kubernetes.ClusterName)
 	logger.Log.Infof("OwnNamespace:             %s", CONFIG.Kubernetes.OwnNamespace)
@@ -102,6 +110,7 @@ func PrintSettings() {
 func PrintVersionInfo() {
 	fmt.Println("")
 	logger.Log.Infof("Version:     %s", version.Ver)
+	logger.Log.Infof("Operator:    %s", version.OperatorVersion)
 	logger.Log.Infof("Branch:      %s", version.Branch)
 	logger.Log.Infof("Hash:        %s", version.GitCommitHash)
 	logger.Log.Infof("BuildAt:     %s", version.BuildTimestamp)

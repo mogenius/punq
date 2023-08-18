@@ -31,18 +31,6 @@ type ResponseError struct {
 	Error string `json:"error,omitempty"`
 }
 
-type Volume struct {
-	Namespace  NamespaceDisplayName `json:"namespace"`
-	VolumeName string               `json:"volumeName"`
-	SizeInGb   int                  `json:"sizeInGb"`
-}
-
-type NamespaceDisplayName struct {
-	DisplayName string `json:"displayName"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-}
-
 func CreateError(err error) ResponseError {
 	return ResponseError{
 		Error: err.Error(),

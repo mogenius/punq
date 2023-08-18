@@ -5,7 +5,9 @@ package cmd
 
 import (
 	"fmt"
+	"runtime"
 
+	"github.com/mogenius/punq/utils"
 	"github.com/mogenius/punq/version"
 
 	"github.com/fatih/color"
@@ -18,12 +20,15 @@ var versionCmd = &cobra.Command{
 	Short: "Print version information and exit.",
 	Long:  `Print version information and exit.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		utils.PrintLogo()
 		yellow := color.New(color.FgYellow).SprintFunc()
-		fmt.Printf("CLI: \t\t%s\n", yellow(version.Ver))
-		fmt.Printf("Container: \t%s\n", yellow(version.Ver))
-		fmt.Printf("Branch: \t%s\n", yellow(version.Branch))
-		fmt.Printf("Commit: \t%s\n", yellow(version.GitCommitHash))
-		fmt.Printf("Timestamp: \t%s\n", yellow(version.BuildTimestamp))
+		fmt.Printf("        CLI:       %s\n", yellow(version.Ver))
+		fmt.Printf("        Operator:  %s\n", yellow(version.OperatorVersion))
+		fmt.Printf("        Branch:    %s\n", yellow(version.Branch))
+		fmt.Printf("        Commit:    %s\n", yellow(version.GitCommitHash))
+		fmt.Printf("        Timestamp: %s\n", yellow(version.BuildTimestamp))
+		fmt.Printf("        Arch:      %s/%s\n", yellow(runtime.GOOS), yellow(runtime.GOARCH))
+		fmt.Println("")
 	},
 }
 
