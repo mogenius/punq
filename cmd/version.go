@@ -23,7 +23,7 @@ var versionCmd = &cobra.Command{
 		utils.PrintLogo()
 		yellow := color.New(color.FgYellow).SprintFunc()
 		fmt.Printf("        CLI:       %s\n", yellow(version.Ver))
-		fmt.Printf("        Operator:  %s\n", yellow(version.OperatorVersion))
+		fmt.Printf("        Operator:  %s\n", yellow(version.Operator))
 		fmt.Printf("        Branch:    %s\n", yellow(version.Branch))
 		fmt.Printf("        Commit:    %s\n", yellow(version.GitCommitHash))
 		fmt.Printf("        Timestamp: %s\n", yellow(version.BuildTimestamp))

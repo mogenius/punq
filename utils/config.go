@@ -110,7 +110,7 @@ func PrintSettings() {
 func PrintVersionInfo() {
 	fmt.Println("")
 	logger.Log.Infof("Version:     %s", version.Ver)
-	logger.Log.Infof("Operator:    %s", version.OperatorVersion)
+	logger.Log.Infof("Operator:    %s", version.Operator)
 	logger.Log.Infof("Branch:      %s", version.Branch)
 	logger.Log.Infof("Hash:        %s", version.GitCommitHash)
 	logger.Log.Infof("BuildAt:     %s", version.BuildTimestamp)
