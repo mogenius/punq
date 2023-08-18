@@ -64,8 +64,7 @@ const (
 )
 
 var (
-	NAMESPACE       = utils.CONFIG.Kubernetes.OwnNamespace
-	DEPLOYMENTIMAGE = fmt.Sprintf("ghcr.io/mogenius/%s:%s", version.Name, version.Operator)
+	DEPLOYMENTIMAGE = fmt.Sprintf("ghcr.io/mogenius/%s:v%s", version.Name, version.Ver)
 
 	SERVICEACCOUNTNAME     = fmt.Sprintf("%s-service-account-app", version.Name)
 	CLUSTERROLENAME        = fmt.Sprintf("%s--cluster-role-app", version.Name)
@@ -92,13 +91,6 @@ type MogeniusNfsInstallationStatus struct {
 type KubeProviderMetrics struct {
 	ClientSet    *metricsv.Clientset
 	ClientConfig rest.Config
-}
-
-func init() {
-	// SETUP DOWNFAULT VALUE
-	if NAMESPACE == "" {
-		NAMESPACE = "mogenius"
-	}
 }
 
 func WorkloadResult(result interface{}, error interface{}) K8sWorkloadResult {

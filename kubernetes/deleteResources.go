@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"context"
 
+	"github.com/mogenius/punq/utils"
 	"github.com/mogenius/punq/version"
 
 	"github.com/mogenius/punq/logger"
@@ -23,7 +24,7 @@ func Remove() {
 }
 
 func removeDeployment(kubeProvider *KubeProvider) {
-	deploymentClient := kubeProvider.ClientSet.AppsV1().Deployments(NAMESPACE)
+	deploymentClient := kubeProvider.ClientSet.AppsV1().Deployments(utils.CONFIG.Kubernetes.OwnNamespace)
 
 	// DELETE Deployment
 	logger.Log.Infof("Deleting %s deployment ...", version.Name)
@@ -39,7 +40,7 @@ func removeDeployment(kubeProvider *KubeProvider) {
 func removeRbac(kubeProvider *KubeProvider) {
 	// CREATE RBAC
 	logger.Log.Infof("Deleting %s RBAC ...", version.Name)
-	err := kubeProvider.ClientSet.CoreV1().ServiceAccounts(NAMESPACE).Delete(context.TODO(), SERVICEACCOUNTNAME, metav1.DeleteOptions{})
+	err := kubeProvider.ClientSet.CoreV1().ServiceAccounts(utils.CONFIG.Kubernetes.OwnNamespace).Delete(context.TODO(), SERVICEACCOUNTNAME, metav1.DeleteOptions{})
 	if err != nil {
 		logger.Log.Error(err)
 		return

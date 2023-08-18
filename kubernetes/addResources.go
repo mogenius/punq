@@ -12,7 +12,6 @@ import (
 	core "k8s.io/api/core/v1"
 	rbac "k8s.io/api/rbac/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	applyconfapp "k8s.io/client-go/applyconfigurations/apps/v1"
 	applyconfcore "k8s.io/client-go/applyconfigurations/core/v1"
@@ -66,14 +65,14 @@ func addRbac(kubeProvider *KubeProvider) error {
 			{
 				Kind:      "ServiceAccount",
 				Name:      SERVICEACCOUNTNAME,
-				Namespace: NAMESPACE,
+				Namespace: utils.CONFIG.Kubernetes.OwnNamespace,
 			},
 		},
 	}
 
 	// CREATE RBAC
 	logger.Log.Info("Creating punq RBAC ...")
-	_, err := kubeProvider.ClientSet.CoreV1().ServiceAccounts(NAMESPACE).Create(context.TODO(), serviceAccount, MoCreateOptions())
+	_, err := kubeProvider.ClientSet.CoreV1().ServiceAccounts(utils.CONFIG.Kubernetes.OwnNamespace).Create(context.TODO(), serviceAccount, MoCreateOptions())
 	if err != nil && !k8serrors.IsAlreadyExists(err) {
 		return err
 	}
@@ -92,7 +91,7 @@ func addRbac(kubeProvider *KubeProvider) error {
 func applyNamespace(kubeProvider *KubeProvider) {
 	serviceClient := kubeProvider.ClientSet.CoreV1().Namespaces()
 
-	namespace := applyconfcore.Namespace(NAMESPACE)
+	namespace := applyconfcore.Namespace(utils.CONFIG.Kubernetes.OwnNamespace)
 
 	applyOptions := metav1.ApplyOptions{
 		Force:        true,
@@ -197,7 +196,7 @@ func applyNamespace(kubeProvider *KubeProvider) {
 // }
 
 func addDeployment(kubeProvider *KubeProvider) {
-	deploymentClient := kubeProvider.ClientSet.AppsV1().Deployments(NAMESPACE)
+	deploymentClient := kubeProvider.ClientSet.AppsV1().Deployments(utils.CONFIG.Kubernetes.OwnNamespace)
 
 	deploymentContainer := applyconfcore.Container()
 	deploymentContainer.WithImagePullPolicy(core.PullAlways)
@@ -214,18 +213,18 @@ func addDeployment(kubeProvider *KubeProvider) {
 		Value: utils.Pointer("94E23575-A689-4F88-8D67-215A274F4E6E"), // dont worry. this is a test key
 	})
 	deploymentContainer.Env = envVars
-	agentResourceLimits := core.ResourceList{
-		"cpu":               resource.MustParse("300m"),
-		"memory":            resource.MustParse("256Mi"),
-		"ephemeral-storage": resource.MustParse("100Mi"),
-	}
-	agentResourceRequests := core.ResourceList{
-		"cpu":               resource.MustParse("100m"),
-		"memory":            resource.MustParse("128Mi"),
-		"ephemeral-storage": resource.MustParse("10Mi"),
-	}
-	agentResources := applyconfcore.ResourceRequirements().WithRequests(agentResourceRequests).WithLimits(agentResourceLimits)
-	deploymentContainer.WithResources(agentResources)
+	// agentResourceLimits := core.ResourceList{
+	// 	"cpu":               resource.MustParse("300m"),
+	// 	"memory":            resource.MustParse("256Mi"),
+	// 	"ephemeral-storage": resource.MustParse("100Mi"),
+	// }
+	// agentResourceRequests := core.ResourceList{
+	// 	"cpu":               resource.MustParse("100m"),
+	// 	"memory":            resource.MustParse("128Mi"),
+	// 	"ephemeral-storage": resource.MustParse("10Mi"),
+	// }
+	// agentResources := applyconfcore.ResourceRequirements().WithRequests(agentResourceRequests).WithLimits(agentResourceLimits)
+	// deploymentContainer.WithResources(agentResources)
 	deploymentContainer.WithName(version.Name)
 
 	podSpec := applyconfcore.PodSpec()
@@ -248,7 +247,7 @@ func addDeployment(kubeProvider *KubeProvider) {
 	})
 	podTemplate.WithSpec(podSpec)
 
-	deployment := applyconfapp.Deployment(version.Name, NAMESPACE)
+	deployment := applyconfapp.Deployment(version.Name, utils.CONFIG.Kubernetes.OwnNamespace)
 	deployment.WithSpec(applyconfapp.DeploymentSpec().WithSelector(labelSelector).WithTemplate(podTemplate))
 
 	// Create Deployment
