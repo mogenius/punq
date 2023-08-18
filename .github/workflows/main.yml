@@ -17,12 +17,12 @@ jobs:
       # NPM RUN BUILD GOES HERE
       #
       - name: npm run build
-        run: make all
-
-      - name: Execute make all
         run: |
           mkdir dist
           cp index.html dist/index.html
+
+      - name: Execute make all
+        run: make all
 
       - name: Create Tag
         run: |
