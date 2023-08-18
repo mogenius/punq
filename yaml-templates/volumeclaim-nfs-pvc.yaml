@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs
+  namespace: XXX
+spec:
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 1Gi
+    limits:
+      storage: 1Gi
+  selector: 
+    matchLabels:
+      type: nfs

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: ${projectName}
+spec:
+    type: ClusterIP
+    ports:
+    - port: 1337 
+    selector:
+        app: ${projectName}

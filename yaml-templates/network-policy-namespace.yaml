@@ -1,0 +1,16 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: test-prod-723tu9-7ew5zf-namespace
+  namespace: test-prod-723tu9-7ew5zf
+spec:
+  policyTypes:
+  - Ingress
+  podSelector:
+    matchLabels:
+      ns: test-prod-723tu9-7ew5zf
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          ns: test-prod-723tu9-7ew5zf

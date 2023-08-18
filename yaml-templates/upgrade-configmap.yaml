@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: updater-cm
+data:
+  values.command: |
+    # helm repo add mogenius https://helm.mogenius.com/public
+    # helm repo update
+    # helm upgrade mogenius mogenius/mogenius-platform -n default --set global.cluster_name="gcp1" \
+    # --set global.api_key="mo_5a7c89c8-2386-4216-8643-e1cbc4b3f48b_osrhrjjvsq6qelkrdqaw" \
+    # --set global.namespace="mogenius" \
+    # --set k8smanager.enabled=true \
+    # --set metrics.enabled=false \
+    # --set traffic-collector.enabled=true \
+    # --set pod-stats-collector.enabled=true \
+    # --set ingress-nginx.enabled=true \
+    # --set ingress-nginx.defaultBackend.image.registry=cinaq \
+    # --set ingress-nginx.defaultBackend.image.image=default-backend \
+    # --set ingress-nginx.defaultBackend.image.tag=1.2 \
+    # --set ingress-nginx.defaultBackend.enabled=true \
+    # --set certmanager.enabled=true \
+    # --set cert-manager.startupapicheck.enabled=false \
+    # --set certmanager.namespace="cert-manager" \
+    # --set cert-manager.namespace=cert-manager \
+    # --set cert-manager.installCRDs=true

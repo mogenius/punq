@@ -1,0 +1,14 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: test-prod-723tu9-7ew5zf-default-backend
+  namespace: test-prod-723tu9-7ew5zf
+spec:
+  policyTypes:
+  - Ingress
+  podSelector:
+    matchLabels:
+      app: default-backend
+  ingress:
+  - ports:
+    - port: 1337

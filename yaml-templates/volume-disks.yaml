@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: azuredisk
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete
+  azureDisk:
+    kind: Managed
+    diskURI: XXXXXXXXXXXXX
+    diskName: XXXXXXXXXXXXX
+    cachingMode: None

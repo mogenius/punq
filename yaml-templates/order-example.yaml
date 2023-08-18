@@ -1,0 +1,12 @@
+apiVersion: acme.cert-manager.io/v1
+kind: Order
+metadata:
+  name: example-com-318391831
+  namespace: default
+spec:
+  request: LS0t...   # Base64-encoded CSR
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - example.com

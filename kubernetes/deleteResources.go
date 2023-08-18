@@ -20,7 +20,7 @@ func Remove() {
 	// namespace is not deleted on purpose
 	removeRbac(provider)
 	removeDeployment(provider)
-	// secret is not deleted on purpose
+	removeSecret(provider)
 }
 
 func removeDeployment(kubeProvider *KubeProvider) {
@@ -56,4 +56,18 @@ func removeRbac(kubeProvider *KubeProvider) {
 		return
 	}
 	logger.Log.Infof("Deleted %s RBAC.", version.Name)
+}
+
+func removeSecret(kubeProvider *KubeProvider) {
+	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+
+	// DELETE Secret
+	logger.Log.Infof("Deleting %s secret ...", version.Name)
+	deletePolicy := metav1.DeletePropagationForeground
+	err := secretClient.Delete(context.TODO(), version.Name, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
+	if err != nil {
+		logger.Log.Error(err)
+		return
+	}
+	logger.Log.Infof("Deleted %s secret.", version.Name)
 }

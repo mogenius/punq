@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: project-volume-claim
+  namespace: default
+spec:
+  volumeName: XXX
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: k8s-manager-data-storage-class
+  resources:
+    requests:
+      storage: 1Gi

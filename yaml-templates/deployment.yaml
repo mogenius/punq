@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mo-default-gateway
+spec:
+  paused: true
+  replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mo-default-gateway
+      ns: XXX
+  template:
+    metadata:
+      labels:
+        app: mo-default-gateway
+    spec:
+      # affinity:
+      #   podAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       - labelSelector:
+      #           matchLabels:
+      #             ns: XXX
+      #         topologyKey: kubernetes.io/hostname
+      containers:
+        - name: mo-default-gateway
+          image: ghcr.io/mogenius/mo-build-backend:latest
+          ports:
+            - containerPort: 1337
+          resources:
+            requests:
+              ephemeral-storage: '100Mi'
+              memory: '128Mi'
+              cpu: '200m'
+            limits:
+              ephemeral-storage: '100Mi'
+              memory: '256Mi'
+              cpu: '300m'
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+          # probes
+          # restart after 30 seconds of failures
+          livenessProbe:
+            httpGet:
+              path: /healthz
+            failureThreshold: 6
+            periodSeconds: 5
+          # restart after 300 seconds of failures
+          startupProbe:
+            httpGet:
+              path: /healthz
+            failureThreshold: 30
+            periodSeconds: 10
+          # re-route traffic after 15 seconds of failures
+          readinessProbe:
+            httpGet:
+              path: /healthz
+            failureThreshold: 3
+            periodSeconds: 5
+          # volumeMounts:
+          # - mountPath: "/mo-data"
+          #   name: data-volume
+      # volumes:
+      #   - name: data-volume
+      #     persistentVolumeClaim:
+      #       claimName: k8s-manager-data-storage

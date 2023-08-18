@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/mogenius/punq/version"
 
 	"github.com/mogenius/punq/utils"
@@ -16,6 +17,7 @@ import (
 	applyconfapp "k8s.io/client-go/applyconfigurations/apps/v1"
 	applyconfcore "k8s.io/client-go/applyconfigurations/core/v1"
 	applyconfmeta "k8s.io/client-go/applyconfigurations/meta/v1"
+	v1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
 func Deploy() {
@@ -27,11 +29,11 @@ func Deploy() {
 	applyNamespace(provider)
 	addRbac(provider)
 	addDeployment(provider)
-	// TODO
-	// _, err = CreateClusterSecretIfNotExist(false)
-	// if err != nil {
-	// 	logger.Log.Fatalf("Error Creating cluster secret. Aborting: %s.", err.Error())
-	// }
+
+	_, err = CreateClusterSecretIfNotExist(provider)
+	if err != nil {
+		logger.Log.Fatalf("Error Creating cluster secret. Aborting: %s.", err.Error())
+	}
 }
 
 func addRbac(kubeProvider *KubeProvider) error {
@@ -84,7 +86,7 @@ func addRbac(kubeProvider *KubeProvider) error {
 	if err != nil && !k8serrors.IsAlreadyExists(err) {
 		return err
 	}
-	logger.Log.Info("Created punq/structs RBAC.")
+	logger.Log.Info("Created punq RBAC.")
 	return nil
 }
 
@@ -98,102 +100,67 @@ func applyNamespace(kubeProvider *KubeProvider) {
 		FieldManager: version.Name,
 	}
 
-	logger.Log.Info("Creating punq/structs namespace ...")
+	logger.Log.Info("Creating punq namespace ...")
 	result, err := serviceClient.Apply(context.TODO(), namespace, applyOptions)
 	if err != nil {
 		logger.Log.Error(err)
 	}
-	logger.Log.Info("Created punq/structs namespace", result.GetObjectMeta().GetName(), ".")
+	logger.Log.Info("Created punq namespace", result.GetObjectMeta().GetName())
 }
 
-// func CreateClusterSecretIfNotExist(runsInCluster bool) (utils.ClusterSecret, error) {
-// 	var kubeProvider *KubeProvider
-// 	var err error
-// 	if runsInCluster {
-// 		kubeProvider, err = NewKubeProviderInCluster()
-// 	} else {
-// 		kubeProvider, err = NewKubeProviderLocal()
-// 	}
+func CreateClusterSecretIfNotExist(kubeProvider *KubeProvider) (utils.ClusterSecret, error) {
+	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
 
-// 	if err != nil {
-// 		logger.Log.Errorf("CreateClusterSecretIfNotExist ERROR: %s", err.Error())
-// 	}
+	existingSecret, getErr := secretClient.Get(context.TODO(), utils.CONFIG.Kubernetes.OwnNamespace, metav1.GetOptions{})
+	return writePunqSecret(secretClient, existingSecret, getErr)
+}
 
-// 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(NAMESPACE)
+func writePunqSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (utils.ClusterSecret, error) {
+	clusterSecret := utils.ClusterSecret{
+		ApiKey:       uuid.New().String(),
+		ClusterMfaId: uuid.New().String(),
+		ClusterName:  utils.CONFIG.Kubernetes.ClusterName,
+	}
 
-// 	existingSecret, getErr := secretClient.Get(context.TODO(), NAMESPACE, metav1.GetOptions{})
-// 	return writeMogeniusSecret(secretClient, runsInCluster, existingSecret, getErr)
-// }
+	secret := utils.InitSecret()
+	secret.ObjectMeta.Name = utils.CONFIG.Kubernetes.OwnNamespace
+	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
+	delete(secret.StringData, "exampleData") // delete example data
+	secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
+	secret.StringData["api-key"] = clusterSecret.ApiKey
+	secret.StringData["cluster-name"] = clusterSecret.ClusterName
 
-// func writeMogeniusSecret(secretClient v1.SecretInterface, runsInCluster bool, existingSecret *core.Secret, getErr error) (utils.ClusterSecret, error) {
-// 	// CREATE NEW SECRET
-// 	apikey := os.Getenv("api_key")
-// 	if apikey == "" {
-// 		if runsInCluster {
-// 			logger.Log.Fatal("Environment Variable 'api_key' is missing.")
-// 		} else {
-// 			apikey = utils.CONFIG.Kubernetes.ApiKey
-// 		}
-// 	}
-// 	clusterName := os.Getenv("cluster_name")
-// 	if clusterName == "" {
-// 		if runsInCluster {
-// 			logger.Log.Fatal("Environment Variable 'cluster_name' is missing.")
-// 		} else {
-// 			clusterName = utils.CONFIG.Kubernetes.ClusterName
-// 		}
-// 	}
+	if existingSecret == nil || getErr != nil {
+		logger.Log.Info("Creating new punq secret ...")
+		result, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
+		if err != nil {
+			logger.Log.Error(err)
+			return clusterSecret, err
+		}
+		logger.Log.Info("Created new punq secret", result.GetObjectMeta().GetName())
+	} else {
+		if string(existingSecret.Data["api-key"]) != clusterSecret.ApiKey ||
+			string(existingSecret.Data["cluster-name"]) != clusterSecret.ClusterName {
+			logger.Log.Info("Updating existing punq secret ...")
+			// keep existing mfa-id if possible
+			if string(existingSecret.Data["cluster-mfa-id"]) != "" {
+				clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
+				secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
+			}
+			result, err := secretClient.Update(context.TODO(), &secret, MoUpdateOptions())
+			if err != nil {
+				logger.Log.Error(err)
+				return clusterSecret, err
+			}
+			logger.Log.Info("Updated punq secret", result.GetObjectMeta().GetName())
+		} else {
+			clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
+			logger.Log.Info("Using existing punq secret.")
+		}
+	}
 
-// 	clusterSecret := utils.ClusterSecret{
-// 		ApiKey:       apikey,
-// 		ClusterMfaId: uuid.New().String(),
-// 		ClusterName:  clusterName,
-// 	}
-
-// 	// This prevents lokal k8s-manager installations from overwriting cluster secrets
-// 	if !runsInCluster {
-// 		return clusterSecret, nil
-// 	}
-
-// 	secret := utils.InitSecret()
-// 	secret.ObjectMeta.Name = NAMESPACE
-// 	secret.ObjectMeta.Namespace = NAMESPACE
-// 	delete(secret.StringData, "PRIVATE_KEY") // delete example data
-// 	secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
-// 	secret.StringData["api-key"] = clusterSecret.ApiKey
-// 	secret.StringData["cluster-name"] = clusterSecret.ClusterName
-
-// 	if existingSecret == nil || getErr != nil {
-// 		logger.Log.Info("Creating new mogenius secret ...")
-// 		result, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
-// 		if err != nil {
-// 			logger.Log.Error(err)
-// 			return clusterSecret, err
-// 		}
-// 		logger.Log.Info("Created new mogenius secret", result.GetObjectMeta().GetName(), ".")
-// 	} else {
-// 		if string(existingSecret.Data["api-key"]) != clusterSecret.ApiKey ||
-// 			string(existingSecret.Data["cluster-name"]) != clusterSecret.ClusterName {
-// 			logger.Log.Info("Updating existing mogenius secret ...")
-// 			// keep existing mfa-id if possible
-// 			if string(existingSecret.Data["cluster-mfa-id"]) != "" {
-// 				clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
-// 				secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
-// 			}
-// 			result, err := secretClient.Update(context.TODO(), &secret, MoUpdateOptions())
-// 			if err != nil {
-// 				logger.Log.Error(err)
-// 				return clusterSecret, err
-// 			}
-// 			logger.Log.Info("Updated mogenius secret", result.GetObjectMeta().GetName(), ".")
-// 		} else {
-// 			clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
-// 			logger.Log.Info("Using existing mogenius secret.")
-// 		}
-// 	}
-
-// 	return clusterSecret, nil
-// }
+	return clusterSecret, nil
+}
 
 func addDeployment(kubeProvider *KubeProvider) {
 	deploymentClient := kubeProvider.ClientSet.AppsV1().Deployments(utils.CONFIG.Kubernetes.OwnNamespace)
@@ -251,10 +218,10 @@ func addDeployment(kubeProvider *KubeProvider) {
 	deployment.WithSpec(applyconfapp.DeploymentSpec().WithSelector(labelSelector).WithTemplate(podTemplate))
 
 	// Create Deployment
-	logger.Log.Info("Creating punq/structs deployment ...")
+	logger.Log.Info("Creating punq deployment ...")
 	result, err := deploymentClient.Apply(context.TODO(), deployment, applyOptions)
 	if err != nil {
 		logger.Log.Error(err)
 	}
-	logger.Log.Info("Created punq/structs deployment.", result.GetObjectMeta().GetName(), ".")
+	logger.Log.Info("Created punq deployment.", result.GetObjectMeta().GetName())
 }

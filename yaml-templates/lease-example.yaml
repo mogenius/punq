@@ -1,0 +1,9 @@
+apiVersion: coordination.k8s.io/v1
+kind: Lease
+metadata:
+  name: my-lease
+  namespace: my-namespace
+spec:
+  holderIdentity: my-identity
+  leaseDurationSeconds: 60
+  renewTime: 2023-07-12T10:00:00Z

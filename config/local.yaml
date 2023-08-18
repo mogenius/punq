@@ -5,7 +5,7 @@ browser:
 kubernetes:
   cluster_name: your-cluster-name
   own_namespace: punq
-  run_in_cluster: true
+  run_in_cluster: false
 
 misc:
   stage: local

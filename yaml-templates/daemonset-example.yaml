@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: my-daemonset
+spec:
+  selector:
+    matchLabels:
+      name: my-daemonset
+  template:
+    metadata:
+      labels:
+        name: my-daemonset
+    spec:
+      containers:
+      - name: my-daemonset-container
+        image: my-daemonset-image
+        ports:
+        - containerPort: 8080

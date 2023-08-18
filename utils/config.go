@@ -46,21 +46,22 @@ var CONFIG Config
 func InitConfigYaml(showDebug bool, customConfigName *string, loadClusterConfig bool) {
 	_, configPath := GetDirectories(customConfigName)
 
-	if _, err := os.Stat(configPath); err == nil || os.IsExist(err) {
-		// file exists
-		if err := cleanenv.ReadConfig(configPath, &CONFIG); err != nil {
-			if strings.HasPrefix(err.Error(), "config file parsing error:") {
-				logger.Log.Notice("Config file is corrupted. Creating a new one by using -r flag.")
-			}
-			logger.Log.Fatal(err)
+	if loadClusterConfig {
+		if _, err := os.Stat(configPath); err == nil || os.IsExist(err) {
+			// do nothing, file exists
+		} else {
+			WriteDefaultConfig(loadClusterConfig)
 		}
 	} else {
 		WriteDefaultConfig(loadClusterConfig)
+	}
 
-		// read configuration from the file and environment variables
-		if err := cleanenv.ReadConfig(configPath, &CONFIG); err != nil {
-			logger.Log.Fatal(err)
+	// read configuration from the file and environment variables
+	if err := cleanenv.ReadConfig(configPath, &CONFIG); err != nil {
+		if strings.HasPrefix(err.Error(), "config file parsing error:") {
+			logger.Log.Notice("Config file is corrupted. Creating a new one by using -r flag.")
 		}
+		logger.Log.Fatal(err)
 	}
 
 	if showDebug {

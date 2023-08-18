@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: XXX
+  namespace: XXX
+spec:
+  dnsNames:
+  - your-dns-name.your-domain.com
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-cluster-issuer
+  secretName: XXX
