@@ -13,8 +13,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Execute make all
+      #
+      # NPM RUN BUILD GOES HERE
+      #
+      - name: npm run build
         run: make all
+
+      - name: Execute make all
+        run: |
+          mkdir dist
+          cp index.html dist/index.html
 
       - name: Create Tag
         run: |

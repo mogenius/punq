@@ -17,7 +17,7 @@ LDFLAGS=-s -w \
   -X 'punq/version.BuildTimestamp=$(BUILD_TIMESTAMP)' \
   -X 'punq/version.Ver=$(VERSION)'
 
-all: copy_static_files darwin_arm64 #darwin_amd64 linux_amd64 linux_386 linux_arm64 linux_arm windows_amd64 windows_386
+all: darwin_arm64 #darwin_amd64 linux_amd64 linux_386 linux_arm64 linux_arm windows_amd64 windows_386
 
 tarballs: all
 	for file in builds/*; do \
@@ -34,9 +34,6 @@ clean:
 	rm -f $(BINARY_NAME)-$(VERSION)-linux-arm
 	rm -f $(BINARY_NAME)-$(VERSION)-windows-amd64
 	rm -f $(BINARY_NAME)-$(VERSION)-windows-386
-
-copy_static_files:
-	cp -r ui builds/.
 
 test:
 	$(GOTEST) -v ./...
