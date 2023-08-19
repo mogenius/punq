@@ -29,6 +29,17 @@ func AllSecrets(namespaceName string) []v1.Secret {
 	return result
 }
 
+func SecretFor(namespace string, name string) *v1.Secret {
+	kubeProvider := NewKubeProvider()
+	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(namespace)
+	secret, err := secretClient.Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		logger.Log.Errorf("SecretFor ERROR: %s", err.Error())
+		return nil
+	}
+	return secret
+}
+
 func AllK8sSecrets(namespaceName string) K8sWorkloadResult {
 	result := []v1.Secret{}
 

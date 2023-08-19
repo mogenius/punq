@@ -100,6 +100,13 @@ func WorkloadResult(result interface{}, error interface{}) K8sWorkloadResult {
 	}
 }
 
+func WorkloadResultError(error string) K8sWorkloadResult {
+	return K8sWorkloadResult{
+		Result: nil,
+		Error:  error,
+	}
+}
+
 func NewWorkload(name string, yaml string, description string) K8sNewWorkload {
 	return K8sNewWorkload{
 		Name:        name,

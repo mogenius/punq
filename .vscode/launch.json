@@ -7,7 +7,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "main.go",
-            "args": ["test"],
+            "args": ["user", "get", "-u", "admin"],
             "asRoot": false,
             "console": "integratedTerminal"
         }

@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 	"strings"
 
@@ -12,6 +11,8 @@ import (
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
+
+const USERSSECRET = "punq-users"
 
 // This object will initially created in secrets when the software is installed into the cluster for the first time (resource: secret -> mogenius/mogenius)
 type ClusterSecret struct {
@@ -68,27 +69,27 @@ func InitConfigYaml(showDebug bool, customConfigName *string, loadClusterConfig 
 		PrintSettings()
 	}
 
-	if CONFIG.Misc.Debug {
-		logger.Log.Notice("Starting serice for pprof in localhost:6060")
-		go func() {
-			logger.Log.Info(http.ListenAndServe("localhost:6060", nil))
-			logger.Log.Info("1. Portforward punq to 6060")
-			logger.Log.Info("2. wget http://localhost:6060/debug/pprof/profile?seconds=60 -O cpu.pprof")
-			logger.Log.Info("3. wget http://localhost:6060/debug/pprof/heap -O mem.pprof")
-			logger.Log.Info("4. go tool pprof -http=localhost:8081 cpu.pprof")
-			logger.Log.Info("5. go tool pprof -http=localhost:8081 mem.pprof")
-			logger.Log.Info("OR: go tool pprof mem.pprof -> Then type in commands like top, top --cum, list")
-			logger.Log.Info("http://localhost:6060/debug/pprof/ This is the index page that lists all available profiles.")
-			logger.Log.Info("http://localhost:6060/debug/pprof/profile This serves a CPU profile. You can set the profiling duration through the seconds parameter. For example, ?seconds=30 would profile your CPU for 30 seconds.")
-			logger.Log.Info("http://localhost:6060/debug/pprof/heap This serves a snapshot of the current heap memory usage.")
-			logger.Log.Info("http://localhost:6060/debug/pprof/goroutine This serves a snapshot of the current goroutines stack traces.")
-			logger.Log.Info("http://localhost:6060/debug/pprof/block This serves a snapshot of stack traces that led to blocking on synchronization primitives.")
-			logger.Log.Info("http://localhost:6060/debug/pprof/threadcreate This serves a snapshot of all OS thread creation stack traces.")
-			logger.Log.Info("http://localhost:6060/debug/pprof/cmdline This returns the command line invocation of the current program.")
-			logger.Log.Info("http://localhost:6060/debug/pprof/symbol This is used to look up the program counters listed in a pprof profile.")
-			logger.Log.Info("http://localhost:6060/debug/pprof/trace This serves a trace of execution of the current program. You can set the trace duration through the seconds parameter.")
-		}()
-	}
+	// if CONFIG.Misc.Debug {
+	// 	logger.Log.Notice("Starting serice for pprof in localhost:6060")
+	// 	go func() {
+	// 		logger.Log.Info(http.ListenAndServe("localhost:6060", nil))
+	// 		logger.Log.Info("1. Portforward punq to 6060")
+	// 		logger.Log.Info("2. wget http://localhost:6060/debug/pprof/profile?seconds=60 -O cpu.pprof")
+	// 		logger.Log.Info("3. wget http://localhost:6060/debug/pprof/heap -O mem.pprof")
+	// 		logger.Log.Info("4. go tool pprof -http=localhost:8081 cpu.pprof")
+	// 		logger.Log.Info("5. go tool pprof -http=localhost:8081 mem.pprof")
+	// 		logger.Log.Info("OR: go tool pprof mem.pprof -> Then type in commands like top, top --cum, list")
+	// 		logger.Log.Info("http://localhost:6060/debug/pprof/ This is the index page that lists all available profiles.")
+	// 		logger.Log.Info("http://localhost:6060/debug/pprof/profile This serves a CPU profile. You can set the profiling duration through the seconds parameter. For example, ?seconds=30 would profile your CPU for 30 seconds.")
+	// 		logger.Log.Info("http://localhost:6060/debug/pprof/heap This serves a snapshot of the current heap memory usage.")
+	// 		logger.Log.Info("http://localhost:6060/debug/pprof/goroutine This serves a snapshot of the current goroutines stack traces.")
+	// 		logger.Log.Info("http://localhost:6060/debug/pprof/block This serves a snapshot of stack traces that led to blocking on synchronization primitives.")
+	// 		logger.Log.Info("http://localhost:6060/debug/pprof/threadcreate This serves a snapshot of all OS thread creation stack traces.")
+	// 		logger.Log.Info("http://localhost:6060/debug/pprof/cmdline This returns the command line invocation of the current program.")
+	// 		logger.Log.Info("http://localhost:6060/debug/pprof/symbol This is used to look up the program counters listed in a pprof profile.")
+	// 		logger.Log.Info("http://localhost:6060/debug/pprof/trace This serves a trace of execution of the current program. You can set the trace duration through the seconds parameter.")
+	// 	}()
+	// }
 }
 
 func PrintSettings() {

@@ -2,8 +2,11 @@ package kubernetes
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/google/uuid"
+	"github.com/mogenius/punq/dtos"
+	"github.com/mogenius/punq/structs"
 	"github.com/mogenius/punq/version"
 
 	"github.com/mogenius/punq/utils"
@@ -33,6 +36,14 @@ func Deploy() {
 	_, err = CreateClusterSecretIfNotExist(provider)
 	if err != nil {
 		logger.Log.Fatalf("Error Creating cluster secret. Aborting: %s.", err.Error())
+	}
+
+	adminUser, err := CreateUserSecretIfNotExist(provider)
+	if err != nil {
+		logger.Log.Fatalf("Error Creating user secret. Aborting: %s.", err.Error())
+	}
+	if adminUser != nil {
+		structs.PrettyPrint(adminUser)
 	}
 }
 
@@ -160,6 +171,45 @@ func writePunqSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 	}
 
 	return clusterSecret, nil
+}
+
+func CreateUserSecretIfNotExist(kubeProvider *KubeProvider) (*dtos.PunqUser, error) {
+	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+
+	existingSecret, getErr := secretClient.Get(context.TODO(), utils.USERSSECRET, metav1.GetOptions{})
+	return writeUserSecret(secretClient, existingSecret, getErr)
+}
+
+func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (*dtos.PunqUser, error) {
+	adminUser := dtos.PunqUser{
+		Id:          "admin",
+		Email:       "your-email@mogenius.com",
+		Password:    uuid.NewString(),
+		DisplayName: "Admin User",
+	}
+
+	rawAdmin, err := json.Marshal(adminUser)
+	if err != nil {
+		logger.Log.Errorf("Error marshaling %s", err)
+	}
+
+	secret := utils.InitSecret()
+	secret.ObjectMeta.Name = utils.USERSSECRET
+	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
+	delete(secret.StringData, "exampleData") // delete example data
+	secret.StringData["admin"] = string(rawAdmin)
+
+	if existingSecret == nil || getErr != nil {
+		logger.Log.Info("Creating new punq-user secret ...")
+		result, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
+		if err != nil {
+			logger.Log.Error(err)
+			return nil, err
+		}
+		logger.Log.Info("Created new punq-user secret", result.GetObjectMeta().GetName())
+		return &adminUser, nil
+	}
+	return nil, nil
 }
 
 func addDeployment(kubeProvider *KubeProvider) {
