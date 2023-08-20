@@ -28,7 +28,7 @@ var installCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		kubernetes.Deploy()
+		kubernetes.Deploy(yellow(kubernetes.CurrentContextName()))
 	},
 }
 

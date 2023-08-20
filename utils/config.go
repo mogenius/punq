@@ -13,6 +13,9 @@ import (
 )
 
 const USERSSECRET = "punq-users"
+const USERADMIN = "admin"
+const CONTEXTSSECRET = "punq-contexts"
+const CONTEXTOWN = "own-context"
 
 // This object will initially created in secrets when the software is installed into the cluster for the first time (resource: secret -> mogenius/mogenius)
 type ClusterSecret struct {

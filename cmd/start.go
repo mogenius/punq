@@ -11,7 +11,6 @@ import (
 
 	"github.com/mogenius/punq/kubernetes"
 
-	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
 
 	"github.com/fatih/color"
@@ -32,15 +31,14 @@ var startCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		kubernetes.Deploy()
+		kubernetes.Deploy(yellow(kubernetes.CurrentContextName()))
 		utils.OpenBrowser(fmt.Sprintf("http://%s:%s/punq", os.Getenv("API_HOST"), os.Getenv("API_PORT")))
 
 		quit := make(chan os.Signal)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		<-quit
-		logger.Log.Warning("CLEANUP Kubernetes resources ...")
-		kubernetes.Remove()
-		logger.Log.Info("CLEANUP finished successfully.")
+
+		kubernetes.Remove(yellow(kubernetes.CurrentContextName()))
 	},
 }
 

@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"context"
 	"encoding/json"
+	"os"
 
 	"github.com/google/uuid"
 	"github.com/mogenius/punq/dtos"
@@ -23,7 +24,7 @@ import (
 	v1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
-func Deploy() {
+func Deploy(clusterName string) {
 	provider, err := NewKubeProviderLocal()
 	if err != nil {
 		panic(err)
@@ -35,16 +36,25 @@ func Deploy() {
 
 	_, err = CreateClusterSecretIfNotExist(provider)
 	if err != nil {
-		logger.Log.Fatalf("Error Creating cluster secret. Aborting: %s.", err.Error())
+		logger.Log.Fatalf("Error creating cluster secret. Aborting: %s.", err.Error())
 	}
 
 	adminUser, err := CreateUserSecretIfNotExist(provider)
 	if err != nil {
-		logger.Log.Fatalf("Error Creating user secret. Aborting: %s.", err.Error())
+		logger.Log.Fatalf("Error creating user secret. Aborting: %s.", err.Error())
 	}
 	if adminUser != nil {
 		structs.PrettyPrint(adminUser)
 	}
+
+	ownContext, err := CreateContextSecretIfNotExist(provider)
+	if err != nil {
+		logger.Log.Fatalf("Error creating context secret. Aborting: %s.", err.Error())
+	}
+	if adminUser != nil {
+		logger.Log.Infof("Contexts saved (%d bytes).", len(ownContext.ContextBase64))
+	}
+	logger.Log.Noticef("🚀🚀🚀 Successfuly installed punq in '%s'.", clusterName)
 }
 
 func addRbac(kubeProvider *KubeProvider) error {
@@ -182,7 +192,7 @@ func CreateUserSecretIfNotExist(kubeProvider *KubeProvider) (*dtos.PunqUser, err
 
 func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (*dtos.PunqUser, error) {
 	adminUser := dtos.PunqUser{
-		Id:          "admin",
+		Id:          utils.USERADMIN,
 		Email:       "your-email@mogenius.com",
 		Password:    uuid.NewString(),
 		DisplayName: "Admin User",
@@ -197,7 +207,7 @@ func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 	secret.ObjectMeta.Name = utils.USERSSECRET
 	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
 	delete(secret.StringData, "exampleData") // delete example data
-	secret.StringData["admin"] = string(rawAdmin)
+	secret.StringData[utils.USERADMIN] = string(rawAdmin)
 
 	if existingSecret == nil || getErr != nil {
 		logger.Log.Info("Creating new punq-user secret ...")
@@ -208,6 +218,54 @@ func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 		}
 		logger.Log.Info("Created new punq-user secret", result.GetObjectMeta().GetName())
 		return &adminUser, nil
+	}
+	return nil, nil
+}
+
+func CreateContextSecretIfNotExist(kubeProvider *KubeProvider) (*dtos.PunqContext, error) {
+	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+
+	existingSecret, getErr := secretClient.Get(context.TODO(), utils.CONTEXTSSECRET, metav1.GetOptions{})
+	return writeContextSecret(secretClient, existingSecret, getErr)
+}
+
+func writeContextSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (*dtos.PunqContext, error) {
+	kubeconfigEnvVar := os.Getenv("KUBECONFIG")
+	if kubeconfigEnvVar != "" {
+		kubeconfigData, err := os.ReadFile(kubeconfigEnvVar)
+		if err != nil {
+			logger.Log.Fatalf("error reading kubeconfig: %s", err.Error())
+		}
+
+		ownContext := dtos.PunqContext{
+			Id:            utils.CONTEXTOWN,
+			ContextBase64: string(kubeconfigData),
+		}
+
+		rawAdmin, err := json.Marshal(ownContext)
+		if err != nil {
+			logger.Log.Errorf("Error marshaling %s", err)
+		}
+
+		secret := utils.InitSecret()
+		secret.ObjectMeta.Name = utils.CONTEXTSSECRET
+		secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
+		delete(secret.StringData, "exampleData") // delete example data
+		secret.StringData[utils.CONTEXTOWN] = string(rawAdmin)
+
+		if existingSecret == nil || getErr != nil {
+			logger.Log.Info("Creating new punq-context secret ...")
+			_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
+			if err != nil {
+				logger.Log.Error(err)
+				return nil, err
+			}
+			logger.Log.Infof("Created new punq-context secret.")
+			return &ownContext, nil
+		}
+		return nil, nil
+	} else {
+		logger.Log.Fatal("$KUBECONFIG is empty. Cannot locate your context. Please use the -c flag to define the location of your kube-config.")
 	}
 	return nil, nil
 }

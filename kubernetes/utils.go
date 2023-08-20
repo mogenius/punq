@@ -73,8 +73,8 @@ var (
 )
 
 type K8sWorkloadResult struct {
-	Result interface{} `json:"result"`
-	Error  interface{} `json:"error"`
+	Result interface{} `json:"result,omitempty"`
+	Error  interface{} `json:"error,omitempty"`
 }
 
 type K8sNewWorkload struct {

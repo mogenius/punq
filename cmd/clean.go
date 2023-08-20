@@ -27,7 +27,7 @@ var cleanCmd = &cobra.Command{
 		if !utils.ConfirmTask(fmt.Sprintf("Do you realy want to remove punq from '%s' context?", yellow(kubernetes.CurrentContextName())), 1) {
 			os.Exit(0)
 		}
-		kubernetes.Remove()
+		kubernetes.Remove(yellow(kubernetes.CurrentContextName()))
 	},
 }
 

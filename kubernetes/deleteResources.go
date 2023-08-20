@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func Remove() {
+func Remove(clusterName string) {
 	provider, err := NewKubeProviderLocal()
 	if err != nil {
 		panic(err)
@@ -20,7 +20,10 @@ func Remove() {
 	// namespace is not deleted on purpose
 	removeRbac(provider)
 	removeDeployment(provider)
-	removeSecret(provider)
+	removeContextsSecret(provider)
+	removeUsersSecret(provider)
+
+	logger.Log.Noticef("🚀🚀🚀 Successfuly uninstalled punq from '%s'.", clusterName)
 }
 
 func removeDeployment(kubeProvider *KubeProvider) {
@@ -58,16 +61,28 @@ func removeRbac(kubeProvider *KubeProvider) {
 	logger.Log.Infof("Deleted %s RBAC.", version.Name)
 }
 
-func removeSecret(kubeProvider *KubeProvider) {
+func removeUsersSecret(kubeProvider *KubeProvider) {
 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
 
-	// DELETE Secret
-	logger.Log.Infof("Deleting %s secret ...", version.Name)
+	logger.Log.Infof("Deleting %s/%s secret ...", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	deletePolicy := metav1.DeletePropagationForeground
-	err := secretClient.Delete(context.TODO(), version.Name, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
+	err := secretClient.Delete(context.TODO(), utils.USERSSECRET, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
 		logger.Log.Error(err)
 		return
 	}
-	logger.Log.Infof("Deleted %s secret.", version.Name)
+	logger.Log.Infof("Deleted %s/%s secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+}
+
+func removeContextsSecret(kubeProvider *KubeProvider) {
+	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+
+	logger.Log.Infof("Deleting %s/%s secret ...", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
+	deletePolicy := metav1.DeletePropagationForeground
+	err := secretClient.Delete(context.TODO(), utils.CONTEXTSSECRET, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
+	if err != nil {
+		logger.Log.Error(err)
+		return
+	}
+	logger.Log.Infof("Deleted %s/%s secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 }

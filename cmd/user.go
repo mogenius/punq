@@ -21,10 +21,10 @@ var userCmd = &cobra.Command{
 	Long:  `The user command lets you manage all user related task like add, remove, list users.`,
 }
 
-var listCmd = &cobra.Command{
+var listUserCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List punq users.",
-	Long:  `The user command lets you list all users of punq.`,
+	Long:  `The list command lets you list all users of punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.InitConfigYaml(false, nil, false)
 
@@ -35,7 +35,7 @@ var listCmd = &cobra.Command{
 	},
 }
 
-var addCmd = &cobra.Command{
+var addUserCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add punq user.",
 	Long:  `The add command lets you add a user into punq.`,
@@ -63,7 +63,7 @@ var addCmd = &cobra.Command{
 	},
 }
 
-var deleteCmd = &cobra.Command{
+var deleteUserCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete punq user.",
 	Long:  `The delete command lets you delete a specific user in punq.`,
@@ -79,7 +79,7 @@ var deleteCmd = &cobra.Command{
 	},
 }
 
-var getCmd = &cobra.Command{
+var getUserCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get specific punq user.",
 	Long:  `The get command lets you get a specific user of punq.`,
@@ -96,18 +96,18 @@ var getCmd = &cobra.Command{
 }
 
 func init() {
-	userCmd.AddCommand(listCmd)
+	userCmd.AddCommand(listUserCmd)
 
-	userCmd.AddCommand(addCmd)
-	addCmd.Flags().StringVarP(&email, "email", "e", "", "E-Mail address of the new user")
-	addCmd.Flags().StringVarP(&displayName, "displayname", "d", "", "Display name of the new user")
-	addCmd.Flags().StringVarP(&password, "password", "p", "", "Password of the new user")
+	userCmd.AddCommand(addUserCmd)
+	addUserCmd.Flags().StringVarP(&email, "email", "e", "", "E-Mail address of the new user")
+	addUserCmd.Flags().StringVarP(&displayName, "displayname", "d", "", "Display name of the new user")
+	addUserCmd.Flags().StringVarP(&password, "password", "p", "", "Password of the new user")
 
-	userCmd.AddCommand(deleteCmd)
-	deleteCmd.Flags().StringVarP(&userId, "userid", "u", "", "UserId of the user")
+	userCmd.AddCommand(deleteUserCmd)
+	deleteUserCmd.Flags().StringVarP(&userId, "userid", "u", "", "UserId of the user")
 
-	userCmd.AddCommand(getCmd)
-	getCmd.Flags().StringVarP(&userId, "userid", "u", "", "UserId of the user")
+	userCmd.AddCommand(getUserCmd)
+	getUserCmd.Flags().StringVarP(&userId, "userid", "u", "", "UserId of the user")
 
 	rootCmd.AddCommand(userCmd)
 }

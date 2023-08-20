@@ -52,11 +52,15 @@ func DeleteUser(id string) kubernetes.K8sWorkloadResult {
 		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
 	}
 
-	if id == "admin" {
+	if id == utils.USERADMIN {
 		return kubernetes.WorkloadResultError("admin user cannot be deleted")
 	}
 
-	delete(secret.Data, id)
+	if secret.Data[id] != nil {
+		delete(secret.Data, id)
+	} else {
+		return kubernetes.WorkloadResultError(fmt.Sprintf("USer '%s' not found.", id))
+	}
 
 	result := kubernetes.UpdateK8sSecret(*secret)
 	if result.Error == nil && result.Result == nil {
@@ -96,7 +100,7 @@ func GetAdmin() (*dtos.PunqUser, error) {
 	}
 
 	for userId, userRaw := range secret.Data {
-		if userId == "admin" {
+		if userId == utils.USERADMIN {
 			admin := dtos.PunqUser{}
 			err := json.Unmarshal([]byte(userRaw), &admin)
 			if err != nil {
