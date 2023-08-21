@@ -17,7 +17,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// startCmd represents the start command
 var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "🚀🚀🚀 Run the application within your currently selected kubernetes context. 🚀🚀🚀",
@@ -31,7 +30,7 @@ var startCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		kubernetes.Deploy(yellow(kubernetes.CurrentContextName()))
+		kubernetes.Deploy(yellow(kubernetes.CurrentContextName()), ingressHostname)
 		utils.OpenBrowser(fmt.Sprintf("http://%s:%s/punq", os.Getenv("API_HOST"), os.Getenv("API_PORT")))
 
 		quit := make(chan os.Signal)
@@ -43,15 +42,6 @@ var startCmd = &cobra.Command{
 }
 
 func init() {
+	startCmd.Flags().StringVarP(&ingressHostname, "ingress", "i", "", "Ingress hostname for operator.")
 	rootCmd.AddCommand(startCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// startCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports start flags which will only run when this command
-	// is called directly, e.g.:
-	// startCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

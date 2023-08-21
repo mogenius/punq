@@ -170,6 +170,21 @@ func InitIngress() netv1.Ingress {
 	}
 	return app
 }
+func InitPunqIngress() netv1.Ingress {
+	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/punq-ingress.yaml")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	s := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
+
+	var app netv1.Ingress
+	_, _, err = s.Decode(yaml, nil, &app)
+	if err != nil {
+		panic(err)
+	}
+	return app
+}
 
 func InitNetPolNamespaceYaml() string {
 	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/network-policy-namespace.yaml")
@@ -249,6 +264,21 @@ func InitServiceYaml() string {
 }
 func InitService() core.Service {
 	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/service.yaml")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	s := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
+
+	var app core.Service
+	_, _, err = s.Decode(yaml, nil, &app)
+	if err != nil {
+		panic(err)
+	}
+	return app
+}
+func InitPunqService() core.Service {
+	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/punq-service.yaml")
 	if err != nil {
 		panic(err.Error())
 	}

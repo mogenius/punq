@@ -8,6 +8,7 @@ import (
 
 	"github.com/mogenius/punq/logger"
 
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -22,6 +23,8 @@ func Remove(clusterName string) {
 	removeDeployment(provider)
 	removeContextsSecret(provider)
 	removeUsersSecret(provider)
+	removeService(provider)
+	removeIngress(provider)
 
 	logger.Log.Noticef("🚀🚀🚀 Successfuly uninstalled punq from '%s'.", clusterName)
 }
@@ -38,6 +41,36 @@ func removeDeployment(kubeProvider *KubeProvider) {
 		return
 	}
 	logger.Log.Infof("Deleted %s deployment.", version.Name)
+}
+
+func removeService(kubeProvider *KubeProvider) {
+	serviceClient := kubeProvider.ClientSet.CoreV1().Services(utils.CONFIG.Kubernetes.OwnNamespace)
+
+	logger.Log.Infof("Deleting %s service ...", SERVICENAME)
+	deletePolicy := metav1.DeletePropagationForeground
+	err := serviceClient.Delete(context.TODO(), SERVICENAME, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
+	if err != nil {
+		if !apierrors.IsNotFound(err) {
+			logger.Log.Error(err)
+			return
+		}
+	}
+	logger.Log.Infof("Deleted %s service.", SERVICENAME)
+}
+
+func removeIngress(kubeProvider *KubeProvider) {
+	ingressClient := kubeProvider.ClientSet.NetworkingV1().Ingresses(utils.CONFIG.Kubernetes.OwnNamespace)
+
+	logger.Log.Infof("Deleting %s ingress ...", INGRESSNAME)
+	deletePolicy := metav1.DeletePropagationForeground
+	err := ingressClient.Delete(context.TODO(), INGRESSNAME, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
+	if err != nil {
+		if !apierrors.IsNotFound(err) {
+			logger.Log.Error(err)
+			return
+		}
+	}
+	logger.Log.Infof("Deleted %s ingress.", INGRESSNAME)
 }
 
 func removeRbac(kubeProvider *KubeProvider) {

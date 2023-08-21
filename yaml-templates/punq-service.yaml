@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: punq-service
+    namespace: punq
+spec:
+    type: ClusterIP
+    ports:
+    - port: 1337 
+    selector:
+        app: punq

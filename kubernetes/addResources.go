@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/google/uuid"
@@ -18,13 +19,14 @@ import (
 	rbac "k8s.io/api/rbac/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	applyconfapp "k8s.io/client-go/applyconfigurations/apps/v1"
 	applyconfcore "k8s.io/client-go/applyconfigurations/core/v1"
 	applyconfmeta "k8s.io/client-go/applyconfigurations/meta/v1"
 	v1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
-func Deploy(clusterName string) {
+func Deploy(clusterName string, ingressHostname string) {
 	provider, err := NewKubeProviderLocal()
 	if err != nil {
 		panic(err)
@@ -54,7 +56,52 @@ func Deploy(clusterName string) {
 	if adminUser != nil {
 		logger.Log.Infof("Contexts saved (%d bytes).", len(ownContext.ContextBase64))
 	}
+
+	if ingressHostname != "" {
+		addService(provider)
+		addIngress(provider, ingressHostname)
+	}
+
 	logger.Log.Noticef("🚀🚀🚀 Successfuly installed punq in '%s'.", clusterName)
+}
+
+func addService(provider *KubeProvider) {
+	logger.Log.Infof("Creating punq service ...")
+
+	punqService := utils.InitPunqService()
+	punqService.ObjectMeta.Name = SERVICENAME
+	punqService.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
+	punqService.Spec.Ports[0].Name = fmt.Sprintf("8080-%s", SERVICENAME)
+	punqService.Spec.Ports[0].Protocol = core.ProtocolTCP
+	punqService.Spec.Ports[0].Port = 8080
+	punqService.Spec.Ports[0].TargetPort = intstr.Parse("8080")
+	punqService.Spec.Selector["app"] = version.Name
+
+	serviceClient := provider.ClientSet.CoreV1().Services(utils.CONFIG.Kubernetes.OwnNamespace)
+	_, err := serviceClient.Create(context.TODO(), &punqService, metav1.CreateOptions{})
+	if err != nil {
+		logger.Log.Fatalf("Service Creation Err: %s", err.Error())
+	}
+
+	logger.Log.Infof("Created punq service.")
+}
+
+func addIngress(provider *KubeProvider, ingressHostname string) {
+	logger.Log.Infof("Creating punq ingress (%s) ...", ingressHostname)
+
+	punqIngress := utils.InitPunqIngress()
+	punqIngress.ObjectMeta.Name = INGRESSNAME
+	punqIngress.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
+	punqIngress.Spec.Rules[0].Host = ingressHostname
+	punqIngress.Spec.Rules[0].HTTP.Paths[0].Backend.Service.Name = SERVICENAME
+
+	ingressClient := provider.ClientSet.NetworkingV1().Ingresses(utils.CONFIG.Kubernetes.OwnNamespace)
+	_, err := ingressClient.Create(context.TODO(), &punqIngress, metav1.CreateOptions{})
+	if err != nil {
+		logger.Log.Fatalf("Ingress Creation Err: %s", err.Error())
+	}
+
+	logger.Log.Infof("Created punq ingress (%s).", ingressHostname)
 }
 
 func addRbac(kubeProvider *KubeProvider) error {

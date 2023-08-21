@@ -7,7 +7,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "main.go",
-            "args": ["user", "get", "-u", "admin"],
+            "args": ["install", "-i", "lala.mogenius.com"],
             "asRoot": false,
             "console": "integratedTerminal"
         }

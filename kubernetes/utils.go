@@ -70,6 +70,8 @@ var (
 	CLUSTERROLENAME        = fmt.Sprintf("%s--cluster-role-app", version.Name)
 	CLUSTERROLEBINDINGNAME = fmt.Sprintf("%s--cluster-role-binding-app", version.Name)
 	RBACRESOURCES          = []string{"pods", "services", "endpoints", "secrets"}
+	SERVICENAME            = fmt.Sprintf("%s-service", version.Name)
+	INGRESSNAME            = fmt.Sprintf("%s-ingress", version.Name)
 )
 
 type K8sWorkloadResult struct {
