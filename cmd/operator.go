@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/mogenius/punq/services"
+	"github.com/mogenius/punq/operator"
 
 	"github.com/mogenius/punq/utils"
 
@@ -14,7 +14,10 @@ var operatorCmd = &cobra.Command{
 	Long:  `Run the operator inside the cluster!`,
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.InitConfigYaml(true, nil, true)
-		services.InitGin()
+		println("\n###############################################")
+		utils.IsNewReleaseIsAvailable()
+		println("###############################################\n")
+		operator.InitGin()
 	},
 }
 

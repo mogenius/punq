@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/google/uuid"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/structs"
 	"github.com/mogenius/punq/version"
@@ -185,8 +184,8 @@ func CreateClusterSecretIfNotExist(kubeProvider *KubeProvider) (utils.ClusterSec
 
 func writePunqSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (utils.ClusterSecret, error) {
 	clusterSecret := utils.ClusterSecret{
-		ApiKey:       uuid.New().String(),
-		ClusterMfaId: uuid.New().String(),
+		ApiKey:       utils.NanoIdExtraLong(),
+		ClusterMfaId: utils.NanoIdExtraLong(),
 		ClusterName:  utils.CONFIG.Kubernetes.ClusterName,
 	}
 
@@ -241,7 +240,7 @@ func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 	adminUser := dtos.PunqUser{
 		Id:          utils.USERADMIN,
 		Email:       "your-email@mogenius.com",
-		Password:    uuid.NewString(),
+		Password:    utils.NanoId(),
 		DisplayName: "Admin User",
 	}
 
@@ -286,6 +285,7 @@ func writeContextSecret(secretClient v1.SecretInterface, existingSecret *core.Se
 
 		ownContext := dtos.PunqContext{
 			Id:            utils.CONTEXTOWN,
+			Name:          utils.CONTEXTOWN,
 			ContextBase64: string(kubeconfigData),
 		}
 

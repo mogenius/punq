@@ -1,12 +1,8 @@
-package services
+package operator
 
 import (
-	"bytes"
 	"embed"
-	"encoding/json"
-	"errors"
 	"fmt"
-	"io"
 	"io/fs"
 	"net/http"
 	"path"
@@ -14,7 +10,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/mogenius/punq/logger"
-	"github.com/mogenius/punq/utils"
 )
 
 var HtmlDirFs embed.FS
@@ -28,18 +23,19 @@ func InitGin() {
 
 	router.StaticFS("/punq", embedFs())
 
-	srv := &http.Server{
-		Addr:    fmt.Sprintf("%s:%s", utils.CONFIG.Browser.Host, utils.CONFIG.Browser.Port),
-		Handler: router,
-	}
+	InitContextRoutes(router)
+	InitUserRoutes(router)
+	InitGeneralRoutes(router)
 
-	if err := srv.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
-		logger.Log.Info("listen: %s\n", err)
-	}
+	err := router.Run(fmt.Sprintf(":%d", OPERATOR_PORT))
+	logger.Log.Errorf("Gin stopped with error: %s", err.Error())
 }
 
 func embedFs() http.FileSystem {
 	sub, err := fs.Sub(HtmlDirFs, "ui/dist")
+	if err != nil {
+		logger.Log.Fatalf("Cannot load ui/dist from filesystem.")
+	}
 
 	dirContent, err := getAllFilenames(&HtmlDirFs, "")
 	if err != nil {
@@ -52,17 +48,6 @@ func embedFs() http.FileSystem {
 		logger.Log.Noticef("Loaded %d static files from embed.", len(dirContent))
 	}
 	return http.FS(sub)
-}
-
-func printPrettyPost(c *gin.Context) {
-	var out bytes.Buffer
-	body, _ := io.ReadAll(c.Request.Body)
-	err := json.Indent(&out, []byte(body), "", "  ")
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println(string(out.Bytes()))
 }
 
 func getAllFilenames(fs *embed.FS, dir string) (out []string, err error) {

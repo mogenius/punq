@@ -5,7 +5,7 @@ import (
 
 	"github.com/mogenius/punq/cmd"
 	"github.com/mogenius/punq/logger"
-	"github.com/mogenius/punq/services"
+	"github.com/mogenius/punq/operator"
 	"github.com/mogenius/punq/utils"
 )
 
@@ -30,7 +30,7 @@ func main() {
 	utils.DefaultConfigClusterFileProd = prodConfig
 	utils.YamlTemplatesFolder = yamlTemplatesFolder
 
-	services.HtmlDirFs = htmlDirFs
+	operator.HtmlDirFs = htmlDirFs
 
 	logger.Init()
 	cmd.Execute()

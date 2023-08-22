@@ -46,6 +46,21 @@ func AddContext(ctx dtos.PunqContext) kubernetes.K8sWorkloadResult {
 	return kubernetes.UpdateK8sSecret(*secret)
 }
 
+func UpdateContext(ctx dtos.PunqContext) kubernetes.K8sWorkloadResult {
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
+	if secret == nil {
+		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET))
+	}
+
+	rawData, err := json.Marshal(ctx)
+	if err != nil {
+		logger.Log.Error("failed to Marshal context '%s'", ctx.Id)
+	}
+	secret.Data[ctx.Id] = rawData
+
+	return kubernetes.UpdateK8sSecret(*secret)
+}
+
 func DeleteContext(id string) kubernetes.K8sWorkloadResult {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 	if secret == nil {

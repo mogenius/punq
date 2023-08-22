@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/google/uuid"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/services"
@@ -14,6 +13,7 @@ var email string
 var password string
 var displayName string
 var userId string
+var showPasswords bool
 
 var userCmd = &cobra.Command{
 	Use:   "user",
@@ -29,9 +29,7 @@ var listUserCmd = &cobra.Command{
 		utils.InitConfigYaml(false, nil, false)
 
 		users := services.ListUsers()
-		for _, user := range users {
-			structs.PrettyPrint(user)
-		}
+		dtos.ListUsers(users, showPasswords)
 	},
 }
 
@@ -53,7 +51,7 @@ var addUserCmd = &cobra.Command{
 		}
 
 		newUser := dtos.PunqUser{
-			Id:          uuid.New().String(),
+			Id:          utils.NanoId(),
 			Email:       email,
 			Password:    password,
 			DisplayName: displayName,
@@ -97,6 +95,7 @@ var getUserCmd = &cobra.Command{
 
 func init() {
 	userCmd.AddCommand(listUserCmd)
+	listUserCmd.Flags().BoolVarP(&showPasswords, "show-passwords", "s", false, "Display current passwords")
 
 	userCmd.AddCommand(addUserCmd)
 	addUserCmd.Flags().StringVarP(&email, "email", "e", "", "E-Mail address of the new user")

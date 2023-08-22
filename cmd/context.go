@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"os"
 
-	"github.com/google/uuid"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/services"
@@ -15,6 +14,7 @@ import (
 
 var filePath string
 var contextId string
+var accessLevel string
 
 var contextCmd = &cobra.Command{
 	Use:   "context",
@@ -30,9 +30,7 @@ var listContextCmd = &cobra.Command{
 		utils.InitConfigYaml(false, nil, false)
 
 		contexts := services.ListContexts()
-		for _, ctx := range contexts {
-			structs.PrettyPrint(ctx)
-		}
+		dtos.ListContexts(contexts)
 	},
 }
 
@@ -55,11 +53,65 @@ var addContextCmd = &cobra.Command{
 		encodedData := base64.StdEncoding.EncodeToString(dataBytes)
 
 		newContext := dtos.PunqContext{
-			Id:            uuid.New().String(),
+			Id:            utils.NanoId(),
 			ContextBase64: encodedData,
 		}
 
 		services.AddContext(newContext)
+	},
+}
+
+var addContextAccessCmd = &cobra.Command{
+	Use:   "add-access",
+	Short: "Add access to punq context.",
+	Long:  `The add-access command lets you add a user + access level to a context in punq.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		utils.InitConfigYaml(false, nil, false)
+
+		if contextId == "" {
+			logger.Log.Fatal("-context-id cannot be empty.")
+		}
+
+		if accessLevel == "" {
+			logger.Log.Fatal("-access-level cannot be empty.")
+		}
+
+		if userId == "" {
+			logger.Log.Fatal("-user-id cannot be empty.")
+		}
+
+		ctx := services.GetContext(contextId)
+		if ctx == nil {
+			logger.Log.Fatalf("context '%s' not found.", contextId)
+		}
+
+		ctx.AddAccess(userId, dtos.AccessLevel(accessLevel))
+		services.UpdateContext(*ctx)
+	},
+}
+
+var removeContextAccessCmd = &cobra.Command{
+	Use:   "remove-access",
+	Short: "Remove access from punq context.",
+	Long:  `The remove-access command lets you remove a users access level from a context in punq.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		utils.InitConfigYaml(false, nil, false)
+
+		if contextId == "" {
+			logger.Log.Fatal("-context-id cannot be empty.")
+		}
+
+		if userId == "" {
+			logger.Log.Fatal("-user-id cannot be empty.")
+		}
+
+		ctx := services.GetContext(contextId)
+		if ctx == nil {
+			logger.Log.Fatalf("context '%s' not found.", contextId)
+		}
+
+		ctx.RemoveAccess(userId)
+		services.UpdateContext(*ctx)
 	},
 }
 
@@ -101,6 +153,15 @@ var getContextCmd = &cobra.Command{
 
 func init() {
 	contextCmd.AddCommand(listContextCmd)
+
+	contextCmd.AddCommand(addContextAccessCmd)
+	addContextAccessCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
+	addContextAccessCmd.Flags().StringVarP(&userId, "user-id", "u", "", "Id of the user you want to add")
+	addContextAccessCmd.Flags().StringVarP(&accessLevel, "access-level", "l", string(dtos.ADMIN), "Access level of the user you want to add (READER, USER, ADMIN)")
+
+	contextCmd.AddCommand(removeContextAccessCmd)
+	removeContextAccessCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
+	removeContextAccessCmd.Flags().StringVarP(&userId, "user-id", "u", "", "Id of the user you want to add")
 
 	contextCmd.AddCommand(addContextCmd)
 	addContextCmd.Flags().StringVarP(&email, "filepath", "f", "", "FilePath to the context you want to add")

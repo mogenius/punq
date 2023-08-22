@@ -3,7 +3,9 @@ package utils
 import (
 	"bufio"
 	"embed"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -29,6 +31,45 @@ func Pointer[K any](val K) *K {
 
 type ResponseError struct {
 	Error string `json:"error,omitempty"`
+}
+
+type Release struct {
+	TagName   string `json:"tag_name"`
+	Published string `json:"published_at"`
+}
+
+func IsNewReleaseIsAvailable() bool {
+	latestRelease := "https://api.github.com/repos/mogenius/punq/releases/latest"
+	resp, err := http.Get(latestRelease)
+	if err != nil {
+		logger.Log.Errorf("Error getting release: %s", err.Error())
+		return false
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		logger.Log.Errorf("failed to fetch latest release: %s", string(bodyBytes))
+		return false
+	}
+
+	var release Release
+	err = json.NewDecoder(resp.Body).Decode(&release)
+	if err != nil {
+		logger.Log.Errorf("Error decoding release: %s", err.Error())
+		return false
+	}
+
+	fmt.Printf("Your version:      v%s\n", version.Ver)
+	fmt.Printf("Available version: %s (published: %s ago)\n", release.TagName, JsonStringToHumanDuration(release.Published))
+
+	if strings.Contains(release.TagName, version.Ver) {
+		fmt.Println("You are up-to-date 🥰.")
+		return false
+	} else {
+		fmt.Println("Your version is outdated 😭! Please update punq: https://punq.dev")
+		return true
+	}
 }
 
 func CreateError(err error) ResponseError {

@@ -5,7 +5,26 @@ import (
 	"hash/fnv"
 	"math"
 	"time"
+
+	"github.com/jaevor/go-nanoid"
+	"github.com/mogenius/punq/logger"
 )
+
+func NanoId() string {
+	id, err := nanoid.Standard(21)
+	if err != nil {
+		logger.Log.Error(err)
+	}
+	return id()
+}
+
+func NanoIdExtraLong() string {
+	id, err := nanoid.Standard(40)
+	if err != nil {
+		logger.Log.Error(err)
+	}
+	return id()
+}
 
 func Round(num float64) int {
 	return int(num + math.Copysign(0.5, num))

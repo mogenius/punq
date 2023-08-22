@@ -7,7 +7,6 @@ import (
 	"github.com/mogenius/punq/utils"
 
 	"github.com/fatih/color"
-	"github.com/google/uuid"
 )
 
 type Datagram struct {
@@ -30,7 +29,7 @@ func CreateDatagramRequest(request Datagram, data interface{}) Datagram {
 
 func CreateDatagramFrom(pattern string, data interface{}) Datagram {
 	datagram := Datagram{
-		Id:        uuid.New().String(),
+		Id:        utils.NanoId(),
 		Pattern:   pattern,
 		Payload:   data,
 		CreatedAt: time.Now(),
@@ -40,7 +39,7 @@ func CreateDatagramFrom(pattern string, data interface{}) Datagram {
 
 func CreateDatagram(pattern string) Datagram {
 	datagram := Datagram{
-		Id:        uuid.New().String(),
+		Id:        utils.NanoId(),
 		Pattern:   pattern,
 		CreatedAt: time.Now(),
 	}
@@ -58,7 +57,7 @@ func CreateDatagramAck(pattern string, id string) Datagram {
 
 func CreateEmptyDatagram() Datagram {
 	datagram := Datagram{
-		Id:        uuid.New().String(),
+		Id:        utils.NanoId(),
 		Pattern:   "",
 		CreatedAt: time.Now(),
 	}
