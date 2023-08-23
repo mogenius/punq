@@ -37,6 +37,34 @@ func AddUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
 		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
 	}
 
+	// check for duplicates
+	for _, data := range secret.Data {
+		userDto := &dtos.PunqUser{}
+		err := json.Unmarshal(data, userDto)
+		if err == nil {
+			if userDto.Email == user.Email {
+				errStr := fmt.Sprintf("Duplicated email: '%s'", user.Email)
+				logger.Log.Error(errStr)
+				return kubernetes.WorkloadResultError(errStr)
+			}
+		}
+	}
+
+	rawData, err := json.Marshal(user)
+	if err != nil {
+		logger.Log.Error("failed to Marshal user '%s'", user.Id)
+	}
+	secret.Data[user.Id] = rawData
+
+	return kubernetes.UpdateK8sSecret(*secret)
+}
+
+func UpdateUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	if secret == nil {
+		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
+	}
+
 	rawData, err := json.Marshal(user)
 	if err != nil {
 		logger.Log.Error("failed to Marshal user '%s'", user.Id)

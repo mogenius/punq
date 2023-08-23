@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"time"
+
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/services"
@@ -49,15 +51,56 @@ var addUserCmd = &cobra.Command{
 		if password == "" {
 			logger.Log.Fatal("-password cannot be empty.")
 		}
+		selectedAccess := dtos.READER // default level
+		if accessLevel != "" {
+			selectedAccess = dtos.AccessLevelFromString(accessLevel)
+		}
 
 		newUser := dtos.PunqUser{
 			Id:          utils.NanoId(),
 			Email:       email,
 			Password:    password,
 			DisplayName: displayName,
+			AccessLevel: selectedAccess,
+			Created:     time.Now().Format(time.RFC3339),
 		}
 
 		services.AddUser(newUser)
+	},
+}
+
+var updateUserCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update punq user.",
+	Long:  `The update command lets you update a user in punq.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		utils.InitConfigYaml(false, nil, false)
+
+		if userId == "" {
+			logger.Log.Fatal("Please selecte a userId to update a user.")
+		}
+		if email == "" && displayName == "" && password == "" && accessLevel == "" {
+			logger.Log.Fatal("One of the following options must be used to update a user: -email -displayname -password -accesslevel")
+		}
+
+		user := services.GetUser(userId)
+		if user == nil {
+			logger.Log.Fatalf("Selected userId '%s' not found.", userId)
+		}
+		if displayName != "" {
+			user.DisplayName = displayName
+		}
+		if password != "" {
+			user.Password = password
+		}
+		if email != "" {
+			user.Email = email
+		}
+		if accessLevel != "" {
+			user.AccessLevel = dtos.AccessLevelFromString(accessLevel)
+		}
+
+		services.UpdateUser(*user)
 	},
 }
 
@@ -97,10 +140,18 @@ func init() {
 	userCmd.AddCommand(listUserCmd)
 	listUserCmd.Flags().BoolVarP(&showPasswords, "show-passwords", "s", false, "Display current passwords")
 
+	userCmd.AddCommand(updateUserCmd)
+	updateUserCmd.Flags().StringVarP(&userId, "userid", "u", "", "UserId of the user")
+	updateUserCmd.Flags().StringVarP(&email, "email", "e", "", "E-Mail address of the user")
+	updateUserCmd.Flags().StringVarP(&displayName, "displayname", "d", "", "Display name of the user")
+	updateUserCmd.Flags().StringVarP(&password, "password", "p", "", "Password of the user")
+	updateUserCmd.Flags().StringVarP(&accessLevel, "accesslevel", "a", "", "AccessLeve of the user")
+
 	userCmd.AddCommand(addUserCmd)
 	addUserCmd.Flags().StringVarP(&email, "email", "e", "", "E-Mail address of the new user")
 	addUserCmd.Flags().StringVarP(&displayName, "displayname", "d", "", "Display name of the new user")
 	addUserCmd.Flags().StringVarP(&password, "password", "p", "", "Password of the new user")
+	addUserCmd.Flags().StringVarP(&accessLevel, "accesslevel", "a", "", "AccessLeve of the new user")
 
 	userCmd.AddCommand(deleteUserCmd)
 	deleteUserCmd.Flags().StringVarP(&userId, "userid", "u", "", "UserId of the user")

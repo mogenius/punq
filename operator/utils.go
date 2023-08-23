@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 
-	"github.com/gin-gonic/gin"
+	gin "github.com/gin-gonic/gin"
 )
 
 const (
@@ -22,4 +23,20 @@ func PrintPrettyPost(c *gin.Context) {
 	}
 
 	fmt.Println(out.String())
+}
+
+func GetRequiredHeader(c *gin.Context, headerField string) string {
+	selectedField := c.Request.Header.Get(headerField)
+	if selectedField == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"err": fmt.Sprintf("Missing header '%s'.", headerField),
+		})
+	}
+	return selectedField
+}
+
+func NotFound(c *gin.Context, msg string) {
+	c.JSON(http.StatusNotFound, gin.H{
+		"err": msg,
+	})
 }

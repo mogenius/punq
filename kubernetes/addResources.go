@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/structs"
@@ -242,6 +243,8 @@ func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 		Email:       "your-email@mogenius.com",
 		Password:    utils.NanoId(),
 		DisplayName: "Admin User",
+		AccessLevel: dtos.ADMIN,
+		Created:     time.Now().Format(time.RFC3339),
 	}
 
 	rawAdmin, err := json.Marshal(adminUser)

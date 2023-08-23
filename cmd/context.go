@@ -85,7 +85,7 @@ var addContextAccessCmd = &cobra.Command{
 			logger.Log.Fatalf("context '%s' not found.", contextId)
 		}
 
-		ctx.AddAccess(userId, dtos.AccessLevel(accessLevel))
+		ctx.AddAccess(userId, dtos.AccessLevelFromString(accessLevel))
 		services.UpdateContext(*ctx)
 	},
 }

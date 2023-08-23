@@ -2,12 +2,22 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Operator",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["operator"],
+            "asRoot": false,
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Launch Package",
             "type": "go",
             "request": "launch",
             "mode": "debug",
             "program": "main.go",
-            "args": ["install", "-i", "lala.mogenius.com"],
+            "args": ["operator"],
             "asRoot": false,
             "console": "integratedTerminal"
         }
