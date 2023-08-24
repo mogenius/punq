@@ -90,6 +90,16 @@ func DescribeK8sSecret(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
+func CreateK8sSecret(data v1.Secret) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().Secrets(data.Namespace)
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
+}
+
 func NewK8sSecret() K8sNewWorkload {
 	return NewWorkload(
 		RES_SECRET,

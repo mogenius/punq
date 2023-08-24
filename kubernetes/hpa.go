@@ -32,8 +32,8 @@ func AllHpas(namespaceName string) K8sWorkloadResult {
 
 func UpdateK8sHpa(data v2.HorizontalPodAutoscaler) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	hpaClient := kubeProvider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(data.Namespace)
-	_, err := hpaClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	client := kubeProvider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(data.Namespace)
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -42,8 +42,8 @@ func UpdateK8sHpa(data v2.HorizontalPodAutoscaler) K8sWorkloadResult {
 
 func DeleteK8sHpa(data v2.HorizontalPodAutoscaler) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	hpaClient := kubeProvider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(data.Namespace)
-	err := hpaClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(data.Namespace)
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -60,6 +60,16 @@ func DescribeK8sHpa(namespace string, name string) K8sWorkloadResult {
 		return WorkloadResult(nil, string(output))
 	}
 	return WorkloadResult(string(output), nil)
+}
+
+func CreateK8sHpa(data v2.HorizontalPodAutoscaler) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(data.Namespace)
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sHpa() K8sNewWorkload {

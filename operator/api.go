@@ -26,6 +26,7 @@ func InitGin() {
 	InitContextRoutes(router)
 	InitUserRoutes(router)
 	InitGeneralRoutes(router)
+	InitWorkloadRoutes(router)
 
 	err := router.Run(fmt.Sprintf(":%d", OPERATOR_PORT))
 	logger.Log.Errorf("Gin stopped with error: %s", err.Error())

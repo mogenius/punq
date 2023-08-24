@@ -30,8 +30,8 @@ func AllStorageClasses() K8sWorkloadResult {
 
 func UpdateK8sStorageClass(data storage.StorageClass) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	scClient := kubeProvider.ClientSet.StorageV1().StorageClasses()
-	_, err := scClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -40,8 +40,8 @@ func UpdateK8sStorageClass(data storage.StorageClass) K8sWorkloadResult {
 
 func DeleteK8sStorageClass(data storage.StorageClass) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	scClient := kubeProvider.ClientSet.StorageV1().StorageClasses()
-	err := scClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -58,6 +58,16 @@ func DescribeK8sStorageClass(name string) K8sWorkloadResult {
 		return WorkloadResult(nil, string(output))
 	}
 	return WorkloadResult(string(output), nil)
+}
+
+func CreateK8sStorageClass(data storage.StorageClass) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sStorageClass() K8sNewWorkload {

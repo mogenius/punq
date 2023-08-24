@@ -13,6 +13,20 @@ import (
 var users []dtos.PunqUser = []dtos.PunqUser{}
 var nextUpdate time.Time = time.Now().Add(-1 * time.Minute) // trigger first update instant
 
+func Auth(requiredAccessLevel dtos.AccessLevel) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		isAuthorized, err := HasSufficientAccess(c, requiredAccessLevel)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		if isAuthorized {
+			c.Next()
+		}
+	}
+}
+
 func updateLocalUserStore() {
 	if time.Now().After(nextUpdate) {
 		users = services.ListUsers()

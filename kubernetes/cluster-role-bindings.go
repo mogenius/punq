@@ -33,8 +33,8 @@ func AllClusterRoleBindings(namespaceName string) K8sWorkloadResult {
 
 func UpdateK8sClusterRoleBinding(data v1.ClusterRoleBinding) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	roleClient := kubeProvider.ClientSet.RbacV1().ClusterRoleBindings()
-	_, err := roleClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	client := kubeProvider.ClientSet.RbacV1().ClusterRoleBindings()
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -43,8 +43,8 @@ func UpdateK8sClusterRoleBinding(data v1.ClusterRoleBinding) K8sWorkloadResult {
 
 func DeleteK8sClusterRoleBinding(data v1.ClusterRoleBinding) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	roleClient := kubeProvider.ClientSet.RbacV1().ClusterRoleBindings()
-	err := roleClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.RbacV1().ClusterRoleBindings()
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -61,6 +61,16 @@ func DescribeK8sClusterRoleBinding(name string) K8sWorkloadResult {
 		return WorkloadResult(nil, string(output))
 	}
 	return WorkloadResult(string(output), nil)
+}
+
+func CreateK8sClusterRoleBinding(data v1.ClusterRoleBinding) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.RbacV1().ClusterRoleBindings()
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sClusterRoleBinding() K8sNewWorkload {

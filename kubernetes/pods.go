@@ -229,6 +229,16 @@ func DescribeK8sPod(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
+func CreateK8sPod(data v1.Pod) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().Pods(data.Namespace)
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
+}
+
 func NewK8sPod() K8sNewWorkload {
 	return NewWorkload(
 		RES_POD,

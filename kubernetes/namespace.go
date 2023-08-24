@@ -76,8 +76,8 @@ func ListK8sNamespaces(namespaceName string) K8sWorkloadResult {
 
 func DeleteK8sNamespace(data v1.Namespace) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	namespaceClient := kubeProvider.ClientSet.CoreV1().Namespaces()
-	err := namespaceClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.CoreV1().Namespaces()
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -101,6 +101,16 @@ func NamespaceExists(namespaceName string) (bool, error) {
 	namespaceClient := kubeProvider.ClientSet.CoreV1().Namespaces()
 	ns, err := namespaceClient.Get(context.TODO(), namespaceName, metav1.GetOptions{})
 	return (ns != nil && err == nil), err
+}
+
+func CreateK8sNamespace(data v1.Namespace) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().Namespaces()
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sNamespace() K8sNewWorkload {

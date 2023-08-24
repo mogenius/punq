@@ -33,8 +33,8 @@ func AllResourceQuotas(namespaceName string) K8sWorkloadResult {
 
 func UpdateK8sResourceQuota(data core.ResourceQuota) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	rqClient := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
-	_, err := rqClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -43,8 +43,8 @@ func UpdateK8sResourceQuota(data core.ResourceQuota) K8sWorkloadResult {
 
 func DeleteK8sResourceQuota(data core.ResourceQuota) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	rqClient := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
-	err := rqClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -61,6 +61,16 @@ func DescribeK8sResourceQuota(namespace string, name string) K8sWorkloadResult {
 		return WorkloadResult(nil, string(output))
 	}
 	return WorkloadResult(string(output), nil)
+}
+
+func CreateK8sResourceQuota(data core.ResourceQuota) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sResourceQuota() K8sNewWorkload {

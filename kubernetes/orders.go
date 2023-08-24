@@ -32,8 +32,8 @@ func AllOrders(namespaceName string) K8sWorkloadResult {
 
 func UpdateK8sOrder(data v1.Order) K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
-	orderClient := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
-	_, err := orderClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -42,8 +42,8 @@ func UpdateK8sOrder(data v1.Order) K8sWorkloadResult {
 
 func DeleteK8sOrder(data v1.Order) K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
-	orderClient := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
-	err := orderClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -60,6 +60,16 @@ func DescribeK8sOrder(namespace string, name string) K8sWorkloadResult {
 		return WorkloadResult(nil, string(output))
 	}
 	return WorkloadResult(string(output), nil)
+}
+
+func CreateK8sOrder(data v1.Order) K8sWorkloadResult {
+	kubeProvider := NewKubeProviderCertManager()
+	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sOrder() K8sNewWorkload {

@@ -33,8 +33,8 @@ func AllPriorityClasses(namespaceName string) K8sWorkloadResult {
 
 func UpdateK8sPriorityClass(data v1.PriorityClass) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	pcClient := kubeProvider.ClientSet.SchedulingV1().PriorityClasses()
-	_, err := pcClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	client := kubeProvider.ClientSet.SchedulingV1().PriorityClasses()
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -43,8 +43,8 @@ func UpdateK8sPriorityClass(data v1.PriorityClass) K8sWorkloadResult {
 
 func DeleteK8sPriorityClass(data v1.PriorityClass) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	pcClient := kubeProvider.ClientSet.SchedulingV1().PriorityClasses()
-	err := pcClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.SchedulingV1().PriorityClasses()
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -61,6 +61,16 @@ func DescribeK8sPriorityClass(name string) K8sWorkloadResult {
 		return WorkloadResult(nil, string(output))
 	}
 	return WorkloadResult(string(output), nil)
+}
+
+func CreateK8sPriorityClass(data v1.PriorityClass) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.SchedulingV1().PriorityClasses()
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sPriorityClass() K8sNewWorkload {

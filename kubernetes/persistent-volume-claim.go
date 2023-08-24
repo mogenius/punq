@@ -44,8 +44,8 @@ func AllK8sPersistentVolumeClaims(namespaceName string) K8sWorkloadResult {
 
 func UpdateK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	pvcClient := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
-	_, err := pvcClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	client := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -54,8 +54,8 @@ func UpdateK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) K8sWorkload
 
 func DeleteK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	pvcClient := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
-	err := pvcClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -72,6 +72,16 @@ func DescribeK8sPersistentVolumeClaim(namespace string, name string) K8sWorkload
 		return WorkloadResult(nil, string(output))
 	}
 	return WorkloadResult(string(output), nil)
+}
+
+func CreateK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sPersistentVolumeClaim() K8sNewWorkload {

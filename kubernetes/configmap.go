@@ -61,8 +61,8 @@ func AllK8sConfigmaps(namespaceName string) K8sWorkloadResult {
 
 func UpdateK8sConfigMap(data v1.ConfigMap) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	configmapClient := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
-	_, err := configmapClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		logger.Log.Errorf("UpdateK8sConfigMap ERROR: %s", err.Error())
 		return WorkloadResult(nil, err)
@@ -72,8 +72,8 @@ func UpdateK8sConfigMap(data v1.ConfigMap) K8sWorkloadResult {
 
 func DeleteK8sConfigmap(data v1.ConfigMap) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	configmapClient := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
-	err := configmapClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		logger.Log.Errorf("DeleteK8sConfigmap ERROR: %s", err.Error())
 		return WorkloadResult(nil, err)
@@ -91,6 +91,16 @@ func DescribeK8sConfigmap(namespace string, name string) K8sWorkloadResult {
 		return WorkloadResult(nil, string(output))
 	}
 	return WorkloadResult(string(output), nil)
+}
+
+func CreateK8sConfigMap(data v1.ConfigMap) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sConfigmap() K8sNewWorkload {

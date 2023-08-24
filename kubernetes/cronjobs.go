@@ -33,8 +33,8 @@ func AllCronjobs(namespaceName string) K8sWorkloadResult {
 
 func UpdateK8sCronJob(data v1.CronJob) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	cronJobClient := kubeProvider.ClientSet.BatchV1().CronJobs(data.Namespace)
-	_, err := cronJobClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	client := kubeProvider.ClientSet.BatchV1().CronJobs(data.Namespace)
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -43,8 +43,8 @@ func UpdateK8sCronJob(data v1.CronJob) K8sWorkloadResult {
 
 func DeleteK8sCronJob(data v1job.CronJob) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	jobClient := kubeProvider.ClientSet.BatchV1().CronJobs(data.Namespace)
-	err := jobClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.BatchV1().CronJobs(data.Namespace)
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -61,6 +61,16 @@ func DescribeK8sCronJob(namespace string, name string) K8sWorkloadResult {
 		return WorkloadResult(nil, string(output))
 	}
 	return WorkloadResult(string(output), nil)
+}
+
+func CreateK8sCronJob(data v1.CronJob) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.BatchV1().CronJobs(data.Namespace)
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sCronJob() K8sNewWorkload {

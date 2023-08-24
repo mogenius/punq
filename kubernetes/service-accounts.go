@@ -33,8 +33,8 @@ func AllServiceAccounts(namespaceName string) K8sWorkloadResult {
 
 func UpdateK8sServiceAccount(data v1.ServiceAccount) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	roleClient := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
-	_, err := roleClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -43,8 +43,8 @@ func UpdateK8sServiceAccount(data v1.ServiceAccount) K8sWorkloadResult {
 
 func DeleteK8sServiceAccount(data v1.ServiceAccount) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	roleClient := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
-	err := roleClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -61,6 +61,16 @@ func DescribeK8sServiceAccount(namespace string, name string) K8sWorkloadResult 
 		return WorkloadResult(nil, string(output))
 	}
 	return WorkloadResult(string(output), nil)
+}
+
+func CreateK8sServiceAccount(data v1.ServiceAccount) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sServiceAccount() K8sNewWorkload {

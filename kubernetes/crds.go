@@ -58,6 +58,16 @@ func DescribeK8sCustomResourceDefinition(name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
+// func CreateK8sCustomResourceDefinition(data v1.ConfigMap) K8sWorkloadResult {
+// 	kubeProvider := NewKubeProvider()
+// 	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
+// 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+// 	if err != nil {
+// 		return WorkloadResult(nil, err)
+// 	}
+// 	return WorkloadResult(nil, nil)
+// }
+
 func NewK8sCustomResourceDefinition() K8sNewWorkload {
 	return NewWorkload(
 		RES_CUSTOM_RESOURCE_DEFINITIONS,

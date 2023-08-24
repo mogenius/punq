@@ -3,9 +3,11 @@ package kubernetes
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/jedib0t/go-pretty/table"
 	"github.com/mogenius/punq/version"
 
 	"github.com/mogenius/punq/utils"
@@ -63,6 +65,45 @@ const (
 	RES_RESOURCEQUOTAS              string = "resourcequotas"
 )
 
+var ALL_RESOURCES []string = []string{
+	RES_NAMESPACE,
+	RES_POD,
+	RES_DEPLOYMENT,
+	RES_SERVICE,
+	RES_INGRESS,
+	RES_CONFIGMAP,
+	RES_SECRET,
+	RES_NODE,
+	RES_DAEMON_SET,
+	RES_STATEFUL_SET,
+	RES_JOB,
+	RES_CRON_JOB,
+	RES_REPLICA_SET,
+	RES_PERSISTENT_VOLUME,
+	RES_PERSISTENT_VOLUME_CLAIM,
+	RES_HORIZONTAL_POD_AUTOSCALER,
+	RES_EVENT,
+	RES_CERTIFICATE,
+	RES_CERTIFICATE_REQUEST,
+	RES_ORDER,
+	RES_ISSUER,
+	RES_CLUSTER_ISSUER,
+	RES_SERVICE_ACCOUNT,
+	RES_ROLE,
+	RES_ROLE_BINDING,
+	RES_CLUSTER_ROLE,
+	RES_CLUSTER_ROLE_BINDING,
+	RES_VOLUME_ATTACHMENT,
+	RES_NETWORK_POLICY,
+	RES_STORAGECLASS,
+	RES_CUSTOM_RESOURCE_DEFINITIONS,
+	RES_ENDPOINTS,
+	RES_LEASES,
+	RES_PRIORITYCLASSES,
+	RES_VOLUMESNAPSHOTS,
+	RES_RESOURCEQUOTAS,
+}
+
 var (
 	DEPLOYMENTIMAGE = fmt.Sprintf("ghcr.io/mogenius/%s:v%s", version.Name, version.Ver)
 
@@ -93,6 +134,18 @@ type MogeniusNfsInstallationStatus struct {
 type KubeProviderMetrics struct {
 	ClientSet    *metricsv.Clientset
 	ClientConfig rest.Config
+}
+
+func ListWorkloads() {
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"#", "Name"})
+	for index, resource := range ALL_RESOURCES {
+		t.AppendRow(
+			table.Row{index + 1, resource},
+		)
+	}
+	t.Render()
 }
 
 func WorkloadResult(result interface{}, error interface{}) K8sWorkloadResult {
@@ -363,4 +416,10 @@ func ListCreateTemplates() []K8sNewWorkload {
 		NewK8sVolumeAttachment())
 
 	return result
+}
+
+func ListTemplatesTerminal() {
+	for _, template := range ListCreateTemplates() {
+		structs.PrettyPrint(template)
+	}
 }

@@ -13,8 +13,8 @@ import (
 
 func UpdateK8sDeployment(data v1.Deployment) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	deploymentClient := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
-	_, err := deploymentClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -23,8 +23,8 @@ func UpdateK8sDeployment(data v1.Deployment) K8sWorkloadResult {
 
 func DeleteK8sDeployment(data v1.Deployment) K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
-	deploymentClient := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
-	err := deploymentClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -77,6 +77,16 @@ func DescribeK8sDeployment(namespace string, name string) K8sWorkloadResult {
 		return WorkloadResult(nil, string(output))
 	}
 	return WorkloadResult(string(output), nil)
+}
+
+func CreateK8sDeployment(data v1.Deployment) K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
+	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
 }
 
 func NewK8sDeployment() K8sNewWorkload {
