@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	gin "github.com/gin-gonic/gin"
+	"github.com/mogenius/punq/kubernetes"
 )
 
 const (
@@ -39,4 +40,18 @@ func NotFound(c *gin.Context, msg string) {
 	c.JSON(http.StatusNotFound, gin.H{
 		"err": msg,
 	})
+}
+
+func MalformedMessage(c *gin.Context, msg string) {
+	c.JSON(http.StatusBadRequest, gin.H{
+		"err": msg,
+	})
+}
+
+func RespondForWorkloadResult(c *gin.Context, workloadResult kubernetes.K8sWorkloadResult) {
+	if workloadResult.Error == nil {
+		c.JSON(http.StatusOK, workloadResult)
+	} else {
+		c.JSON(http.StatusBadRequest, workloadResult)
+	}
 }

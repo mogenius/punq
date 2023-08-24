@@ -3,11 +3,14 @@ package kubernetes
 import (
 	"bytes"
 	"context"
+	"os"
 	"os/exec"
 	"sort"
 	"strings"
 	"text/template"
+	"time"
 
+	"github.com/jedib0t/go-pretty/table"
 	"github.com/mogenius/punq/utils"
 
 	"github.com/mogenius/punq/logger"
@@ -88,7 +91,7 @@ func ServicePodStatus(namespace string, serviceName string) []v1.Pod {
 
 	pods, err := podClient.List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		logger.Log.Error("ServicePodStatus Error: %s", err.Error())
+		logger.Log.Errorf("ServicePodStatus Error: %s", err.Error())
 		return result
 	}
 
@@ -101,6 +104,18 @@ func ServicePodStatus(namespace string, serviceName string) []v1.Pod {
 	}
 
 	return result
+}
+
+func GetPod(namespace string, podName string) *v1.Pod {
+	kubeProvider := NewKubeProvider()
+
+	client := kubeProvider.ClientSet.CoreV1().Pods(namespace)
+	pod, err := client.Get(context.TODO(), podName, metav1.GetOptions{})
+	if err != nil {
+		logger.Log.Errorf("GetPod Error: %s", err.Error())
+		return nil
+	}
+	return pod
 }
 
 func PodExists(namespace string, name string) ServicePodExistsResult {
@@ -250,4 +265,17 @@ func filterStatus(pod *v1.Pod) {
 	pod.ManagedFields = nil
 	pod.ObjectMeta = metav1.ObjectMeta{}
 	pod.Spec = v1.PodSpec{}
+}
+
+func ListPodsTerminal(namespace string) {
+	pods := AllPods(namespace)
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"#", "Namespace", "Name", "Ready", "Status", "Restarts", "Age"})
+	for index, pod := range pods {
+		t.AppendRow(
+			table.Row{index + 1, pod.Namespace, pod.Name, pod.Status.ContainerStatuses[0].Ready, pod.Status.Phase, pod.Status.ContainerStatuses[0].RestartCount, utils.JsonStringToHumanDuration(pod.Status.StartTime.Format(time.RFC3339))},
+		)
+	}
+	t.Render()
 }

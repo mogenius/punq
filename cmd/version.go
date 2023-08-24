@@ -14,8 +14,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var checkForUpdates bool
-
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",

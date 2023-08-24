@@ -14,8 +14,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var ingressHostname string
-
 // installCmd represents the install command
 var installCmd = &cobra.Command{
 	Use:   "install",

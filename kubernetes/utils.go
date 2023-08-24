@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"time"
 
 	"github.com/jedib0t/go-pretty/table"
@@ -148,10 +149,14 @@ func ListWorkloads() {
 	t.Render()
 }
 
-func WorkloadResult(result interface{}, error interface{}) K8sWorkloadResult {
+func WorkloadResult(result interface{}, err interface{}) K8sWorkloadResult {
+	fmt.Println(reflect.TypeOf(err))
+	if fmt.Sprint(reflect.TypeOf(err)) == "*errors.errorString" {
+		err = err.(error).Error()
+	}
 	return K8sWorkloadResult{
 		Result: result,
-		Error:  error,
+		Error:  err,
 	}
 }
 

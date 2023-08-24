@@ -12,10 +12,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var filePath string
-var contextId string
-var accessLevel string
-
 var contextCmd = &cobra.Command{
 	Use:   "context",
 	Short: "Manage punq contexts.",

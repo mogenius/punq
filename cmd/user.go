@@ -11,12 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var email string
-var password string
-var displayName string
-var userId string
-var showPasswords bool
-
 var userCmd = &cobra.Command{
 	Use:   "user",
 	Short: "Manage punq users.",

@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/mogenius/punq/kubernetes"
+	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
 	"github.com/spf13/cobra"
 )
@@ -34,9 +37,56 @@ var listTemplatesCmd = &cobra.Command{
 	},
 }
 
+var podsCmd = &cobra.Command{
+	Use:   "pods",
+	Short: "pods related commands.",
+	Long:  `Similar to kubectl, punq can list workloads in an orderly fashion.`,
+}
+var podsListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List pods.",
+	Long:  `Similar to kubectl, punq can list workloads in an orderly fashion.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		utils.InitConfigYaml(false, nil, false)
+
+		kubernetes.ListPodsTerminal(namespace)
+	},
+}
+
+var podDeleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "Delete pod.",
+	Long:  `Similar to kubectl, punq can delete workloads in an orderly fashion.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		utils.InitConfigYaml(false, nil, false)
+
+		if namespace == "" {
+			logger.Log.Fatal("-namespace cannot be empty.")
+		}
+		if resource == "" {
+			logger.Log.Fatal("-resource cannot be empty.")
+		}
+
+		pod := kubernetes.GetPod(namespace, resource)
+		if pod != nil {
+			kubernetes.DeleteK8sPod(*pod)
+		} else {
+			fmt.Printf("Pod %s/%s not found.\n", namespace, resource)
+		}
+	},
+}
+
 func init() {
 	workloadCmd.AddCommand(listWorkloadsCmd)
 	workloadCmd.AddCommand(listTemplatesCmd)
+
+	workloadCmd.AddCommand(podsCmd)
+	podsCmd.AddCommand(podsListCmd)
+	podsListCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
+	podsListCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
+	podsCmd.AddCommand(podDeleteCmd)
+	podDeleteCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
+	podDeleteCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
 
 	rootCmd.AddCommand(workloadCmd)
 }

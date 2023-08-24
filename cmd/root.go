@@ -7,6 +7,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var namespace string
+var resource string
+var checkForUpdates bool
+var email string
+var password string
+var displayName string
+var userId string
+var showPasswords bool
+var ingressHostname string
+var filePath string
+var contextId string
+var accessLevel string
+
 var rootCmd = &cobra.Command{
 	Use:   "github.com/mogenius/punq",
 	Short: "Collect traffic data using pcap from a machine.",
