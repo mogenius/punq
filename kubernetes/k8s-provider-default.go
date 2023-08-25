@@ -22,9 +22,9 @@ func NewKubeProvider() *KubeProvider {
 	var kubeProvider *KubeProvider
 	var err error
 	if utils.CONFIG.Kubernetes.RunInCluster {
-		kubeProvider, err = NewKubeProviderInCluster()
+		kubeProvider, err = newKubeProviderInCluster()
 	} else {
-		kubeProvider, err = NewKubeProviderLocal()
+		kubeProvider, err = newKubeProviderLocal()
 	}
 
 	if err != nil {
@@ -33,7 +33,7 @@ func NewKubeProvider() *KubeProvider {
 	return kubeProvider
 }
 
-func NewKubeProviderLocal() (*KubeProvider, error) {
+func newKubeProviderLocal() (*KubeProvider, error) {
 	var kubeconfig string = ""
 	if home := homedir.HomeDir(); home != "" {
 		kubeconfig = filepath.Join(home, ".kube", "config")
@@ -55,7 +55,7 @@ func NewKubeProviderLocal() (*KubeProvider, error) {
 	}, nil
 }
 
-func NewKubeProviderInCluster() (*KubeProvider, error) {
+func newKubeProviderInCluster() (*KubeProvider, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())

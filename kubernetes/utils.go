@@ -21,10 +21,8 @@ import (
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
-	metricsv "k8s.io/metrics/pkg/client/clientset/versioned"
 )
 
 const (
@@ -132,11 +130,6 @@ type MogeniusNfsInstallationStatus struct {
 	IsInstalled bool   `json:"isInstalled"`
 }
 
-type KubeProviderMetrics struct {
-	ClientSet    *metricsv.Clientset
-	ClientConfig rest.Config
-}
-
 func ListWorkloads() {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
@@ -195,11 +188,7 @@ func CurrentContextName() string {
 }
 
 func Hostname() string {
-	provider, error := NewKubeProviderInCluster()
-	if error != nil {
-		fmt.Println("Error:", error)
-	}
-
+	provider := NewKubeProvider()
 	return provider.ClientConfig.Host
 }
 
@@ -253,15 +242,9 @@ func listAllPods() []v1.Pod {
 }
 
 func ListNodes() []v1.Node {
-	var provider *KubeProvider
-	var err error
-	if !utils.CONFIG.Kubernetes.RunInCluster {
-		provider, err = NewKubeProviderLocal()
-	} else {
-		provider, err = NewKubeProviderInCluster()
-	}
-	if err != nil {
-		logger.Log.Errorf("ListNodeMetrics ERROR: %s", err.Error())
+	var provider *KubeProvider = NewKubeProvider()
+	if provider == nil {
+		logger.Log.Errorf("Failed to load kubeprovider.")
 		return []v1.Node{}
 	}
 
@@ -274,15 +257,11 @@ func ListNodes() []v1.Node {
 }
 
 func podStats(pods map[string]v1.Pod) ([]structs.Stats, error) {
-	var provider *KubeProviderMetrics
-	var err error
-	if !utils.CONFIG.Kubernetes.RunInCluster {
-		provider, err = NewKubeProviderMetricsLocal()
-	} else {
-		provider, err = NewKubeProviderMetricsInCluster()
-	}
-	if err != nil {
-		panic(err)
+	var provider *KubeProviderMetrics = NewKubeProviderMetrics()
+	if provider == nil {
+		err := fmt.Errorf("Failed to load kubeprovider.")
+		logger.Log.Errorf(err.Error())
+		return []structs.Stats{}, err
 	}
 
 	podMetricsList, err := provider.ClientSet.MetricsV1beta1().PodMetricses("").List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system,metadata.namespace!=default"})

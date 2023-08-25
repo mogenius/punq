@@ -179,15 +179,9 @@ func AllPodNamesForLabel(namespace string, labelKey string, labelValue string) [
 func PodIdsFor(namespace string, serviceId *string) []string {
 	result := []string{}
 
-	var provider *KubeProviderMetrics
-	var err error
-	if !utils.CONFIG.Kubernetes.RunInCluster {
-		provider, err = NewKubeProviderMetricsLocal()
-	} else {
-		provider, err = NewKubeProviderMetricsInCluster()
-	}
-	if err != nil {
-		logger.Log.Errorf("PodIdsForServiceId ERROR: %s", err.Error())
+	var provider *KubeProviderMetrics = NewKubeProviderMetrics()
+	if provider == nil {
+		logger.Log.Errorf("Failed to load kubeprovider")
 		return result
 	}
 

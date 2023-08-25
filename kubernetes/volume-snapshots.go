@@ -2,42 +2,37 @@ package kubernetes
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
 
-	storage "k8s.io/api/storage/v1"
+	snap "github.com/kubernetes-csi/external-snapshotter/client/v6/apis/volumesnapshot/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllVolumeSnapshots() K8sWorkloadResult {
-	result := []storage.VolumeAttachment{}
+func AllVolumeSnapshots(namespace string) K8sWorkloadResult {
+	result := []snap.VolumeSnapshot{}
 
-	provider := NewKubeProvider()
-	volAttachList, err := provider.ClientSet.StorageV1().VolumeAttachments().List(context.TODO(), metav1.ListOptions{})
+	provider := NewKubeProviderSnapshot()
+	volSnapshotsList, err := provider.ClientSet.SnapshotV1().VolumeSnapshots(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllVolumeSnapshots ERROR: %s", err.Error())
 		return WorkloadResult(nil, err)
 	}
 
-	result = append(result, volAttachList.Items...)
+	result = append(result, volSnapshotsList.Items...)
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sVolumeSnapshot(data storage.VolumeAttachment) K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
-	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
-	if err != nil {
-		return WorkloadResult(nil, err)
-	}
-	return WorkloadResult(nil, nil)
+func UpdateK8sVolumeSnapshot(data snap.VolumeSnapshot) K8sWorkloadResult {
+	return WorkloadResult(nil, fmt.Errorf("UPDATE not available in VolumeSnapshot."))
 }
 
-func DeleteK8sVolumeSnapshot(data storage.VolumeAttachment) K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
-	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
+func DeleteK8sVolumeSnapshot(data snap.VolumeSnapshot) K8sWorkloadResult {
+	kubeProvider := NewKubeProviderSnapshot()
+	client := kubeProvider.ClientSet.SnapshotV1().VolumeSnapshots(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -57,9 +52,9 @@ func DescribeK8sVolumeSnapshot(namespace string, name string) K8sWorkloadResult 
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sVolumeSnapshot(data storage.VolumeAttachment) K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
-	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
+func CreateK8sVolumeSnapshot(data snap.VolumeSnapshot) K8sWorkloadResult {
+	kubeProvider := NewKubeProviderSnapshot()
+	client := kubeProvider.ClientSet.SnapshotV1().VolumeSnapshots(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

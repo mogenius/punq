@@ -22,9 +22,9 @@ func NewKubeProviderCertManager() *KubeProviderCertManager {
 	var kubeProvider *KubeProviderCertManager
 	var err error
 	if utils.CONFIG.Kubernetes.RunInCluster {
-		kubeProvider, err = NewKubeProviderCertManagerInCluster()
+		kubeProvider, err = newKubeProviderCertManagerInCluster()
 	} else {
-		kubeProvider, err = NewKubeProviderCertManagerLocal()
+		kubeProvider, err = newKubeProviderCertManagerLocal()
 	}
 
 	if err != nil {
@@ -33,7 +33,7 @@ func NewKubeProviderCertManager() *KubeProviderCertManager {
 	return kubeProvider
 }
 
-func NewKubeProviderCertManagerLocal() (*KubeProviderCertManager, error) {
+func newKubeProviderCertManagerLocal() (*KubeProviderCertManager, error) {
 	var kubeconfig string = ""
 	if home := homedir.HomeDir(); home != "" {
 		kubeconfig = filepath.Join(home, ".kube", "config")
@@ -55,7 +55,7 @@ func NewKubeProviderCertManagerLocal() (*KubeProviderCertManager, error) {
 	}, nil
 }
 
-func NewKubeProviderCertManagerInCluster() (*KubeProviderCertManager, error) {
+func newKubeProviderCertManagerInCluster() (*KubeProviderCertManager, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())

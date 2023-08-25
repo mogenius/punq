@@ -96,20 +96,20 @@ func InitConfigYaml(showDebug bool, customConfigName *string, loadClusterConfig 
 }
 
 func PrintSettings() {
-	logger.Log.Infof("BROWSER")
-	logger.Log.Infof("Host:                     %s", CONFIG.Browser.Host)
-	logger.Log.Infof("Port:                     %s", CONFIG.Browser.Port)
+	fmt.Printf("BROWSER\n")
+	fmt.Printf("Host:                     %s\n", CONFIG.Browser.Host)
+	fmt.Printf("Port:                     %s\n", CONFIG.Browser.Port)
 
-	logger.Log.Infof("KUBERNETES")
-	logger.Log.Infof("ClusterName:              %s", CONFIG.Kubernetes.ClusterName)
-	logger.Log.Infof("OwnNamespace:             %s", CONFIG.Kubernetes.OwnNamespace)
-	logger.Log.Infof("RunInCluster:             %t", CONFIG.Kubernetes.RunInCluster)
+	fmt.Printf("\nKUBERNETES\n")
+	fmt.Printf("ClusterName:              %s\n", CONFIG.Kubernetes.ClusterName)
+	fmt.Printf("OwnNamespace:             %s\n", CONFIG.Kubernetes.OwnNamespace)
+	fmt.Printf("RunInCluster:             %t\n", CONFIG.Kubernetes.RunInCluster)
 
-	logger.Log.Infof("MISC")
-	logger.Log.Infof("Stage:                    %s", CONFIG.Misc.Stage)
-	logger.Log.Infof("Debug:                    %t", CONFIG.Misc.Debug)
-	logger.Log.Infof("CheckForUpdates:          %d", CONFIG.Misc.CheckForUpdates)
-	logger.Log.Infof("IgnoreNamespaces:         %s", strings.Join(CONFIG.Misc.IgnoreNamespaces, ","))
+	fmt.Printf("\nMISC\n")
+	fmt.Printf("Stage:                    %s\n", CONFIG.Misc.Stage)
+	fmt.Printf("Debug:                    %t\n", CONFIG.Misc.Debug)
+	fmt.Printf("CheckForUpdates:          %d\n", CONFIG.Misc.CheckForUpdates)
+	fmt.Printf("IgnoreNamespaces:         %s\n\n", strings.Join(CONFIG.Misc.IgnoreNamespaces, ","))
 }
 
 func PrintVersionInfo() {

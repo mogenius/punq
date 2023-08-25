@@ -90,7 +90,7 @@ func DescribeK8sCertificate(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sCertificated(data cmapi.Certificate) K8sWorkloadResult {
+func CreateK8sCertificate(data cmapi.Certificate) K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.CertmanagerV1().Certificates(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

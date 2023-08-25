@@ -27,16 +27,16 @@ import (
 )
 
 func Deploy(clusterName string, ingressHostname string) {
-	provider, err := NewKubeProviderLocal()
-	if err != nil {
-		panic(err)
+	provider := NewKubeProvider()
+	if provider == nil {
+		logger.Log.Fatal("Failed to load kubeprovider.")
 	}
 
 	applyNamespace(provider)
 	addRbac(provider)
 	addDeployment(provider)
 
-	_, err = CreateClusterSecretIfNotExist(provider)
+	_, err := CreateClusterSecretIfNotExist(provider)
 	if err != nil {
 		logger.Log.Fatalf("Error creating cluster secret. Aborting: %s.", err.Error())
 	}
@@ -54,7 +54,7 @@ func Deploy(clusterName string, ingressHostname string) {
 		logger.Log.Fatalf("Error creating context secret. Aborting: %s.", err.Error())
 	}
 	if adminUser != nil {
-		logger.Log.Infof("Contexts saved (%d bytes).", len(ownContext.ContextBase64))
+		fmt.Println("Contexts saved (%d bytes).", len(ownContext.ContextBase64))
 	}
 
 	if ingressHostname != "" {
@@ -62,11 +62,11 @@ func Deploy(clusterName string, ingressHostname string) {
 		addIngress(provider, ingressHostname)
 	}
 
-	logger.Log.Noticef("🚀🚀🚀 Successfuly installed punq in '%s'.", clusterName)
+	fmt.Printf("\n🚀🚀🚀 Successfuly installed punq in '%s'.\n\n", clusterName)
 }
 
 func addService(provider *KubeProvider) {
-	logger.Log.Infof("Creating punq service ...")
+	fmt.Println("Creating punq service ...")
 
 	punqService := utils.InitPunqService()
 	punqService.ObjectMeta.Name = SERVICENAME
@@ -83,11 +83,11 @@ func addService(provider *KubeProvider) {
 		logger.Log.Fatalf("Service Creation Err: %s", err.Error())
 	}
 
-	logger.Log.Infof("Created punq service.")
+	fmt.Println("Created punq service. ✅")
 }
 
 func addIngress(provider *KubeProvider, ingressHostname string) {
-	logger.Log.Infof("Creating punq ingress (%s) ...", ingressHostname)
+	fmt.Printf("Creating punq ingress (%s) ...\n", ingressHostname)
 
 	punqIngress := utils.InitPunqIngress()
 	punqIngress.ObjectMeta.Name = INGRESSNAME
@@ -101,7 +101,7 @@ func addIngress(provider *KubeProvider, ingressHostname string) {
 		logger.Log.Fatalf("Ingress Creation Err: %s", err.Error())
 	}
 
-	logger.Log.Infof("Created punq ingress (%s).", ingressHostname)
+	fmt.Printf("Created punq ingress (%s). ✅\n", ingressHostname)
 }
 
 func addRbac(kubeProvider *KubeProvider) error {
@@ -141,7 +141,7 @@ func addRbac(kubeProvider *KubeProvider) error {
 	}
 
 	// CREATE RBAC
-	logger.Log.Info("Creating punq RBAC ...")
+	fmt.Println("Creating punq RBAC ...")
 	_, err := kubeProvider.ClientSet.CoreV1().ServiceAccounts(utils.CONFIG.Kubernetes.OwnNamespace).Create(context.TODO(), serviceAccount, MoCreateOptions())
 	if err != nil && !k8serrors.IsAlreadyExists(err) {
 		return err
@@ -154,7 +154,7 @@ func addRbac(kubeProvider *KubeProvider) error {
 	if err != nil && !k8serrors.IsAlreadyExists(err) {
 		return err
 	}
-	logger.Log.Info("Created punq RBAC.")
+	fmt.Println("Created punq RBAC. ✅")
 	return nil
 }
 
@@ -168,12 +168,12 @@ func applyNamespace(kubeProvider *KubeProvider) {
 		FieldManager: version.Name,
 	}
 
-	logger.Log.Info("Creating punq namespace ...")
-	result, err := serviceClient.Apply(context.TODO(), namespace, applyOptions)
+	fmt.Println("Creating punq namespace ...")
+	_, err := serviceClient.Apply(context.TODO(), namespace, applyOptions)
 	if err != nil {
 		logger.Log.Error(err)
 	}
-	logger.Log.Info("Created punq namespace", result.GetObjectMeta().GetName())
+	fmt.Println("Created punq namespace. ✅")
 }
 
 func CreateClusterSecretIfNotExist(kubeProvider *KubeProvider) (utils.ClusterSecret, error) {
@@ -200,30 +200,30 @@ func writePunqSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 
 	if existingSecret == nil || getErr != nil {
 		logger.Log.Info("Creating new punq secret ...")
-		result, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
+		_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
 		if err != nil {
 			logger.Log.Error(err)
 			return clusterSecret, err
 		}
-		logger.Log.Info("Created new punq secret", result.GetObjectMeta().GetName())
+		fmt.Println("Created new punq secret. ✅")
 	} else {
 		if string(existingSecret.Data["api-key"]) != clusterSecret.ApiKey ||
 			string(existingSecret.Data["cluster-name"]) != clusterSecret.ClusterName {
-			logger.Log.Info("Updating existing punq secret ...")
+			fmt.Println("Updating existing punq secret ...")
 			// keep existing mfa-id if possible
 			if string(existingSecret.Data["cluster-mfa-id"]) != "" {
 				clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
 				secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
 			}
-			result, err := secretClient.Update(context.TODO(), &secret, MoUpdateOptions())
+			_, err := secretClient.Update(context.TODO(), &secret, MoUpdateOptions())
 			if err != nil {
 				logger.Log.Error(err)
 				return clusterSecret, err
 			}
-			logger.Log.Info("Updated punq secret", result.GetObjectMeta().GetName())
+			fmt.Println("Updated punq secret. ✅")
 		} else {
 			clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
-			logger.Log.Info("Using existing punq secret.")
+			fmt.Println("Using existing punq secret. ✅")
 		}
 	}
 
@@ -259,13 +259,13 @@ func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 	secret.StringData[utils.USERADMIN] = string(rawAdmin)
 
 	if existingSecret == nil || getErr != nil {
-		logger.Log.Info("Creating new punq-user secret ...")
-		result, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
+		fmt.Println("Creating new punq-user secret ...")
+		_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
 		if err != nil {
 			logger.Log.Error(err)
 			return nil, err
 		}
-		logger.Log.Info("Created new punq-user secret", result.GetObjectMeta().GetName())
+		fmt.Println("Created new punq-user secret. ✅")
 		return &adminUser, nil
 	}
 	return nil, nil
@@ -304,13 +304,13 @@ func writeContextSecret(secretClient v1.SecretInterface, existingSecret *core.Se
 		secret.StringData[utils.CONTEXTOWN] = string(rawAdmin)
 
 		if existingSecret == nil || getErr != nil {
-			logger.Log.Info("Creating new punq-context secret ...")
+			fmt.Println("Creating new punq-context secret ...")
 			_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
 			if err != nil {
 				logger.Log.Error(err)
 				return nil, err
 			}
-			logger.Log.Infof("Created new punq-context secret.")
+			fmt.Println("Created new punq-context secret. ✅")
 			return &ownContext, nil
 		}
 		return nil, nil
@@ -376,10 +376,10 @@ func addDeployment(kubeProvider *KubeProvider) {
 	deployment.WithSpec(applyconfapp.DeploymentSpec().WithSelector(labelSelector).WithTemplate(podTemplate))
 
 	// Create Deployment
-	logger.Log.Info("Creating punq deployment ...")
-	result, err := deploymentClient.Apply(context.TODO(), deployment, applyOptions)
+	fmt.Println("Creating punq deployment ...")
+	_, err := deploymentClient.Apply(context.TODO(), deployment, applyOptions)
 	if err != nil {
 		logger.Log.Error(err)
 	}
-	logger.Log.Info("Created punq deployment.", result.GetObjectMeta().GetName())
+	fmt.Println("Created punq deployment. ✅")
 }

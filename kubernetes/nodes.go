@@ -7,7 +7,6 @@ import (
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
-	"github.com/mogenius/punq/utils"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -41,15 +40,10 @@ func GetNodeStats() []dtos.NodeStat {
 }
 
 func ListK8sNodes() K8sWorkloadResult {
-	var provider *KubeProvider
-	var err error
-	if !utils.CONFIG.Kubernetes.RunInCluster {
-		provider, err = NewKubeProviderLocal()
-	} else {
-		provider, err = NewKubeProviderInCluster()
-	}
-	if err != nil {
-		logger.Log.Errorf("ListNodeMetrics ERROR: %s", err.Error())
+	var provider *KubeProvider = NewKubeProvider()
+	if provider == nil {
+		err := fmt.Errorf("Failed to load kubeprovider.")
+		logger.Log.Errorf(err.Error())
 		return WorkloadResult(nil, err)
 	}
 

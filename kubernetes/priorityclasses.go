@@ -13,7 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllPriorityClasses(namespaceName string) K8sWorkloadResult {
+func AllPriorityClasses() K8sWorkloadResult {
 	result := []v1.PriorityClass{}
 
 	provider := NewKubeProvider()

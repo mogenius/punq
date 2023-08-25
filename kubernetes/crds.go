@@ -6,45 +6,54 @@ import (
 	"github.com/mogenius/punq/utils"
 
 	"github.com/mogenius/punq/logger"
+	apiExt "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions"
 )
 
-// func AllCustomResourceDefinitions(namespaceName string) K8sWorkloadResult {
-// 	result := []apiExt.CustomResourceDefinition{}
+// TODO
 
-// 	provider := NewKubeProvider()
-// 	certificatesList, err := provider.ClientSet.ApiextensionsV1()
-// 	if err != nil {
-// 		logger.Log.Errorf("AllCertificateSigningRequests ERROR: %s", err.Error())
-// 		return WorkloadResult(nil, err)
-// 	}
+func AllCustomResourceDefinitions() K8sWorkloadResult {
+	// TODO
 
-// 	for _, certificate := range certificatesList.Items {
-// 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, certificate.ObjectMeta.Namespace) {
-// 			result = append(result, certificate)
-// 		}
-// 	}
-// 	return WorkloadResult(result, nil)
-// }
+	// 	result := []apiExt.CustomResourceDefinition{}
 
-// func UpdateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) K8sWorkloadResult {
-// 	kubeProvider := NewKubeProvider()
-// 	certificateClient := kubeProvider.ClientSet.Ex.CertificateRequests(data.Namespace)
-// 	_, err := certificateClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
-// 	if err != nil {
-// 		return WorkloadResult(nil, err)
-// 	}
-// 	return WorkloadResult(nil, nil)
-// }
+	// 	provider := NewKubeProvider()
+	// 	certificatesList, err := provider.ClientSet.ApiextensionsV1()
+	// 	if err != nil {
+	// 		logger.Log.Errorf("AllCertificateSigningRequests ERROR: %s", err.Error())
+	// 		return WorkloadResult(nil, err)
+	// 	}
 
-// func DeleteK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) K8sWorkloadResult {
-// 	kubeProvider := NewKubeProvider()
-// 	certificateClient := kubeProvider.ClientSet.
-// 	err := certificateClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
-// 	if err != nil {
-// 		return WorkloadResult(nil, err)
-// 	}
-// 	return WorkloadResult(nil, nil)
-// }
+	// 	for _, certificate := range certificatesList.Items {
+	// 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, certificate.ObjectMeta.Namespace) {
+	// 			result = append(result, certificate)
+	// 		}
+	// 	}
+	return WorkloadResult(nil, nil)
+}
+
+func UpdateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) K8sWorkloadResult {
+	// TODO
+
+	// kubeProvider := NewKubeProvider()
+	// certificateClient := kubeProvider.ClientSet.Ex.CertificateRequests(data.Namespace)
+	// _, err := certificateClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	// if err != nil {
+	// 	return WorkloadResult(nil, err)
+	// }
+	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) K8sWorkloadResult {
+	// TODO
+
+	// kubeProvider := NewKubeProvider()
+	// certificateClient := kubeProvider.ClientSet.
+	// err := certificateClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	// if err != nil {
+	// 	return WorkloadResult(nil, err)
+	// }
+	return WorkloadResult(nil, nil)
+}
 
 func DescribeK8sCustomResourceDefinition(name string) K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "crds", name)
@@ -58,15 +67,17 @@ func DescribeK8sCustomResourceDefinition(name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-// func CreateK8sCustomResourceDefinition(data v1.ConfigMap) K8sWorkloadResult {
-// 	kubeProvider := NewKubeProvider()
-// 	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
-// 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
-// 	if err != nil {
-// 		return WorkloadResult(nil, err)
-// 	}
-// 	return WorkloadResult(nil, nil)
-// }
+func CreateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) K8sWorkloadResult {
+	// TODO
+
+	// kubeProvider := NewKubeProvider()
+	// client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
+	// _, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	// if err != nil {
+	// 	return WorkloadResult(nil, err)
+	// }
+	return WorkloadResult(nil, nil)
+}
 
 func NewK8sCustomResourceDefinition() K8sNewWorkload {
 	return NewWorkload(

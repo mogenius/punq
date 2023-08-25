@@ -13,7 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllClusterRoles(namespaceName string) K8sWorkloadResult {
+func AllClusterRoles() K8sWorkloadResult {
 	result := []v1.ClusterRole{}
 
 	provider := NewKubeProvider()

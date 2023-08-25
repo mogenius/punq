@@ -50,8 +50,8 @@ func DeleteK8sCertificateSigningRequest(data cmapi.CertificateRequest) K8sWorklo
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sCertificateSigningRequest(name string) K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "csr", name)
+func DescribeK8sCertificateSigningRequest(namespace string, name string) K8sWorkloadResult {
+	cmd := exec.Command("kubectl", "describe", "-n", namespace, "csr", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

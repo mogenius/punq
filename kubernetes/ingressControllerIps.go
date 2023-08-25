@@ -10,20 +10,16 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/mogenius/punq/logger"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func GetIngressControllerIps(useLocalKubeConfig bool) []net.IP {
 	var result []net.IP
-	var kubeProvider *KubeProvider
-	var err error
-	if useLocalKubeConfig == true {
-		kubeProvider, err = NewKubeProviderLocal()
-	} else {
-		kubeProvider, err = NewKubeProviderInCluster()
-	}
-	if err != nil {
-		panic(err)
+	var kubeProvider *KubeProvider = NewKubeProvider()
+	if kubeProvider == nil {
+		logger.Log.Errorf("Failed to load kubeprovider.")
+		return []net.IP{}
 	}
 
 	labelSelector := fmt.Sprintf("app.kubernetes.io/component=controller,app.kubernetes.io/instance=nginx-ingress,app.kubernetes.io/name=ingress-nginx")

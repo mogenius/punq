@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mogenius/punq/utils"
 	"github.com/mogenius/punq/version"
@@ -13,9 +14,9 @@ import (
 )
 
 func Remove(clusterName string) {
-	provider, err := NewKubeProviderLocal()
-	if err != nil {
-		panic(err)
+	provider := NewKubeProvider()
+	if provider == nil {
+		logger.Log.Fatal("Failed to load kubeprovider.")
 	}
 
 	// namespace is not deleted on purpose
@@ -26,27 +27,27 @@ func Remove(clusterName string) {
 	removeService(provider)
 	removeIngress(provider)
 
-	logger.Log.Noticef("🚀🚀🚀 Successfuly uninstalled punq from '%s'.", clusterName)
+	fmt.Printf("\n🚀🚀🚀 Successfuly uninstalled punq from '%s'.\n\n", clusterName)
 }
 
 func removeDeployment(kubeProvider *KubeProvider) {
 	deploymentClient := kubeProvider.ClientSet.AppsV1().Deployments(utils.CONFIG.Kubernetes.OwnNamespace)
 
 	// DELETE Deployment
-	logger.Log.Infof("Deleting %s deployment ...", version.Name)
+	fmt.Printf("Deleting %s deployment ...\n", version.Name)
 	deletePolicy := metav1.DeletePropagationForeground
 	err := deploymentClient.Delete(context.TODO(), version.Name, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
 		logger.Log.Error(err)
 		return
 	}
-	logger.Log.Infof("Deleted %s deployment.", version.Name)
+	fmt.Printf("Deleted %s deployment. ✅\n", version.Name)
 }
 
 func removeService(kubeProvider *KubeProvider) {
 	serviceClient := kubeProvider.ClientSet.CoreV1().Services(utils.CONFIG.Kubernetes.OwnNamespace)
 
-	logger.Log.Infof("Deleting %s service ...", SERVICENAME)
+	fmt.Printf("Deleting %s service ...\n", SERVICENAME)
 	deletePolicy := metav1.DeletePropagationForeground
 	err := serviceClient.Delete(context.TODO(), SERVICENAME, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
@@ -55,13 +56,13 @@ func removeService(kubeProvider *KubeProvider) {
 			return
 		}
 	}
-	logger.Log.Infof("Deleted %s service.", SERVICENAME)
+	fmt.Printf("Deleted %s service. ✅\n", SERVICENAME)
 }
 
 func removeIngress(kubeProvider *KubeProvider) {
 	ingressClient := kubeProvider.ClientSet.NetworkingV1().Ingresses(utils.CONFIG.Kubernetes.OwnNamespace)
 
-	logger.Log.Infof("Deleting %s ingress ...", INGRESSNAME)
+	fmt.Printf("Deleting %s ingress ...\n", INGRESSNAME)
 	deletePolicy := metav1.DeletePropagationForeground
 	err := ingressClient.Delete(context.TODO(), INGRESSNAME, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
@@ -70,12 +71,12 @@ func removeIngress(kubeProvider *KubeProvider) {
 			return
 		}
 	}
-	logger.Log.Infof("Deleted %s ingress.", INGRESSNAME)
+	fmt.Printf("Deleted %s ingress. ✅\n", INGRESSNAME)
 }
 
 func removeRbac(kubeProvider *KubeProvider) {
 	// CREATE RBAC
-	logger.Log.Infof("Deleting %s RBAC ...", version.Name)
+	fmt.Printf("Deleting %s RBAC ...\n", version.Name)
 	err := kubeProvider.ClientSet.CoreV1().ServiceAccounts(utils.CONFIG.Kubernetes.OwnNamespace).Delete(context.TODO(), SERVICEACCOUNTNAME, metav1.DeleteOptions{})
 	if err != nil {
 		logger.Log.Error(err)
@@ -91,31 +92,31 @@ func removeRbac(kubeProvider *KubeProvider) {
 		logger.Log.Error(err)
 		return
 	}
-	logger.Log.Infof("Deleted %s RBAC.", version.Name)
+	fmt.Printf("Deleted %s RBAC. ✅\n", version.Name)
 }
 
 func removeUsersSecret(kubeProvider *KubeProvider) {
 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
 
-	logger.Log.Infof("Deleting %s/%s secret ...", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	fmt.Printf("Deleting %s/%s secret ...\n", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	deletePolicy := metav1.DeletePropagationForeground
 	err := secretClient.Delete(context.TODO(), utils.USERSSECRET, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
 		logger.Log.Error(err)
 		return
 	}
-	logger.Log.Infof("Deleted %s/%s secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	fmt.Printf("Deleted %s/%s secret. ✅\n", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 }
 
 func removeContextsSecret(kubeProvider *KubeProvider) {
 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
 
-	logger.Log.Infof("Deleting %s/%s secret ...", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
+	fmt.Printf("Deleting %s/%s secret ...\n", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 	deletePolicy := metav1.DeletePropagationForeground
 	err := secretClient.Delete(context.TODO(), utils.CONTEXTSSECRET, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
 		logger.Log.Error(err)
 		return
 	}
-	logger.Log.Infof("Deleted %s/%s secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
+	fmt.Printf("Deleted %s/%s secret. ✅\n", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 }
