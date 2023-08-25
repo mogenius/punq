@@ -35,8 +35,8 @@ jobs:
         run: |
           VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "${{ env.VERSION }}"
-          gh release create refs/tags/${{ env.VERSION }} --title "Release ${{ env.VERSION }}" --repo mogenius/punq
+          echo "$VERSION"
+          gh release create refs/tags/"$VERSION" --title "Release $VERSION" --repo mogenius/punq
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
