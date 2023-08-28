@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var useClusterConfig bool
 var debug bool
 var customConfig string
 var namespace string
@@ -24,13 +25,15 @@ var contextId string
 var accessLevel string
 
 var rootCmd = &cobra.Command{
-	Use:   "github.com/mogenius/punq",
+	Use:   "punq",
 	Short: "Collect traffic data using pcap from a machine.",
 	Long:  `Use punq to manage the workloads of your kubernetes clusters relatively neat. 🚀`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		utils.InitConfigYaml(debug, customConfig, useClusterConfig)
+	},
 }
 
 func Execute() {
-	utils.InitConfigYaml(debug, customConfig)
 
 	cc.Init(&cc.Config{
 		RootCmd:  rootCmd,
@@ -48,6 +51,7 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.PersistentFlags().BoolVarP(&useClusterConfig, "use-cluster-config", "x", false, "Load different default config to run in cluster")
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug information")
-	rootCmd.PersistentFlags().StringVarP(&customConfig, "config", "c", "", "Use config from custom location")
+	rootCmd.PersistentFlags().StringVarP(&customConfig, "config", "y", "", "Use config from custom location")
 }

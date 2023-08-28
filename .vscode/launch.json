@@ -30,6 +30,16 @@
             "args": ["clean"],
             "asRoot": false,
             "console": "integratedTerminal"
+        },
+        {
+            "name": "config test",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["-y", "lalala", "-x", "info"],
+            "asRoot": false,
+            "console": "integratedTerminal"
         }
     ]
 }

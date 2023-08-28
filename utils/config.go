@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/mogenius/punq/version"
@@ -49,14 +50,18 @@ var DefaultConfigFileProd string
 var CONFIG Config
 var ConfigPath string
 
-func InitConfigYaml(showDebug bool, customConfigName string) {
+func InitConfigYaml(showDebug bool, customConfigName string, useInClusterConfig bool) {
 	_, configPath := GetDirectories(customConfigName)
 	ConfigPath = configPath
 
-	if _, err := os.Stat(configPath); err == nil || os.IsExist(err) {
-		// do nothing, file exists
+	if useInClusterConfig {
+		WriteDefaultConfig(useInClusterConfig)
 	} else {
-		WriteDefaultConfig()
+		if _, err := os.Stat(configPath); err == nil || os.IsExist(err) {
+			// do nothing, file exists
+		} else {
+			WriteDefaultConfig(useInClusterConfig)
+		}
 	}
 
 	// read configuration from the file and environment variables
@@ -123,26 +128,28 @@ func PrintVersionInfo() {
 	logger.Log.Infof("BuildAt:     %s", version.BuildTimestamp)
 }
 
-func GetDirectories(customConfigName string) (configDir string, configPath string) {
+func GetDirectories(customConfigPath string) (configDir string, configPath string) {
 	homeDirName, err := os.UserHomeDir()
 	if err != nil {
 		logger.Log.Error(err)
 	}
 
-	configDir = homeDirName + "/.punq/"
-	if customConfigName != "" {
-		newConfigName := customConfigName
-		if newConfigName != "" {
-			configPath = configDir + newConfigName
+	if customConfigPath != "" {
+		if _, err := os.Stat(configPath); err == nil || os.IsExist(err) {
+			configPath = customConfigPath
+			configDir = filepath.Dir(customConfigPath)
+		} else {
+			logger.Log.Errorf("Custom config not found '%s'.", customConfigPath)
 		}
 	} else {
+		configDir = homeDirName + "/.punq/"
 		configPath = configDir + "config.yaml"
 	}
 
 	return configDir, configPath
 }
 
-func WriteDefaultConfig() {
+func WriteDefaultConfig(useInClusterConfig bool) {
 	configDir, configPath := GetDirectories("")
 
 	// write it to default location
@@ -154,12 +161,16 @@ func WriteDefaultConfig() {
 
 	stage := strings.ToLower(os.Getenv("STAGE"))
 
-	if stage == "dev" {
-		err = os.WriteFile(configPath, []byte(DefaultConfigFileDev), 0755)
-	} else if stage == "prod" {
+	if useInClusterConfig {
 		err = os.WriteFile(configPath, []byte(DefaultConfigFileProd), 0755)
 	} else {
-		err = os.WriteFile(configPath, []byte(DefaultConfigLocalFile), 0755)
+		if stage == "dev" {
+			err = os.WriteFile(configPath, []byte(DefaultConfigFileDev), 0755)
+		} else if stage == "prod" {
+			err = os.WriteFile(configPath, []byte(DefaultConfigFileProd), 0755)
+		} else {
+			err = os.WriteFile(configPath, []byte(DefaultConfigLocalFile), 0755)
+		}
 	}
 	if err != nil {
 		logger.Log.Error("Error writing " + configPath + " file")
