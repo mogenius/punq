@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.27](https://github.com/mogenius/punq/compare/v1.1.26...v1.1.27) (2023-08-28)
+
 ### [1.1.26](https://github.com/mogenius/punq/compare/v1.1.25...v1.1.26) (2023-08-28)
 
 
