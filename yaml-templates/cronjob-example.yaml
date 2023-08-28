@@ -1,14 +1,31 @@
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: my-cronjob
+  namspace: my-namespace
 spec:
-  schedule: "*/1 * * * *"
+  schedule: "*/5 * * * *"
+  suspend: false
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
+      backoffLimit: 6
+      activeDeadlineSeconds: 600
       template:
+        metadata:
+          labels:
+            app: my-app
+            ns: my-namespace
         spec:
           containers:
-          - name: my-cronjob-container
-            image: my-cronjob-image
+            - name: task
+              image: busybox:latest
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+              args:
+                - -c
+                - date; echo 'Hello World from mogenius'; sleep 10;
           restartPolicy: OnFailure

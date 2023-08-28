@@ -477,6 +477,22 @@ func InitCronJobYaml() string {
 	return string(yaml)
 }
 
+func InitCronJob() v1job.CronJob {
+	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/cronjob-example.yaml")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	s := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
+
+	var app v1job.CronJob
+	_, _, err = s.Decode(yaml, nil, &app)
+	if err != nil {
+		panic(err)
+	}
+	return app
+}
+
 func InitClusterIssuerYaml() string {
 	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/cluster-issuer-example.yaml")
 	if err != nil {
