@@ -22,8 +22,6 @@ var listUserCmd = &cobra.Command{
 	Short: "List punq users.",
 	Long:  `The list command lets you list all users of punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		users := services.ListUsers()
 		dtos.ListUsers(users, showPasswords)
 	},
@@ -34,8 +32,6 @@ var addUserCmd = &cobra.Command{
 	Short: "Add punq user.",
 	Long:  `The add command lets you add a user into punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		if email == "" {
 			logger.Log.Fatal("-email cannot be empty.")
 		}
@@ -68,8 +64,6 @@ var updateUserCmd = &cobra.Command{
 	Short: "Update punq user.",
 	Long:  `The update command lets you update a user in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		if userId == "" {
 			logger.Log.Fatal("Please selecte a userId to update a user.")
 		}
@@ -103,8 +97,6 @@ var deleteUserCmd = &cobra.Command{
 	Short: "Delete punq user.",
 	Long:  `The delete command lets you delete a specific user in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		if userId == "" {
 			logger.Log.Fatal("-userid cannot be empty.")
 		}
@@ -119,8 +111,6 @@ var getUserCmd = &cobra.Command{
 	Short: "Get specific punq user.",
 	Long:  `The get command lets you get a specific user of punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		if userId == "" {
 			logger.Log.Fatal("-userid cannot be empty.")
 		}

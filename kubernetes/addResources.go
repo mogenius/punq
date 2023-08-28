@@ -328,16 +328,18 @@ func addDeployment(kubeProvider *KubeProvider) {
 	deploymentContainer.WithName(version.Name)
 	deploymentContainer.WithImage(DEPLOYMENTIMAGE)
 
-	envVars := []applyconfcore.EnvVarApplyConfiguration{}
-	envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
-		Name:  utils.Pointer("cluster_name"),
-		Value: utils.Pointer("TestClusterFromCode"),
-	})
-	envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
-		Name:  utils.Pointer("api_key"),
-		Value: utils.Pointer("94E23575-A689-4F88-8D67-215A274F4E6E"), // dont worry. this is a test key
-	})
-	deploymentContainer.Env = envVars
+	deploymentContainer.WithPorts(applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Kubernetes.ContainerPort)))
+
+	// envVars := []applyconfcore.EnvVarApplyConfiguration{}
+	// envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
+	// 	Name:  utils.Pointer("cluster_name"),
+	// 	Value: utils.Pointer("TestClusterFromCode"),
+	// })
+	// envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
+	// 	Name:  utils.Pointer("api_key"),
+	// 	Value: utils.Pointer("94E23575-A689-4F88-8D67-215A274F4E6E"), // dont worry. this is a test key
+	// })
+	// deploymentContainer.Env = envVars
 	// agentResourceLimits := core.ResourceList{
 	// 	"cpu":               resource.MustParse("300m"),
 	// 	"memory":            resource.MustParse("256Mi"),

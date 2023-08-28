@@ -5,7 +5,6 @@ import (
 
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/logger"
-	"github.com/mogenius/punq/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -20,8 +19,6 @@ var listWorkloadsCmd = &cobra.Command{
 	Short: "List punq supported workloads.",
 	Long:  `The workloads command lets you list all workloads managed by punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		kubernetes.ListWorkloads()
 	},
 }
@@ -31,8 +28,6 @@ var listTemplatesCmd = &cobra.Command{
 	Short: "List punq supported templates to create workloads.",
 	Long:  `The list-templates command lets you list all workloads which can be created punq using a template.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		kubernetes.ListTemplatesTerminal()
 	},
 }
@@ -47,8 +42,6 @@ var podsListCmd = &cobra.Command{
 	Short: "List pods.",
 	Long:  `Similar to kubectl, punq can list workloads in an orderly fashion.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		kubernetes.ListPodsTerminal(namespace)
 	},
 }
@@ -58,8 +51,6 @@ var podDeleteCmd = &cobra.Command{
 	Short: "Delete pod.",
 	Long:  `Similar to kubectl, punq can delete workloads in an orderly fashion.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		if namespace == "" {
 			logger.Log.Fatal("-namespace cannot be empty.")
 		}

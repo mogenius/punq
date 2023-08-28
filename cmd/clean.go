@@ -22,7 +22,6 @@ var cleanCmd = &cobra.Command{
 	This cmd removes all remaining parts of the daemonset, configs, etc. from your cluster. 
 	This can be used if something went wrong during automatic cleanup.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(true, nil, false)
 		yellow := color.New(color.FgYellow).SprintFunc()
 		if !utils.ConfirmTask(fmt.Sprintf("Do you realy want to remove punq from '%s' context?", yellow(kubernetes.CurrentContextName())), 1) {
 			os.Exit(0)

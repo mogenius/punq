@@ -26,8 +26,8 @@ var yamlTemplatesFolder embed.FS
 
 func main() {
 	utils.DefaultConfigLocalFile = localConfig
-	utils.DefaultConfigClusterFileDev = devConfig
-	utils.DefaultConfigClusterFileProd = prodConfig
+	utils.DefaultConfigFileDev = devConfig
+	utils.DefaultConfigFileProd = prodConfig
 	utils.YamlTemplatesFolder = yamlTemplatesFolder
 
 	operator.HtmlDirFs = htmlDirFs

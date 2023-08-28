@@ -23,8 +23,6 @@ var listContextCmd = &cobra.Command{
 	Short: "List punq contexts.",
 	Long:  `The list command lets you list all contexts managed by punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		contexts := services.ListContexts()
 		dtos.ListContexts(contexts)
 	},
@@ -35,8 +33,6 @@ var addContextCmd = &cobra.Command{
 	Short: "Add punq context.",
 	Long:  `The add command lets you add a context into punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		if filePath == "" {
 			logger.Log.Fatal("-filePath cannot be empty.")
 		}
@@ -62,8 +58,6 @@ var addContextAccessCmd = &cobra.Command{
 	Short: "Add access to punq context.",
 	Long:  `The add-access command lets you add a user + access level to a context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		if contextId == "" {
 			logger.Log.Fatal("-context-id cannot be empty.")
 		}
@@ -91,8 +85,6 @@ var removeContextAccessCmd = &cobra.Command{
 	Short: "Remove access from punq context.",
 	Long:  `The remove-access command lets you remove a users access level from a context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		if contextId == "" {
 			logger.Log.Fatal("-context-id cannot be empty.")
 		}
@@ -116,8 +108,6 @@ var deleteContextCmd = &cobra.Command{
 	Short: "Delete punq context.",
 	Long:  `The delete command lets you delete a specific context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		if contextId == "" {
 			logger.Log.Fatal("-contextid cannot be empty.")
 		}
@@ -132,8 +122,6 @@ var getContextCmd = &cobra.Command{
 	Short: "Get specific punq context.",
 	Long:  `The get command lets you get a specific context from punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(false, nil, false)
-
 		if contextId == "" {
 			logger.Log.Fatal("-contextid cannot be empty.")
 		}

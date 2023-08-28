@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-    tags: [ 'v*.*.*' ]
 
 jobs:
   build:
@@ -94,7 +93,7 @@ jobs:
           cd homebrew-punq
           cp ../punq.rb .
           git add .
-          git commit -m "${{ env.VERSION }}"
+          git commit -m "[skip ci] ${{ env.VERSION }}"
           git push
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}

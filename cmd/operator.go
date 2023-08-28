@@ -13,7 +13,6 @@ var operatorCmd = &cobra.Command{
 	Short: "Run the operator inside the cluster!",
 	Long:  `Run the operator inside the cluster!`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.InitConfigYaml(true, nil, true)
 		println("\n###############################################")
 		utils.IsNewReleaseIsAvailable()
 		println("###############################################\n")

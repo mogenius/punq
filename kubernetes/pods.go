@@ -106,6 +106,25 @@ func ServicePodStatus(namespace string, serviceName string) []v1.Pod {
 	return result
 }
 
+// labelname should look like app=my-app-name (like you defined your label)
+func GetFirstPodForLabelName(namespace string, labelName string) *v1.Pod {
+	kubeProvider := NewKubeProvider()
+
+	pods, err := kubeProvider.ClientSet.CoreV1().Pods(namespace).List(context.TODO(), metav1.ListOptions{LabelSelector: labelName})
+
+	for _, pod := range pods.Items {
+		return &pod
+	}
+
+	if err != nil {
+		logger.Log.Errorf("GetFirstPodForLabelName ERR:", err)
+		return nil
+	}
+
+	logger.Log.Errorf("No pod labeled '%s/%s' not found", namespace, labelName)
+	return nil
+}
+
 func GetPod(namespace string, podName string) *v1.Pod {
 	kubeProvider := NewKubeProvider()
 

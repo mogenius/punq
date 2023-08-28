@@ -6,6 +6,7 @@ kubernetes:
   cluster_name: your-cluster-name
   own_namespace: punq
   run_in_cluster: true
+  container_port: 8080
 
 misc:
   stage: dev

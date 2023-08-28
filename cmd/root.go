@@ -4,9 +4,12 @@ import (
 	"os"
 
 	cc "github.com/ivanpirog/coloredcobra"
+	"github.com/mogenius/punq/utils"
 	"github.com/spf13/cobra"
 )
 
+var debug bool
+var customConfig string
 var namespace string
 var resource string
 var checkForUpdates bool
@@ -27,6 +30,7 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	utils.InitConfigYaml(debug, customConfig)
 
 	cc.Init(&cc.Config{
 		RootCmd:  rootCmd,
@@ -44,5 +48,6 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug information")
+	rootCmd.PersistentFlags().StringVarP(&customConfig, "config", "c", "", "Use config from custom location")
 }

@@ -27,12 +27,13 @@ type ClusterSecret struct {
 type Config struct {
 	Browser struct {
 		Host string `yaml:"host" env:"browser_host" env-description:"Host of the browser app."`
-		Port string `yaml:"port" env:"browser_port" env-description:"Port of the browser app."`
+		Port int    `yaml:"port" env:"browser_port" env-description:"Port of the browser app."`
 	} `yaml:"browser"`
 	Kubernetes struct {
-		ClusterName  string `yaml:"cluster_name" env:"cluster_name" env-description:"The Name of the Kubernetes Cluster"`
-		OwnNamespace string `yaml:"own_namespace" env:"OWN_NAMESPACE" env-description:"The Namespace of mogenius platform"`
-		RunInCluster bool   `yaml:"run_in_cluster" env:"run_in_cluster" env-description:"If set to true, the application will run in the cluster (using the service account token). Otherwise it will try to load your local default context." env-default:"false"`
+		ClusterName   string `yaml:"cluster_name" env:"cluster_name" env-description:"The Name of the Kubernetes Cluster"`
+		OwnNamespace  string `yaml:"own_namespace" env:"OWN_NAMESPACE" env-description:"The Namespace of mogenius platform"`
+		RunInCluster  bool   `yaml:"run_in_cluster" env:"run_in_cluster" env-description:"If set to true, the application will run in the cluster (using the service account token). Otherwise it will try to load your local default context." env-default:"false"`
+		ContainerPort int    `yaml:"container_port" env:"container_port" env-description:"Port of the container to listen for connections." env-default:"8080"`
 	} `yaml:"kubernetes"`
 	Misc struct {
 		Stage            string   `yaml:"stage" env:"stage" env-description:"mogenius k8s-manager stage" env-default:"prod"`
@@ -43,21 +44,19 @@ type Config struct {
 }
 
 var DefaultConfigLocalFile string
-var DefaultConfigClusterFileDev string
-var DefaultConfigClusterFileProd string
+var DefaultConfigFileDev string
+var DefaultConfigFileProd string
 var CONFIG Config
+var ConfigPath string
 
-func InitConfigYaml(showDebug bool, customConfigName *string, loadClusterConfig bool) {
+func InitConfigYaml(showDebug bool, customConfigName string) {
 	_, configPath := GetDirectories(customConfigName)
+	ConfigPath = configPath
 
-	if loadClusterConfig {
-		if _, err := os.Stat(configPath); err == nil || os.IsExist(err) {
-			// do nothing, file exists
-		} else {
-			WriteDefaultConfig(loadClusterConfig)
-		}
+	if _, err := os.Stat(configPath); err == nil || os.IsExist(err) {
+		// do nothing, file exists
 	} else {
-		WriteDefaultConfig(loadClusterConfig)
+		WriteDefaultConfig()
 	}
 
 	// read configuration from the file and environment variables
@@ -98,18 +97,21 @@ func InitConfigYaml(showDebug bool, customConfigName *string, loadClusterConfig 
 func PrintSettings() {
 	fmt.Printf("BROWSER\n")
 	fmt.Printf("Host:                     %s\n", CONFIG.Browser.Host)
-	fmt.Printf("Port:                     %s\n", CONFIG.Browser.Port)
+	fmt.Printf("Port:                     %d\n", CONFIG.Browser.Port)
 
 	fmt.Printf("\nKUBERNETES\n")
 	fmt.Printf("ClusterName:              %s\n", CONFIG.Kubernetes.ClusterName)
 	fmt.Printf("OwnNamespace:             %s\n", CONFIG.Kubernetes.OwnNamespace)
 	fmt.Printf("RunInCluster:             %t\n", CONFIG.Kubernetes.RunInCluster)
+	fmt.Printf("ContainerPort:            %d\n", CONFIG.Kubernetes.ContainerPort)
 
 	fmt.Printf("\nMISC\n")
 	fmt.Printf("Stage:                    %s\n", CONFIG.Misc.Stage)
 	fmt.Printf("Debug:                    %t\n", CONFIG.Misc.Debug)
 	fmt.Printf("CheckForUpdates:          %d\n", CONFIG.Misc.CheckForUpdates)
 	fmt.Printf("IgnoreNamespaces:         %s\n\n", strings.Join(CONFIG.Misc.IgnoreNamespaces, ","))
+
+	fmt.Printf("Config:                   %s\n\n", ConfigPath)
 }
 
 func PrintVersionInfo() {
@@ -121,15 +123,15 @@ func PrintVersionInfo() {
 	logger.Log.Infof("BuildAt:     %s", version.BuildTimestamp)
 }
 
-func GetDirectories(customConfigName *string) (configDir string, configPath string) {
+func GetDirectories(customConfigName string) (configDir string, configPath string) {
 	homeDirName, err := os.UserHomeDir()
 	if err != nil {
 		logger.Log.Error(err)
 	}
 
 	configDir = homeDirName + "/.punq/"
-	if customConfigName != nil {
-		newConfigName := *customConfigName
+	if customConfigName != "" {
+		newConfigName := customConfigName
 		if newConfigName != "" {
 			configPath = configDir + newConfigName
 		}
@@ -140,8 +142,8 @@ func GetDirectories(customConfigName *string) (configDir string, configPath stri
 	return configDir, configPath
 }
 
-func WriteDefaultConfig(loadClusterConfig bool) {
-	configDir, configPath := GetDirectories(nil)
+func WriteDefaultConfig() {
+	configDir, configPath := GetDirectories("")
 
 	// write it to default location
 	err := os.Mkdir(configDir, 0755)
@@ -150,14 +152,12 @@ func WriteDefaultConfig(loadClusterConfig bool) {
 		logger.Log.Warning(err)
 	}
 
-	stage := os.Getenv("STAGE")
+	stage := strings.ToLower(os.Getenv("STAGE"))
 
-	if loadClusterConfig {
-		if stage == "prod" {
-			err = os.WriteFile(configPath, []byte(DefaultConfigClusterFileProd), 0755)
-		} else {
-			err = os.WriteFile(configPath, []byte(DefaultConfigClusterFileDev), 0755)
-		}
+	if stage == "dev" {
+		err = os.WriteFile(configPath, []byte(DefaultConfigFileDev), 0755)
+	} else if stage == "prod" {
+		err = os.WriteFile(configPath, []byte(DefaultConfigFileProd), 0755)
 	} else {
 		err = os.WriteFile(configPath, []byte(DefaultConfigLocalFile), 0755)
 	}
