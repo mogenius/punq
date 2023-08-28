@@ -19,6 +19,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.PUNQ_TOKEN }}
   
+      - name: Create Sematic Release Version
+        run: |
+          npm install -g standard-version
+          standard-version
       #
       # TODO: NPM RUN BUILD GOES HERE
       #
@@ -32,7 +36,7 @@ jobs:
 
       - name: Create release
         run: |
-          VERSION=v$(grep "Ver" version/consts.go | awk -F "\"" {'print $2'})
+          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "$VERSION"
           gh release create refs/tags/"$VERSION" --title "Release $VERSION" --repo mogenius/punq

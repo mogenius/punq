@@ -7,7 +7,7 @@ GOTEST=$(GO) test
 GOGET=$(GO) get
 
 # Ensure linker embeds versioning information
-VERSION=${shell grep "Ver" version/consts.go | awk -F "\"" {'print $$2'}}
+VERSION=${shell git describe --tags $(git rev-list --tags --max-count=1)}
 COMMIT_HASH=$(shell git rev-parse --short HEAD)
 GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 BUILD_TIMESTAMP=$(shell date)
