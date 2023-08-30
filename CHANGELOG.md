@@ -1,4 +1,11 @@
 
+### [1.1.28](https://github.com/mogenius/punq/compare/v1.1.27...v1.1.28) (2023-08-30)
+
+
+### Bug Fixes
+
+* bug in release pipeline. ([67825f9](https://github.com/mogenius/punq/commit/67825f9c43dc6ef87b09af3c4aece47ee8895787))
+
 ### [1.1.27](https://github.com/mogenius/punq/compare/v1.1.26...v1.1.27) (2023-08-30)
 
 
