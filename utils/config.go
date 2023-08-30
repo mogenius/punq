@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/glamour"
+	"golang.org/x/term"
 
 	"github.com/mogenius/punq/version"
 
@@ -132,19 +133,20 @@ func PrintVersionInfo() {
 }
 
 func PrintChangeLog() {
-	// Create a renderer with glamour
 	r, _ := glamour.NewTermRenderer(
-		// detect a terminal's background color and pick either the default dark or light theme
 		glamour.WithAutoStyle(),
-		// wrap output at specific width
-		glamour.WithWordWrap(80),
+		glamour.WithWordWrap(getTermialSize()),
 	)
-
-	// Render the markdown text to ANSI compatible string
 	out, _ := r.Render(ChangeLog)
-
-	// Print it to stdout
 	fmt.Println(out)
+}
+
+func getTermialSize() int {
+	width, _, err := term.GetSize(0)
+	if err != nil {
+		logger.Log.Errorf("Failed getting terminal size: %v", err)
+	}
+	return width
 }
 
 func GetDirectories(customConfigPath string) (configDir string, configPath string) {

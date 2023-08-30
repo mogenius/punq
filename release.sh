@@ -2,6 +2,7 @@
 
 BINARY_NAME=punq
 VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+VERSIONWITHOUTV=$(echo $version | cut -c 2-)
 SHA256_DARWIN_ARM64=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-darwin-arm64.tar.gz | awk '{print $1}')
 SHA256_DARWIN_AMD64=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-darwin-amd64.tar.gz | awk '{print $1}')
 SHA256_LINUX_ARM64=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-linux-arm64.tar.gz | awk '{print $1}')
@@ -12,7 +13,7 @@ SHA256_LINUX_386=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-linux-386.tar.gz |
 # Generate formula from template with replacements
 cat <<EOF > punq.rb
 class Punq < Formula
-  desc "View your kubernetes workloads relativly neat!"
+  desc "View your kubernetes workloads relatively neat!"
   homepage "https://punq.dev"
   
   on_macos do
@@ -45,7 +46,7 @@ class Punq < Formula
     end
   end
   
-  version "${VERSION}"
+  version "${VERSIONWITHOUTV}"
   license "MIT"
 
   def install
