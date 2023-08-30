@@ -21,12 +21,17 @@ var devConfig string
 //go:embed config/prod.yaml
 var prodConfig string
 
+//go:embed CHANGELOG.md
+var changelog string
+
 func main() {
 	utils.DefaultConfigLocalFile = localConfig
 	utils.DefaultConfigFileDev = devConfig
 	utils.DefaultConfigFileProd = prodConfig
 
 	operator.HtmlDirFs = htmlDirFs
+
+	utils.ChangeLog = changelog
 
 	logger.Init()
 	cmd.Execute()

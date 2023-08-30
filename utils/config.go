@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/charmbracelet/glamour"
+
 	"github.com/mogenius/punq/version"
 
 	"github.com/mogenius/punq/logger"
@@ -47,6 +49,7 @@ type Config struct {
 var DefaultConfigLocalFile string
 var DefaultConfigFileDev string
 var DefaultConfigFileProd string
+var ChangeLog string
 var CONFIG Config
 var ConfigPath string
 
@@ -126,6 +129,22 @@ func PrintVersionInfo() {
 	logger.Log.Infof("Branch:      %s", version.Branch)
 	logger.Log.Infof("Hash:        %s", version.GitCommitHash)
 	logger.Log.Infof("BuildAt:     %s", version.BuildTimestamp)
+}
+
+func PrintChangeLog() {
+	// Create a renderer with glamour
+	r, _ := glamour.NewTermRenderer(
+		// detect a terminal's background color and pick either the default dark or light theme
+		glamour.WithAutoStyle(),
+		// wrap output at specific width
+		glamour.WithWordWrap(80),
+	)
+
+	// Render the markdown text to ANSI compatible string
+	out, _ := r.Render(ChangeLog)
+
+	// Print it to stdout
+	fmt.Println(out)
 }
 
 func GetDirectories(customConfigPath string) (configDir string, configPath string) {

@@ -27,7 +27,7 @@ jobs:
           git config --global user.email "punq@mogenius.com"
           git config --global user.name "punq"
           git config --global credential.helper cache
-          standard-version
+          standard-version --header ""
           git push --follow-tags origin main
       #
       # TODO: NPM RUN BUILD GOES HERE
