@@ -1,6 +1,10 @@
-# Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+### [1.1.27](https://github.com/mogenius/punq/compare/v1.1.26...v1.1.27) (2023-08-30)
+
+
+### Bug Fixes
+
+* added changelog cmd to cli. ([9215bc3](https://github.com/mogenius/punq/commit/9215bc3e10b876f29b732cfc32b3c181c1c6e778))
 
 ### [1.1.26](https://github.com/mogenius/punq/compare/v1.1.25...v1.1.26) (2023-08-30)
 
