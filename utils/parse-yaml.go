@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"embed"
+
 	cmapi "github.com/cert-manager/cert-manager/pkg/apis/certmanager/v1"
 	v1 "k8s.io/api/apps/v1"
 	v1job "k8s.io/api/batch/v1"
@@ -9,6 +11,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"k8s.io/kubectl/pkg/scheme"
 )
+
+//go:embed yaml-templates
+var YamlTemplatesFolder embed.FS
 
 func InitPersistentVolumeYaml() string {
 	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/volume-example.yaml")

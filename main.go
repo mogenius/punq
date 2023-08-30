@@ -21,14 +21,10 @@ var devConfig string
 //go:embed config/prod.yaml
 var prodConfig string
 
-//go:embed yaml-templates
-var yamlTemplatesFolder embed.FS
-
 func main() {
 	utils.DefaultConfigLocalFile = localConfig
 	utils.DefaultConfigFileDev = devConfig
 	utils.DefaultConfigFileProd = prodConfig
-	utils.YamlTemplatesFolder = yamlTemplatesFolder
 
 	operator.HtmlDirFs = htmlDirFs
 

@@ -2,7 +2,6 @@ package utils
 
 import (
 	"bufio"
-	"embed"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -22,8 +21,6 @@ import (
 )
 
 const APP_NAME = "k8s"
-
-var YamlTemplatesFolder embed.FS
 
 func Pointer[K any](val K) *K {
 	return &val
