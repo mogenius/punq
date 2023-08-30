@@ -17,10 +17,10 @@ class Punq < Formula
   
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/mogenius/homebrew-punq/releases/download/v${VERSION}/punq-${VERSION}-darwin-arm64.tar.gz"
+      url "https://github.com/mogenius/homebrew-punq/releases/download/${VERSION}/punq-${VERSION}-darwin-arm64.tar.gz"
       sha256 "$SHA256_DARWIN_ARM64"
     elsif Hardware::CPU.intel?
-      url "https://github.com/mogenius/homebrew-punq/releases/download/v${VERSION}/punq-${VERSION}-darwin-amd64.tar.gz"
+      url "https://github.com/mogenius/homebrew-punq/releases/download/${VERSION}/punq-${VERSION}-darwin-amd64.tar.gz"
       sha256 "$SHA256_DARWIN_AMD64"
     end
   end
@@ -28,18 +28,18 @@ class Punq < Formula
   on_linux do
     if Hardware::CPU.intel?
       if Hardware::CPU.is_64_bit?
-        url "https://github.com/mogenius/homebrew-punq/releases/download/v${VERSION}/punq-${VERSION}-linux-amd64.tar.gz"
+        url "https://github.com/mogenius/homebrew-punq/releases/download/${VERSION}/punq-${VERSION}-linux-amd64.tar.gz"
         sha256 "$SHA256_LINUX_AMD64"
       else
-        url "https://github.com/mogenius/homebrew-punq/releases/download/v${VERSION}/punq-${VERSION}-linux-386.tar.gz"
+        url "https://github.com/mogenius/homebrew-punq/releases/download/${VERSION}/punq-${VERSION}-linux-386.tar.gz"
         sha256 "$SHA256_LINUX_386"
       end
     elif Hardware::CPU.arm?
       if Hardware::CPU.is_64_bit?
-        url "https://github.com/mogenius/homebrew-punq/releases/download/v${VERSION}/punq-${VERSION}-linux-arm64.tar.gz"
+        url "https://github.com/mogenius/homebrew-punq/releases/download/${VERSION}/punq-${VERSION}-linux-arm64.tar.gz"
         sha256 "$SHA256_LINUX_ARM64"
       else
-        url "https://github.com/mogenius/homebrew-punq/releases/download/v${VERSION}/punq-${VERSION}-linux-arm.tar.gz"
+        url "https://github.com/mogenius/homebrew-punq/releases/download/${VERSION}/punq-${VERSION}-linux-arm.tar.gz"
         sha256 "$SHA256_LINUX_ARM"
       end
     end

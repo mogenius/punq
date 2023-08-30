@@ -11,11 +11,11 @@ VERSION=${shell git describe --tags $(git rev-list --tags --max-count=1)}
 COMMIT_HASH=$(shell git rev-parse --short HEAD)
 GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 BUILD_TIMESTAMP=$(shell date)
-LDFLAGS=-s -w \
-  -X 'punq/version.GitCommitHash=$(COMMIT_HASH)' \
-  -X 'punq/version.Branch=$(GIT_BRANCH)' \
-  -X 'punq/version.BuildTimestamp=$(BUILD_TIMESTAMP)' \
-  -X 'punq/version.Ver=$(VERSION)'
+LDFLAGS=-s -w -extldflags= \
+  -X 'github.com/mogenius/punq/version.GitCommitHash=$(COMMIT_HASH)' \
+  -X 'github.com/mogenius/punq/version.Branch=$(GIT_BRANCH)' \
+  -X 'github.com/mogenius/punq/version.BuildTimestamp=$(BUILD_TIMESTAMP)' \
+  -X 'github.com/mogenius/punq/version.Ver=$(VERSION)'
 
 all: darwin_arm64 darwin_amd64 linux_amd64 linux_386 linux_arm64 linux_arm windows_amd64 windows_386
 
