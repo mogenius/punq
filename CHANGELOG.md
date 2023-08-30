@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.26](https://github.com/mogenius/punq/compare/v1.1.25...v1.1.26) (2023-08-30)
+
+
+### Bug Fixes
+
+* moved yamles into utils to make embed work with modules which import the functions. ([27b03d7](https://github.com/mogenius/punq/commit/27b03d75b93cd86d74af3dd93001fa481eeddc57))
+
 ### [1.1.25](https://github.com/mogenius/punq/compare/v1.0.1...v1.1.25) (2023-08-29)
 
 
