@@ -4,6 +4,6 @@
     "url": "https://github.com/mogenius/punq/releases/download/v1.1.31/punq-v1.1.31-windows-amd64",
     "homepage": "https://punq.dev",
     "hash": "f1d368cbc5881d67d49c9036f2ef58e1ca8d82e317e881fd5131c22a9a6ac5b0",
-    "bin": "punq-v1.1.31-windows-amd64",
-    "description": "View your kubernetes workloads relatively neat!"
+    "description": "View your kubernetes workloads relatively neat!",
+    "architecture": "64bit"
 }
