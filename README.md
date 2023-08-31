@@ -12,7 +12,8 @@ brew install punq
 ### Windows
 ```
 Install: https://scoop.sh/
-scoop install https://github.com/mogenius/punq/blob/main/punq.json
+scoop bucket add mogenius https://github.com/mogenius/punq
+scoop install punq
 ```
 
 Then have fun! 😎
