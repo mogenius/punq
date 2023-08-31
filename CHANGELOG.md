@@ -1,4 +1,11 @@
 
+### [1.1.31](https://github.com/mogenius/punq/compare/v1.1.30...v1.1.31) (2023-08-31)
+
+
+### Bug Fixes
+
+* kubernetes version upgraded to 1.28. ([db6b317](https://github.com/mogenius/punq/commit/db6b3179ce39bf72de4eb6ade18974a862062f6d))
+
 ### [1.1.30](https://github.com/mogenius/punq/compare/v1.1.29...v1.1.30) (2023-08-30)
 
 
