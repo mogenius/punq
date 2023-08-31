@@ -1,4 +1,11 @@
 
+### [1.1.38](https://github.com/mogenius/punq/compare/v1.1.37...v1.1.38) (2023-08-31)
+
+
+### Bug Fixes
+
+* scoop. ([a1af745](https://github.com/mogenius/punq/commit/a1af7450537a6f333435fcf48fa888bf8e785546))
+
 ### [1.1.37](https://github.com/mogenius/punq/compare/v1.1.36...v1.1.37) (2023-08-31)
 
 
