@@ -1,0 +1,11 @@
+{
+    "version":  "v1.1.31",
+    "license":  "MIT",
+    "extract_dir":  "",
+    "url":  "https://github.com/mogenius/punq/releases/download/v1.1.31/punq-v1.1.31-windows-amd64",
+    "depends":  "",
+    "homepage":  "https://punq.dev",
+    "hash":  "",
+    "bin":  "punq",
+    "description": "View your kubernetes workloads relatively neat!"
+}
