@@ -1,4 +1,11 @@
 
+### [1.1.40](https://github.com/mogenius/punq/compare/v1.1.39...v1.1.40) (2023-09-01)
+
+
+### Bug Fixes
+
+* added automated scoop support. ([741e25c](https://github.com/mogenius/punq/commit/741e25c71a02e40781c7d340b3309490d5274cde))
+
 ### [1.1.39](https://github.com/mogenius/punq/compare/v1.1.38...v1.1.39) (2023-08-31)
 
 
