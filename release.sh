@@ -2,13 +2,15 @@
 
 BINARY_NAME=punq
 VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
-VERSIONWITHOUTV=$(echo $version | cut -c 2-)
+VERSIONWITHOUTV=$(echo $VERSION | cut -c 2-)
 SHA256_DARWIN_ARM64=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-darwin-arm64.tar.gz | awk '{print $1}')
 SHA256_DARWIN_AMD64=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-darwin-amd64.tar.gz | awk '{print $1}')
 SHA256_LINUX_ARM64=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-linux-arm64.tar.gz | awk '{print $1}')
 SHA256_LINUX_ARM=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-linux-arm.tar.gz | awk '{print $1}')
 SHA256_LINUX_AMD64=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-linux-amd64.tar.gz | awk '{print $1}')
 SHA256_LINUX_386=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-linux-386.tar.gz | awk '{print $1}')
+SHA256_WIN_AMD64=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-windows-amd64 | awk '{print $1}')
+WIN_AMD64="$BINARY_NAME-$VERSION-windows-amd64"
 
 # Generate formula from template with replacements
 cat <<EOF > punq.rb
@@ -79,4 +81,21 @@ class Punq < Formula
   end
 end
 end
+EOF
+
+cat <<EOF > punq.json
+{
+    "version": "$VERSIONWITHOUTV",
+    "license": "MIT",
+    "homepage": "https://punq.dev",
+    "bin": "punq.exe",
+    "pre_install": "Rename-Item \"\$dir\\\\$WIN_AMD64\" punq.exe",
+    "description": "View your kubernetes workloads relatively neat!",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mogenius/punq/releases/download/$VERSION/punq-$VERSION-windows-amd64",
+            "hash": "$SHA256_WIN_AMD64"
+        }
+    }
+}
 EOF

@@ -99,8 +99,16 @@ jobs:
           git clone https://${{secrets.PUNQ_TOKEN}}@github.com/mogenius/homebrew-punq
           cd homebrew-punq
           cp ../punq.rb .
-          git add .
+          git add punq.rb
           git commit -m "[skip ci] ${{ env.VERSION }}"
+          git push
+        env:
+          GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
+
+      - name: UPDATE SCOOP
+        run: |
+          git add punq.json
+          git commit -m "[skip ci] scoop ${{ env.VERSION }}"
           git push
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
