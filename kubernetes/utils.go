@@ -168,7 +168,7 @@ type MogeniusNfsInstallationStatus struct {
 
 func DEPLOYMENTNAME() string {
 	if utils.CONFIG.Misc.Stage != "prod" {
-		return fmt.Sprintf("ghcr.io/mogenius/%s-dev:v%s", version.Name, version.Ver)
+		return fmt.Sprintf("ghcr.io/mogenius/%s-dev:dev%s", version.Name, version.Ver)
 	}
 	return fmt.Sprintf("ghcr.io/mogenius/%s:v%s", version.Name, version.Ver)
 }
