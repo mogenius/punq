@@ -142,8 +142,6 @@ var ALL_RESOURCES_READER []string = []string{
 }
 
 var (
-	DEPLOYMENTIMAGE = fmt.Sprintf("ghcr.io/mogenius/%s:v%s", version.Name, version.Ver)
-
 	SERVICEACCOUNTNAME     = fmt.Sprintf("%s-service-account-app", version.Name)
 	CLUSTERROLENAME        = fmt.Sprintf("%s--cluster-role-app", version.Name)
 	CLUSTERROLEBINDINGNAME = fmt.Sprintf("%s--cluster-role-binding-app", version.Name)
@@ -166,6 +164,13 @@ type K8sNewWorkload struct {
 type MogeniusNfsInstallationStatus struct {
 	Error       string `json:"error,omitempty"`
 	IsInstalled bool   `json:"isInstalled"`
+}
+
+func DEPLOYMENTNAME() string {
+	if utils.CONFIG.Misc.Stage != "prod" {
+		return fmt.Sprintf("ghcr.io/mogenius/%s-dev:v%s", version.Name, version.Ver)
+	}
+	return fmt.Sprintf("ghcr.io/mogenius/%s:v%s", version.Name, version.Ver)
 }
 
 func ListWorkloadsOnTerminal(access dtos.AccessLevel) {
