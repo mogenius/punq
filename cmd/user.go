@@ -127,13 +127,13 @@ func init() {
 	userCmd.AddCommand(updateUserCmd)
 	updateUserCmd.Flags().StringVarP(&userId, "userid", "u", "", "UserId of the user")
 	updateUserCmd.Flags().StringVarP(&email, "email", "e", "", "E-Mail address of the user")
-	updateUserCmd.Flags().StringVarP(&displayName, "displayname", "d", "", "Display name of the user")
+	updateUserCmd.Flags().StringVarP(&displayName, "displayname", "j", "", "Display name of the user")
 	updateUserCmd.Flags().StringVarP(&password, "password", "p", "", "Password of the user")
 	updateUserCmd.Flags().StringVarP(&accessLevel, "accesslevel", "a", "", "AccessLeve of the user")
 
 	userCmd.AddCommand(addUserCmd)
 	addUserCmd.Flags().StringVarP(&email, "email", "e", "", "E-Mail address of the new user")
-	addUserCmd.Flags().StringVarP(&displayName, "displayname", "d", "", "Display name of the new user")
+	addUserCmd.Flags().StringVarP(&displayName, "displayname", "j", "", "Display name of the new user")
 	addUserCmd.Flags().StringVarP(&password, "password", "p", "", "Password of the new user")
 	addUserCmd.Flags().StringVarP(&accessLevel, "accesslevel", "a", "", "AccessLeve of the new user")
 

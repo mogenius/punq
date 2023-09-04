@@ -170,6 +170,16 @@ func GetDirectories(customConfigPath string) (configDir string, configPath strin
 	return configDir, configPath
 }
 
+func DeleteCurrentConfig() {
+	_, configPath := GetDirectories("")
+	err := os.Remove(configPath)
+	if err != nil {
+		fmt.Printf("Error removing config file. '%s'.", err.Error())
+	} else {
+		fmt.Printf("%s succesfuly deleted.", configPath)
+	}
+}
+
 func WriteDefaultConfig(useInClusterConfig bool) {
 	configDir, configPath := GetDirectories("")
 

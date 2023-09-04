@@ -12,6 +12,16 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "install",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["install"],
+            "asRoot": false,
+            "console": "integratedTerminal"
+        },
+        {
             "name": "start",
             "type": "go",
             "request": "launch",

@@ -54,7 +54,7 @@ func Deploy(clusterName string, ingressHostname string) {
 		logger.Log.Fatalf("Error creating context secret. Aborting: %s.", err.Error())
 	}
 	if adminUser != nil {
-		fmt.Println("Contexts saved (%d bytes).", len(ownContext.ContextBase64))
+		fmt.Printf("Contexts saved (%d bytes).\n", len(ownContext.ContextBase64))
 	}
 
 	if ingressHostname != "" {

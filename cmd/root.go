@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var resetConfig bool
 var useClusterConfig bool
 var debug bool
 var customConfig string
@@ -29,6 +30,9 @@ var rootCmd = &cobra.Command{
 	Short: "Collect traffic data using pcap from a machine.",
 	Long:  `Use punq to manage the workloads of your kubernetes clusters relatively neat. 🚀`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		if resetConfig {
+			utils.DeleteCurrentConfig()
+		}
 		utils.InitConfigYaml(debug, customConfig, useClusterConfig)
 	},
 }
@@ -53,5 +57,6 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&useClusterConfig, "use-cluster-config", "x", false, "Load different default config to run in cluster")
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug information")
+	rootCmd.PersistentFlags().BoolVarP(&resetConfig, "reset-config", "k", false, "Delete the current config and replace it with the default one")
 	rootCmd.PersistentFlags().StringVarP(&customConfig, "config", "y", "", "Use config from custom location")
 }
