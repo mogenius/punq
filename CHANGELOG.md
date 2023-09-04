@@ -1,4 +1,11 @@
 
+## [1.2.0](https://github.com/mogenius/punq/compare/dev1.1.7...dev1.2.0) (2023-09-04)
+
+
+### Features
+
+* introduced swagger. ([fc03f7e](https://github.com/mogenius/punq/commit/fc03f7e536f8b77a70e80ddb7cb2eddbc3577476))
+
 ### [1.1.7](https://github.com/mogenius/punq/compare/dev1.1.6...dev1.1.7) (2023-09-04)
 
 
