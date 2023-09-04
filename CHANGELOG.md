@@ -1,4 +1,11 @@
 
+### [1.1.6](https://github.com/mogenius/punq/compare/dev1.1.5...dev1.1.6) (2023-09-04)
+
+
+### Bug Fixes
+
+* action fixed. ([8213508](https://github.com/mogenius/punq/commit/8213508247030c1838dc504d26b5e62364e32e14))
+
 ### [1.1.5](https://github.com/mogenius/punq/compare/dev1.1.4...dev1.1.5) (2023-09-04)
 
 
