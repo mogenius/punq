@@ -1,4 +1,11 @@
 
+### [1.1.2](https://github.com/mogenius/punq/compare/dev1.1.1...dev1.1.2) (2023-09-04)
+
+
+### Bug Fixes
+
+* workloads list now displays only valid workloads for different users. ([9744a1a](https://github.com/mogenius/punq/commit/9744a1a0867cec3ec77d689ab2a68d0cc49d4f1f))
+
 ### [1.1.1](https://github.com/mogenius/punq/compare/dev1.1.0...dev1.1.1) (2023-09-04)
 
 
