@@ -241,7 +241,12 @@ func allWorkloadTemplates(c *gin.Context) {
 }
 
 func allKubernetesResources(c *gin.Context) {
-	c.JSON(http.StatusOK, kubernetes.ALL_RESOURCES)
+	user, err := CheckUserAuthorization(c)
+	if err != nil || user == nil {
+		MalformedMessage(c, "User not found.")
+		return
+	}
+	c.JSON(http.StatusOK, kubernetes.WorkloadsForAccesslevel(user.AccessLevel))
 }
 
 // NAMESPACES

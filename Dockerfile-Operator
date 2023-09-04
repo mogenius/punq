@@ -5,7 +5,7 @@ ENV CGO_ENABLED=0 GOOS=linux
 ARG COMMIT_HASH=NOT_SET
 ARG GIT_BRANCH=NOT_SET
 ARG BUILD_TIMESTAMP=NOT_SET
-ARG NEXT_VERSION=NOT_SET
+ARG VERSION=NOT_SET
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s -extldflags= 
   -X 'github.com/mogenius/punq/version.GitCommitHash=${COMMIT_HASH}' \
   -X 'github.com/mogenius/punq/version.Branch=${GIT_BRANCH}' \
   -X 'github.com/mogenius/punq/version.BuildTimestamp=${BUILD_TIMESTAMP}' \
-  -X 'github.com/mogenius/punq/version.Ver=${NEXT_VERSION}'" -o bin/punq-operator .
+  -X 'github.com/mogenius/punq/version.Ver=${VERSION}'" -o bin/punq-operator .
 
 
 FROM scratch
@@ -26,6 +26,7 @@ FROM scratch
 WORKDIR /app
 
 COPY --from=builder ["/app/bin/punq-operator", "."]
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 ENV GIN_MODE=release
 

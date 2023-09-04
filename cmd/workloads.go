@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/logger"
 	"github.com/spf13/cobra"
@@ -19,7 +20,7 @@ var listWorkloadsCmd = &cobra.Command{
 	Short: "List punq supported workloads.",
 	Long:  `The workloads command lets you list all workloads managed by punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		kubernetes.ListWorkloads()
+		kubernetes.ListWorkloadsOnTerminal(dtos.ADMIN)
 	},
 }
 

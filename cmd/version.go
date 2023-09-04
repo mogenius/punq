@@ -31,7 +31,7 @@ var versionCmd = &cobra.Command{
 		fmt.Println("")
 
 		if checkForUpdates {
-			utils.IsNewReleaseIsAvailable()
+			utils.IsNewReleaseAvailable()
 			fmt.Println("")
 		}
 	},

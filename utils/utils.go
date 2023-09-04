@@ -35,7 +35,7 @@ type Release struct {
 	Published string `json:"published_at"`
 }
 
-func IsNewReleaseIsAvailable() bool {
+func IsNewReleaseAvailable() bool {
 	latestRelease := "https://api.github.com/repos/mogenius/punq/releases/latest"
 	resp, err := http.Get(latestRelease)
 	if err != nil {
