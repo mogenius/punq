@@ -1,4 +1,11 @@
 
+### [1.1.7](https://github.com/mogenius/punq/compare/dev1.1.6...dev1.1.7) (2023-09-04)
+
+
+### Bug Fixes
+
+* portforward improved. ([67b657e](https://github.com/mogenius/punq/commit/67b657e0041288f623df19ddfddb2cbf0b85281d))
+
 ### [1.1.6](https://github.com/mogenius/punq/compare/dev1.1.5...dev1.1.6) (2023-09-04)
 
 
