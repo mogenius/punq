@@ -31,7 +31,16 @@ jobs:
           git push --follow-tags origin develop
           VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+          GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+          BUILD_TIMESTAMP=$(date)
+          echo "BUILD_TIMESTAMP=$BUILD_TIMESTAMP" >> $GITHUB_ENV
           echo "$VERSION"
+          echo "BUILD_TIMESTAMP"
+          echo "GIT_BRANCH"
+          echo "COMMIT_HASH"
 
       #
       # TODO: NPM RUN BUILD GOES HERE
@@ -58,10 +67,10 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
-            VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
-            COMMIT_HASH=$(git rev-parse --short HEAD)
-            GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-            BUILD_TIMESTAMP=$(date)
+            VERSION=${{ env.VERSION }}
+            COMMIT_HASH=${{ env.COMMIT_HASH }}
+            GIT_BRANCH=${{ env.GIT_BRANCH }}
+            BUILD_TIMESTAMP=${{ env.BUILD_TIMESTAMP }}
           tags: |
             ghcr.io/mogenius/punq-dev:latest
             ghcr.io/mogenius/punq-dev:${{ env.VERSION }}
