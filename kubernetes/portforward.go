@@ -34,7 +34,7 @@ type PortForwardAPodRequest struct {
 	ReadyCh chan struct{}
 }
 
-func StartPortForward(localPort int, podPort int) {
+func StartPortForward(localPort int, podPort int, readyChannel chan struct{}, stopChannel chan struct{}) {
 	for {
 		pod := GetFirstPodForLabelName(utils.CONFIG.Kubernetes.OwnNamespace, "app=punq")
 		if pod == nil {
@@ -46,8 +46,6 @@ func StartPortForward(localPort int, podPort int) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 
-		stopCh := make(chan struct{}, 1)
-		readyCh := make(chan struct{})
 		out, errOut := new(bytes.Buffer), new(bytes.Buffer)
 
 		sigs := make(chan os.Signal, 1)
@@ -55,7 +53,7 @@ func StartPortForward(localPort int, podPort int) {
 		go func() {
 			<-sigs
 			fmt.Println("Port-Forward to punq closed!")
-			close(stopCh)
+			close(stopChannel)
 			wg.Done()
 		}()
 
@@ -66,8 +64,8 @@ func StartPortForward(localPort int, podPort int) {
 				PodPort:   podPort,
 				Out:       out,
 				ErrOut:    errOut,
-				StopCh:    stopCh,
-				ReadyCh:   readyCh,
+				StopCh:    stopChannel,
+				ReadyCh:   readyChannel,
 			})
 			if err != nil {
 				logger.Log.Warning("ERROR DURING PORTFORWARD!")
@@ -76,10 +74,10 @@ func StartPortForward(localPort int, podPort int) {
 		}()
 
 		select {
-		case <-readyCh:
+		case <-readyChannel:
 			fmt.Printf("PortForward for %s(%d:%d) is ready!\n", pod.Name, localPort, podPort)
 			break
-		case <-stopCh:
+		case <-stopChannel:
 			fmt.Printf("PortForward for %s is stopped!\n", pod.Name)
 			break
 		}
