@@ -1,4 +1,13 @@
 
+### [1.1.3](https://github.com/mogenius/punq/compare/dev1.1.2...dev1.1.3) (2023-09-04)
+
+
+### Bug Fixes
+
+* dev action fixed. ([116bc73](https://github.com/mogenius/punq/commit/116bc73449b384ddbf5c6f7f8dacef59a4474883))
+* package fixes. ([7c32652](https://github.com/mogenius/punq/commit/7c326524e46154e8dd81ebd41533838955a3761d))
+* scratch container was missing ca-certificates. they will now be copied from builder. ([4190a75](https://github.com/mogenius/punq/commit/4190a757d56302317d71714dc1f1646ad56b1fe0))
+
 ### [1.1.2](https://github.com/mogenius/punq/compare/dev1.1.1...dev1.1.2) (2023-09-04)
 
 
