@@ -73,6 +73,7 @@ jobs:
           file: Dockerfile-Operator
           context: .
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/mogenius/punq:latest
             ghcr.io/mogenius/punq:${{ env.VERSION }}

@@ -1,0 +1,56 @@
+name: Build, Package, Release
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PUNQ_TOKEN }}
+  
+      - name: Create Sematic Release Version
+        run: |
+          npm install -g standard-version
+          git config --global user.email "punq@mogenius.com"
+          git config --global user.name "punq"
+          git config --global credential.helper cache
+          standard-version --header ""
+          git push --follow-tags origin develop
+          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "$VERSION"
+
+      #
+      # TODO: NPM RUN BUILD GOES HERE
+      #
+      - name: npm run build
+        run: |
+          mkdir ui/dist
+          cp ui/index.html ui/dist/index.html
+
+      # Build and push Docker image with Buildx (don't push on PR)
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v4
+        with:
+          file: Dockerfile-Operator
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/mogenius/punq-dev:latest
+            ghcr.io/mogenius/punq-dev:${{ env.VERSION }}
