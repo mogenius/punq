@@ -236,10 +236,18 @@ func InitWorkloadRoutes(router *gin.Engine) {
 }
 
 // GENERAL
+// @Tags General
+// @Produce json
+// @Success 200 {array} kubernetes.K8sNewWorkload
+// @Router /workload/templates [get]
 func allWorkloadTemplates(c *gin.Context) {
 	c.JSON(http.StatusOK, kubernetes.ListCreateTemplates())
 }
 
+// @Tags General
+// @Produce json
+// @Success 200 {array} string
+// @Router /workload/available-resources [get]
 func allKubernetesResources(c *gin.Context) {
 	user, err := CheckUserAuthorization(c)
 	if err != nil || user == nil {

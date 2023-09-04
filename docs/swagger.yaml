@@ -1,0 +1,213 @@
+definitions:
+  dtos.AccessLevel:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - READER
+    - USER
+    - ADMIN
+  dtos.PunqAccess:
+    properties:
+      level:
+        $ref: '#/definitions/dtos.AccessLevel'
+      userId:
+        type: string
+    required:
+    - level
+    - userId
+    type: object
+  dtos.PunqContext:
+    properties:
+      access:
+        items:
+          $ref: '#/definitions/dtos.PunqAccess'
+        type: array
+      contextBase64:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    required:
+    - access
+    - contextBase64
+    - id
+    - name
+    type: object
+  dtos.PunqUser:
+    properties:
+      accessLevel:
+        $ref: '#/definitions/dtos.AccessLevel'
+      createdAt:
+        type: string
+      displayName:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+    required:
+    - accessLevel
+    - createdAt
+    - displayName
+    - email
+    - id
+    - password
+    type: object
+  kubernetes.K8sNewWorkload:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      yamlString:
+        type: string
+    type: object
+  structs.Version:
+    properties:
+      branch:
+        type: string
+      buildTimestamp:
+        type: string
+      gitCommitHash:
+        type: string
+      name:
+        type: string
+      version:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /context/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dtos.PunqContext'
+            type: array
+      tags:
+      - Context
+  /user:
+    delete:
+      parameters:
+      - description: ID of the user
+        in: query
+        name: userid
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.PunqUser'
+      tags:
+      - User
+    get:
+      parameters:
+      - description: ID of the user
+        in: query
+        name: userid
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.PunqUser'
+      tags:
+      - User
+    patch:
+      parameters:
+      - description: PunqUser
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/dtos.PunqUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.PunqUser'
+      tags:
+      - User
+    post:
+      parameters:
+      - description: PunqUser
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/dtos.PunqUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.PunqUser'
+      tags:
+      - User
+  /user/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dtos.PunqUser'
+            type: array
+      tags:
+      - User
+  /version:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/structs.Version'
+      tags:
+      - Misc
+  /workload/available-resources:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      tags:
+      - General
+  /workload/templates:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/kubernetes.K8sNewWorkload'
+            type: array
+      tags:
+      - General
+swagger: "2.0"

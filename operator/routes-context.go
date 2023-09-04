@@ -16,6 +16,10 @@ func InitContextRoutes(router *gin.Engine) {
 	router.PATCH("/context/:ctxId", Auth(dtos.ADMIN), updateContext)
 }
 
+// @Tags Context
+// @Produce json
+// @Success 200 {array} dtos.PunqContext
+// @Router /context/all [get]
 func allContexts(c *gin.Context) {
 	c.JSON(http.StatusOK, services.ListContexts())
 }
