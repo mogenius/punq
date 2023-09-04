@@ -1,5 +1,21 @@
 
-<<<<<<< HEAD
+### [1.1.42](https://github.com/mogenius/punq/compare/v1.1.41...v1.1.42) (2023-09-04)
+
+
+### Bug Fixes
+
+* action fixed. ([28ac266](https://github.com/mogenius/punq/commit/28ac266bfce5794063aafa33e8b283a636a07a0e))
+* action fixed. ([8213508](https://github.com/mogenius/punq/commit/8213508247030c1838dc504d26b5e62364e32e14))
+* dev action fixed. ([31b314d](https://github.com/mogenius/punq/commit/31b314d9ec797987a513ee938bbece1737c36dbc))
+* dev action fixed. ([5d366c6](https://github.com/mogenius/punq/commit/5d366c6082d9e57c51a654469e67db6e0fa97fbf))
+* dev action fixed. ([116bc73](https://github.com/mogenius/punq/commit/116bc73449b384ddbf5c6f7f8dacef59a4474883))
+* develop pipeline. ([e1eb198](https://github.com/mogenius/punq/commit/e1eb198c06782153f40f160a99680c08eb027ffb))
+* develop pipeline. ([3fac41c](https://github.com/mogenius/punq/commit/3fac41c2162040b38646f38142d2ea7f5b3e6909))
+* develop pipeline. ([330395f](https://github.com/mogenius/punq/commit/330395f146bbbd0c3d2430889f65d337f6f38d88))
+* package fixes. ([7c32652](https://github.com/mogenius/punq/commit/7c326524e46154e8dd81ebd41533838955a3761d))
+* scratch container was missing ca-certificates. they will now be copied from builder. ([4190a75](https://github.com/mogenius/punq/commit/4190a757d56302317d71714dc1f1646ad56b1fe0))
+* workloads list now displays only valid workloads for different users. ([9744a1a](https://github.com/mogenius/punq/commit/9744a1a0867cec3ec77d689ab2a68d0cc49d4f1f))
+
 ### [1.1.41](https://github.com/mogenius/punq/compare/v1.1.40...v1.1.41) (2023-09-04)
 =======
 ### [1.1.5](https://github.com/mogenius/punq/compare/dev1.1.4...dev1.1.5) (2023-09-04)
