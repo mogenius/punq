@@ -1,4 +1,11 @@
 
+### [1.1.41](https://github.com/mogenius/punq/compare/v1.1.40...v1.1.41) (2023-09-04)
+
+
+### Bug Fixes
+
+* minor updates. ([ab37ba3](https://github.com/mogenius/punq/commit/ab37ba3816313ae4266a4969725b801da8e02961))
+
 ### [1.1.40](https://github.com/mogenius/punq/compare/v1.1.39...v1.1.40) (2023-09-01)
 
 
