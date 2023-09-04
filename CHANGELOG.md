@@ -1,4 +1,11 @@
 
+### [1.1.1](https://github.com/mogenius/punq/compare/dev1.1.0...dev1.1.1) (2023-09-04)
+
+
+### Bug Fixes
+
+* develop pipeline. ([e1eb198](https://github.com/mogenius/punq/commit/e1eb198c06782153f40f160a99680c08eb027ffb))
+
 ## 1.1.0 (2023-09-04)
 
 
