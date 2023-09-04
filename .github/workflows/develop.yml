@@ -27,7 +27,7 @@ jobs:
           git config --global user.email "punq@mogenius.com"
           git config --global user.name "punq"
           git config --global credential.helper cache
-          standard-version --header ""
+          standard-version --header "" --tag-prefix "dev"
           git push --follow-tags origin develop
           VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
           echo "VERSION=$VERSION" >> $GITHUB_ENV
