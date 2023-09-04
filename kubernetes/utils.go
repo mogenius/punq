@@ -103,6 +103,44 @@ var ALL_RESOURCES []string = []string{
 	RES_RESOURCEQUOTAS,
 }
 
+var ALL_RESOURCES_USER []string = []string{
+	RES_NAMESPACE,
+	RES_POD,
+	RES_DEPLOYMENT,
+	RES_SERVICE,
+	RES_INGRESS,
+	RES_CONFIGMAP,
+	RES_NODE,
+	RES_DAEMON_SET,
+	RES_STATEFUL_SET,
+	RES_JOB,
+	RES_CRON_JOB,
+	RES_REPLICA_SET,
+	RES_PERSISTENT_VOLUME_CLAIM,
+	RES_EVENT,
+	RES_NETWORK_POLICY,
+	RES_ENDPOINTS,
+}
+
+var ALL_RESOURCES_READER []string = []string{
+	RES_NAMESPACE,
+	RES_POD,
+	RES_DEPLOYMENT,
+	RES_SERVICE,
+	RES_INGRESS,
+	RES_CONFIGMAP,
+	RES_NODE,
+	RES_DAEMON_SET,
+	RES_STATEFUL_SET,
+	RES_JOB,
+	RES_CRON_JOB,
+	RES_REPLICA_SET,
+	RES_PERSISTENT_VOLUME_CLAIM,
+	RES_EVENT,
+	RES_NETWORK_POLICY,
+	RES_ENDPOINTS,
+}
+
 var (
 	DEPLOYMENTIMAGE = fmt.Sprintf("ghcr.io/mogenius/%s:v%s", version.Name, version.Ver)
 
@@ -130,16 +168,31 @@ type MogeniusNfsInstallationStatus struct {
 	IsInstalled bool   `json:"isInstalled"`
 }
 
-func ListWorkloads() {
+func ListWorkloadsOnTerminal(access dtos.AccessLevel) {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"#", "Name"})
-	for index, resource := range ALL_RESOURCES {
+
+	resources := WorkloadsForAccesslevel(access)
+	for index, resource := range resources {
 		t.AppendRow(
 			table.Row{index + 1, resource},
 		)
 	}
 	t.Render()
+}
+
+func WorkloadsForAccesslevel(access dtos.AccessLevel) []string {
+	resources := []string{}
+	switch access {
+	case dtos.READER:
+		resources = ALL_RESOURCES_READER
+	case dtos.USER:
+		resources = ALL_RESOURCES_USER
+	case dtos.ADMIN:
+		resources = ALL_RESOURCES
+	}
+	return resources
 }
 
 func WorkloadResult(result interface{}, err interface{}) K8sWorkloadResult {
