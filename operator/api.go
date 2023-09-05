@@ -39,6 +39,7 @@ func InitGin() {
 		ginSwagger.DocExpansion("none")))
 
 	InitContextRoutes(router)
+	InitAuthRoutes(router)
 	InitUserRoutes(router)
 	InitGeneralRoutes(router)
 	InitWorkloadRoutes(router)

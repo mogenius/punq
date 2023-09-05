@@ -12,3 +12,4 @@ node_modules
 ui/package-lock.json
 punq
 ui/dist
+.idea/
