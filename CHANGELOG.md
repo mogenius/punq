@@ -1,4 +1,11 @@
 
+### [1.3.6](https://github.com/mogenius/punq/compare/dev1.3.5...dev1.3.6) (2023-09-06)
+
+
+### Bug Fixes
+
+* minor fix config yaml. ([a54099b](https://github.com/mogenius/punq/commit/a54099b145a3846a3c63f34cd6a0fd028efbac02))
+
 ### [1.3.5](https://github.com/mogenius/punq/compare/dev1.3.4...dev1.3.5) (2023-09-06)
 
 
