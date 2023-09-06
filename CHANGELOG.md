@@ -1,4 +1,11 @@
 
+### [1.3.1](https://github.com/mogenius/punq/compare/dev1.3.0...dev1.3.1) (2023-09-06)
+
+
+### Bug Fixes
+
+* docu updates. ([fea7b75](https://github.com/mogenius/punq/commit/fea7b7513607c80b2f2fc1e57fc221f3f04beee8))
+
 ## [1.3.0](https://github.com/mogenius/punq/compare/dev1.2.0...dev1.3.0) (2023-09-06)
 
 
