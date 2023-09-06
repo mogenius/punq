@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"golang.org/x/crypto/bcrypt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"time"
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
@@ -51,7 +52,7 @@ func CreateAdminUser() {
 		return
 	}
 
-	if GetUser("admin_id") != nil {
+	if secret.Data["admin_id"] != nil {
 		return
 	}
 
@@ -68,7 +69,10 @@ func CreateAdminUser() {
 
 	AddUser(adminUser)
 	secret = kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
-	secret.StringData["admin_id"] = adminUser.Id
+	strData := make(map[string]string)
+	strData["admin_id"] = adminUser.Id
+	secret.StringData = strData
+	kubernetes.UpdateK8sSecret(*secret)
 }
 
 func ListUsers() []dtos.PunqUser {
