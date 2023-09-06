@@ -17,6 +17,7 @@ import (
 )
 
 const USERSSECRET = "punq-users"
+const JWTSECRET = "punq-jwt"
 const USERADMIN = "admin"
 const CONTEXTSSECRET = "punq-contexts"
 const CONTEXTOWN = "own-context"

@@ -1,6 +1,8 @@
 package dtos
 
 import (
+	"errors"
+	"golang.org/x/crypto/bcrypt"
 	"os"
 
 	"github.com/jedib0t/go-pretty/v6/table"
@@ -35,4 +37,13 @@ func ListUsers(users []PunqUser, showPasswords bool) {
 		}
 	}
 	t.Render()
+}
+
+func (user *PunqUser) PasswordCheck(password string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+
+	if err != nil && errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+		return false, err
+	}
+	return true, nil
 }

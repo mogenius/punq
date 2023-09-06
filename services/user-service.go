@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
@@ -50,6 +51,13 @@ func AddUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
 		}
 	}
 
+	// hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return kubernetes.WorkloadResultError(err.Error())
+	}
+	user.Password = string(hashedPassword)
+
 	rawData, err := json.Marshal(user)
 	if err != nil {
 		logger.Log.Error("failed to Marshal user '%s'", user.Id)
@@ -68,6 +76,15 @@ func UpdateUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
 	rawData, err := json.Marshal(user)
 	if err != nil {
 		logger.Log.Error("failed to Marshal user '%s'", user.Id)
+	}
+	userObj := GetUser(user.Id)
+	if userObj.Password != user.Password {
+		// hash password
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return kubernetes.WorkloadResultError(err.Error())
+		}
+		user.Password = string(hashedPassword)
 	}
 	secret.Data[user.Id] = rawData
 
@@ -105,13 +122,32 @@ func GetUser(id string) *dtos.PunqUser {
 		return nil
 	}
 
+	if secret.Data[id] != nil {
+		user := dtos.PunqUser{}
+		err := json.Unmarshal(secret.Data[id], &user)
+		if err != nil {
+			logger.Log.Error("Failed to Unmarshal user '%s'.", id)
+		}
+		return &user
+	}
+
+	return nil
+}
+
+func GetUserByEmail(email string) *dtos.PunqUser {
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	if secret == nil {
+		logger.Log.Errorf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+		return nil
+	}
+
 	for userId, userRaw := range secret.Data {
 		user := dtos.PunqUser{}
 		err := json.Unmarshal(userRaw, &user)
 		if err != nil {
 			logger.Log.Error("Failed to Unmarshal user '%s'.", userId)
 		}
-		if user.Id == id {
+		if user.Email == email {
 			return &user
 		}
 	}

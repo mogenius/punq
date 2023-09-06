@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"os"
 	"time"
 
@@ -238,10 +239,16 @@ func CreateUserSecretIfNotExist(kubeProvider *KubeProvider) (*dtos.PunqUser, err
 }
 
 func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (*dtos.PunqUser, error) {
+	password := utils.NanoId()
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
 	adminUser := dtos.PunqUser{
-		Id:          utils.USERADMIN,
+		Id:          utils.NanoId(),
 		Email:       "your-email@mogenius.com",
-		Password:    utils.NanoId(),
+		Password:    string(hashedPassword),
 		DisplayName: "Admin User",
 		AccessLevel: dtos.ADMIN,
 		Created:     time.Now().Format(time.RFC3339),
@@ -256,7 +263,7 @@ func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 	secret.ObjectMeta.Name = utils.USERSSECRET
 	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
 	delete(secret.StringData, "exampleData") // delete example data
-	secret.StringData[utils.USERADMIN] = string(rawAdmin)
+	secret.StringData[adminUser.Id] = string(rawAdmin)
 
 	if existingSecret == nil || getErr != nil {
 		fmt.Println("Creating new punq-user secret ...")
@@ -266,6 +273,7 @@ func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 			return nil, err
 		}
 		fmt.Println("Created new punq-user secret. ✅")
+		adminUser.Password = password
 		return &adminUser, nil
 	}
 	return nil, nil
