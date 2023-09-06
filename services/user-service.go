@@ -1,15 +1,75 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"time"
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
 )
+
+func InitUserService() {
+	CreateUserSecret()
+	CreateAdminUser()
+}
+
+func CreateUserSecret() {
+	provider := kubernetes.NewKubeProvider()
+	if provider == nil {
+		logger.Log.Fatal("Failed to load kubeprovider.")
+	}
+
+	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+	existingSecret, getErr := secretClient.Get(context.TODO(), utils.USERSSECRET, metav1.GetOptions{})
+
+	secret := utils.InitSecret()
+	secret.ObjectMeta.Name = utils.USERSSECRET
+	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
+	delete(secret.StringData, "exampleData") // delete example data
+
+	// if not exist
+	if existingSecret == nil || getErr != nil {
+		fmt.Println("Creating new punq-auth secret ...")
+		_, err := secretClient.Create(context.TODO(), &secret, kubernetes.MoCreateOptions())
+		if err != nil {
+			logger.Log.Error(err)
+			return
+		}
+		fmt.Println("Created new punq-users secret. ✅")
+	}
+}
+
+func CreateAdminUser() {
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	if secret == nil {
+		return
+	}
+
+	if GetUser("admin_id") != nil {
+		return
+	}
+
+	password := utils.NanoId()
+
+	adminUser := dtos.PunqUser{
+		Id:          utils.NanoId(),
+		Email:       "admin@punq.dev",
+		Password:    password,
+		DisplayName: "Admin User",
+		AccessLevel: dtos.ADMIN,
+		Created:     time.Now().Format(time.RFC3339),
+	}
+
+	AddUser(adminUser)
+	secret = kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	secret.StringData["admin_id"] = adminUser.Id
+}
 
 func ListUsers() []dtos.PunqUser {
 	users := []dtos.PunqUser{}
@@ -62,7 +122,11 @@ func AddUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
 	if err != nil {
 		logger.Log.Error("failed to Marshal user '%s'", user.Id)
 	}
-	secret.Data[user.Id] = rawData
+
+	if secret.StringData == nil {
+		secret.StringData = make(map[string]string)
+	}
+	secret.StringData[user.Id] = string(rawData)
 
 	return kubernetes.UpdateK8sSecret(*secret)
 }
