@@ -1,4 +1,11 @@
 
+## [1.3.0](https://github.com/mogenius/punq/compare/dev1.2.0...dev1.3.0) (2023-09-06)
+
+
+### Features
+
+* login; jwt auth ([ada0658](https://github.com/mogenius/punq/commit/ada065827a94857873449b123773cf7281faa25a))
+
 ## [1.2.0](https://github.com/mogenius/punq/compare/dev1.1.7...dev1.2.0) (2023-09-04)
 
 
