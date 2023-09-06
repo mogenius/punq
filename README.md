@@ -17,3 +17,9 @@ scoop install punq
 ```
 
 Then have fun! 😎
+
+## Swagger
+To update the documentation please run (in project root):
+```
+swag init --parseDependency --parseInternal
+```
