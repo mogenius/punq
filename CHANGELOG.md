@@ -1,4 +1,13 @@
 
+### [1.3.3](https://github.com/mogenius/punq/compare/dev1.3.2...dev1.3.3) (2023-09-06)
+
+
+### Bug Fixes
+
+* add bearer to authorization header ([1fd3536](https://github.com/mogenius/punq/commit/1fd3536c8c6d233fb26cf11874a5cc8a686e2e29))
+* minor fix. ([c09ad3d](https://github.com/mogenius/punq/commit/c09ad3d3425ad92f3bb2162eb88d58352bcacad3))
+* moving create admin to user-service ([ce34d73](https://github.com/mogenius/punq/commit/ce34d73237da672616990f5cce144c6e75ed695a))
+
 ### [1.3.2](https://github.com/mogenius/punq/compare/dev1.3.1...dev1.3.2) (2023-09-06)
 
 
