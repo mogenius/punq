@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mogenius/punq/docs"
 	"github.com/mogenius/punq/logger"
-	"github.com/mogenius/punq/utils"
 	"github.com/mogenius/punq/version"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -32,9 +31,9 @@ func InitGin() {
 	docs.SwaggerInfo.Title = "punq API documentation"
 	docs.SwaggerInfo.Description = "This is the documentation of all available API calls for the punq UI."
 	docs.SwaggerInfo.Version = version.Ver
-	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", utils.CONFIG.Browser.Host, utils.CONFIG.Browser.Port)
+	//docs.SwaggerInfo.Host = fmt.Sprintf("0.0.0.0:%d", utils.CONFIG.Browser.Port)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler,
-		ginSwagger.URL(fmt.Sprintf("http://%s:%d/swagger/doc.json", utils.CONFIG.Browser.Host, utils.CONFIG.Browser.Port)),
+		//ginSwagger.URL(fmt.Sprintf("http://%s:%d/swagger/doc.json", utils.CONFIG.Browser.Host, utils.CONFIG.Browser.Port)),
 		ginSwagger.DefaultModelsExpandDepth(5),
 		ginSwagger.DocExpansion("none")))
 

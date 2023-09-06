@@ -1,8 +1,6 @@
 package kubernetes
 
 import (
-	"path/filepath"
-
 	"github.com/mogenius/punq/utils"
 
 	"github.com/mogenius/punq/logger"
@@ -10,7 +8,6 @@ import (
 	cmclientset "github.com/cert-manager/cert-manager/pkg/client/clientset/versioned"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
 )
 
 type KubeProviderCertManager struct {
@@ -34,10 +31,7 @@ func NewKubeProviderCertManager() *KubeProviderCertManager {
 }
 
 func newKubeProviderCertManagerLocal() (*KubeProviderCertManager, error) {
-	var kubeconfig string = ""
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	}
+	var kubeconfig string = getKubeConfig()
 
 	restConfig, errConfig := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if errConfig != nil {

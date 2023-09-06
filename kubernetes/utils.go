@@ -227,10 +227,7 @@ func NewWorkload(name string, yaml string, description string) K8sNewWorkload {
 }
 
 func CurrentContextName() string {
-	var kubeconfig string = ""
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	}
+	var kubeconfig string = getKubeConfig()
 
 	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
@@ -355,11 +352,11 @@ func podStats(pods map[string]v1.Pod) ([]structs.Stats, error) {
 }
 
 func getKubeConfig() string {
-	var kubeconfig string
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	} else {
-		kubeconfig = ""
+	var kubeconfig string = os.Getenv("KUBECONFIG")
+	if kubeconfig == "" {
+		if home := homedir.HomeDir(); home != "" {
+			kubeconfig = filepath.Join(home, ".kube", "config")
+		}
 	}
 	return kubeconfig
 }
