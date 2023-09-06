@@ -17,6 +17,11 @@ func InitAuthRoutes(router *gin.Engine) {
 	router.GET("/auth/authenticate", Auth(dtos.READER), authenticate)
 }
 
+// @Tags Auth
+// @Produce json
+// @Success 200 {object} dtos.PunqToken
+// @Router /auth/login [post]
+// @Param body body LoginInput true "LoginInput"
 func login(c *gin.Context) {
 	input := LoginInput{}
 
@@ -36,9 +41,14 @@ func login(c *gin.Context) {
 
 	token, _ := services.GenerateToken(user)
 
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	c.JSON(http.StatusOK, token)
 }
 
+// @Tags Auth
+// @Produce json
+// @Success 200 {object} dtos.PunqToken
+// @Router /auth/authenticate [get]
+// @Security Bearer
 func authenticate(c *gin.Context) {
 	if temp, exists := c.Get("user"); exists {
 		user, ok := temp.(dtos.PunqUser)

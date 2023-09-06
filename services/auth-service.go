@@ -9,13 +9,14 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"time"
 )
 
 const SEC_KEY_PAIR = "keyPair"
@@ -201,7 +202,7 @@ func GetKeyPair() *KeyPair {
 	return nil
 }
 
-func GenerateToken(user *dtos.PunqUser) (*string, error) {
+func GenerateToken(user *dtos.PunqUser) (*dtos.PunqToken, error) {
 	if KeyPairInstance == nil {
 		KeyPairInstance = GetKeyPair()
 	}
@@ -218,7 +219,7 @@ func GenerateToken(user *dtos.PunqUser) (*string, error) {
 		logger.Log.Errorf("sign JWT-Token with private key failed %s", err)
 		return nil, err
 	}
-	return &tokenString, nil
+	return dtos.CreateToken(tokenString), nil
 }
 
 func ValidationToken(tokenString string) *PunqClaims {

@@ -9,6 +9,13 @@ import (
 	"github.com/mogenius/punq/utils"
 )
 
+// SWAGGER <-- DO NOT REMOVE
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token. Use the user/login route to get the token.
+// SWAGGER --> DO NOT REMOVE
+
 //go:embed ui/dist/*
 var htmlDirFs embed.FS
 

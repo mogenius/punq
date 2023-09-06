@@ -240,6 +240,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 // @Produce json
 // @Success 200 {array} kubernetes.K8sNewWorkload
 // @Router /workload/templates [get]
+// @Security Bearer
 func allWorkloadTemplates(c *gin.Context) {
 	c.JSON(http.StatusOK, kubernetes.ListCreateTemplates())
 }
@@ -248,6 +249,7 @@ func allWorkloadTemplates(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} string
 // @Router /workload/available-resources [get]
+// @Security Bearer
 func allKubernetesResources(c *gin.Context) {
 	user, err := CheckUserAuthorization(c)
 	if err != nil || user == nil {
@@ -258,9 +260,20 @@ func allKubernetesResources(c *gin.Context) {
 }
 
 // NAMESPACES
+// @Tags Workloads
+// @Produce json
+// @Success 200 {array} v1.Namespace
+// @Router /workload/namespace/all [get]
+// @Security Bearer
 func allNamespaces(c *gin.Context) {
-	c.JSON(http.StatusOK, kubernetes.ListAllNamespace())
+	c.JSON(http.StatusOK, kubernetes.ListK8sNamespaces(""))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/namespace [post]
+// @Security Bearer
 func createNamespace(c *gin.Context) {
 	var data v1.Namespace
 	err := c.MustBindWith(&data, binding.YAML)
@@ -269,6 +282,12 @@ func createNamespace(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, kubernetes.CreateK8sNamespace(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/namespace [delete]
+// @Security Bearer
 func deleteNamespace(c *gin.Context) {
 	var data v1.Namespace
 	err := c.MustBindWith(&data, binding.JSON)
@@ -279,15 +298,34 @@ func deleteNamespace(c *gin.Context) {
 }
 
 // PODS
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.Pod
+// @Router /workload/pod [get]
+// @Security Bearer
 func allPods(c *gin.Context) {
 	namespace := c.Query("namespace")
 	RespondForWorkloadResult(c, kubernetes.AllK8sPods(namespace))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/pod/describe [get]
+// @Security Bearer
+// @Param namespace query string false  "namespace"
+// @Param name query string false  "resource name"
 func describePod(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
 	RespondForWorkloadResult(c, kubernetes.DescribeK8sPod(namespace, name))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/pod [delete]
+// @Security Bearer
 func deletePod(c *gin.Context) {
 	var data v1.Pod
 	err := c.MustBindWith(&data, binding.JSON)
@@ -297,6 +335,12 @@ func deletePod(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.DeleteK8sPod(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/pod [patch]
+// @Security Bearer
 func patchPod(c *gin.Context) {
 	var data v1.Pod
 	err := c.MustBindWith(&data, binding.JSON)
@@ -306,6 +350,12 @@ func patchPod(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.UpdateK8sPod(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/pod [post]
+// @Security Bearer
 func createPod(c *gin.Context) {
 	var data v1.Pod
 	err := c.MustBindWith(&data, binding.YAML)
@@ -317,15 +367,35 @@ func createPod(c *gin.Context) {
 }
 
 // DEPLOYMENTS
+// @Tags Workloads
+// @Produce json
+// @Success 200 {array} v1Apps.Deployment
+// @Router /workload/deployment [get]
+// @Security Bearer
+// @Param namespace query string false  "namespace"
 func allDeployments(c *gin.Context) {
 	namespace := c.Query("namespace")
 	RespondForWorkloadResult(c, kubernetes.AllK8sDeployments(namespace))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/deployment/describe [get]
+// @Security Bearer
+// @Param namespace query string false  "namespace"
+// @Param name query string false  "resource name"
 func describeDeployment(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
 	RespondForWorkloadResult(c, kubernetes.DescribeK8sDeployment(namespace, name))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.Deployment
+// @Router /workload/deployment [delete]
+// @Security Bearer
 func deleteDeployment(c *gin.Context) {
 	var data v1Apps.Deployment
 	err := c.MustBindWith(&data, binding.JSON)
@@ -335,6 +405,12 @@ func deleteDeployment(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.DeleteK8sDeployment(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.Deployment
+// @Router /workload/deployment [patch]
+// @Security Bearer
 func patchDeployment(c *gin.Context) {
 	var data v1Apps.Deployment
 	err := c.MustBindWith(&data, binding.JSON)
@@ -344,6 +420,12 @@ func patchDeployment(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.UpdateK8sDeployment(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.Deployment
+// @Router /workload/deployment [post]
+// @Security Bearer
 func createDeployment(c *gin.Context) {
 	var data v1Apps.Deployment
 	err := c.MustBindWith(&data, binding.YAML)
@@ -355,15 +437,35 @@ func createDeployment(c *gin.Context) {
 }
 
 // SERVICES
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.Service
+// @Router /workload/service/describe [get]
+// @Security Bearer
+// @Param namespace query string false  "namespace"
 func allServices(c *gin.Context) {
 	namespace := c.Query("namespace")
 	RespondForWorkloadResult(c, kubernetes.AllK8sServices(namespace))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/service/describe [get]
+// @Security Bearer
+// @Param namespace query string false  "namespace"
+// @Param name query string false  "resource name"
 func describeService(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
 	RespondForWorkloadResult(c, kubernetes.DescribeK8sService(namespace, name))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.Service
+// @Router /workload/service [delete]
+// @Security Bearer
 func deleteService(c *gin.Context) {
 	var data v1.Service
 	err := c.MustBindWith(&data, binding.JSON)
@@ -373,6 +475,12 @@ func deleteService(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.DeleteK8sService(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.Service
+// @Router /workload/service [patch]
+// @Security Bearer
 func patchService(c *gin.Context) {
 	var data v1.Service
 	err := c.MustBindWith(&data, binding.JSON)
@@ -382,6 +490,12 @@ func patchService(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.UpdateK8sService(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.Service
+// @Router /workload/service [post]
+// @Security Bearer
 func createService(c *gin.Context) {
 	var data v1.Service
 	err := c.MustBindWith(&data, binding.YAML)
@@ -393,15 +507,35 @@ func createService(c *gin.Context) {
 }
 
 // INGRESSES
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1Networking.Ingress
+// @Router /workload/ingress/describe [get]
+// @Security Bearer
+// @Param namespace query string false  "namespace"
 func allIngresses(c *gin.Context) {
 	namespace := c.Query("namespace")
 	RespondForWorkloadResult(c, kubernetes.AllK8sIngresses(namespace))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/ingress/describe [get]
+// @Security Bearer
+// @Param namespace query string false  "namespace"
+// @Param name query string false  "resource name"
 func describeIngress(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
 	RespondForWorkloadResult(c, kubernetes.DescribeK8sIngress(namespace, name))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1Networking.Ingress
+// @Router /workload/ingress [delete]
+// @Security Bearer
 func deleteIngress(c *gin.Context) {
 	var data v1Networking.Ingress
 	err := c.MustBindWith(&data, binding.JSON)
@@ -411,6 +545,12 @@ func deleteIngress(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.DeleteK8sIngress(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1Networking.Ingress
+// @Router /workload/ingress [patch]
+// @Security Bearer
 func patchIngress(c *gin.Context) {
 	var data v1Networking.Ingress
 	err := c.MustBindWith(&data, binding.JSON)
@@ -420,6 +560,12 @@ func patchIngress(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.UpdateK8sIngress(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1Networking.Ingress
+// @Router /workload/ingress [post]
+// @Security Bearer
 func createIngress(c *gin.Context) {
 	var data v1Networking.Ingress
 	err := c.MustBindWith(&data, binding.YAML)
@@ -431,15 +577,35 @@ func createIngress(c *gin.Context) {
 }
 
 // CONFIGMAPS
+// @Tags Workloads
+// @Produce json
+// @Success 200 {array} v1.ConfigMap
+// @Router /workload/configmap [get]
+// @Security Bearer
+// @Param namespace query string false "namespace"
 func allConfigmaps(c *gin.Context) {
 	namespace := c.Query("namespace")
 	RespondForWorkloadResult(c, kubernetes.AllK8sConfigmaps(namespace))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/configmap/describe [get]
+// @Security Bearer
+// @Param namespace query string false "namespace"
+// @Param name query string false "resource name"
 func describeConfigmap(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
 	RespondForWorkloadResult(c, kubernetes.DescribeK8sConfigmap(namespace, name))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.ConfigMap
+// @Router /workload/configmap [delete]
+// @Security Bearer
 func deleteConfigmap(c *gin.Context) {
 	var data v1.ConfigMap
 	err := c.MustBindWith(&data, binding.JSON)
@@ -449,6 +615,12 @@ func deleteConfigmap(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.DeleteK8sConfigmap(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.ConfigMap
+// @Router /workload/configmap [patch]
+// @Security Bearer
 func patchConfigmap(c *gin.Context) {
 	var data v1.ConfigMap
 	err := c.MustBindWith(&data, binding.JSON)
@@ -458,6 +630,12 @@ func patchConfigmap(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.UpdateK8sConfigMap(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.ConfigMap
+// @Router /workload/configmap [post]
+// @Security Bearer
 func createConfigmap(c *gin.Context) {
 	var data v1.ConfigMap
 	err := c.MustBindWith(&data, binding.YAML)
@@ -469,15 +647,35 @@ func createConfigmap(c *gin.Context) {
 }
 
 // SECRETS
+// @Tags Workloads
+// @Produce json
+// @Success 200 {array} v1.Secret
+// @Router /workload/secret [get]
+// @Security Bearer
+// @Param namespace query string false  "namespace"
 func allSecrets(c *gin.Context) {
 	namespace := c.Query("namespace")
 	RespondForWorkloadResult(c, kubernetes.AllK8sSecrets(namespace))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/secret/describe [get]
+// @Security Bearer
+// @Param namespace query string false  "namespace"
+// @Param name query string false  "resource name"
 func describeSecret(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
 	RespondForWorkloadResult(c, kubernetes.DescribeK8sSecret(namespace, name))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.Secret
+// @Router /workload/secret [delete]
+// @Security Bearer
 func deleteSecret(c *gin.Context) {
 	var data v1.Secret
 	err := c.MustBindWith(&data, binding.JSON)
@@ -487,6 +685,12 @@ func deleteSecret(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.DeleteK8sSecret(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.Secret
+// @Router /workload/secret [patch]
+// @Security Bearer
 func patchSecret(c *gin.Context) {
 	var data v1.Secret
 	err := c.MustBindWith(&data, binding.JSON)
@@ -496,6 +700,12 @@ func patchSecret(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.UpdateK8sSecret(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1.Secret
+// @Router /workload/secret [post]
+// @Security Bearer
 func createSecret(c *gin.Context) {
 	var data v1.Secret
 	err := c.MustBindWith(&data, binding.YAML)
@@ -507,24 +717,55 @@ func createSecret(c *gin.Context) {
 }
 
 // NODES
+// @Tags Workloads
+// @Produce json
+// @Success 200 {array} kubernetes.K8sWorkloadResult
+// @Router /workload/node/all [get]
+// @Security Bearer
 func allNodes(c *gin.Context) {
 	RespondForWorkloadResult(c, kubernetes.ListK8sNodes())
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Router /workload/node/describe [get]
+// @Security Bearer
+// @Param name query string false  "resource name"
 func describeNode(c *gin.Context) {
 	name := c.Query("name")
 	RespondForWorkloadResult(c, kubernetes.DescribeK8sNode(name))
 }
 
 // DAEMONSETS
+// @Tags Workloads
+// @Produce json
+// @Success 200 {array} v1Apps.DaemonSet
+// @Router /workload/daemonset [get]
+// @Security Bearer
+// @Param namespace query string false "namespace"
 func allDaemonSets(c *gin.Context) {
 	namespace := c.Query("namespace")
 	RespondForWorkloadResult(c, kubernetes.AllK8sDaemonsets(namespace))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1Apps.DaemonSet
+// @Router /workload/daemonset/describe [get]
+// @Security Bearer
+// @Param namespace query string false "namespace"
 func describeDaemonSet(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
 	RespondForWorkloadResult(c, kubernetes.DescribeK8sDaemonSet(namespace, name))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1Apps.DaemonSet
+// @Router /workload/daemonset [delete]
+// @Security Bearer
 func deleteDaemonSet(c *gin.Context) {
 	var data v1Apps.DaemonSet
 	err := c.MustBindWith(&data, binding.JSON)
@@ -534,6 +775,12 @@ func deleteDaemonSet(c *gin.Context) {
 	}
 	RespondForWorkloadResult(c, kubernetes.DeleteK8sDaemonSet(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} v1Apps.DaemonSet
+// @Router /workload/daemonset [patch]
+// @Security Bearer
 func patchDaemonSet(c *gin.Context) {
 	var data v1Apps.DaemonSet
 	err := c.MustBindWith(&data, binding.JSON)
