@@ -55,18 +55,20 @@ var ChangeLog string
 var CONFIG Config
 var ConfigPath string
 
-func InitConfigYaml(showDebug bool, customConfigName string, useInClusterConfig bool) {
+func InitConfigYaml(showDebug bool, customConfigName string, stage string) {
 	_, configPath := GetDirectories(customConfigName)
 	ConfigPath = configPath
 
-	if useInClusterConfig {
-		WriteDefaultConfig(useInClusterConfig)
-	} else {
+	// create default config if not exists
+	// if stage is set, then we overwrite the config
+	if stage == "" {
 		if _, err := os.Stat(configPath); err == nil || os.IsExist(err) {
 			// do nothing, file exists
 		} else {
-			WriteDefaultConfig(useInClusterConfig)
+			WriteDefaultConfig(stage)
 		}
+	} else {
+		WriteDefaultConfig(stage)
 	}
 
 	// read configuration from the file and environment variables
@@ -181,7 +183,7 @@ func DeleteCurrentConfig() {
 	}
 }
 
-func WriteDefaultConfig(useInClusterConfig bool) {
+func WriteDefaultConfig(stage string) {
 	configDir, configPath := GetDirectories("")
 
 	// write it to default location
@@ -191,18 +193,26 @@ func WriteDefaultConfig(useInClusterConfig bool) {
 		logger.Log.Warning(err)
 	}
 
-	stage := strings.ToLower(os.Getenv("STAGE"))
-
-	if useInClusterConfig {
-		err = os.WriteFile(configPath, []byte(DefaultConfigFileProd), 0755)
+	// check if stage is set via env variable
+	envVarStage := strings.ToLower(os.Getenv("STAGE"))
+	if envVarStage != "" {
+		stage = envVarStage
 	} else {
-		if stage == "dev" {
-			err = os.WriteFile(configPath, []byte(DefaultConfigFileDev), 0755)
-		} else if stage == "prod" {
-			err = os.WriteFile(configPath, []byte(DefaultConfigFileProd), 0755)
-		} else {
-			err = os.WriteFile(configPath, []byte(DefaultConfigLocalFile), 0755)
+		// default stage is prod
+		if stage == "" {
+			stage = "prod"
 		}
+	}
+
+	if stage == "dev" {
+		err = os.WriteFile(configPath, []byte(DefaultConfigFileDev), 0755)
+	} else if stage == "prod" {
+		err = os.WriteFile(configPath, []byte(DefaultConfigFileProd), 0755)
+	} else if stage == "local" {
+		err = os.WriteFile(configPath, []byte(DefaultConfigLocalFile), 0755)
+	} else {
+		fmt.Println("No stage set. Using local config.")
+		err = os.WriteFile(configPath, []byte(DefaultConfigLocalFile), 0755)
 	}
 	if err != nil {
 		logger.Log.Error("Error writing " + configPath + " file")

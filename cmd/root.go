@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	cc "github.com/ivanpirog/coloredcobra"
@@ -9,7 +10,7 @@ import (
 )
 
 var resetConfig bool
-var useClusterConfig bool
+var stage string
 var debug bool
 var customConfig string
 var namespace string
@@ -33,7 +34,8 @@ var rootCmd = &cobra.Command{
 		if resetConfig {
 			utils.DeleteCurrentConfig()
 		}
-		utils.InitConfigYaml(debug, customConfig, useClusterConfig)
+		fmt.Println("XXX stage: ", stage)
+		utils.InitConfigYaml(debug, customConfig, stage)
 	},
 }
 
@@ -55,7 +57,7 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(&useClusterConfig, "use-cluster-config", "x", false, "Load different default config to run in cluster")
+	rootCmd.PersistentFlags().StringVarP(&stage, "stage", "s", "", "Use different stage environment")
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug information")
 	rootCmd.PersistentFlags().BoolVarP(&resetConfig, "reset-config", "k", false, "Delete the current config and replace it with the default one")
 	rootCmd.PersistentFlags().StringVarP(&customConfig, "config", "y", "", "Use config from custom location")
