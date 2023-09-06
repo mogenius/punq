@@ -4,13 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
-	"os"
-	"time"
-
 	"github.com/mogenius/punq/dtos"
-	"github.com/mogenius/punq/structs"
 	"github.com/mogenius/punq/version"
+	"os"
 
 	"github.com/mogenius/punq/utils"
 
@@ -42,21 +38,21 @@ func Deploy(clusterName string, ingressHostname string) {
 		logger.Log.Fatalf("Error creating cluster secret. Aborting: %s.", err.Error())
 	}
 
-	adminUser, err := CreateUserSecretIfNotExist(provider)
-	if err != nil {
-		logger.Log.Fatalf("Error creating user secret. Aborting: %s.", err.Error())
-	}
-	if adminUser != nil {
-		structs.PrettyPrint(adminUser)
-	}
+	// adminUser, err := CreateUserSecretIfNotExist(provider)
+	// if err != nil {
+	// 	logger.Log.Fatalf("Error creating user secret. Aborting: %s.", err.Error())
+	// }
+	// if adminUser != nil {
+	// 	structs.PrettyPrint(adminUser)
+	// }
 
-	ownContext, err := CreateContextSecretIfNotExist(provider)
+	_, err = CreateContextSecretIfNotExist(provider)
 	if err != nil {
 		logger.Log.Fatalf("Error creating context secret. Aborting: %s.", err.Error())
 	}
-	if adminUser != nil {
-		fmt.Printf("Contexts saved (%d bytes).\n", len(ownContext.ContextBase64))
-	}
+	// if adminUser != nil {
+	// 	fmt.Printf("Contexts saved (%d bytes).\n", len(ownContext.ContextBase64))
+	// }
 
 	if ingressHostname != "" {
 		addService(provider)
@@ -231,53 +227,53 @@ func writePunqSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 	return clusterSecret, nil
 }
 
-func CreateUserSecretIfNotExist(kubeProvider *KubeProvider) (*dtos.PunqUser, error) {
-	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+// func CreateUserSecretIfNotExist(kubeProvider *KubeProvider) (*dtos.PunqUser, error) {
+// 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+//
+// 	existingSecret, getErr := secretClient.Get(context.TODO(), utils.USERSSECRET, metav1.GetOptions{})
+// 	return writeUserSecret(secretClient, existingSecret, getErr)
+// }
 
-	existingSecret, getErr := secretClient.Get(context.TODO(), utils.USERSSECRET, metav1.GetOptions{})
-	return writeUserSecret(secretClient, existingSecret, getErr)
-}
-
-func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (*dtos.PunqUser, error) {
-	password := utils.NanoId()
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, err
-	}
-
-	adminUser := dtos.PunqUser{
-		Id:          utils.NanoId(),
-		Email:       "your-email@mogenius.com",
-		Password:    string(hashedPassword),
-		DisplayName: "Admin User",
-		AccessLevel: dtos.ADMIN,
-		Created:     time.Now().Format(time.RFC3339),
-	}
-
-	rawAdmin, err := json.Marshal(adminUser)
-	if err != nil {
-		logger.Log.Errorf("Error marshaling %s", err)
-	}
-
-	secret := utils.InitSecret()
-	secret.ObjectMeta.Name = utils.USERSSECRET
-	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
-	delete(secret.StringData, "exampleData") // delete example data
-	secret.StringData[adminUser.Id] = string(rawAdmin)
-
-	if existingSecret == nil || getErr != nil {
-		fmt.Println("Creating new punq-user secret ...")
-		_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
-		if err != nil {
-			logger.Log.Error(err)
-			return nil, err
-		}
-		fmt.Println("Created new punq-user secret. ✅")
-		adminUser.Password = password
-		return &adminUser, nil
-	}
-	return nil, nil
-}
+// func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (*dtos.PunqUser, error) {
+// 	password := utils.NanoId()
+// 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+//
+// 	adminUser := dtos.PunqUser{
+// 		Id:          utils.NanoId(),
+// 		Email:       "your-email@mogenius.com",
+// 		Password:    string(hashedPassword),
+// 		DisplayName: "Admin User",
+// 		AccessLevel: dtos.ADMIN,
+// 		Created:     time.Now().Format(time.RFC3339),
+// 	}
+//
+// 	rawAdmin, err := json.Marshal(adminUser)
+// 	if err != nil {
+// 		logger.Log.Errorf("Error marshaling %s", err)
+// 	}
+//
+// 	secret := utils.InitSecret()
+// 	secret.ObjectMeta.Name = utils.USERSSECRET
+// 	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
+// 	delete(secret.StringData, "exampleData") // delete example data
+// 	secret.StringData[adminUser.Id] = string(rawAdmin)
+//
+// 	if existingSecret == nil || getErr != nil {
+// 		fmt.Println("Creating new punq-user secret ...")
+// 		_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
+// 		if err != nil {
+// 			logger.Log.Error(err)
+// 			return nil, err
+// 		}
+// 		fmt.Println("Created new punq-user secret. ✅")
+// 		adminUser.Password = password
+// 		return &adminUser, nil
+// 	}
+// 	return nil, nil
+// }
 
 func CreateContextSecretIfNotExist(kubeProvider *KubeProvider) (*dtos.PunqContext, error) {
 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)

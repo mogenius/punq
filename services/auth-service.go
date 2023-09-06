@@ -120,6 +120,10 @@ func generateAuthKeyPair() (*KeyPair, error) {
 	return &keyPair, nil
 }
 
+func InitAuthService() {
+	CreateKeyPair()
+}
+
 func CreateKeyPair() *KeyPair {
 	provider := kubernetes.NewKubeProvider()
 	if provider == nil {

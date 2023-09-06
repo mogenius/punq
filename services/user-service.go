@@ -1,15 +1,83 @@
 package services
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/mogenius/punq/structs"
+	"time"
+
 	"golang.org/x/crypto/bcrypt"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
 )
+
+const PunqAdminIdKey = "admin_id"
+
+func InitUserService() {
+	CreateUserSecret()
+	CreateAdminUser()
+}
+
+func CreateUserSecret() {
+	provider := kubernetes.NewKubeProvider()
+	if provider == nil {
+		logger.Log.Fatal("Failed to load kubeprovider.")
+	}
+
+	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+	existingSecret, getErr := secretClient.Get(context.TODO(), utils.USERSSECRET, metav1.GetOptions{})
+
+	secret := utils.InitSecret()
+	secret.ObjectMeta.Name = utils.USERSSECRET
+	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
+	delete(secret.StringData, "exampleData") // delete example data
+
+	// if not exist
+	if existingSecret == nil || getErr != nil {
+		fmt.Println("Creating new punq-auth secret ...")
+		_, err := secretClient.Create(context.TODO(), &secret, kubernetes.MoCreateOptions())
+		if err != nil {
+			logger.Log.Error(err)
+			return
+		}
+		fmt.Println("Created new punq-users secret. ✅")
+	}
+}
+
+func CreateAdminUser() {
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	if secret == nil {
+		return
+	}
+
+	if secret.Data[PunqAdminIdKey] != nil {
+		return
+	}
+
+	password := utils.NanoId()
+
+	adminUser := dtos.PunqUser{
+		Id:          utils.NanoId(),
+		Email:       "admin@punq.dev",
+		Password:    password,
+		DisplayName: "Admin User",
+		AccessLevel: dtos.ADMIN,
+		Created:     time.Now().Format(time.RFC3339),
+	}
+
+	AddUser(adminUser)
+	structs.PrettyPrint(adminUser)
+	secret = kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	strData := make(map[string]string)
+	strData[PunqAdminIdKey] = adminUser.Id
+	secret.StringData = strData
+	kubernetes.UpdateK8sSecret(*secret)
+}
 
 func ListUsers() []dtos.PunqUser {
 	users := []dtos.PunqUser{}
@@ -21,6 +89,9 @@ func ListUsers() []dtos.PunqUser {
 	}
 
 	for userId, userRaw := range secret.Data {
+		if userId == PunqAdminIdKey {
+			continue
+		}
 		user := dtos.PunqUser{}
 		err := json.Unmarshal(userRaw, &user)
 		if err != nil {
@@ -62,7 +133,11 @@ func AddUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
 	if err != nil {
 		logger.Log.Error("failed to Marshal user '%s'", user.Id)
 	}
-	secret.Data[user.Id] = rawData
+
+	if secret.StringData == nil {
+		secret.StringData = make(map[string]string)
+	}
+	secret.StringData[user.Id] = string(rawData)
 
 	return kubernetes.UpdateK8sSecret(*secret)
 }
@@ -142,6 +217,9 @@ func GetUserByEmail(email string) *dtos.PunqUser {
 	}
 
 	for userId, userRaw := range secret.Data {
+		if userId == PunqAdminIdKey {
+			continue
+		}
 		user := dtos.PunqUser{}
 		err := json.Unmarshal(userRaw, &user)
 		if err != nil {
@@ -163,15 +241,12 @@ func GetAdmin() (*dtos.PunqUser, error) {
 		return nil, err
 	}
 
-	for userId, userRaw := range secret.Data {
-		if userId == utils.USERADMIN {
-			admin := dtos.PunqUser{}
-			err := json.Unmarshal([]byte(userRaw), &admin)
-			if err != nil {
-				logger.Log.Error("Failed to Unmarshal user '%s'.", userId)
-			}
-			return &admin, nil
-		}
+	adminId := string(secret.Data[PunqAdminIdKey])
+
+	adminUser := GetUser(adminId)
+	if adminUser != nil {
+		return adminUser, nil
 	}
+
 	return nil, fmt.Errorf("admin user not found")
 }
