@@ -6637,6 +6637,19 @@ definitions:
 info:
   contact: {}
 paths:
+  /auth/authenticate:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.PunqToken'
+      security:
+      - Bearer: []
+      tags:
+      - Auth
   /auth/login:
     post:
       parameters:
@@ -6654,7 +6667,7 @@ paths:
           schema:
             $ref: '#/definitions/dtos.PunqToken'
       tags:
-      - Login
+      - Auth
   /context/all:
     get:
       produces:

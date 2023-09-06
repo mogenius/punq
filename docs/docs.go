@@ -15,13 +15,36 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/authenticate": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PunqToken"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Login"
+                    "Auth"
                 ],
                 "parameters": [
                     {
