@@ -1,4 +1,11 @@
 
+### [1.1.43](https://github.com/mogenius/punq/compare/v1.1.42...v1.1.43) (2023-09-06)
+
+
+### Bug Fixes
+
+* cronjob change restart policy ([ff44293](https://github.com/mogenius/punq/commit/ff44293ef6a868f399ec3525ccd724765244675e))
+
 ### [1.1.42](https://github.com/mogenius/punq/compare/v1.1.41...v1.1.42) (2023-09-04)
 
 
