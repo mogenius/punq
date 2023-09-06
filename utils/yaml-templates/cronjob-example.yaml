@@ -28,4 +28,4 @@ spec:
               args:
                 - -c
                 - date; echo 'Hello World from mogenius'; sleep 10;
-          restartPolicy: OnFailure
+          restartPolicy: Never
