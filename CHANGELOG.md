@@ -1,4 +1,11 @@
 
+### [1.3.4](https://github.com/mogenius/punq/compare/dev1.3.3...dev1.3.4) (2023-09-06)
+
+
+### Bug Fixes
+
+* minor fix. ([1e6b6e9](https://github.com/mogenius/punq/commit/1e6b6e996a3eb4bb0ac1dfbc1b7178b97a330a3b))
+
 ### [1.3.3](https://github.com/mogenius/punq/compare/dev1.3.2...dev1.3.3) (2023-09-06)
 
 
