@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/services"
-	"github.com/mogenius/punq/structs"
 	"net/http"
 )
 
@@ -21,8 +20,6 @@ func InitAuthRoutes(router *gin.Engine) {
 func login(c *gin.Context) {
 	input := LoginInput{}
 
-	structs.PrettyPrint(input)
-
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
@@ -30,7 +27,6 @@ func login(c *gin.Context) {
 	}
 
 	user := services.GetUserByEmail(input.Email)
-	structs.PrettyPrint(user)
 
 	_, err = user.PasswordCheck(input.Password)
 	if err != nil {

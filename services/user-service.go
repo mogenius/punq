@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/mogenius/punq/structs"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -14,6 +15,8 @@ import (
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
 )
+
+const PunqAdminIdKey = "admin_id"
 
 func InitUserService() {
 	CreateUserSecret()
@@ -52,7 +55,7 @@ func CreateAdminUser() {
 		return
 	}
 
-	if secret.Data["admin_id"] != nil {
+	if secret.Data[PunqAdminIdKey] != nil {
 		return
 	}
 
@@ -68,9 +71,10 @@ func CreateAdminUser() {
 	}
 
 	AddUser(adminUser)
+	structs.PrettyPrint(adminUser)
 	secret = kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	strData := make(map[string]string)
-	strData["admin_id"] = adminUser.Id
+	strData[PunqAdminIdKey] = adminUser.Id
 	secret.StringData = strData
 	kubernetes.UpdateK8sSecret(*secret)
 }
@@ -85,6 +89,9 @@ func ListUsers() []dtos.PunqUser {
 	}
 
 	for userId, userRaw := range secret.Data {
+		if userId == PunqAdminIdKey {
+			continue
+		}
 		user := dtos.PunqUser{}
 		err := json.Unmarshal(userRaw, &user)
 		if err != nil {
@@ -210,6 +217,9 @@ func GetUserByEmail(email string) *dtos.PunqUser {
 	}
 
 	for userId, userRaw := range secret.Data {
+		if userId == PunqAdminIdKey {
+			continue
+		}
 		user := dtos.PunqUser{}
 		err := json.Unmarshal(userRaw, &user)
 		if err != nil {
@@ -231,15 +241,12 @@ func GetAdmin() (*dtos.PunqUser, error) {
 		return nil, err
 	}
 
-	for userId, userRaw := range secret.Data {
-		if userId == utils.USERADMIN {
-			admin := dtos.PunqUser{}
-			err := json.Unmarshal([]byte(userRaw), &admin)
-			if err != nil {
-				logger.Log.Error("Failed to Unmarshal user '%s'.", userId)
-			}
-			return &admin, nil
-		}
+	adminId := string(secret.Data[PunqAdminIdKey])
+
+	adminUser := GetUser(adminId)
+	if adminUser != nil {
+		return adminUser, nil
 	}
+
 	return nil, fmt.Errorf("admin user not found")
 }

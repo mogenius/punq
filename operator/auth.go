@@ -6,10 +6,34 @@ import (
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/services"
 	"net/http"
+	"regexp"
 )
 
 // var users []dtos.PunqUser = []dtos.PunqUser{}
 // var nextUpdate time.Time = time.Now().Add(-1 * time.Minute) // trigger first update instant
+
+type AuthHeader struct {
+	Scheme string
+	Value  string
+}
+
+func parseAuthHeader(hdrValue string) *AuthHeader {
+	re := regexp.MustCompile(`(\S+)\s+(\S+)`)
+
+	if hdrValue == "" {
+		return nil
+	}
+
+	matches := re.FindStringSubmatch(hdrValue)
+	if matches == nil {
+		return nil
+	}
+
+	return &AuthHeader{
+		Scheme: matches[1],
+		Value:  matches[2],
+	}
+}
 
 func Auth(requiredAccessLevel dtos.AccessLevel) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -33,11 +57,13 @@ func Auth(requiredAccessLevel dtos.AccessLevel) gin.HandlerFunc {
 // }
 
 func CheckUserAuthorization(c *gin.Context) (*dtos.PunqUser, error) {
-	authorization := GetRequiredHeader(c, "authorization")
-	if authorization == "" {
+	authorization := parseAuthHeader(GetRequiredHeader(c, "authorization"))
+
+	if authorization == nil {
 		return nil, fmt.Errorf("MalformedRequest")
 	}
-	claims := services.ValidationToken(authorization)
+
+	claims := services.ValidationToken(authorization.Value)
 	if claims == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"err": "invalid token"})
 		return nil, fmt.Errorf("MalformedRequest")
