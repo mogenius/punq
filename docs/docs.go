@@ -89,6 +89,27 @@ const docTemplate = `{
             }
         },
         "/user": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PunqUser"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {

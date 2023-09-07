@@ -15,6 +15,7 @@ func InitUserRoutes(router *gin.Engine) {
 	userRoutes := router.Group("/user", Auth(dtos.ADMIN))
 	{
 		userRoutes.GET("/all", userList)
+		userRoutes.GET("/", currentUserGet)
 		userRoutes.GET("/:id", userGet)
 		userRoutes.DELETE("/:id", userDelete)
 		userRoutes.PATCH("/", userUpdate)
@@ -42,6 +43,26 @@ func userList(c *gin.Context) {
 func userDelete(c *gin.Context) {
 	userId := c.Param("id")
 	c.JSON(http.StatusOK, services.DeleteUser(userId))
+}
+
+// @Tags User
+// @Produce json
+// @Success 200 {object} dtos.PunqUser
+// @Router /user [get]
+// @Security Bearer
+func currentUserGet(c *gin.Context) {
+	if temp, exists := c.Get("user"); exists {
+		user, ok := temp.(dtos.PunqUser)
+		if !ok {
+			utils.MalformedMessage(c, "Type Assertion failed")
+			return
+		}
+		c.JSON(http.StatusOK, user)
+		return
+	}
+	utils.Unauthorized(c, "Unauthorized")
+	return
+
 }
 
 // @Tags User
