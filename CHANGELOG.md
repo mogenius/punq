@@ -1,5 +1,11 @@
 
-<<<<<<< HEAD
+### [1.3.10](https://github.com/mogenius/punq/compare/dev1.3.9...dev1.3.10) (2023-09-07)
+
+
+### Bug Fixes
+
+* action fixed. ([28ac266](https://github.com/mogenius/punq/commit/28ac266bfce5794063aafa33e8b283a636a07a0e))
+
 ### [1.1.42](https://github.com/mogenius/punq/compare/v1.1.41...v1.1.42) (2023-09-04)
 =======
 ### [1.3.9](https://github.com/mogenius/punq/compare/dev1.3.8...dev1.3.9) (2023-09-07)
