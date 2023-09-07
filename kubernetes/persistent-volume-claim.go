@@ -26,7 +26,7 @@ func AllPersistentVolumeClaims(namespaceName string) []core.PersistentVolumeClai
 	return result
 }
 
-func AllK8sPersistentVolumeClaims(namespaceName string) K8sWorkloadResult {
+func AllK8sPersistentVolumeClaims(namespaceName string) utils.K8sWorkloadResult {
 	result := []core.PersistentVolumeClaim{}
 
 	provider := NewKubeProvider()
@@ -42,7 +42,7 @@ func AllK8sPersistentVolumeClaims(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) K8sWorkloadResult {
+func UpdateK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -52,7 +52,7 @@ func UpdateK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) K8sWorkload
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) K8sWorkloadResult {
+func DeleteK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -62,7 +62,7 @@ func DeleteK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) K8sWorkload
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sPersistentVolumeClaim(namespace string, name string) K8sWorkloadResult {
+func DescribeK8sPersistentVolumeClaim(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "persistentvolumeclaim", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -74,7 +74,7 @@ func DescribeK8sPersistentVolumeClaim(namespace string, name string) K8sWorkload
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) K8sWorkloadResult {
+func CreateK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

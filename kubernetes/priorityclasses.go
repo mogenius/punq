@@ -13,7 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllPriorityClasses() K8sWorkloadResult {
+func AllPriorityClasses() utils.K8sWorkloadResult {
 	result := []v1.PriorityClass{}
 
 	provider := NewKubeProvider()
@@ -31,7 +31,7 @@ func AllPriorityClasses() K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sPriorityClass(data v1.PriorityClass) K8sWorkloadResult {
+func UpdateK8sPriorityClass(data v1.PriorityClass) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.SchedulingV1().PriorityClasses()
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -41,7 +41,7 @@ func UpdateK8sPriorityClass(data v1.PriorityClass) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sPriorityClass(data v1.PriorityClass) K8sWorkloadResult {
+func DeleteK8sPriorityClass(data v1.PriorityClass) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.SchedulingV1().PriorityClasses()
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -51,7 +51,7 @@ func DeleteK8sPriorityClass(data v1.PriorityClass) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sPriorityClass(name string) K8sWorkloadResult {
+func DescribeK8sPriorityClass(name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "priorityclasses", name)
 
 	output, err := cmd.CombinedOutput()
@@ -63,7 +63,7 @@ func DescribeK8sPriorityClass(name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sPriorityClass(data v1.PriorityClass) K8sWorkloadResult {
+func CreateK8sPriorityClass(data v1.PriorityClass) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.SchedulingV1().PriorityClasses()
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

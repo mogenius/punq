@@ -30,7 +30,7 @@ func AllReplicasets(namespaceName string) []v1.ReplicaSet {
 	return result
 }
 
-func AllK8sReplicasets(namespaceName string) K8sWorkloadResult {
+func AllK8sReplicasets(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.ReplicaSet{}
 
 	provider := NewKubeProvider()
@@ -48,7 +48,7 @@ func AllK8sReplicasets(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sReplicaset(data v1.ReplicaSet) K8sWorkloadResult {
+func UpdateK8sReplicaset(data v1.ReplicaSet) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -58,7 +58,7 @@ func UpdateK8sReplicaset(data v1.ReplicaSet) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sReplicaset(data v1.ReplicaSet) K8sWorkloadResult {
+func DeleteK8sReplicaset(data v1.ReplicaSet) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -68,7 +68,7 @@ func DeleteK8sReplicaset(data v1.ReplicaSet) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sReplicaset(namespace string, name string) K8sWorkloadResult {
+func DescribeK8sReplicaset(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "replicaset", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -80,7 +80,7 @@ func DescribeK8sReplicaset(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sReplicaSet(data v1.ReplicaSet) K8sWorkloadResult {
+func CreateK8sReplicaSet(data v1.ReplicaSet) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
