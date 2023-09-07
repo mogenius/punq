@@ -6703,6 +6703,41 @@ paths:
             $ref: '#/definitions/dtos.PunqToken'
       tags:
       - Auth
+  /context/{ctxId}:
+    delete:
+      parameters:
+      - description: ID of the context
+        in: path
+        name: ctxId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.PunqContext'
+      security:
+      - Bearer: []
+      tags:
+      - Context
+    get:
+      parameters:
+      - description: ctxId of the context-id
+        in: path
+        name: ctxId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.PunqContext'
+      security:
+      - Bearer: []
+      tags:
+      - Context
   /context/all:
     get:
       produces:
@@ -6714,6 +6749,8 @@ paths:
             items:
               $ref: '#/definitions/dtos.PunqContext'
             type: array
+      security:
+      - Bearer: []
       tags:
       - Context
   /user:

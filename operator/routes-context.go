@@ -26,10 +26,17 @@ func InitContextRoutes(router *gin.Engine) {
 // @Produce json
 // @Success 200 {array} dtos.PunqContext
 // @Router /context/all [get]
+// @Security Bearer
 func allContexts(c *gin.Context) {
 	c.JSON(http.StatusOK, services.ListContexts())
 }
 
+// @Tags Context
+// @Produce json
+// @Success 200 {object} dtos.PunqContext
+// @Router /context/{ctxId} [get]
+// @Param ctxId path string false  "ctxId of the context-id"
+// @Security Bearer
 func getContext(c *gin.Context) {
 	ctxId := c.Param("ctxId")
 
@@ -42,6 +49,12 @@ func getContext(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Tags Context
+// @Produce json
+// @Success 200 {object} dtos.PunqContext
+// @Router /context/{ctxId} [delete]
+// @Param ctxId path string false  "ID of the context"
+// @Security Bearer
 func deleteContext(c *gin.Context) {
 	ctxId := c.Param("ctxId")
 

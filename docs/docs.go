@@ -69,6 +69,11 @@ const docTemplate = `{
         },
         "/context/all": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -83,6 +88,66 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/dtos.PunqContext"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/context/{ctxId}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Context"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ctxId of the context-id",
+                        "name": "ctxId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PunqContext"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Context"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the context",
+                        "name": "ctxId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PunqContext"
                         }
                     }
                 }
