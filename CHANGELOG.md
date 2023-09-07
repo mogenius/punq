@@ -1,4 +1,11 @@
 
+### [1.3.14](https://github.com/mogenius/punq/compare/dev1.3.13...dev1.3.14) (2023-09-07)
+
+
+### Bug Fixes
+
+* update context service return values ([9a40a2c](https://github.com/mogenius/punq/commit/9a40a2cae7344bbe327daa99483a6532519010ab))
+
 ### [1.3.13](https://github.com/mogenius/punq/compare/dev1.3.12...dev1.3.13) (2023-09-07)
 
 ### [1.3.12](https://github.com/mogenius/punq/compare/dev1.3.11...dev1.3.12) (2023-09-07)
