@@ -11,10 +11,15 @@ import (
 )
 
 func InitContextRoutes(router *gin.Engine) {
-	router.GET("/context/all", Auth(dtos.ADMIN), allContexts)
-	router.GET("/context/:ctxId", Auth(dtos.ADMIN), getContext)
-	router.DELETE("/context/:ctxId", Auth(dtos.ADMIN), deleteContext)
-	router.PATCH("/context/:ctxId", Auth(dtos.ADMIN), updateContext)
+
+	contextRoutes := router.Group("/context", Auth(dtos.ADMIN))
+	{
+		contextRoutes.GET("/all", Auth(dtos.ADMIN), allContexts)
+		contextRoutes.GET("/:ctxId", Auth(dtos.ADMIN), getContext)
+		contextRoutes.DELETE("/:ctxId", Auth(dtos.ADMIN), deleteContext)
+		contextRoutes.PATCH("/:ctxId", Auth(dtos.ADMIN), updateContext)
+	}
+
 }
 
 // @Tags Context
