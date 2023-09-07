@@ -1,4 +1,11 @@
 
+### [1.3.12](https://github.com/mogenius/punq/compare/dev1.3.11...dev1.3.12) (2023-09-07)
+
+
+### Bug Fixes
+
+* add cors config AllowHeaders 'authorization' ([b5f20e4](https://github.com/mogenius/punq/commit/b5f20e477c5a0576262c234b0b7f68892efcacf4))
+
 ### [1.3.11](https://github.com/mogenius/punq/compare/dev1.3.10...dev1.3.11) (2023-09-07)
 
 
