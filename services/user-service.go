@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/mogenius/punq/structs"
 	"time"
@@ -61,16 +62,13 @@ func CreateAdminUser() {
 
 	password := utils.NanoId()
 
-	adminUser := dtos.PunqUser{
-		Id:          utils.NanoId(),
+	adminUser, _ := AddUser(dtos.PunqUserCreateInput{
 		Email:       "admin@punq.dev",
 		Password:    password,
 		DisplayName: "Admin User",
 		AccessLevel: dtos.ADMIN,
-		Created:     time.Now().Format(time.RFC3339),
-	}
+	})
 
-	AddUser(adminUser)
 	structs.PrettyPrint(adminUser)
 	secret = kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	strData := make(map[string]string)
@@ -103,10 +101,10 @@ func ListUsers() []dtos.PunqUser {
 	return users
 }
 
-func AddUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
+func AddUser(userCreateInput dtos.PunqUserCreateInput) (*dtos.PunqUser, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	if secret == nil {
-		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
+		return nil, errors.New(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
 	}
 
 	// check for duplicates
@@ -114,24 +112,45 @@ func AddUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
 		userDto := &dtos.PunqUser{}
 		err := json.Unmarshal(data, userDto)
 		if err == nil {
-			if userDto.Email == user.Email {
-				errStr := fmt.Sprintf("Duplicated email: '%s'", user.Email)
+			if userDto.Email == userCreateInput.Email {
+				errStr := fmt.Sprintf("Duplicated email: '%s'", userCreateInput.Email)
 				logger.Log.Error(errStr)
-				return kubernetes.WorkloadResultError(errStr)
+				return nil, errors.New(errStr)
 			}
 		}
 	}
 
 	// hash password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userCreateInput.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return kubernetes.WorkloadResultError(err.Error())
+		return nil, errors.New(err.Error())
 	}
-	user.Password = string(hashedPassword)
+	userCreateInput.Password = string(hashedPassword)
+
+	jsonData, err := json.Marshal(userCreateInput)
+	if err != nil {
+		errStr := fmt.Sprintf("failed marshalling userCreateInput %v", err)
+		logger.Log.Error(errStr)
+		return nil, errors.New(errStr)
+	}
+
+	user := dtos.PunqUser{
+		Id:      utils.NanoId(),
+		Created: time.Now().Format(time.RFC3339),
+	}
+
+	err = json.Unmarshal(jsonData, &user)
+	if err != nil {
+		errStr := fmt.Sprintf("failed unmarshalling into user %v", err)
+		logger.Log.Error(errStr)
+		return nil, errors.New(errStr)
+	}
 
 	rawData, err := json.Marshal(user)
 	if err != nil {
-		logger.Log.Error("failed to Marshal user '%s'", user.Id)
+		errStr := fmt.Sprintf("failed to Marshal user '%s'", user.Id)
+		logger.Log.Error(errStr)
+		return nil, errors.New(errStr)
 	}
 
 	if secret.StringData == nil {
@@ -139,47 +158,80 @@ func AddUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
 	}
 	secret.StringData[user.Id] = string(rawData)
 
-	return kubernetes.UpdateK8sSecret(*secret)
+	// add user to secret
+	kubernetes.UpdateK8sSecret(*secret)
+
+	return &user, nil
 }
 
-func UpdateUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
+func UpdateUser(userUpdateInput dtos.PunqUserUpdateInput) (*dtos.PunqUser, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	if secret == nil {
-		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
+		return nil, errors.New(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
+	}
+
+	user, err := GetUser(userUpdateInput.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	// check duplicated email
+	if user.Email != userUpdateInput.Email {
+		findByEmail, _ := GetUserByEmail(userUpdateInput.Email)
+		if findByEmail != nil && findByEmail.Id != userUpdateInput.Id {
+			errStr := fmt.Sprintf("Duplicated email: '%s'", userUpdateInput.Email)
+			logger.Log.Error(errStr)
+			return nil, errors.New(errStr)
+		}
+	}
+
+	// hash new password
+	if userUpdateInput.Password != "" && user.Password != userUpdateInput.Password {
+		// hash password
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userUpdateInput.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, errors.New(err.Error())
+		}
+		userUpdateInput.Password = string(hashedPassword)
+	}
+
+	jsonData, err := json.Marshal(userUpdateInput)
+	if err != nil {
+		errStr := fmt.Sprintf("failed marshalling userCreateInput %v", err)
+		logger.Log.Error(errStr)
+		return nil, errors.New(errStr)
+	}
+
+	err = json.Unmarshal(jsonData, &user)
+	if err != nil {
+		errStr := fmt.Sprintf("failed unmarshalling into user %v", err)
+		logger.Log.Error(errStr)
+		return nil, errors.New(errStr)
 	}
 
 	rawData, err := json.Marshal(user)
-	if err != nil {
-		logger.Log.Error("failed to Marshal user '%s'", user.Id)
-	}
-	userObj := GetUser(user.Id)
-	if userObj.Password != user.Password {
-		// hash password
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-		if err != nil {
-			return kubernetes.WorkloadResultError(err.Error())
-		}
-		user.Password = string(hashedPassword)
-	}
-	secret.Data[user.Id] = rawData
+	secret.Data[userUpdateInput.Id] = rawData
 
-	return kubernetes.UpdateK8sSecret(*secret)
+	// update user
+	kubernetes.UpdateK8sSecret(*secret)
+
+	return user, nil
 }
 
-func DeleteUser(id string) kubernetes.K8sWorkloadResult {
+func DeleteUser(id string) error {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	if secret == nil {
-		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
+		return errors.New(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
 	}
 
 	if id == utils.USERADMIN {
-		return kubernetes.WorkloadResultError("admin user cannot be deleted")
+		return errors.New("admin user cannot be deleted")
 	}
 
 	if secret.Data[id] != nil {
 		delete(secret.Data, id)
 	} else {
-		return kubernetes.WorkloadResultError(fmt.Sprintf("USer '%s' not found.", id))
+		return errors.New(fmt.Sprintf("USer '%s' not found.", id))
 	}
 
 	result := kubernetes.UpdateK8sSecret(*secret)
@@ -187,33 +239,37 @@ func DeleteUser(id string) kubernetes.K8sWorkloadResult {
 		// success
 		result.Result = fmt.Sprintf("User %s successfuly deleted.", id)
 	}
-	return result
+	return nil
 }
 
-func GetUser(id string) *dtos.PunqUser {
+func GetUser(id string) (*dtos.PunqUser, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	if secret == nil {
-		logger.Log.Errorf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
-		return nil
+		msg := fmt.Sprintf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 
 	if secret.Data[id] != nil {
 		user := dtos.PunqUser{}
 		err := json.Unmarshal(secret.Data[id], &user)
 		if err != nil {
-			logger.Log.Error("Failed to Unmarshal user '%s'.", id)
+			msg := fmt.Sprintf("Failed to Unmarshal user '%s'.", id)
+			logger.Log.Error(msg)
+			return nil, errors.New(msg)
 		}
-		return &user
+		return &user, nil
 	}
 
-	return nil
+	return nil, errors.New("user not found")
 }
 
-func GetUserByEmail(email string) *dtos.PunqUser {
+func GetUserByEmail(email string) (*dtos.PunqUser, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	if secret == nil {
-		logger.Log.Errorf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
-		return nil
+		msg := fmt.Sprintf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 
 	for userId, userRaw := range secret.Data {
@@ -223,14 +279,16 @@ func GetUserByEmail(email string) *dtos.PunqUser {
 		user := dtos.PunqUser{}
 		err := json.Unmarshal(userRaw, &user)
 		if err != nil {
-			logger.Log.Error("Failed to Unmarshal user '%s'.", userId)
+			msg := fmt.Sprintf("Failed to Unmarshal user '%s'.", userId)
+			logger.Log.Error(msg)
+			return nil, errors.New(msg)
 		}
 		if user.Email == email {
-			return &user
+			return &user, nil
 		}
 	}
 
-	return nil
+	return nil, errors.New("user not found")
 }
 
 func GetAdmin() (*dtos.PunqUser, error) {
@@ -243,10 +301,10 @@ func GetAdmin() (*dtos.PunqUser, error) {
 
 	adminId := string(secret.Data[PunqAdminIdKey])
 
-	adminUser := GetUser(adminId)
-	if adminUser != nil {
-		return adminUser, nil
+	adminUser, err := GetUser(adminId)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, fmt.Errorf("admin user not found")
+	return adminUser, nil
 }

@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllJobs(namespaceName string) K8sWorkloadResult {
+func AllJobs(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1job.Job{}
 
 	provider := NewKubeProvider()
@@ -30,7 +30,7 @@ func AllJobs(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sJob(data v1job.Job) K8sWorkloadResult {
+func UpdateK8sJob(data v1job.Job) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.BatchV1().Jobs(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -40,7 +40,7 @@ func UpdateK8sJob(data v1job.Job) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sJob(data v1job.Job) K8sWorkloadResult {
+func DeleteK8sJob(data v1job.Job) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.BatchV1().Jobs(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -50,7 +50,7 @@ func DeleteK8sJob(data v1job.Job) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sJob(namespace string, name string) K8sWorkloadResult {
+func DescribeK8sJob(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "job", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -62,7 +62,7 @@ func DescribeK8sJob(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sJob(data v1job.Job) K8sWorkloadResult {
+func CreateK8sJob(data v1job.Job) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.BatchV1().Jobs(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

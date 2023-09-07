@@ -1,6 +1,7 @@
 package operator
 
 import (
+	"github.com/mogenius/punq/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,10 +11,15 @@ import (
 )
 
 func InitContextRoutes(router *gin.Engine) {
-	router.GET("/context/all", Auth(dtos.ADMIN), allContexts)
-	router.GET("/context/:ctxId", Auth(dtos.ADMIN), getContext)
-	router.DELETE("/context/:ctxId", Auth(dtos.ADMIN), deleteContext)
-	router.PATCH("/context/:ctxId", Auth(dtos.ADMIN), updateContext)
+
+	contextRoutes := router.Group("/context", Auth(dtos.ADMIN))
+	{
+		contextRoutes.GET("/all", Auth(dtos.ADMIN), allContexts)
+		contextRoutes.GET("/:ctxId", Auth(dtos.ADMIN), getContext)
+		contextRoutes.DELETE("/:ctxId", Auth(dtos.ADMIN), deleteContext)
+		contextRoutes.PATCH("/:ctxId", Auth(dtos.ADMIN), updateContext)
+	}
+
 }
 
 // @Tags Context
@@ -28,7 +34,7 @@ func getContext(c *gin.Context) {
 	ctxId := c.Param("ctxId")
 	result := services.GetContext(ctxId)
 	if result == nil {
-		NotFound(c, "Context not found.")
+		utils.NotFound(c, "Context not found.")
 		return
 	}
 	c.JSON(http.StatusOK, result)
@@ -45,7 +51,7 @@ func updateContext(c *gin.Context) {
 	ctxId := c.Param("ctxId")
 	result := services.GetContext(ctxId)
 	if result == nil {
-		NotFound(c, "Context not found.")
+		utils.NotFound(c, "Context not found.")
 		return
 	}
 

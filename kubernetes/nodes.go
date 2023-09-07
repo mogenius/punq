@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"context"
 	"fmt"
+	"github.com/mogenius/punq/utils"
 	"os/exec"
 
 	"github.com/mogenius/punq/dtos"
@@ -39,7 +40,7 @@ func GetNodeStats() []dtos.NodeStat {
 	return result
 }
 
-func ListK8sNodes() K8sWorkloadResult {
+func ListK8sNodes() utils.K8sWorkloadResult {
 	var provider *KubeProvider = NewKubeProvider()
 	if provider == nil {
 		err := fmt.Errorf("Failed to load kubeprovider.")
@@ -55,7 +56,7 @@ func ListK8sNodes() K8sWorkloadResult {
 	return WorkloadResult(nodeMetricsList.Items, nil)
 }
 
-func DescribeK8sNode(name string) K8sWorkloadResult {
+func DescribeK8sNode(name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "node", name)
 
 	output, err := cmd.CombinedOutput()

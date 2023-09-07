@@ -89,31 +89,12 @@ const docTemplate = `{
             }
         },
         "/user": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "userid",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dtos.PunqUser"
-                        }
-                    }
-                }
-            },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -122,36 +103,12 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "description": "PunqUser",
+                        "description": "PunqUserCreateInput",
                         "name": "body",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/dtos.PunqUser"
+                            "$ref": "#/definitions/dtos.PunqUserCreateInput"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dtos.PunqUser"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "userid",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -164,6 +121,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -172,11 +134,11 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "description": "PunqUser",
+                        "description": "PunqUserUpdateInput",
                         "name": "body",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/dtos.PunqUser"
+                            "$ref": "#/definitions/dtos.PunqUserUpdateInput"
                         }
                     }
                 ],
@@ -192,6 +154,11 @@ const docTemplate = `{
         },
         "/user/all": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -206,6 +173,66 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/dtos.PunqUser"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PunqUser"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PunqUser"
                         }
                     }
                 }
@@ -383,7 +410,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -624,7 +651,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -726,7 +753,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -749,7 +776,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -770,7 +797,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -821,7 +848,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                                "$ref": "#/definitions/utils.K8sWorkloadResult"
                             }
                         }
                     }
@@ -853,7 +880,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -897,7 +924,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -918,7 +945,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -939,7 +966,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -976,7 +1003,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -1110,7 +1137,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -1212,7 +1239,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -1342,6 +1369,56 @@ const docTemplate = `{
                 }
             }
         },
+        "dtos.PunqUserCreateInput": {
+            "type": "object",
+            "required": [
+                "accessLevel",
+                "displayName",
+                "email",
+                "password"
+            ],
+            "properties": {
+                "accessLevel": {
+                    "$ref": "#/definitions/dtos.AccessLevel"
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.PunqUserUpdateInput": {
+            "type": "object",
+            "required": [
+                "accessLevel",
+                "displayName",
+                "email",
+                "id",
+                "password"
+            ],
+            "properties": {
+                "accessLevel": {
+                    "$ref": "#/definitions/dtos.AccessLevel"
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "intstr.IntOrString": {
             "type": "object",
             "properties": {
@@ -1437,13 +1514,6 @@ const docTemplate = `{
                 }
             }
         },
-        "kubernetes.K8sWorkloadResult": {
-            "type": "object",
-            "properties": {
-                "error": {},
-                "result": {}
-            }
-        },
         "operator.LoginInput": {
             "type": "object",
             "required": [
@@ -1500,6 +1570,13 @@ const docTemplate = `{
                 "version": {
                     "type": "string"
                 }
+            }
+        },
+        "utils.K8sWorkloadResult": {
+            "type": "object",
+            "properties": {
+                "error": {},
+                "result": {}
             }
         },
         "v1.AWSElasticBlockStoreVolumeSource": {

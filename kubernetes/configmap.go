@@ -41,7 +41,7 @@ func AllConfigmaps(namespaceName string) []v1.ConfigMap {
 	return result
 }
 
-func AllK8sConfigmaps(namespaceName string) K8sWorkloadResult {
+func AllK8sConfigmaps(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.ConfigMap{}
 
 	provider := NewKubeProvider()
@@ -59,7 +59,7 @@ func AllK8sConfigmaps(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sConfigMap(data v1.ConfigMap) K8sWorkloadResult {
+func UpdateK8sConfigMap(data v1.ConfigMap) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -70,7 +70,7 @@ func UpdateK8sConfigMap(data v1.ConfigMap) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sConfigmap(data v1.ConfigMap) K8sWorkloadResult {
+func DeleteK8sConfigmap(data v1.ConfigMap) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -81,7 +81,7 @@ func DeleteK8sConfigmap(data v1.ConfigMap) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sConfigmap(namespace string, name string) K8sWorkloadResult {
+func DescribeK8sConfigmap(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "configmap", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -93,7 +93,7 @@ func DescribeK8sConfigmap(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sConfigMap(data v1.ConfigMap) K8sWorkloadResult {
+func CreateK8sConfigMap(data v1.ConfigMap) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

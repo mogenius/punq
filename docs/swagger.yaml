@@ -66,6 +66,41 @@ definitions:
     - id
     - password
     type: object
+  dtos.PunqUserCreateInput:
+    properties:
+      accessLevel:
+        $ref: '#/definitions/dtos.AccessLevel'
+      displayName:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - accessLevel
+    - displayName
+    - email
+    - password
+    type: object
+  dtos.PunqUserUpdateInput:
+    properties:
+      accessLevel:
+        $ref: '#/definitions/dtos.AccessLevel'
+      displayName:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+    required:
+    - accessLevel
+    - displayName
+    - email
+    - id
+    - password
+    type: object
   intstr.IntOrString:
     properties:
       intVal:
@@ -144,11 +179,6 @@ definitions:
       yamlString:
         type: string
     type: object
-  kubernetes.K8sWorkloadResult:
-    properties:
-      error: {}
-      result: {}
-    type: object
   operator.LoginInput:
     properties:
       email:
@@ -188,6 +218,11 @@ definitions:
         type: string
       version:
         type: string
+    type: object
+  utils.K8sWorkloadResult:
+    properties:
+      error: {}
+      result: {}
     type: object
   v1.AWSElasticBlockStoreVolumeSource:
     properties:
@@ -6682,11 +6717,48 @@ paths:
       tags:
       - Context
   /user:
+    patch:
+      parameters:
+      - description: PunqUserUpdateInput
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/dtos.PunqUserUpdateInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.PunqUser'
+      security:
+      - Bearer: []
+      tags:
+      - User
+    post:
+      parameters:
+      - description: PunqUserCreateInput
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/dtos.PunqUserCreateInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.PunqUser'
+      security:
+      - Bearer: []
+      tags:
+      - User
+  /user/{id}:
     delete:
       parameters:
       - description: ID of the user
-        in: query
-        name: userid
+        in: path
+        name: id
         type: string
       produces:
       - application/json
@@ -6695,13 +6767,15 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dtos.PunqUser'
+      security:
+      - Bearer: []
       tags:
       - User
     get:
       parameters:
       - description: ID of the user
-        in: query
-        name: userid
+        in: path
+        name: id
         type: string
       produces:
       - application/json
@@ -6710,38 +6784,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dtos.PunqUser'
-      tags:
-      - User
-    patch:
-      parameters:
-      - description: PunqUser
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/dtos.PunqUser'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dtos.PunqUser'
-      tags:
-      - User
-    post:
-      parameters:
-      - description: PunqUser
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/dtos.PunqUser'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dtos.PunqUser'
+      security:
+      - Bearer: []
       tags:
       - User
   /user/all:
@@ -6755,6 +6799,8 @@ paths:
             items:
               $ref: '#/definitions/dtos.PunqUser'
             type: array
+      security:
+      - Bearer: []
       tags:
       - User
   /version:
@@ -6856,7 +6902,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -6996,7 +7042,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7055,7 +7101,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7068,7 +7114,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7080,7 +7126,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7109,7 +7155,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+              $ref: '#/definitions/utils.K8sWorkloadResult'
             type: array
       security:
       - Bearer: []
@@ -7128,7 +7174,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7141,7 +7187,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7165,7 +7211,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7177,7 +7223,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7199,7 +7245,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7277,7 +7323,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7336,7 +7382,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/kubernetes.K8sWorkloadResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:

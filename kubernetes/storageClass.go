@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllStorageClasses() K8sWorkloadResult {
+func AllStorageClasses() utils.K8sWorkloadResult {
 	result := []storage.StorageClass{}
 
 	provider := NewKubeProvider()
@@ -28,7 +28,7 @@ func AllStorageClasses() K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sStorageClass(data storage.StorageClass) K8sWorkloadResult {
+func UpdateK8sStorageClass(data storage.StorageClass) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -38,7 +38,7 @@ func UpdateK8sStorageClass(data storage.StorageClass) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sStorageClass(data storage.StorageClass) K8sWorkloadResult {
+func DeleteK8sStorageClass(data storage.StorageClass) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -48,7 +48,7 @@ func DeleteK8sStorageClass(data storage.StorageClass) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sStorageClass(name string) K8sWorkloadResult {
+func DescribeK8sStorageClass(name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "storageclass", name)
 
 	output, err := cmd.CombinedOutput()
@@ -60,7 +60,7 @@ func DescribeK8sStorageClass(name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sStorageClass(data storage.StorageClass) K8sWorkloadResult {
+func CreateK8sStorageClass(data storage.StorageClass) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

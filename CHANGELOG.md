@@ -1,5 +1,97 @@
 
+<<<<<<< HEAD
 ### [1.1.42](https://github.com/mogenius/punq/compare/v1.1.41...v1.1.42) (2023-09-04)
+=======
+### [1.3.9](https://github.com/mogenius/punq/compare/dev1.3.8...dev1.3.9) (2023-09-07)
+
+
+### Bug Fixes
+
+* grouping auth routes; grouping context routes ([0f7be85](https://github.com/mogenius/punq/commit/0f7be85a26fbc00119f54d0d4649bc01290943bf))
+
+### [1.3.8](https://github.com/mogenius/punq/compare/dev1.3.7...dev1.3.8) (2023-09-07)
+
+
+### Bug Fixes
+
+* user routes error handling ([d57ab29](https://github.com/mogenius/punq/commit/d57ab29e247e5f022175e83924f3f2bcf03b1b97))
+
+### [1.3.7](https://github.com/mogenius/punq/compare/dev1.3.6...dev1.3.7) (2023-09-07)
+
+
+### Bug Fixes
+
+* rename HttpResult to K8sWorkloadResult ([712793b](https://github.com/mogenius/punq/commit/712793bc20898895135b16d7d5307c8dedff32a4))
+* update user route; refactoring utils ([f036774](https://github.com/mogenius/punq/commit/f0367743b2f09c1ce0d2982bc414114b0d942c24))
+* user create, user update route ([7cd2da6](https://github.com/mogenius/punq/commit/7cd2da62f3a510f90fd6ddee5baa516b02a5f609))
+
+### [1.3.6](https://github.com/mogenius/punq/compare/dev1.3.5...dev1.3.6) (2023-09-06)
+
+
+### Bug Fixes
+
+* minor fix config yaml. ([a54099b](https://github.com/mogenius/punq/commit/a54099b145a3846a3c63f34cd6a0fd028efbac02))
+
+### [1.3.5](https://github.com/mogenius/punq/compare/dev1.3.4...dev1.3.5) (2023-09-06)
+
+
+### Bug Fixes
+
+* minor fix. ([be7a528](https://github.com/mogenius/punq/commit/be7a528d6d556ea6ab423216182851ffd7c80e2c))
+
+### [1.3.4](https://github.com/mogenius/punq/compare/dev1.3.3...dev1.3.4) (2023-09-06)
+
+
+### Bug Fixes
+
+* minor fix. ([1e6b6e9](https://github.com/mogenius/punq/commit/1e6b6e996a3eb4bb0ac1dfbc1b7178b97a330a3b))
+
+### [1.3.3](https://github.com/mogenius/punq/compare/dev1.3.2...dev1.3.3) (2023-09-06)
+
+
+### Bug Fixes
+
+* add bearer to authorization header ([1fd3536](https://github.com/mogenius/punq/commit/1fd3536c8c6d233fb26cf11874a5cc8a686e2e29))
+* minor fix. ([c09ad3d](https://github.com/mogenius/punq/commit/c09ad3d3425ad92f3bb2162eb88d58352bcacad3))
+* moving create admin to user-service ([ce34d73](https://github.com/mogenius/punq/commit/ce34d73237da672616990f5cce144c6e75ed695a))
+
+### [1.3.2](https://github.com/mogenius/punq/compare/dev1.3.1...dev1.3.2) (2023-09-06)
+
+
+### Bug Fixes
+
+* minor fix. ([d05fd7e](https://github.com/mogenius/punq/commit/d05fd7e0221e173261fad5c45ef8ea67b955b554))
+
+### [1.3.1](https://github.com/mogenius/punq/compare/dev1.3.0...dev1.3.1) (2023-09-06)
+
+
+### Bug Fixes
+
+* docu updates. ([fea7b75](https://github.com/mogenius/punq/commit/fea7b7513607c80b2f2fc1e57fc221f3f04beee8))
+
+## [1.3.0](https://github.com/mogenius/punq/compare/dev1.2.0...dev1.3.0) (2023-09-06)
+
+
+### Features
+
+* login; jwt auth ([ada0658](https://github.com/mogenius/punq/commit/ada065827a94857873449b123773cf7281faa25a))
+
+## [1.2.0](https://github.com/mogenius/punq/compare/dev1.1.7...dev1.2.0) (2023-09-04)
+
+
+### Features
+
+* introduced swagger. ([fc03f7e](https://github.com/mogenius/punq/commit/fc03f7e536f8b77a70e80ddb7cb2eddbc3577476))
+
+### [1.1.7](https://github.com/mogenius/punq/compare/dev1.1.6...dev1.1.7) (2023-09-04)
+
+
+### Bug Fixes
+
+* portforward improved. ([67b657e](https://github.com/mogenius/punq/commit/67b657e0041288f623df19ddfddb2cbf0b85281d))
+
+### [1.1.6](https://github.com/mogenius/punq/compare/dev1.1.5...dev1.1.6) (2023-09-04)
+>>>>>>> 5c479075026ff702c68d83dd519cf5807155e329
 
 
 ### Bug Fixes

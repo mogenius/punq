@@ -1,11 +1,13 @@
 package operator
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/mogenius/punq/dtos"
+	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/services"
-	"net/http"
+	"github.com/mogenius/punq/utils"
 	"regexp"
 )
 
@@ -17,29 +19,30 @@ type AuthHeader struct {
 	Value  string
 }
 
-func parseAuthHeader(hdrValue string) *AuthHeader {
+func parseAuthHeader(headerStr string) (*AuthHeader, error) {
 	re := regexp.MustCompile(`(\S+)\s+(\S+)`)
 
-	if hdrValue == "" {
-		return nil
+	if headerStr == "" {
+		return nil, errors.New("headerStr value ist empty")
 	}
 
-	matches := re.FindStringSubmatch(hdrValue)
+	matches := re.FindStringSubmatch(headerStr)
 	if matches == nil {
-		return nil
+		return nil, errors.New("invalid authorization token")
 	}
 
 	return &AuthHeader{
 		Scheme: matches[1],
 		Value:  matches[2],
-	}
+	}, nil
 }
 
 func Auth(requiredAccessLevel dtos.AccessLevel) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		isAuthorized, err := HasSufficientAccess(c, requiredAccessLevel)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			utils.Unauthorized(c, err.Error())
+			c.Abort()
 			return
 		}
 
@@ -57,31 +60,28 @@ func Auth(requiredAccessLevel dtos.AccessLevel) gin.HandlerFunc {
 // }
 
 func CheckUserAuthorization(c *gin.Context) (*dtos.PunqUser, error) {
-	authorization := parseAuthHeader(GetRequiredHeader(c, "authorization"))
+	authorization, err := parseAuthHeader(utils.GetRequiredHeader(c, "authorization"))
 
-	if authorization == nil {
-		return nil, fmt.Errorf("MalformedRequest")
+	if err != nil {
+		logger.Log.Error(err)
+		return nil, err
 	}
 
 	claims := services.ValidationToken(authorization.Value)
 	if claims == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"err": "invalid token"})
-		return nil, fmt.Errorf("MalformedRequest")
+		msg := "claims failed"
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 	userId := claims.UserID
 
 	// updateLocalUserStore()
 
-	user := services.GetUser(userId)
-	if user != nil {
-		return user, nil
+	user, err := services.GetUser(userId)
+	if err != nil {
+		return nil, err
 	}
-
-	c.JSON(http.StatusUnauthorized, gin.H{
-		"err": "Authorization failed.",
-	})
-
-	return nil, fmt.Errorf("UserNotFound")
+	return user, nil
 }
 
 func HasSufficientAccess(c *gin.Context, requiredAccessLevel dtos.AccessLevel) (bool, error) {
@@ -96,8 +96,8 @@ func HasSufficientAccess(c *gin.Context, requiredAccessLevel dtos.AccessLevel) (
 		}
 	}
 	errStr := fmt.Sprintf("AccessLevel is insufficient (Current:%d - Required:%d).", user.AccessLevel, requiredAccessLevel)
-	c.JSON(http.StatusNotFound, gin.H{
-		"err": errStr,
-	})
+	// c.JSON(http.StatusNotFound, gin.H{
+	// 	"err": errStr,
+	// })
 	return false, fmt.Errorf(errStr)
 }

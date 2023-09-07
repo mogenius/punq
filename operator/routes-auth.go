@@ -2,8 +2,10 @@ package operator
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/services"
+	"github.com/mogenius/punq/utils"
 	"net/http"
 )
 
@@ -13,8 +15,13 @@ type LoginInput struct {
 }
 
 func InitAuthRoutes(router *gin.Engine) {
-	router.POST("/auth/login", login)
-	router.GET("/auth/authenticate", Auth(dtos.READER), authenticate)
+
+	authRoutes := router.Group("/auth")
+	{
+		authRoutes.POST("/login", login)
+		authRoutes.GET("/authenticate", Auth(dtos.READER), authenticate)
+	}
+
 }
 
 // @Tags Auth
@@ -25,22 +32,30 @@ func InitAuthRoutes(router *gin.Engine) {
 func login(c *gin.Context) {
 	input := LoginInput{}
 
-	err := c.ShouldBindJSON(&input)
+	err := c.MustBindWith(&input, binding.JSON)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
 		return
 	}
 
-	user := services.GetUserByEmail(input.Email)
+	user, err := services.GetUserByEmail(input.Email)
 
-	_, err = user.PasswordCheck(input.Password)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"err": "username or password is incorrect."})
+		utils.NotFound(c, err.Error())
 		return
 	}
 
-	token, _ := services.GenerateToken(user)
+	_, err = user.PasswordCheck(input.Password)
+	if err != nil {
+		utils.Unauthorized(c, "username or password is incorrect")
+		return
+	}
 
+	token, err := services.GenerateToken(user)
+	if err != nil {
+		utils.Unauthorized(c, err.Error())
+		return
+	}
 	c.JSON(http.StatusOK, token)
 }
 
@@ -53,11 +68,11 @@ func authenticate(c *gin.Context) {
 	if temp, exists := c.Get("user"); exists {
 		user, ok := temp.(dtos.PunqUser)
 		if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{})
+			utils.MalformedMessage(c, "Type Assertion failed")
 			return
 		}
 		c.JSON(http.StatusOK, user)
 		return
 	}
-	c.JSON(http.StatusUnauthorized, gin.H{})
+	utils.Unauthorized(c, "Unauthorized")
 }
