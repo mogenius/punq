@@ -53,10 +53,9 @@ func userDelete(c *gin.Context) {
 func userGet(c *gin.Context) {
 	userId := c.Param("id")
 
-	user := services.GetUser(userId)
-
-	if user == nil {
-		utils.NotFound(c, "User not found")
+	user, err := services.GetUser(userId)
+	if err != nil {
+		utils.NotFound(c, err.Error())
 		return
 	}
 

@@ -276,7 +276,7 @@ func allNamespaces(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/namespace [post]
 // @Security Bearer
 func createNamespace(c *gin.Context) {
@@ -290,7 +290,7 @@ func createNamespace(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/namespace [delete]
 // @Security Bearer
 func deleteNamespace(c *gin.Context) {
@@ -315,7 +315,7 @@ func allPods(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/pod/describe [get]
 // @Security Bearer
 // @Param namespace query string false  "namespace"
@@ -328,7 +328,7 @@ func describePod(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/pod [delete]
 // @Security Bearer
 func deletePod(c *gin.Context) {
@@ -343,7 +343,7 @@ func deletePod(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/pod [patch]
 // @Security Bearer
 func patchPod(c *gin.Context) {
@@ -358,7 +358,7 @@ func patchPod(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/pod [post]
 // @Security Bearer
 func createPod(c *gin.Context) {
@@ -385,7 +385,7 @@ func allDeployments(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/deployment/describe [get]
 // @Security Bearer
 // @Param namespace query string false  "namespace"
@@ -455,7 +455,7 @@ func allServices(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/service/describe [get]
 // @Security Bearer
 // @Param namespace query string false  "namespace"
@@ -525,7 +525,7 @@ func allIngresses(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/ingress/describe [get]
 // @Security Bearer
 // @Param namespace query string false  "namespace"
@@ -595,7 +595,7 @@ func allConfigmaps(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/configmap/describe [get]
 // @Security Bearer
 // @Param namespace query string false "namespace"
@@ -665,7 +665,7 @@ func allSecrets(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/secret/describe [get]
 // @Security Bearer
 // @Param namespace query string false  "namespace"
@@ -724,7 +724,7 @@ func createSecret(c *gin.Context) {
 // NODES
 // @Tags Workloads
 // @Produce json
-// @Success 200 {array} utils.HttpResult
+// @Success 200 {array} utils.K8sWorkloadResult
 // @Router /workload/node/all [get]
 // @Security Bearer
 func allNodes(c *gin.Context) {
@@ -733,7 +733,7 @@ func allNodes(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} utils.HttpResult
+// @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/node/describe [get]
 // @Security Bearer
 // @Param name query string false  "resource name"

@@ -410,7 +410,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -651,7 +651,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -753,7 +753,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -776,7 +776,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -797,7 +797,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -848,7 +848,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/utils.HttpResult"
+                                "$ref": "#/definitions/utils.K8sWorkloadResult"
                             }
                         }
                     }
@@ -880,7 +880,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -924,7 +924,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -945,7 +945,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -966,7 +966,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -1003,7 +1003,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -1137,7 +1137,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -1239,7 +1239,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utils.HttpResult"
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
                         }
                     }
                 }
@@ -1572,7 +1572,7 @@ const docTemplate = `{
                 }
             }
         },
-        "utils.HttpResult": {
+        "utils.K8sWorkloadResult": {
             "type": "object",
             "properties": {
                 "error": {},

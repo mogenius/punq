@@ -219,7 +219,7 @@ definitions:
       version:
         type: string
     type: object
-  utils.HttpResult:
+  utils.K8sWorkloadResult:
     properties:
       error: {}
       result: {}
@@ -6902,7 +6902,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7042,7 +7042,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7101,7 +7101,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7114,7 +7114,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7126,7 +7126,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7155,7 +7155,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/utils.HttpResult'
+              $ref: '#/definitions/utils.K8sWorkloadResult'
             type: array
       security:
       - Bearer: []
@@ -7174,7 +7174,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7187,7 +7187,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7211,7 +7211,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7223,7 +7223,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7245,7 +7245,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7323,7 +7323,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:
@@ -7382,7 +7382,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/utils.HttpResult'
+            $ref: '#/definitions/utils.K8sWorkloadResult'
       security:
       - Bearer: []
       tags:

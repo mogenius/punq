@@ -41,6 +41,12 @@ func NotFound(c *gin.Context, msg string) {
 	})
 }
 
+func Unauthorized(c *gin.Context, msg string) {
+	c.JSON(http.StatusUnauthorized, gin.H{
+		"err": msg,
+	})
+}
+
 func MalformedMessage(c *gin.Context, msg string) {
 	c.JSON(http.StatusBadRequest, gin.H{
 		"err": msg,

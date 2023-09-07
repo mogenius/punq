@@ -113,7 +113,10 @@ var getUserCmd = &cobra.Command{
 			logger.Log.Fatal("-userid cannot be empty.")
 		}
 
-		user := services.GetUser(userId)
+		user, err := services.GetUser(userId)
+		if err != nil {
+			logger.Log.Fatal(err)
+		}
 		structs.PrettyPrint(user)
 	},
 }
