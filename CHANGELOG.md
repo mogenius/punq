@@ -1,4 +1,11 @@
 
+### [1.3.9](https://github.com/mogenius/punq/compare/dev1.3.8...dev1.3.9) (2023-09-07)
+
+
+### Bug Fixes
+
+* grouping auth routes; grouping context routes ([0f7be85](https://github.com/mogenius/punq/commit/0f7be85a26fbc00119f54d0d4649bc01290943bf))
+
 ### [1.3.8](https://github.com/mogenius/punq/compare/dev1.3.7...dev1.3.8) (2023-09-07)
 
 
