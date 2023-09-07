@@ -1,4 +1,11 @@
 
+### [1.3.11](https://github.com/mogenius/punq/compare/dev1.3.10...dev1.3.11) (2023-09-07)
+
+
+### Bug Fixes
+
+* update CreateKeyPair, GetKeyPair, ValidationToken return values ([062089c](https://github.com/mogenius/punq/commit/062089cc599fbe1e695f61d2c1b19fecb781f0fb))
+
 ### [1.3.10](https://github.com/mogenius/punq/compare/dev1.3.9...dev1.3.10) (2023-09-07)
 
 
