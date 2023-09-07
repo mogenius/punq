@@ -6717,6 +6717,18 @@ paths:
       tags:
       - Context
   /user:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.PunqUser'
+      security:
+      - Bearer: []
+      tags:
+      - User
     patch:
       parameters:
       - description: PunqUserUpdateInput

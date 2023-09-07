@@ -112,7 +112,10 @@ var deleteContextCmd = &cobra.Command{
 			logger.Log.Fatal("-contextid cannot be empty.")
 		}
 
-		result := services.DeleteContext(contextId)
+		result, err := services.DeleteContext(contextId)
+		if err != nil {
+			logger.Log.Fatalf(err.Error())
+		}
 		structs.PrettyPrint(result)
 	},
 }
