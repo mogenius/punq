@@ -32,7 +32,7 @@ func allContexts(c *gin.Context) {
 
 func getContext(c *gin.Context) {
 	ctxId := c.Param("ctxId")
-	result := services.GetContext(ctxId)
+	result, _ := services.GetContext(ctxId)
 	if result == nil {
 		utils.NotFound(c, "Context not found.")
 		return
@@ -49,7 +49,7 @@ func deleteContext(c *gin.Context) {
 // TODO -> This is crap. validator is shit bind is shit.
 func updateContext(c *gin.Context) {
 	ctxId := c.Param("ctxId")
-	result := services.GetContext(ctxId)
+	result, _ := services.GetContext(ctxId)
 	if result == nil {
 		utils.NotFound(c, "Context not found.")
 		return

@@ -70,7 +70,7 @@ var addContextAccessCmd = &cobra.Command{
 			logger.Log.Fatal("-user-id cannot be empty.")
 		}
 
-		ctx := services.GetContext(contextId)
+		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
 			logger.Log.Fatalf("context '%s' not found.", contextId)
 		}
@@ -93,7 +93,7 @@ var removeContextAccessCmd = &cobra.Command{
 			logger.Log.Fatal("-user-id cannot be empty.")
 		}
 
-		ctx := services.GetContext(contextId)
+		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
 			logger.Log.Fatalf("context '%s' not found.", contextId)
 		}
@@ -126,7 +126,7 @@ var getContextCmd = &cobra.Command{
 			logger.Log.Fatal("-contextid cannot be empty.")
 		}
 
-		ctx := services.GetContext(contextId)
+		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
 			logger.Log.Errorf("No context found for '%s'.", contextId)
 		} else {

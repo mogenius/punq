@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/mogenius/punq/dtos"
@@ -85,11 +86,12 @@ func DeleteContext(id string) utils.K8sWorkloadResult {
 	return result
 }
 
-func GetContext(id string) *dtos.PunqContext {
+func GetContext(id string) (*dtos.PunqContext, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 	if secret == nil {
-		logger.Log.Errorf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
-		return nil
+		msg := fmt.Sprintf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 
 	for ctxId, ctxRaw := range secret.Data {
@@ -99,11 +101,13 @@ func GetContext(id string) *dtos.PunqContext {
 			logger.Log.Error("Failed to Unmarshal context '%s'.", ctxId)
 		}
 		if ctx.Id == id {
-			return &ctx
+			return &ctx, nil
 		}
 	}
 
-	return nil
+	msg := fmt.Sprintf("context not found")
+	logger.Log.Error(msg)
+	return nil, errors.New(msg)
 }
 
 func GetOwnContext() (*dtos.PunqContext, error) {
