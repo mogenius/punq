@@ -66,6 +66,41 @@ definitions:
     - id
     - password
     type: object
+  dtos.PunqUserCreateInput:
+    properties:
+      accessLevel:
+        $ref: '#/definitions/dtos.AccessLevel'
+      displayName:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - accessLevel
+    - displayName
+    - email
+    - password
+    type: object
+  dtos.PunqUserUpdateInput:
+    properties:
+      accessLevel:
+        $ref: '#/definitions/dtos.AccessLevel'
+      displayName:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+    required:
+    - accessLevel
+    - displayName
+    - email
+    - id
+    - password
+    type: object
   intstr.IntOrString:
     properties:
       intVal:
@@ -6684,11 +6719,11 @@ paths:
   /user:
     patch:
       parameters:
-      - description: PunqUser
+      - description: PunqUserUpdateInput
         in: body
         name: body
         schema:
-          $ref: '#/definitions/dtos.PunqUser'
+          $ref: '#/definitions/dtos.PunqUserUpdateInput'
       produces:
       - application/json
       responses:
@@ -6702,11 +6737,11 @@ paths:
       - User
     post:
       parameters:
-      - description: PunqUser
+      - description: PunqUserCreateInput
         in: body
         name: body
         schema:
-          $ref: '#/definitions/dtos.PunqUser'
+          $ref: '#/definitions/dtos.PunqUserCreateInput'
       produces:
       - application/json
       responses:

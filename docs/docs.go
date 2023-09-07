@@ -103,11 +103,11 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "description": "PunqUser",
+                        "description": "PunqUserCreateInput",
                         "name": "body",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/dtos.PunqUser"
+                            "$ref": "#/definitions/dtos.PunqUserCreateInput"
                         }
                     }
                 ],
@@ -134,11 +134,11 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "description": "PunqUser",
+                        "description": "PunqUserUpdateInput",
                         "name": "body",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/dtos.PunqUser"
+                            "$ref": "#/definitions/dtos.PunqUserUpdateInput"
                         }
                     }
                 ],
@@ -1354,6 +1354,56 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "type": "string"
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.PunqUserCreateInput": {
+            "type": "object",
+            "required": [
+                "accessLevel",
+                "displayName",
+                "email",
+                "password"
+            ],
+            "properties": {
+                "accessLevel": {
+                    "$ref": "#/definitions/dtos.AccessLevel"
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.PunqUserUpdateInput": {
+            "type": "object",
+            "required": [
+                "accessLevel",
+                "displayName",
+                "email",
+                "id",
+                "password"
+            ],
+            "properties": {
+                "accessLevel": {
+                    "$ref": "#/definitions/dtos.AccessLevel"
                 },
                 "displayName": {
                     "type": "string"

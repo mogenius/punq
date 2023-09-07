@@ -19,8 +19,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-const SEC_KEY_PAIR = "keyPair"
-const TOKEN_EXP_HOURS = 24 * 7 // 1 week
+const (
+	SecKeyPair    = "keyPair"
+	TokenExpHours = 24 * 7 // 1 week
+)
 
 var KeyPairInstance *KeyPair
 
@@ -146,7 +148,7 @@ func CreateKeyPair() *KeyPair {
 	if err != nil {
 		logger.Log.Errorf("Error marshaling %s", err)
 	}
-	secret.StringData[SEC_KEY_PAIR] = string(rawKeyPair)
+	secret.StringData[SecKeyPair] = string(rawKeyPair)
 
 	// if not exist
 	if existingSecret == nil || getErr != nil {
@@ -190,11 +192,11 @@ func GetKeyPair() *KeyPair {
 		return CreateKeyPair()
 	}
 
-	if secret.Data[SEC_KEY_PAIR] != nil {
+	if secret.Data[SecKeyPair] != nil {
 		keyPair := KeyPair{}
-		err := json.Unmarshal([]byte(secret.Data[SEC_KEY_PAIR]), &keyPair)
+		err := json.Unmarshal([]byte(secret.Data[SecKeyPair]), &keyPair)
 		if err != nil {
-			logger.Log.Errorf("Failed to Unmarshal user '%s' %s.", SEC_KEY_PAIR, err)
+			logger.Log.Errorf("Failed to Unmarshal user '%s' %s.", SecKeyPair, err)
 		}
 		return &keyPair
 	}
@@ -210,7 +212,7 @@ func GenerateToken(user *dtos.PunqUser) (*dtos.PunqToken, error) {
 	claims := jwt.MapClaims{}
 	claims["accessLevel"] = user.AccessLevel
 	claims["userId"] = user.Id
-	claims["exp"] = time.Now().Add(time.Hour * time.Duration(TOKEN_EXP_HOURS)).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * time.Duration(TokenExpHours)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodES512, claims)
 
 	// sign JWT-Token with private key

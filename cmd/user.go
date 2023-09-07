@@ -1,13 +1,10 @@
 package cmd
 
 import (
-	"time"
-
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/structs"
-	"github.com/mogenius/punq/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -46,16 +43,12 @@ var addUserCmd = &cobra.Command{
 			selectedAccess = dtos.AccessLevelFromString(accessLevel)
 		}
 
-		newUser := dtos.PunqUser{
-			Id:          utils.NanoId(),
+		services.AddUser(dtos.PunqUserCreateInput{
 			Email:       email,
 			Password:    password,
 			DisplayName: displayName,
 			AccessLevel: selectedAccess,
-			Created:     time.Now().Format(time.RFC3339),
-		}
-
-		services.AddUser(newUser)
+		})
 	},
 }
 
@@ -71,10 +64,12 @@ var updateUserCmd = &cobra.Command{
 			logger.Log.Fatal("One of the following options must be used to update a user: -email -displayname -password -accesslevel")
 		}
 
-		user := services.GetUser(userId)
-		if user == nil {
-			logger.Log.Fatalf("Selected userId '%s' not found.", userId)
+		user := dtos.PunqUserUpdateInput{
+			Id: userId,
 		}
+		// if user == nil {
+		// 	logger.Log.Fatalf("Selected userId '%s' not found.", userId)
+		// }
 		if displayName != "" {
 			user.DisplayName = displayName
 		}
@@ -88,7 +83,10 @@ var updateUserCmd = &cobra.Command{
 			user.AccessLevel = dtos.AccessLevelFromString(accessLevel)
 		}
 
-		services.UpdateUser(*user)
+		_, err := services.UpdateUser(user)
+		if err != nil {
+			logger.Log.Fatalf(err.Error())
+		}
 	},
 }
 

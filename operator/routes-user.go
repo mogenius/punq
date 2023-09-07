@@ -7,6 +7,7 @@ import (
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/utils"
+	"net/http"
 )
 
 func InitUserRoutes(router *gin.Engine) {
@@ -29,7 +30,6 @@ func InitUserRoutes(router *gin.Engine) {
 // @Security Bearer
 func userList(c *gin.Context) {
 	users := services.ListUsers()
-
 	utils.RespondForHttpResult(c, kubernetes.WorkloadResult(users, nil))
 }
 
@@ -41,8 +41,7 @@ func userList(c *gin.Context) {
 // @Security Bearer
 func userDelete(c *gin.Context) {
 	userId := c.Param("id")
-
-	utils.RespondForHttpResult(c, services.DeleteUser(userId))
+	c.JSON(http.StatusOK, services.DeleteUser(userId))
 }
 
 // @Tags User
@@ -55,37 +54,53 @@ func userGet(c *gin.Context) {
 	userId := c.Param("id")
 
 	user := services.GetUser(userId)
-	utils.RespondForHttpResult(c, kubernetes.WorkloadResult(user, nil))
+
+	if user == nil {
+		utils.NotFound(c, "User not found")
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }
 
 // @Tags User
 // @Produce json
 // @Success 200 {object} dtos.PunqUser
 // @Router /user [patch]
-// @Param body body dtos.PunqUser false "PunqUser"
+// @Param body body dtos.PunqUserUpdateInput false "PunqUserUpdateInput"
 // @Security Bearer
 func userUpdate(c *gin.Context) {
-	var data dtos.PunqUser
+	var data dtos.PunqUserUpdateInput
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
 		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	utils.RespondForHttpResult(c, services.UpdateUser(data))
+	user, err := services.UpdateUser(data)
+	if err != nil {
+		utils.MalformedMessage(c, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
 
 // @Tags User
 // @Produce json
 // @Success 200 {object} dtos.PunqUser
 // @Router /user [post]
-// @Param body body dtos.PunqUser false "PunqUser"
+// @Param body body dtos.PunqUserCreateInput false "PunqUserCreateInput"
 // @Security Bearer
 func userAdd(c *gin.Context) {
-	var data dtos.PunqUser
+	var data dtos.PunqUserCreateInput
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
 		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	utils.RespondForHttpResult(c, services.AddUser(data))
+	user, err := services.AddUser(data)
+	if err != nil {
+		utils.MalformedMessage(c, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
