@@ -1,4 +1,13 @@
 
+### [1.3.7](https://github.com/mogenius/punq/compare/dev1.3.6...dev1.3.7) (2023-09-07)
+
+
+### Bug Fixes
+
+* rename HttpResult to K8sWorkloadResult ([712793b](https://github.com/mogenius/punq/commit/712793bc20898895135b16d7d5307c8dedff32a4))
+* update user route; refactoring utils ([f036774](https://github.com/mogenius/punq/commit/f0367743b2f09c1ce0d2982bc414114b0d942c24))
+* user create, user update route ([7cd2da6](https://github.com/mogenius/punq/commit/7cd2da62f3a510f90fd6ddee5baa516b02a5f609))
+
 ### [1.3.6](https://github.com/mogenius/punq/compare/dev1.3.5...dev1.3.6) (2023-09-06)
 
 
