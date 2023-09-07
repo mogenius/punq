@@ -1,4 +1,11 @@
 
+### [1.3.8](https://github.com/mogenius/punq/compare/dev1.3.7...dev1.3.8) (2023-09-07)
+
+
+### Bug Fixes
+
+* user routes error handling ([d57ab29](https://github.com/mogenius/punq/commit/d57ab29e247e5f022175e83924f3f2bcf03b1b97))
+
 ### [1.3.7](https://github.com/mogenius/punq/compare/dev1.3.6...dev1.3.7) (2023-09-07)
 
 
