@@ -56,13 +56,12 @@ var CONFIG Config
 var ConfigPath string
 
 func InitConfigYaml(showDebug bool, customConfigName string, stage string) {
-	_, configPath := GetDirectories(customConfigName)
-	ConfigPath = configPath
+	_, ConfigPath = GetDirectories(customConfigName)
 
 	// create default config if not exists
 	// if stage is set, then we overwrite the config
 	if stage == "" {
-		if _, err := os.Stat(configPath); err == nil || os.IsExist(err) {
+		if _, err := os.Stat(ConfigPath); err == nil || os.IsExist(err) {
 			// do nothing, file exists
 		} else {
 			WriteDefaultConfig(stage)
@@ -72,11 +71,15 @@ func InitConfigYaml(showDebug bool, customConfigName string, stage string) {
 	}
 
 	// read configuration from the file and environment variables
-	if err := cleanenv.ReadConfig(configPath, &CONFIG); err != nil {
+	if err := cleanenv.ReadConfig(ConfigPath, &CONFIG); err != nil {
 		if strings.HasPrefix(err.Error(), "config file parsing error:") {
 			logger.Log.Notice("Config file is corrupted. Creating a new one by using -r flag.")
 		}
 		logger.Log.Fatal(err)
+	}
+
+	if CONFIG.Kubernetes.RunInCluster {
+		ConfigPath = "RUNS_IN_CLUSTER_NO_CONFIG_NEEDED"
 	}
 
 	if showDebug {

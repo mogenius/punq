@@ -1,78 +1,22 @@
 
-### [1.3.6](https://github.com/mogenius/punq/compare/dev1.3.5...dev1.3.6) (2023-09-06)
+### [1.1.42](https://github.com/mogenius/punq/compare/v1.1.41...v1.1.42) (2023-09-04)
 
 
 ### Bug Fixes
 
-* minor fix config yaml. ([a54099b](https://github.com/mogenius/punq/commit/a54099b145a3846a3c63f34cd6a0fd028efbac02))
-
-### [1.3.5](https://github.com/mogenius/punq/compare/dev1.3.4...dev1.3.5) (2023-09-06)
-
-
-### Bug Fixes
-
-* minor fix. ([be7a528](https://github.com/mogenius/punq/commit/be7a528d6d556ea6ab423216182851ffd7c80e2c))
-
-### [1.3.4](https://github.com/mogenius/punq/compare/dev1.3.3...dev1.3.4) (2023-09-06)
-
-
-### Bug Fixes
-
-* minor fix. ([1e6b6e9](https://github.com/mogenius/punq/commit/1e6b6e996a3eb4bb0ac1dfbc1b7178b97a330a3b))
-
-### [1.3.3](https://github.com/mogenius/punq/compare/dev1.3.2...dev1.3.3) (2023-09-06)
-
-
-### Bug Fixes
-
-* add bearer to authorization header ([1fd3536](https://github.com/mogenius/punq/commit/1fd3536c8c6d233fb26cf11874a5cc8a686e2e29))
-* minor fix. ([c09ad3d](https://github.com/mogenius/punq/commit/c09ad3d3425ad92f3bb2162eb88d58352bcacad3))
-* moving create admin to user-service ([ce34d73](https://github.com/mogenius/punq/commit/ce34d73237da672616990f5cce144c6e75ed695a))
-
-### [1.3.2](https://github.com/mogenius/punq/compare/dev1.3.1...dev1.3.2) (2023-09-06)
-
-
-### Bug Fixes
-
-* minor fix. ([d05fd7e](https://github.com/mogenius/punq/commit/d05fd7e0221e173261fad5c45ef8ea67b955b554))
-
-### [1.3.1](https://github.com/mogenius/punq/compare/dev1.3.0...dev1.3.1) (2023-09-06)
-
-
-### Bug Fixes
-
-* docu updates. ([fea7b75](https://github.com/mogenius/punq/commit/fea7b7513607c80b2f2fc1e57fc221f3f04beee8))
-
-## [1.3.0](https://github.com/mogenius/punq/compare/dev1.2.0...dev1.3.0) (2023-09-06)
-
-
-### Features
-
-* login; jwt auth ([ada0658](https://github.com/mogenius/punq/commit/ada065827a94857873449b123773cf7281faa25a))
-
-## [1.2.0](https://github.com/mogenius/punq/compare/dev1.1.7...dev1.2.0) (2023-09-04)
-
-
-### Features
-
-* introduced swagger. ([fc03f7e](https://github.com/mogenius/punq/commit/fc03f7e536f8b77a70e80ddb7cb2eddbc3577476))
-
-### [1.1.7](https://github.com/mogenius/punq/compare/dev1.1.6...dev1.1.7) (2023-09-04)
-
-
-### Bug Fixes
-
-* portforward improved. ([67b657e](https://github.com/mogenius/punq/commit/67b657e0041288f623df19ddfddb2cbf0b85281d))
-
-### [1.1.6](https://github.com/mogenius/punq/compare/dev1.1.5...dev1.1.6) (2023-09-04)
-
-
-### Bug Fixes
-
+* action fixed. ([28ac266](https://github.com/mogenius/punq/commit/28ac266bfce5794063aafa33e8b283a636a07a0e))
 * action fixed. ([8213508](https://github.com/mogenius/punq/commit/8213508247030c1838dc504d26b5e62364e32e14))
+* dev action fixed. ([31b314d](https://github.com/mogenius/punq/commit/31b314d9ec797987a513ee938bbece1737c36dbc))
+* dev action fixed. ([5d366c6](https://github.com/mogenius/punq/commit/5d366c6082d9e57c51a654469e67db6e0fa97fbf))
+* dev action fixed. ([116bc73](https://github.com/mogenius/punq/commit/116bc73449b384ddbf5c6f7f8dacef59a4474883))
+* develop pipeline. ([e1eb198](https://github.com/mogenius/punq/commit/e1eb198c06782153f40f160a99680c08eb027ffb))
+* develop pipeline. ([3fac41c](https://github.com/mogenius/punq/commit/3fac41c2162040b38646f38142d2ea7f5b3e6909))
+* develop pipeline. ([330395f](https://github.com/mogenius/punq/commit/330395f146bbbd0c3d2430889f65d337f6f38d88))
+* package fixes. ([7c32652](https://github.com/mogenius/punq/commit/7c326524e46154e8dd81ebd41533838955a3761d))
+* scratch container was missing ca-certificates. they will now be copied from builder. ([4190a75](https://github.com/mogenius/punq/commit/4190a757d56302317d71714dc1f1646ad56b1fe0))
+* workloads list now displays only valid workloads for different users. ([9744a1a](https://github.com/mogenius/punq/commit/9744a1a0867cec3ec77d689ab2a68d0cc49d4f1f))
 
-### [1.1.5](https://github.com/mogenius/punq/compare/dev1.1.4...dev1.1.5) (2023-09-04)
-
+### [1.1.41](https://github.com/mogenius/punq/compare/v1.1.40...v1.1.41) (2023-09-04)
 
 ### Bug Fixes
 

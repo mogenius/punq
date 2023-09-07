@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	cc "github.com/ivanpirog/coloredcobra"
@@ -34,7 +33,6 @@ var rootCmd = &cobra.Command{
 		if resetConfig {
 			utils.DeleteCurrentConfig()
 		}
-		fmt.Println("XXX stage: ", stage)
 		utils.InitConfigYaml(debug, customConfig, stage)
 	},
 }
