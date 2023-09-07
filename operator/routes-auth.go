@@ -15,8 +15,13 @@ type LoginInput struct {
 }
 
 func InitAuthRoutes(router *gin.Engine) {
-	router.POST("/auth/login", login)
-	router.GET("/auth/authenticate", Auth(dtos.READER), authenticate)
+
+	authRoutes := router.Group("/auth")
+	{
+		authRoutes.POST("/login", login)
+		authRoutes.GET("/authenticate", Auth(dtos.READER), authenticate)
+	}
+
 }
 
 // @Tags Auth
