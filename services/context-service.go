@@ -31,7 +31,7 @@ func ListContexts() []dtos.PunqContext {
 	return contexts
 }
 
-func AddContext(ctx dtos.PunqContext) utils.HttpResult {
+func AddContext(ctx dtos.PunqContext) utils.K8sWorkloadResult {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 	if secret == nil {
 		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET))
@@ -46,7 +46,7 @@ func AddContext(ctx dtos.PunqContext) utils.HttpResult {
 	return kubernetes.UpdateK8sSecret(*secret)
 }
 
-func UpdateContext(ctx dtos.PunqContext) utils.HttpResult {
+func UpdateContext(ctx dtos.PunqContext) utils.K8sWorkloadResult {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 	if secret == nil {
 		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET))
@@ -61,7 +61,7 @@ func UpdateContext(ctx dtos.PunqContext) utils.HttpResult {
 	return kubernetes.UpdateK8sSecret(*secret)
 }
 
-func DeleteContext(id string) utils.HttpResult {
+func DeleteContext(id string) utils.K8sWorkloadResult {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 	if secret == nil {
 		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET))

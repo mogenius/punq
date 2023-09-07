@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllRoleBindings(namespaceName string) utils.HttpResult {
+func AllRoleBindings(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.RoleBinding{}
 
 	provider := NewKubeProvider()
@@ -30,7 +30,7 @@ func AllRoleBindings(namespaceName string) utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sRoleBinding(data v1.RoleBinding) utils.HttpResult {
+func UpdateK8sRoleBinding(data v1.RoleBinding) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.RbacV1().RoleBindings(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -40,7 +40,7 @@ func UpdateK8sRoleBinding(data v1.RoleBinding) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sRoleBinding(data v1.RoleBinding) utils.HttpResult {
+func DeleteK8sRoleBinding(data v1.RoleBinding) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.RbacV1().RoleBindings(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -50,7 +50,7 @@ func DeleteK8sRoleBinding(data v1.RoleBinding) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sRoleBinding(namespace string, name string) utils.HttpResult {
+func DescribeK8sRoleBinding(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "rolebinding", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -62,7 +62,7 @@ func DescribeK8sRoleBinding(namespace string, name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sRoleBinding(data v1.RoleBinding) utils.HttpResult {
+func CreateK8sRoleBinding(data v1.RoleBinding) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.RbacV1().RoleBindings(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

@@ -11,7 +11,7 @@ import (
 
 // TODO
 
-func AllCustomResourceDefinitions() utils.HttpResult {
+func AllCustomResourceDefinitions() utils.K8sWorkloadResult {
 	// TODO
 
 	// 	result := []apiExt.CustomResourceDefinition{}
@@ -31,7 +31,7 @@ func AllCustomResourceDefinitions() utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func UpdateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) utils.HttpResult {
+func UpdateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) utils.K8sWorkloadResult {
 	// TODO
 
 	// kubeProvider := NewKubeProvider()
@@ -43,7 +43,7 @@ func UpdateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) uti
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) utils.HttpResult {
+func DeleteK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) utils.K8sWorkloadResult {
 	// TODO
 
 	// kubeProvider := NewKubeProvider()
@@ -55,7 +55,7 @@ func DeleteK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) uti
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sCustomResourceDefinition(name string) utils.HttpResult {
+func DescribeK8sCustomResourceDefinition(name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "crds", name)
 
 	output, err := cmd.CombinedOutput()
@@ -67,7 +67,7 @@ func DescribeK8sCustomResourceDefinition(name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) utils.HttpResult {
+func CreateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) utils.K8sWorkloadResult {
 	// TODO
 
 	// kubeProvider := NewKubeProvider()

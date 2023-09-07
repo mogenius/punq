@@ -13,7 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllServiceAccounts(namespaceName string) utils.HttpResult {
+func AllServiceAccounts(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.ServiceAccount{}
 
 	provider := NewKubeProvider()
@@ -31,7 +31,7 @@ func AllServiceAccounts(namespaceName string) utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sServiceAccount(data v1.ServiceAccount) utils.HttpResult {
+func UpdateK8sServiceAccount(data v1.ServiceAccount) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -41,7 +41,7 @@ func UpdateK8sServiceAccount(data v1.ServiceAccount) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sServiceAccount(data v1.ServiceAccount) utils.HttpResult {
+func DeleteK8sServiceAccount(data v1.ServiceAccount) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -51,7 +51,7 @@ func DeleteK8sServiceAccount(data v1.ServiceAccount) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sServiceAccount(namespace string, name string) utils.HttpResult {
+func DescribeK8sServiceAccount(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "serviceaccount", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -63,7 +63,7 @@ func DescribeK8sServiceAccount(namespace string, name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sServiceAccount(data v1.ServiceAccount) utils.HttpResult {
+func CreateK8sServiceAccount(data v1.ServiceAccount) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

@@ -30,7 +30,7 @@ func AllReplicasets(namespaceName string) []v1.ReplicaSet {
 	return result
 }
 
-func AllK8sReplicasets(namespaceName string) utils.HttpResult {
+func AllK8sReplicasets(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.ReplicaSet{}
 
 	provider := NewKubeProvider()
@@ -48,7 +48,7 @@ func AllK8sReplicasets(namespaceName string) utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sReplicaset(data v1.ReplicaSet) utils.HttpResult {
+func UpdateK8sReplicaset(data v1.ReplicaSet) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -58,7 +58,7 @@ func UpdateK8sReplicaset(data v1.ReplicaSet) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sReplicaset(data v1.ReplicaSet) utils.HttpResult {
+func DeleteK8sReplicaset(data v1.ReplicaSet) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -68,7 +68,7 @@ func DeleteK8sReplicaset(data v1.ReplicaSet) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sReplicaset(namespace string, name string) utils.HttpResult {
+func DescribeK8sReplicaset(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "replicaset", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -80,7 +80,7 @@ func DescribeK8sReplicaset(namespace string, name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sReplicaSet(data v1.ReplicaSet) utils.HttpResult {
+func CreateK8sReplicaSet(data v1.ReplicaSet) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

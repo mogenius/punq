@@ -12,13 +12,13 @@ import (
 
 func InitUserRoutes(router *gin.Engine) {
 
-	userRoutes := router.Group("/user")
+	userRoutes := router.Group("/user", Auth(dtos.ADMIN))
 	{
-		userRoutes.GET("/all", Auth(dtos.ADMIN), userList)
-		userRoutes.GET("/:id", Auth(dtos.ADMIN), userGet)
-		userRoutes.DELETE("/:id", Auth(dtos.ADMIN), userDelete)
-		userRoutes.PATCH("/", Auth(dtos.ADMIN), userUpdate)
-		userRoutes.POST("/", Auth(dtos.ADMIN), userAdd)
+		userRoutes.GET("/all", userList)
+		userRoutes.GET("/:id", userGet)
+		userRoutes.DELETE("/:id", userDelete)
+		userRoutes.PATCH("/", userUpdate)
+		userRoutes.POST("/", userAdd)
 	}
 
 }
@@ -30,7 +30,7 @@ func InitUserRoutes(router *gin.Engine) {
 // @Security Bearer
 func userList(c *gin.Context) {
 	users := services.ListUsers()
-	utils.RespondForHttpResult(c, kubernetes.WorkloadResult(users, nil))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.WorkloadResult(users, nil))
 }
 
 // @Tags User

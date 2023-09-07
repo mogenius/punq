@@ -195,19 +195,19 @@ func WorkloadsForAccesslevel(access dtos.AccessLevel) []string {
 	return resources
 }
 
-func WorkloadResult(result interface{}, err interface{}) utils.HttpResult {
+func WorkloadResult(result interface{}, err interface{}) utils.K8sWorkloadResult {
 	fmt.Println(reflect.TypeOf(err))
 	if fmt.Sprint(reflect.TypeOf(err)) == "*errors.errorString" {
 		err = err.(error).Error()
 	}
-	return utils.HttpResult{
+	return utils.K8sWorkloadResult{
 		Result: result,
 		Error:  err,
 	}
 }
 
-func WorkloadResultError(error string) utils.HttpResult {
-	return utils.HttpResult{
+func WorkloadResultError(error string) utils.K8sWorkloadResult {
+	return utils.K8sWorkloadResult{
 		Result: nil,
 		Error:  error,
 	}

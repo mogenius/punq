@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-type HttpResult struct {
+type K8sWorkloadResult struct {
 	Result interface{} `json:"result,omitempty"`
 	Error  interface{} `json:"error,omitempty"`
 }
@@ -47,10 +47,10 @@ func MalformedMessage(c *gin.Context, msg string) {
 	})
 }
 
-func RespondForHttpResult(c *gin.Context, httpResult HttpResult) {
-	if httpResult.Error == nil {
-		c.JSON(http.StatusOK, httpResult)
+func HttpRespondForWorkloadResult(c *gin.Context, workloadResult K8sWorkloadResult) {
+	if workloadResult.Error == nil {
+		c.JSON(http.StatusOK, workloadResult)
 	} else {
-		c.JSON(http.StatusBadRequest, httpResult)
+		c.JSON(http.StatusBadRequest, workloadResult)
 	}
 }

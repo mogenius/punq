@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func UpdateK8sDeployment(data v1.Deployment) utils.HttpResult {
+func UpdateK8sDeployment(data v1.Deployment) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -21,7 +21,7 @@ func UpdateK8sDeployment(data v1.Deployment) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sDeployment(data v1.Deployment) utils.HttpResult {
+func DeleteK8sDeployment(data v1.Deployment) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -49,7 +49,7 @@ func AllDeployments(namespaceName string) []v1.Deployment {
 	return result
 }
 
-func AllK8sDeployments(namespaceName string) utils.HttpResult {
+func AllK8sDeployments(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.Deployment{}
 
 	provider := NewKubeProvider()
@@ -67,7 +67,7 @@ func AllK8sDeployments(namespaceName string) utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func DescribeK8sDeployment(namespace string, name string) utils.HttpResult {
+func DescribeK8sDeployment(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "deployment", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -79,7 +79,7 @@ func DescribeK8sDeployment(namespace string, name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sDeployment(data v1.Deployment) utils.HttpResult {
+func CreateK8sDeployment(data v1.Deployment) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

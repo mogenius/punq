@@ -40,7 +40,7 @@ func GetNodeStats() []dtos.NodeStat {
 	return result
 }
 
-func ListK8sNodes() utils.HttpResult {
+func ListK8sNodes() utils.K8sWorkloadResult {
 	var provider *KubeProvider = NewKubeProvider()
 	if provider == nil {
 		err := fmt.Errorf("Failed to load kubeprovider.")
@@ -56,7 +56,7 @@ func ListK8sNodes() utils.HttpResult {
 	return WorkloadResult(nodeMetricsList.Items, nil)
 }
 
-func DescribeK8sNode(name string) utils.HttpResult {
+func DescribeK8sNode(name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "node", name)
 
 	output, err := cmd.CombinedOutput()

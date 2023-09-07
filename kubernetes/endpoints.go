@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllEndpoints(namespaceName string) utils.HttpResult {
+func AllEndpoints(namespaceName string) utils.K8sWorkloadResult {
 	result := []corev1.Endpoints{}
 
 	provider := NewKubeProvider()
@@ -29,7 +29,7 @@ func AllEndpoints(namespaceName string) utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sEndpoint(data corev1.Endpoints) utils.HttpResult {
+func UpdateK8sEndpoint(data corev1.Endpoints) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().Endpoints(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -39,7 +39,7 @@ func UpdateK8sEndpoint(data corev1.Endpoints) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sEndpoint(data corev1.Endpoints) utils.HttpResult {
+func DeleteK8sEndpoint(data corev1.Endpoints) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().Endpoints(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -49,7 +49,7 @@ func DeleteK8sEndpoint(data corev1.Endpoints) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sEndpoint(namespace string, name string) utils.HttpResult {
+func DescribeK8sEndpoint(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "endpoint", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -61,7 +61,7 @@ func DescribeK8sEndpoint(namespace string, name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sEndpoint(data corev1.Endpoints) utils.HttpResult {
+func CreateK8sEndpoint(data corev1.Endpoints) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().Endpoints(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

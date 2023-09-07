@@ -30,7 +30,7 @@ func AllDaemonsets(namespaceName string) []v1.DaemonSet {
 	return result
 }
 
-func AllK8sDaemonsets(namespaceName string) utils.HttpResult {
+func AllK8sDaemonsets(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.DaemonSet{}
 
 	provider := NewKubeProvider()
@@ -48,7 +48,7 @@ func AllK8sDaemonsets(namespaceName string) utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sDaemonSet(data v1.DaemonSet) utils.HttpResult {
+func UpdateK8sDaemonSet(data v1.DaemonSet) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().DaemonSets(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -58,7 +58,7 @@ func UpdateK8sDaemonSet(data v1.DaemonSet) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sDaemonSet(data v1.DaemonSet) utils.HttpResult {
+func DeleteK8sDaemonSet(data v1.DaemonSet) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().DaemonSets(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -68,7 +68,7 @@ func DeleteK8sDaemonSet(data v1.DaemonSet) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sDaemonSet(namespace string, name string) utils.HttpResult {
+func DescribeK8sDaemonSet(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "daemonset", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -80,7 +80,7 @@ func DescribeK8sDaemonSet(namespace string, name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sDaemonSet(data v1.DaemonSet) utils.HttpResult {
+func CreateK8sDaemonSet(data v1.DaemonSet) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().DaemonSets(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

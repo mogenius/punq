@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllIssuer(namespaceName string) utils.HttpResult {
+func AllIssuer(namespaceName string) utils.K8sWorkloadResult {
 	result := []cmapi.Issuer{}
 
 	provider := NewKubeProviderCertManager()
@@ -30,7 +30,7 @@ func AllIssuer(namespaceName string) utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sIssuer(data cmapi.Issuer) utils.HttpResult {
+func UpdateK8sIssuer(data cmapi.Issuer) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.CertmanagerV1().Issuers(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -40,7 +40,7 @@ func UpdateK8sIssuer(data cmapi.Issuer) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sIssuer(data cmapi.Issuer) utils.HttpResult {
+func DeleteK8sIssuer(data cmapi.Issuer) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.CertmanagerV1().Issuers(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -50,7 +50,7 @@ func DeleteK8sIssuer(data cmapi.Issuer) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sIssuer(namespace string, name string) utils.HttpResult {
+func DescribeK8sIssuer(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "issuer", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -62,7 +62,7 @@ func DescribeK8sIssuer(namespace string, name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sIssuer(data cmapi.Issuer) utils.HttpResult {
+func CreateK8sIssuer(data cmapi.Issuer) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.CertmanagerV1().Issuers(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

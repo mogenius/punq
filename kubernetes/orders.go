@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllOrders(namespaceName string) utils.HttpResult {
+func AllOrders(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.Order{}
 
 	provider := NewKubeProviderCertManager()
@@ -30,7 +30,7 @@ func AllOrders(namespaceName string) utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sOrder(data v1.Order) utils.HttpResult {
+func UpdateK8sOrder(data v1.Order) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -40,7 +40,7 @@ func UpdateK8sOrder(data v1.Order) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sOrder(data v1.Order) utils.HttpResult {
+func DeleteK8sOrder(data v1.Order) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -50,7 +50,7 @@ func DeleteK8sOrder(data v1.Order) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sOrder(namespace string, name string) utils.HttpResult {
+func DescribeK8sOrder(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "order", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -62,7 +62,7 @@ func DescribeK8sOrder(namespace string, name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sOrder(data v1.Order) utils.HttpResult {
+func CreateK8sOrder(data v1.Order) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllVolumeSnapshots(namespace string) utils.HttpResult {
+func AllVolumeSnapshots(namespace string) utils.K8sWorkloadResult {
 	result := []snap.VolumeSnapshot{}
 
 	provider := NewKubeProviderSnapshot()
@@ -26,11 +26,11 @@ func AllVolumeSnapshots(namespace string) utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sVolumeSnapshot(data snap.VolumeSnapshot) utils.HttpResult {
+func UpdateK8sVolumeSnapshot(data snap.VolumeSnapshot) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, fmt.Errorf("UPDATE not available in VolumeSnapshot."))
 }
 
-func DeleteK8sVolumeSnapshot(data snap.VolumeSnapshot) utils.HttpResult {
+func DeleteK8sVolumeSnapshot(data snap.VolumeSnapshot) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderSnapshot()
 	client := kubeProvider.ClientSet.SnapshotV1().VolumeSnapshots(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -40,7 +40,7 @@ func DeleteK8sVolumeSnapshot(data snap.VolumeSnapshot) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sVolumeSnapshot(namespace string, name string) utils.HttpResult {
+func DescribeK8sVolumeSnapshot(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "volumesnapshots", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -52,7 +52,7 @@ func DescribeK8sVolumeSnapshot(namespace string, name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sVolumeSnapshot(data snap.VolumeSnapshot) utils.HttpResult {
+func CreateK8sVolumeSnapshot(data snap.VolumeSnapshot) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderSnapshot()
 	client := kubeProvider.ClientSet.SnapshotV1().VolumeSnapshots(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

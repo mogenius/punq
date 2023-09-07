@@ -13,7 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllCronjobs(namespaceName string) utils.HttpResult {
+func AllCronjobs(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1job.CronJob{}
 
 	provider := NewKubeProvider()
@@ -31,7 +31,7 @@ func AllCronjobs(namespaceName string) utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sCronJob(data v1.CronJob) utils.HttpResult {
+func UpdateK8sCronJob(data v1.CronJob) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.BatchV1().CronJobs(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -41,7 +41,7 @@ func UpdateK8sCronJob(data v1.CronJob) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sCronJob(data v1job.CronJob) utils.HttpResult {
+func DeleteK8sCronJob(data v1job.CronJob) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.BatchV1().CronJobs(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -51,7 +51,7 @@ func DeleteK8sCronJob(data v1job.CronJob) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sCronJob(namespace string, name string) utils.HttpResult {
+func DescribeK8sCronJob(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "cronjob", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -63,7 +63,7 @@ func DescribeK8sCronJob(namespace string, name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sCronJob(data v1.CronJob) utils.HttpResult {
+func CreateK8sCronJob(data v1.CronJob) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.BatchV1().CronJobs(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

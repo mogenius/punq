@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllVolumeAttachments() utils.HttpResult {
+func AllVolumeAttachments() utils.K8sWorkloadResult {
 	result := []storage.VolumeAttachment{}
 
 	provider := NewKubeProvider()
@@ -25,7 +25,7 @@ func AllVolumeAttachments() utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sVolumeAttachment(data storage.VolumeAttachment) utils.HttpResult {
+func UpdateK8sVolumeAttachment(data storage.VolumeAttachment) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -35,7 +35,7 @@ func UpdateK8sVolumeAttachment(data storage.VolumeAttachment) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sVolumeAttachment(data storage.VolumeAttachment) utils.HttpResult {
+func DeleteK8sVolumeAttachment(data storage.VolumeAttachment) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -45,7 +45,7 @@ func DeleteK8sVolumeAttachment(data storage.VolumeAttachment) utils.HttpResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sVolumeAttachment(name string) utils.HttpResult {
+func DescribeK8sVolumeAttachment(name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "volumeattachment", name)
 
 	output, err := cmd.CombinedOutput()
@@ -57,7 +57,7 @@ func DescribeK8sVolumeAttachment(name string) utils.HttpResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sVolumeAttachment(data storage.VolumeAttachment) utils.HttpResult {
+func CreateK8sVolumeAttachment(data storage.VolumeAttachment) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

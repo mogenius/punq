@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllEvents(namespaceName string) utils.HttpResult {
+func AllEvents(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1Core.Event{}
 
 	provider := NewKubeProvider()
@@ -29,7 +29,7 @@ func AllEvents(namespaceName string) utils.HttpResult {
 	return WorkloadResult(result, nil)
 }
 
-func DescribeK8sEvent(namespace string, name string) utils.HttpResult {
+func DescribeK8sEvent(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "event", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
