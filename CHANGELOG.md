@@ -1,4 +1,12 @@
 
+### [1.3.15](https://github.com/mogenius/punq/compare/dev1.3.14...dev1.3.15) (2023-09-07)
+
+
+### Bug Fixes
+
+* add current user to user route ([6e12143](https://github.com/mogenius/punq/commit/6e121434bd0b4d9eecff9449cefb24ee51d4b6be))
+* update context service return values ([08ce1e2](https://github.com/mogenius/punq/commit/08ce1e27f9036150d959cdc4ab0d2e7084e40ba1))
+
 ### [1.3.14](https://github.com/mogenius/punq/compare/dev1.3.13...dev1.3.14) (2023-09-07)
 
 
