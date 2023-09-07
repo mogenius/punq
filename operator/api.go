@@ -3,10 +3,6 @@ package operator
 import (
 	"embed"
 	"fmt"
-	"io/fs"
-	"net/http"
-	"path"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/mogenius/punq/docs"
@@ -14,6 +10,9 @@ import (
 	"github.com/mogenius/punq/version"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"io/fs"
+	"net/http"
+	"path"
 )
 
 var HtmlDirFs embed.FS

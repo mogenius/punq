@@ -67,11 +67,9 @@ func CheckUserAuthorization(c *gin.Context) (*dtos.PunqUser, error) {
 		return nil, err
 	}
 
-	claims := services.ValidationToken(authorization.Value)
-	if claims == nil {
-		msg := "claims failed"
-		logger.Log.Error(msg)
-		return nil, errors.New(msg)
+	claims, err := services.ValidationToken(authorization.Value)
+	if err != nil {
+		return nil, err
 	}
 	userId := claims.UserID
 

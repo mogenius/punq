@@ -8,6 +8,7 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"time"
 
@@ -126,10 +127,12 @@ func InitAuthService() {
 	CreateKeyPair()
 }
 
-func CreateKeyPair() *KeyPair {
+func CreateKeyPair() (*KeyPair, error) {
 	provider := kubernetes.NewKubeProvider()
 	if provider == nil {
-		logger.Log.Fatal("Failed to load kubeprovider.")
+		msg := fmt.Sprintf("Failed to load kubeprovider.")
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 
 	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
@@ -142,11 +145,15 @@ func CreateKeyPair() *KeyPair {
 
 	keyPair, err := generateAuthKeyPair()
 	if err != nil {
-		logger.Log.Errorf("failed to generate key-pair %s", err)
+		msg := fmt.Sprintf("failed to generate key-pair %v", err)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 	rawKeyPair, err := json.Marshal(keyPair)
 	if err != nil {
-		logger.Log.Errorf("Error marshaling %s", err)
+		msg := fmt.Sprintf("failed marshaling %v", err)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 	secret.StringData[SecKeyPair] = string(rawKeyPair)
 
@@ -155,12 +162,11 @@ func CreateKeyPair() *KeyPair {
 		fmt.Println("Creating new punq-auth secret ...")
 		_, err := secretClient.Create(context.TODO(), &secret, kubernetes.MoCreateOptions())
 		if err != nil {
-			logger.Log.Error(err)
-			return nil
+			return nil, err
 		}
 		fmt.Println("Created new punq-auth secret. ✅")
 
-		return keyPair
+		return keyPair, nil
 	}
 
 	// get from secret
@@ -185,7 +191,7 @@ func RemoveKeyPair() {
 	fmt.Printf("Deleted %s/%s secret. ✅\n", utils.CONFIG.Kubernetes.OwnNamespace, utils.JWTSECRET)
 }
 
-func GetKeyPair() *KeyPair {
+func GetKeyPair() (*KeyPair, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.JWTSECRET)
 	if secret == nil {
 		logger.Log.Warningf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.JWTSECRET)
@@ -196,17 +202,23 @@ func GetKeyPair() *KeyPair {
 		keyPair := KeyPair{}
 		err := json.Unmarshal([]byte(secret.Data[SecKeyPair]), &keyPair)
 		if err != nil {
-			logger.Log.Errorf("Failed to Unmarshal user '%s' %s.", SecKeyPair, err)
+			msg := fmt.Sprintf("failed to Unmarshal user '%s' %v.", SecKeyPair, err)
+			logger.Log.Error(msg)
+			return nil, err
 		}
-		return &keyPair
+		return &keyPair, nil
 	}
 
-	return nil
+	return CreateKeyPair()
 }
 
 func GenerateToken(user *dtos.PunqUser) (*dtos.PunqToken, error) {
 	if KeyPairInstance == nil {
-		KeyPairInstance = GetKeyPair()
+		keyPair, err := GetKeyPair()
+		if err != nil {
+			return nil, err
+		}
+		KeyPairInstance = keyPair
 	}
 
 	claims := jwt.MapClaims{}
@@ -224,15 +236,20 @@ func GenerateToken(user *dtos.PunqUser) (*dtos.PunqToken, error) {
 	return dtos.CreateToken(tokenString), nil
 }
 
-func ValidationToken(tokenString string) *PunqClaims {
+func ValidationToken(tokenString string) (*PunqClaims, error) {
 	if KeyPairInstance == nil {
-		KeyPairInstance = GetKeyPair()
+		keyPair, err := GetKeyPair()
+		if err != nil {
+			return nil, err
+		}
+		KeyPairInstance = keyPair
 	}
 
 	ecdsaPublicKey, ok := KeyPairInstance.PublicKey.(*ecdsa.PublicKey)
 	if !ok {
-		logger.Log.Error("Invalid public key")
-		return nil
+		msg := fmt.Sprintf("Invalid public key")
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 
 	// Validation
@@ -242,10 +259,16 @@ func ValidationToken(tokenString string) *PunqClaims {
 		}
 		return ecdsaPublicKey, nil
 	})
-
-	if claims, ok := token.Claims.(*PunqClaims); ok && token.Valid {
-		return claims
+	claims, ok := token.Claims.(*PunqClaims)
+	if !ok {
+		msg := fmt.Sprintf("Type Assertion failed")
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
-	logger.Log.Errorf("Invalid token %v", err)
-	return nil
+	if !token.Valid {
+		msg := fmt.Sprintf("Invalid token %v", err)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
+	}
+	return claims, nil
 }
