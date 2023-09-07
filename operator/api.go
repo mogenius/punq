@@ -22,6 +22,8 @@ func InitGin() {
 	router := gin.Default()
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "authorization"}
+
 	router.Use(cors.New(config))
 
 	router.StaticFS("/punq", embedFs())
