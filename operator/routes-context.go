@@ -1,6 +1,7 @@
 package operator
 
 import (
+	"github.com/mogenius/punq/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -28,7 +29,7 @@ func getContext(c *gin.Context) {
 	ctxId := c.Param("ctxId")
 	result := services.GetContext(ctxId)
 	if result == nil {
-		NotFound(c, "Context not found.")
+		utils.NotFound(c, "Context not found.")
 		return
 	}
 	c.JSON(http.StatusOK, result)
@@ -45,7 +46,7 @@ func updateContext(c *gin.Context) {
 	ctxId := c.Param("ctxId")
 	result := services.GetContext(ctxId)
 	if result == nil {
-		NotFound(c, "Context not found.")
+		utils.NotFound(c, "Context not found.")
 		return
 	}
 

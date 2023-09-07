@@ -13,7 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllServiceAccounts(namespaceName string) K8sWorkloadResult {
+func AllServiceAccounts(namespaceName string) utils.HttpResult {
 	result := []v1.ServiceAccount{}
 
 	provider := NewKubeProvider()
@@ -31,7 +31,7 @@ func AllServiceAccounts(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sServiceAccount(data v1.ServiceAccount) K8sWorkloadResult {
+func UpdateK8sServiceAccount(data v1.ServiceAccount) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -41,7 +41,7 @@ func UpdateK8sServiceAccount(data v1.ServiceAccount) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sServiceAccount(data v1.ServiceAccount) K8sWorkloadResult {
+func DeleteK8sServiceAccount(data v1.ServiceAccount) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -51,7 +51,7 @@ func DeleteK8sServiceAccount(data v1.ServiceAccount) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sServiceAccount(namespace string, name string) K8sWorkloadResult {
+func DescribeK8sServiceAccount(namespace string, name string) utils.HttpResult {
 	cmd := exec.Command("kubectl", "describe", "serviceaccount", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -63,7 +63,7 @@ func DescribeK8sServiceAccount(namespace string, name string) K8sWorkloadResult 
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sServiceAccount(data v1.ServiceAccount) K8sWorkloadResult {
+func CreateK8sServiceAccount(data v1.ServiceAccount) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

@@ -1,6 +1,7 @@
 package operator
 
 import (
+	"github.com/mogenius/punq/utils"
 	"net/http"
 
 	v1Cert "github.com/cert-manager/cert-manager/pkg/apis/acme/v1"
@@ -253,7 +254,7 @@ func allWorkloadTemplates(c *gin.Context) {
 func allKubernetesResources(c *gin.Context) {
 	user, err := CheckUserAuthorization(c)
 	if err != nil || user == nil {
-		MalformedMessage(c, "User not found.")
+		utils.MalformedMessage(c, "User not found.")
 		return
 	}
 	c.JSON(http.StatusOK, kubernetes.WorkloadsForAccesslevel(user.AccessLevel))
@@ -271,7 +272,7 @@ func allNamespaces(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/namespace [post]
 // @Security Bearer
 func createNamespace(c *gin.Context) {
@@ -285,7 +286,7 @@ func createNamespace(c *gin.Context) {
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/namespace [delete]
 // @Security Bearer
 func deleteNamespace(c *gin.Context) {
@@ -305,12 +306,12 @@ func deleteNamespace(c *gin.Context) {
 // @Security Bearer
 func allPods(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sPods(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllK8sPods(namespace))
 }
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/pod/describe [get]
 // @Security Bearer
 // @Param namespace query string false  "namespace"
@@ -318,52 +319,52 @@ func allPods(c *gin.Context) {
 func describePod(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sPod(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sPod(namespace, name))
 }
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/pod [delete]
 // @Security Bearer
 func deletePod(c *gin.Context) {
 	var data v1.Pod
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sPod(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sPod(data))
 }
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/pod [patch]
 // @Security Bearer
 func patchPod(c *gin.Context) {
 	var data v1.Pod
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sPod(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sPod(data))
 }
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/pod [post]
 // @Security Bearer
 func createPod(c *gin.Context) {
 	var data v1.Pod
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sPod(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sPod(data))
 }
 
 // DEPLOYMENTS
@@ -375,12 +376,12 @@ func createPod(c *gin.Context) {
 // @Param namespace query string false  "namespace"
 func allDeployments(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sDeployments(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllK8sDeployments(namespace))
 }
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/deployment/describe [get]
 // @Security Bearer
 // @Param namespace query string false  "namespace"
@@ -388,7 +389,7 @@ func allDeployments(c *gin.Context) {
 func describeDeployment(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sDeployment(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sDeployment(namespace, name))
 }
 
 // @Tags Workloads
@@ -400,10 +401,10 @@ func deleteDeployment(c *gin.Context) {
 	var data v1Apps.Deployment
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sDeployment(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sDeployment(data))
 }
 
 // @Tags Workloads
@@ -415,10 +416,10 @@ func patchDeployment(c *gin.Context) {
 	var data v1Apps.Deployment
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sDeployment(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sDeployment(data))
 }
 
 // @Tags Workloads
@@ -430,10 +431,10 @@ func createDeployment(c *gin.Context) {
 	var data v1Apps.Deployment
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sDeployment(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sDeployment(data))
 }
 
 // SERVICES
@@ -445,12 +446,12 @@ func createDeployment(c *gin.Context) {
 // @Param namespace query string false  "namespace"
 func allServices(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sServices(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllK8sServices(namespace))
 }
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/service/describe [get]
 // @Security Bearer
 // @Param namespace query string false  "namespace"
@@ -458,7 +459,7 @@ func allServices(c *gin.Context) {
 func describeService(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sService(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sService(namespace, name))
 }
 
 // @Tags Workloads
@@ -470,10 +471,10 @@ func deleteService(c *gin.Context) {
 	var data v1.Service
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sService(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sService(data))
 }
 
 // @Tags Workloads
@@ -485,10 +486,10 @@ func patchService(c *gin.Context) {
 	var data v1.Service
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sService(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sService(data))
 }
 
 // @Tags Workloads
@@ -500,10 +501,10 @@ func createService(c *gin.Context) {
 	var data v1.Service
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sService(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sService(data))
 }
 
 // INGRESSES
@@ -515,12 +516,12 @@ func createService(c *gin.Context) {
 // @Param namespace query string false  "namespace"
 func allIngresses(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sIngresses(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllK8sIngresses(namespace))
 }
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/ingress/describe [get]
 // @Security Bearer
 // @Param namespace query string false  "namespace"
@@ -528,7 +529,7 @@ func allIngresses(c *gin.Context) {
 func describeIngress(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sIngress(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sIngress(namespace, name))
 }
 
 // @Tags Workloads
@@ -540,10 +541,10 @@ func deleteIngress(c *gin.Context) {
 	var data v1Networking.Ingress
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sIngress(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sIngress(data))
 }
 
 // @Tags Workloads
@@ -555,10 +556,10 @@ func patchIngress(c *gin.Context) {
 	var data v1Networking.Ingress
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sIngress(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sIngress(data))
 }
 
 // @Tags Workloads
@@ -570,10 +571,10 @@ func createIngress(c *gin.Context) {
 	var data v1Networking.Ingress
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sIngress(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sIngress(data))
 }
 
 // CONFIGMAPS
@@ -585,12 +586,12 @@ func createIngress(c *gin.Context) {
 // @Param namespace query string false "namespace"
 func allConfigmaps(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sConfigmaps(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllK8sConfigmaps(namespace))
 }
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/configmap/describe [get]
 // @Security Bearer
 // @Param namespace query string false "namespace"
@@ -598,7 +599,7 @@ func allConfigmaps(c *gin.Context) {
 func describeConfigmap(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sConfigmap(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sConfigmap(namespace, name))
 }
 
 // @Tags Workloads
@@ -610,10 +611,10 @@ func deleteConfigmap(c *gin.Context) {
 	var data v1.ConfigMap
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sConfigmap(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sConfigmap(data))
 }
 
 // @Tags Workloads
@@ -625,10 +626,10 @@ func patchConfigmap(c *gin.Context) {
 	var data v1.ConfigMap
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sConfigMap(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sConfigMap(data))
 }
 
 // @Tags Workloads
@@ -640,10 +641,10 @@ func createConfigmap(c *gin.Context) {
 	var data v1.ConfigMap
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sConfigMap(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sConfigMap(data))
 }
 
 // SECRETS
@@ -655,12 +656,12 @@ func createConfigmap(c *gin.Context) {
 // @Param namespace query string false  "namespace"
 func allSecrets(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sSecrets(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllK8sSecrets(namespace))
 }
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/secret/describe [get]
 // @Security Bearer
 // @Param namespace query string false  "namespace"
@@ -668,7 +669,7 @@ func allSecrets(c *gin.Context) {
 func describeSecret(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sSecret(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sSecret(namespace, name))
 }
 
 // @Tags Workloads
@@ -680,10 +681,10 @@ func deleteSecret(c *gin.Context) {
 	var data v1.Secret
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sSecret(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sSecret(data))
 }
 
 // @Tags Workloads
@@ -695,10 +696,10 @@ func patchSecret(c *gin.Context) {
 	var data v1.Secret
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sSecret(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sSecret(data))
 }
 
 // @Tags Workloads
@@ -710,31 +711,31 @@ func createSecret(c *gin.Context) {
 	var data v1.Secret
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sSecret(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sSecret(data))
 }
 
 // NODES
 // @Tags Workloads
 // @Produce json
-// @Success 200 {array} kubernetes.K8sWorkloadResult
+// @Success 200 {array} utils.HttpResult
 // @Router /workload/node/all [get]
 // @Security Bearer
 func allNodes(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.ListK8sNodes())
+	utils.RespondForHttpResult(c, kubernetes.ListK8sNodes())
 }
 
 // @Tags Workloads
 // @Produce json
-// @Success 200 {object} kubernetes.K8sWorkloadResult
+// @Success 200 {object} utils.HttpResult
 // @Router /workload/node/describe [get]
 // @Security Bearer
 // @Param name query string false  "resource name"
 func describeNode(c *gin.Context) {
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sNode(name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sNode(name))
 }
 
 // DAEMONSETS
@@ -746,7 +747,7 @@ func describeNode(c *gin.Context) {
 // @Param namespace query string false "namespace"
 func allDaemonSets(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sDaemonsets(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllK8sDaemonsets(namespace))
 }
 
 // @Tags Workloads
@@ -758,7 +759,7 @@ func allDaemonSets(c *gin.Context) {
 func describeDaemonSet(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sDaemonSet(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sDaemonSet(namespace, name))
 }
 
 // @Tags Workloads
@@ -770,10 +771,10 @@ func deleteDaemonSet(c *gin.Context) {
 	var data v1Apps.DaemonSet
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sDaemonSet(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sDaemonSet(data))
 }
 
 // @Tags Workloads
@@ -785,1000 +786,1000 @@ func patchDaemonSet(c *gin.Context) {
 	var data v1Apps.DaemonSet
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sDaemonSet(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sDaemonSet(data))
 }
 func createDaemonSet(c *gin.Context) {
 	var data v1Apps.DaemonSet
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sDaemonSet(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sDaemonSet(data))
 }
 
 // STATEFULSETS
 func allStatefulSets(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllStatefulSets(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllStatefulSets(namespace))
 }
 func describeStatefulSet(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sStatefulset(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sStatefulset(namespace, name))
 }
 func deleteStatefulSet(c *gin.Context) {
 	var data v1Apps.StatefulSet
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sStatefulset(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sStatefulset(data))
 }
 func patchStatefulSet(c *gin.Context) {
 	var data v1Apps.StatefulSet
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sStatefulset(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sStatefulset(data))
 }
 func createStatefulSet(c *gin.Context) {
 	var data v1Apps.StatefulSet
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sStatefulset(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sStatefulset(data))
 }
 
 // JOBS
 func allJobs(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllJobs(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllJobs(namespace))
 }
 func describeJob(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sJob(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sJob(namespace, name))
 }
 func deleteJob(c *gin.Context) {
 	var data v1Job.Job
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sJob(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sJob(data))
 }
 func patchJob(c *gin.Context) {
 	var data v1Job.Job
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sJob(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sJob(data))
 }
 func createJob(c *gin.Context) {
 	var data v1Job.Job
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sJob(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sJob(data))
 }
 
 // CRONJOBS
 func allCronJobs(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllCronjobs(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllCronjobs(namespace))
 }
 func describeCronJob(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sCronJob(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sCronJob(namespace, name))
 }
 func deleteCronJob(c *gin.Context) {
 	var data v1Job.CronJob
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sCronJob(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sCronJob(data))
 }
 func patchCronJob(c *gin.Context) {
 	var data v1Job.CronJob
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sCronJob(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sCronJob(data))
 }
 func createCronJob(c *gin.Context) {
 	var data v1Job.CronJob
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sCronJob(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sCronJob(data))
 }
 
 // REPLICASETS
 func allReplicasets(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sReplicasets(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllK8sReplicasets(namespace))
 }
 func describeReplicaset(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sReplicaset(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sReplicaset(namespace, name))
 }
 func deleteReplicaset(c *gin.Context) {
 	var data v1Apps.ReplicaSet
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sReplicaset(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sReplicaset(data))
 }
 func patchReplicaset(c *gin.Context) {
 	var data v1Apps.ReplicaSet
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sReplicaset(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sReplicaset(data))
 }
 func createReplicaset(c *gin.Context) {
 	var data v1Apps.ReplicaSet
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sReplicaSet(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sReplicaSet(data))
 }
 
 // PERSISTENTVOLUMES
 func allPersistentVolumes(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllPersistentVolumes())
+	utils.RespondForHttpResult(c, kubernetes.AllPersistentVolumes())
 }
 func describePersistentVolume(c *gin.Context) {
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sPersistentVolume(name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sPersistentVolume(name))
 }
 func deletePersistentVolume(c *gin.Context) {
 	var data v1.PersistentVolume
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sPersistentVolume(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sPersistentVolume(data))
 }
 func patchPersistentVolume(c *gin.Context) {
 	var data v1.PersistentVolume
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sPersistentVolume(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sPersistentVolume(data))
 }
 func createPersistentVolume(c *gin.Context) {
 	var data v1.PersistentVolume
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sPersistentVolume(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sPersistentVolume(data))
 }
 
 // PERSISTENTVOLUMECLAIMS
 func allPersistentVolumeClaims(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sPersistentVolumeClaims(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllK8sPersistentVolumeClaims(namespace))
 }
 func describePersistentVolumeClaim(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sPersistentVolumeClaim(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sPersistentVolumeClaim(namespace, name))
 }
 func deletePersistentVolumeClaim(c *gin.Context) {
 	var data v1.PersistentVolumeClaim
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sPersistentVolumeClaim(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sPersistentVolumeClaim(data))
 }
 func patchPersistentVolumeClaim(c *gin.Context) {
 	var data v1.PersistentVolumeClaim
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sPersistentVolumeClaim(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sPersistentVolumeClaim(data))
 }
 func createPersistentVolumeClaim(c *gin.Context) {
 	var data v1.PersistentVolumeClaim
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sPersistentVolumeClaim(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sPersistentVolumeClaim(data))
 }
 
 // HPA
 func allHpas(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllHpas(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllHpas(namespace))
 }
 func describeHpa(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sHpa(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sHpa(namespace, name))
 }
 func deleteHpa(c *gin.Context) {
 	var data v2Scale.HorizontalPodAutoscaler
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sHpa(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sHpa(data))
 }
 func patchHpa(c *gin.Context) {
 	var data v2Scale.HorizontalPodAutoscaler
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sHpa(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sHpa(data))
 }
 func createHpa(c *gin.Context) {
 	var data v2Scale.HorizontalPodAutoscaler
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sHpa(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sHpa(data))
 }
 
 // EVENTS
 func allEvents(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllEvents(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllEvents(namespace))
 }
 func describeEvent(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sEvent(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sEvent(namespace, name))
 }
 
 // CERTIFICATES
 func allCertificates(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sCertificates(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllK8sCertificates(namespace))
 }
 func describeCertificate(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sCertificate(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sCertificate(namespace, name))
 }
 func deleteCertificate(c *gin.Context) {
 	var data cmapi.Certificate
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sCertificate(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sCertificate(data))
 }
 func patchCertificate(c *gin.Context) {
 	var data cmapi.Certificate
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sCertificate(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sCertificate(data))
 }
 func createCertificate(c *gin.Context) {
 	var data cmapi.Certificate
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sCertificate(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sCertificate(data))
 }
 
 // CERTIFICATEREQUESTS
 func allCertificateRequests(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllCertificateSigningRequests(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllCertificateSigningRequests(namespace))
 }
 func describeCertificateRequest(c *gin.Context) {
 	name := c.Query("name")
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sCertificateSigningRequest(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sCertificateSigningRequest(namespace, name))
 }
 func deleteCertificateRequest(c *gin.Context) {
 	var data cmapi.CertificateRequest
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sCertificateSigningRequest(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sCertificateSigningRequest(data))
 }
 func patchCertificateRequest(c *gin.Context) {
 	var data cmapi.CertificateRequest
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sCertificateSigningRequest(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sCertificateSigningRequest(data))
 }
 func createCertificateRequest(c *gin.Context) {
 	var data cmapi.CertificateRequest
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sCertificateSigningRequest(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sCertificateSigningRequest(data))
 }
 
 // ORDERS
 func allOrders(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllOrders(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllOrders(namespace))
 }
 func describeOrder(c *gin.Context) {
 	name := c.Query("name")
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sOrder(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sOrder(namespace, name))
 }
 func deleteOrder(c *gin.Context) {
 	var data v1Cert.Order
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sOrder(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sOrder(data))
 }
 func patchOrder(c *gin.Context) {
 	var data v1Cert.Order
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sOrder(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sOrder(data))
 }
 func createOrder(c *gin.Context) {
 	var data v1Cert.Order
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sOrder(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sOrder(data))
 }
 
 // ISSUERS
 func allIssuers(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllIssuer(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllIssuer(namespace))
 }
 func describeIssuer(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sIssuer(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sIssuer(namespace, name))
 }
 func deleteIssuer(c *gin.Context) {
 	var data cmapi.Issuer
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sIssuer(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sIssuer(data))
 }
 func patchIssuer(c *gin.Context) {
 	var data cmapi.Issuer
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sIssuer(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sIssuer(data))
 }
 func createIssuer(c *gin.Context) {
 	var data cmapi.Issuer
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sIssuer(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sIssuer(data))
 }
 
 // CLUSTERISSUERS
 func allClusterIssuers(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllClusterIssuers())
+	utils.RespondForHttpResult(c, kubernetes.AllClusterIssuers())
 }
 func describeClusterIssuer(c *gin.Context) {
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sClusterIssuer(name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sClusterIssuer(name))
 }
 func deleteClusterIssuer(c *gin.Context) {
 	var data cmapi.ClusterIssuer
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sClusterIssuer(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sClusterIssuer(data))
 }
 func patchClusterIssuer(c *gin.Context) {
 	var data cmapi.ClusterIssuer
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sClusterIssuer(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sClusterIssuer(data))
 }
 func createClusterIssuer(c *gin.Context) {
 	var data cmapi.ClusterIssuer
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sClusterIssuer(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sClusterIssuer(data))
 }
 
 // SERVICEACCOUNTS
 func allServiceAccounts(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllServiceAccounts(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllServiceAccounts(namespace))
 }
 func describeServiceAccount(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sServiceAccount(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sServiceAccount(namespace, name))
 }
 func deleteServiceAccount(c *gin.Context) {
 	var data v1.ServiceAccount
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sServiceAccount(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sServiceAccount(data))
 }
 func patchServiceAccount(c *gin.Context) {
 	var data v1.ServiceAccount
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sServiceAccount(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sServiceAccount(data))
 }
 func createServiceAccount(c *gin.Context) {
 	var data v1.ServiceAccount
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sServiceAccount(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sServiceAccount(data))
 }
 
 // ROLES
 func allRoles(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllRoles(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllRoles(namespace))
 }
 func describeRole(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sRole(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sRole(namespace, name))
 }
 func deleteRole(c *gin.Context) {
 	var data v1Rbac.Role
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sRole(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sRole(data))
 }
 func patchRole(c *gin.Context) {
 	var data v1Rbac.Role
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sRole(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sRole(data))
 }
 func createRole(c *gin.Context) {
 	var data v1Rbac.Role
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sRole(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sRole(data))
 }
 
 // ROLEBINDINGS
 func allRoleBindings(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllRoleBindings(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllRoleBindings(namespace))
 }
 func describeRoleBinding(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sRoleBinding(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sRoleBinding(namespace, name))
 }
 func deleteRoleBinding(c *gin.Context) {
 	var data v1Rbac.RoleBinding
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sRoleBinding(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sRoleBinding(data))
 }
 func patchRoleBinding(c *gin.Context) {
 	var data v1Rbac.RoleBinding
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sRoleBinding(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sRoleBinding(data))
 }
 func createRoleBinding(c *gin.Context) {
 	var data v1Rbac.RoleBinding
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sRoleBinding(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sRoleBinding(data))
 }
 
 // CLUSTERROLES
 func allClusterRoles(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllClusterRoles())
+	utils.RespondForHttpResult(c, kubernetes.AllClusterRoles())
 }
 func describeClusterRole(c *gin.Context) {
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sClusterRole(name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sClusterRole(name))
 }
 func deleteClusterRole(c *gin.Context) {
 	var data v1Rbac.ClusterRole
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sClusterRole(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sClusterRole(data))
 }
 func patchClusterRole(c *gin.Context) {
 	var data v1Rbac.ClusterRole
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sClusterRole(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sClusterRole(data))
 }
 func createClusterRole(c *gin.Context) {
 	var data v1Rbac.ClusterRole
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sClusterRole(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sClusterRole(data))
 }
 
 // CLUSTERROLEBINDINGS
 func allClusterRoleBindings(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllClusterRoleBindings())
+	utils.RespondForHttpResult(c, kubernetes.AllClusterRoleBindings())
 }
 func describeClusterRoleBinding(c *gin.Context) {
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sClusterRoleBinding(name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sClusterRoleBinding(name))
 }
 func deleteClusterRoleBinding(c *gin.Context) {
 	var data v1Rbac.ClusterRoleBinding
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sClusterRoleBinding(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sClusterRoleBinding(data))
 }
 func patchClusterRoleBinding(c *gin.Context) {
 	var data v1Rbac.ClusterRoleBinding
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sClusterRoleBinding(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sClusterRoleBinding(data))
 }
 func createClusterRoleBinding(c *gin.Context) {
 	var data v1Rbac.ClusterRoleBinding
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sClusterRoleBinding(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sClusterRoleBinding(data))
 }
 
 // VOLUMEATTACHMENTS
 func allVolumeAttachments(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllVolumeAttachments())
+	utils.RespondForHttpResult(c, kubernetes.AllVolumeAttachments())
 }
 func describeVolumeAttachment(c *gin.Context) {
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sVolumeAttachment(name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sVolumeAttachment(name))
 }
 func deleteVolumeAttachment(c *gin.Context) {
 	var data v1Storage.VolumeAttachment
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sVolumeAttachment(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sVolumeAttachment(data))
 }
 func patchVolumeAttachment(c *gin.Context) {
 	var data v1Storage.VolumeAttachment
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sVolumeAttachment(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sVolumeAttachment(data))
 }
 func createVolumeAttachment(c *gin.Context) {
 	var data v1Storage.VolumeAttachment
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sVolumeAttachment(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sVolumeAttachment(data))
 }
 
 // NETWORKPOLICIES
 func allNetworkPolicies(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllNetworkPolicies(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllNetworkPolicies(namespace))
 }
 func describeNetworkPolicy(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sNetworkPolicy(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sNetworkPolicy(namespace, name))
 }
 func deleteNetworkPolicy(c *gin.Context) {
 	var data v1Networking.NetworkPolicy
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sNetworkPolicy(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sNetworkPolicy(data))
 }
 func patchNetworkPolicy(c *gin.Context) {
 	var data v1Networking.NetworkPolicy
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sNetworkPolicy(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sNetworkPolicy(data))
 }
 func createNetworkPolicy(c *gin.Context) {
 	var data v1Networking.NetworkPolicy
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sNetworkpolicy(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sNetworkpolicy(data))
 }
 
 // STORAGECLASSES
 func allStorageClasses(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllStorageClasses())
+	utils.RespondForHttpResult(c, kubernetes.AllStorageClasses())
 }
 func describeStorageClass(c *gin.Context) {
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sStorageClass(name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sStorageClass(name))
 }
 func deleteStorageClass(c *gin.Context) {
 	var data v1Storage.StorageClass
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sStorageClass(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sStorageClass(data))
 }
 func patchStorageClass(c *gin.Context) {
 	var data v1Storage.StorageClass
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sStorageClass(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sStorageClass(data))
 }
 func createStorageClass(c *gin.Context) {
 	var data v1Storage.StorageClass
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sStorageClass(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sStorageClass(data))
 }
 
 // CRDS
 func allCrds(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllCustomResourceDefinitions())
+	utils.RespondForHttpResult(c, kubernetes.AllCustomResourceDefinitions())
 }
 func describeCrd(c *gin.Context) {
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sCustomResourceDefinition(name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sCustomResourceDefinition(name))
 }
 func deleteCrd(c *gin.Context) {
 	var data apiExt.CustomResourceDefinition
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sCustomResourceDefinition(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sCustomResourceDefinition(data))
 }
 func patchCrd(c *gin.Context) {
 	var data apiExt.CustomResourceDefinition
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sCustomResourceDefinition(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sCustomResourceDefinition(data))
 }
 func createCrd(c *gin.Context) {
 	var data apiExt.CustomResourceDefinition
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sCustomResourceDefinition(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sCustomResourceDefinition(data))
 }
 
 // ENDPOINTS
 func allEndpoints(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllEndpoints(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllEndpoints(namespace))
 }
 func describeEndpoint(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sEndpoint(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sEndpoint(namespace, name))
 }
 func deleteEndpoint(c *gin.Context) {
 	var data v1.Endpoints
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sEndpoint(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sEndpoint(data))
 }
 func patchEndpoint(c *gin.Context) {
 	var data v1.Endpoints
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sEndpoint(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sEndpoint(data))
 }
 func createEndpoint(c *gin.Context) {
 	var data v1.Endpoints
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sEndpoint(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sEndpoint(data))
 }
 
 // LEASES
 func allLeases(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllLeases(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllLeases(namespace))
 }
 func describeLease(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sLease(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sLease(namespace, name))
 }
 func deleteLease(c *gin.Context) {
 	var data v1Coordination.Lease
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sLease(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sLease(data))
 }
 func patchLease(c *gin.Context) {
 	var data v1Coordination.Lease
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sLease(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sLease(data))
 }
 func createLease(c *gin.Context) {
 	var data v1Coordination.Lease
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sLease(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sLease(data))
 }
 
 // PRIORITYCLASSES
 func allPriorityClasses(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllPriorityClasses())
+	utils.RespondForHttpResult(c, kubernetes.AllPriorityClasses())
 }
 func describePriorityClass(c *gin.Context) {
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sPriorityClass(name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sPriorityClass(name))
 }
 func deletePriorityClass(c *gin.Context) {
 	var data v1Scheduling.PriorityClass
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sPriorityClass(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sPriorityClass(data))
 }
 func patchPriorityClass(c *gin.Context) {
 	var data v1Scheduling.PriorityClass
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sPriorityClass(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sPriorityClass(data))
 }
 func createPriorityClass(c *gin.Context) {
 	var data v1Scheduling.PriorityClass
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sPriorityClass(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sPriorityClass(data))
 }
 
 // VOLUMESNAPSHOTS
 func allVolumeSnapshots(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllVolumeSnapshots(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllVolumeSnapshots(namespace))
 }
 func describeVolumeSnapshot(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sVolumeSnapshot(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sVolumeSnapshot(namespace, name))
 }
 func deleteVolumeSnapshot(c *gin.Context) {
 	var data v6Snap.VolumeSnapshot
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sVolumeSnapshot(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sVolumeSnapshot(data))
 }
 func patchVolumeSnapshot(c *gin.Context) {
 	var data v6Snap.VolumeSnapshot
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sVolumeSnapshot(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sVolumeSnapshot(data))
 }
 func createVolumeSnapshot(c *gin.Context) {
 	var data v6Snap.VolumeSnapshot
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sVolumeSnapshot(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sVolumeSnapshot(data))
 }
 
 // RESOURCEQUOTAS
 func allResourceQuotas(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllResourceQuotas(namespace))
+	utils.RespondForHttpResult(c, kubernetes.AllResourceQuotas(namespace))
 }
 func describeResourceQuota(c *gin.Context) {
 	namespace := c.Query("namespace")
 	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sResourceQuota(namespace, name))
+	utils.RespondForHttpResult(c, kubernetes.DescribeK8sResourceQuota(namespace, name))
 }
 func deleteResourceQuota(c *gin.Context) {
 	var data v1.ResourceQuota
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sResourceQuota(data))
+	utils.RespondForHttpResult(c, kubernetes.DeleteK8sResourceQuota(data))
 }
 func patchResourceQuota(c *gin.Context) {
 	var data v1.ResourceQuota
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sResourceQuota(data))
+	utils.RespondForHttpResult(c, kubernetes.UpdateK8sResourceQuota(data))
 }
 func createResourceQuota(c *gin.Context) {
 	var data v1.ResourceQuota
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sResourceQuota(data))
+	utils.RespondForHttpResult(c, kubernetes.CreateK8sResourceQuota(data))
 }

@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllHpas(namespaceName string) K8sWorkloadResult {
+func AllHpas(namespaceName string) utils.HttpResult {
 	result := []v2.HorizontalPodAutoscaler{}
 
 	provider := NewKubeProvider()
@@ -30,7 +30,7 @@ func AllHpas(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sHpa(data v2.HorizontalPodAutoscaler) K8sWorkloadResult {
+func UpdateK8sHpa(data v2.HorizontalPodAutoscaler) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -40,7 +40,7 @@ func UpdateK8sHpa(data v2.HorizontalPodAutoscaler) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sHpa(data v2.HorizontalPodAutoscaler) K8sWorkloadResult {
+func DeleteK8sHpa(data v2.HorizontalPodAutoscaler) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -50,7 +50,7 @@ func DeleteK8sHpa(data v2.HorizontalPodAutoscaler) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sHpa(namespace string, name string) K8sWorkloadResult {
+func DescribeK8sHpa(namespace string, name string) utils.HttpResult {
 	cmd := exec.Command("kubectl", "describe", "hpa", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -62,7 +62,7 @@ func DescribeK8sHpa(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sHpa(data v2.HorizontalPodAutoscaler) K8sWorkloadResult {
+func CreateK8sHpa(data v2.HorizontalPodAutoscaler) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

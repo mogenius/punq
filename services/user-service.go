@@ -103,7 +103,7 @@ func ListUsers() []dtos.PunqUser {
 	return users
 }
 
-func AddUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
+func AddUser(user dtos.PunqUser) utils.HttpResult {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	if secret == nil {
 		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
@@ -142,7 +142,7 @@ func AddUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
 	return kubernetes.UpdateK8sSecret(*secret)
 }
 
-func UpdateUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
+func UpdateUser(user dtos.PunqUser) utils.HttpResult {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	if secret == nil {
 		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
@@ -166,7 +166,7 @@ func UpdateUser(user dtos.PunqUser) kubernetes.K8sWorkloadResult {
 	return kubernetes.UpdateK8sSecret(*secret)
 }
 
-func DeleteUser(id string) kubernetes.K8sWorkloadResult {
+func DeleteUser(id string) utils.HttpResult {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	if secret == nil {
 		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))

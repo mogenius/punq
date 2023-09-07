@@ -49,7 +49,7 @@ func ListAllNamespace() []v1.Namespace {
 	return result
 }
 
-func ListK8sNamespaces(namespaceName string) K8sWorkloadResult {
+func ListK8sNamespaces(namespaceName string) utils.HttpResult {
 	result := []v1.Namespace{}
 
 	kubeProvider := NewKubeProvider()
@@ -74,7 +74,7 @@ func ListK8sNamespaces(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func DeleteK8sNamespace(data v1.Namespace) K8sWorkloadResult {
+func DeleteK8sNamespace(data v1.Namespace) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().Namespaces()
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -84,7 +84,7 @@ func DeleteK8sNamespace(data v1.Namespace) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sNamespace(name string) K8sWorkloadResult {
+func DescribeK8sNamespace(name string) utils.HttpResult {
 	cmd := exec.Command("kubectl", "describe", "namespace", name)
 
 	output, err := cmd.CombinedOutput()
@@ -103,7 +103,7 @@ func NamespaceExists(namespaceName string) (bool, error) {
 	return (ns != nil && err == nil), err
 }
 
-func CreateK8sNamespace(data v1.Namespace) K8sWorkloadResult {
+func CreateK8sNamespace(data v1.Namespace) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().Namespaces()
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

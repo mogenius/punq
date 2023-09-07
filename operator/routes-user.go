@@ -6,48 +6,56 @@ import (
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/services"
+	"github.com/mogenius/punq/utils"
 )
 
 func InitUserRoutes(router *gin.Engine) {
-	router.GET("/user/all", Auth(dtos.ADMIN), userList)
-	router.GET("/user", Auth(dtos.ADMIN), userGet)
-	router.DELETE("/user", Auth(dtos.ADMIN), userDelete)
-	router.PATCH("/user", Auth(dtos.ADMIN), userUpdate)
-	router.POST("/user", Auth(dtos.ADMIN), userAdd)
+
+	userRoutes := router.Group("/user")
+	{
+		userRoutes.GET("/all", Auth(dtos.ADMIN), userList)
+		userRoutes.GET("/:id", Auth(dtos.ADMIN), userGet)
+		userRoutes.DELETE("/:id", Auth(dtos.ADMIN), userDelete)
+		userRoutes.PATCH("/", Auth(dtos.ADMIN), userUpdate)
+		userRoutes.POST("/", Auth(dtos.ADMIN), userAdd)
+	}
+
 }
 
 // @Tags User
 // @Produce json
 // @Success 200 {array} dtos.PunqUser
 // @Router /user/all [get]
+// @Security Bearer
 func userList(c *gin.Context) {
 	users := services.ListUsers()
 
-	RespondForWorkloadResult(c, kubernetes.WorkloadResult(users, nil))
+	utils.RespondForHttpResult(c, kubernetes.WorkloadResult(users, nil))
 }
 
 // @Tags User
 // @Produce json
 // @Success 200 {object} dtos.PunqUser
-// @Router /user [delete]
-// @Param userid query string false  "ID of the user"
+// @Router /user/{id} [delete]
+// @Param id path string false  "ID of the user"
+// @Security Bearer
 func userDelete(c *gin.Context) {
-	userId := c.Query("userId")
+	userId := c.Param("id")
 
-	RespondForWorkloadResult(c, services.DeleteUser(userId))
+	utils.RespondForHttpResult(c, services.DeleteUser(userId))
 }
 
 // @Tags User
 // @Produce json
 // @Success 200 {object} dtos.PunqUser
-// @Router /user [get]
-// @Param userid query string false  "ID of the user"
+// @Router /user/{id} [get]
+// @Param id path string false  "ID of the user"
+// @Security Bearer
 func userGet(c *gin.Context) {
-	userId := c.Query("userId")
+	userId := c.Param("id")
 
 	user := services.GetUser(userId)
-	RespondForWorkloadResult(c, kubernetes.WorkloadResult(user, nil))
-
+	utils.RespondForHttpResult(c, kubernetes.WorkloadResult(user, nil))
 }
 
 // @Tags User
@@ -55,14 +63,15 @@ func userGet(c *gin.Context) {
 // @Success 200 {object} dtos.PunqUser
 // @Router /user [patch]
 // @Param body body dtos.PunqUser false "PunqUser"
+// @Security Bearer
 func userUpdate(c *gin.Context) {
 	var data dtos.PunqUser
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, services.UpdateUser(data))
+	utils.RespondForHttpResult(c, services.UpdateUser(data))
 }
 
 // @Tags User
@@ -70,12 +79,13 @@ func userUpdate(c *gin.Context) {
 // @Success 200 {object} dtos.PunqUser
 // @Router /user [post]
 // @Param body body dtos.PunqUser false "PunqUser"
+// @Security Bearer
 func userAdd(c *gin.Context) {
 	var data dtos.PunqUser
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, services.AddUser(data))
+	utils.RespondForHttpResult(c, services.AddUser(data))
 }

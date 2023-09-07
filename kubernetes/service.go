@@ -50,12 +50,12 @@ func AllServices(namespaceName string) []v1.Service {
 	return result
 }
 
-func AllK8sServices(namespaceName string) K8sWorkloadResult {
+func AllK8sServices(namespaceName string) utils.HttpResult {
 	results := AllServices(namespaceName)
 	return WorkloadResult(results, nil)
 }
 
-func UpdateK8sService(data v1.Service) K8sWorkloadResult {
+func UpdateK8sService(data v1.Service) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().Services(data.ObjectMeta.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -65,7 +65,7 @@ func UpdateK8sService(data v1.Service) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sService(data v1.Service) K8sWorkloadResult {
+func DeleteK8sService(data v1.Service) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().Services(data.ObjectMeta.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -75,7 +75,7 @@ func DeleteK8sService(data v1.Service) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sService(namespace string, name string) K8sWorkloadResult {
+func DescribeK8sService(namespace string, name string) utils.HttpResult {
 	cmd := exec.Command("kubectl", "describe", "service", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -87,7 +87,7 @@ func DescribeK8sService(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sService(data v1.Service) K8sWorkloadResult {
+func CreateK8sService(data v1.Service) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().Services(data.ObjectMeta.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

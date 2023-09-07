@@ -170,7 +170,7 @@ func AllPods(namespaceName string) []v1.Pod {
 	return result
 }
 
-func AllK8sPods(namespaceName string) K8sWorkloadResult {
+func AllK8sPods(namespaceName string) utils.HttpResult {
 	result := AllPods(namespaceName)
 	return WorkloadResult(result, nil)
 }
@@ -225,7 +225,7 @@ func PodIdsFor(namespace string, serviceId *string) []string {
 	return result
 }
 
-func UpdateK8sPod(data v1.Pod) K8sWorkloadResult {
+func UpdateK8sPod(data v1.Pod) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(data.Namespace)
 	_, err := podClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -235,7 +235,7 @@ func UpdateK8sPod(data v1.Pod) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sPod(data v1.Pod) K8sWorkloadResult {
+func DeleteK8sPod(data v1.Pod) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(data.Namespace)
 	err := podClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -245,7 +245,7 @@ func DeleteK8sPod(data v1.Pod) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sPod(namespace string, name string) K8sWorkloadResult {
+func DescribeK8sPod(namespace string, name string) utils.HttpResult {
 	cmd := exec.Command("kubectl", "describe", "pod", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -257,7 +257,7 @@ func DescribeK8sPod(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sPod(data v1.Pod) K8sWorkloadResult {
+func CreateK8sPod(data v1.Pod) utils.HttpResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().Pods(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

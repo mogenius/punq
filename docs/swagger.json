@@ -78,31 +78,12 @@
             }
         },
         "/user": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "userid",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dtos.PunqUser"
-                        }
-                    }
-                }
-            },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -128,31 +109,12 @@
                     }
                 }
             },
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "userid",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dtos.PunqUser"
-                        }
-                    }
-                }
-            },
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -181,6 +143,11 @@
         },
         "/user/all": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -195,6 +162,66 @@
                             "items": {
                                 "$ref": "#/definitions/dtos.PunqUser"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PunqUser"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PunqUser"
                         }
                     }
                 }
@@ -372,7 +399,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -613,7 +640,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -715,7 +742,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -738,7 +765,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -759,7 +786,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -810,7 +837,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                                "$ref": "#/definitions/utils.HttpResult"
                             }
                         }
                     }
@@ -842,7 +869,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -886,7 +913,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -907,7 +934,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -928,7 +955,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -965,7 +992,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -1099,7 +1126,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -1201,7 +1228,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/kubernetes.K8sWorkloadResult"
+                            "$ref": "#/definitions/utils.HttpResult"
                         }
                     }
                 }
@@ -1426,13 +1453,6 @@
                 }
             }
         },
-        "kubernetes.K8sWorkloadResult": {
-            "type": "object",
-            "properties": {
-                "error": {},
-                "result": {}
-            }
-        },
         "operator.LoginInput": {
             "type": "object",
             "required": [
@@ -1489,6 +1509,13 @@
                 "version": {
                     "type": "string"
                 }
+            }
+        },
+        "utils.HttpResult": {
+            "type": "object",
+            "properties": {
+                "error": {},
+                "result": {}
             }
         },
         "v1.AWSElasticBlockStoreVolumeSource": {

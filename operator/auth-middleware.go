@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/services"
+	"github.com/mogenius/punq/utils"
 	"net/http"
 	"regexp"
 )
@@ -57,7 +58,7 @@ func Auth(requiredAccessLevel dtos.AccessLevel) gin.HandlerFunc {
 // }
 
 func CheckUserAuthorization(c *gin.Context) (*dtos.PunqUser, error) {
-	authorization := parseAuthHeader(GetRequiredHeader(c, "authorization"))
+	authorization := parseAuthHeader(utils.GetRequiredHeader(c, "authorization"))
 
 	if authorization == nil {
 		return nil, fmt.Errorf("MalformedRequest")
