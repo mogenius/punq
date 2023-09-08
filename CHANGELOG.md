@@ -1,5 +1,41 @@
 
-<<<<<<< HEAD
+## [1.2.0](https://github.com/mogenius/punq/compare/v1.1.43...v1.2.0) (2023-09-08)
+
+
+### Features
+
+* introduced swagger. ([fc03f7e](https://github.com/mogenius/punq/commit/fc03f7e536f8b77a70e80ddb7cb2eddbc3577476))
+* login; jwt auth ([ada0658](https://github.com/mogenius/punq/commit/ada065827a94857873449b123773cf7281faa25a))
+
+
+### Bug Fixes
+
+* add bearer to authorization header ([1fd3536](https://github.com/mogenius/punq/commit/1fd3536c8c6d233fb26cf11874a5cc8a686e2e29))
+* add cors config AllowHeaders 'authorization' ([b5f20e4](https://github.com/mogenius/punq/commit/b5f20e477c5a0576262c234b0b7f68892efcacf4))
+* add current user to user route ([6e12143](https://github.com/mogenius/punq/commit/6e121434bd0b4d9eecff9449cefb24ee51d4b6be))
+* added arm for develop again. ([a8c79e0](https://github.com/mogenius/punq/commit/a8c79e018f66a5b7d6644f0ef4622b1bde43aa0c))
+* docu updates. ([fea7b75](https://github.com/mogenius/punq/commit/fea7b7513607c80b2f2fc1e57fc221f3f04beee8))
+* grouping auth routes; grouping context routes ([0f7be85](https://github.com/mogenius/punq/commit/0f7be85a26fbc00119f54d0d4649bc01290943bf))
+* minor fix config yaml. ([a54099b](https://github.com/mogenius/punq/commit/a54099b145a3846a3c63f34cd6a0fd028efbac02))
+* minor fix. ([be7a528](https://github.com/mogenius/punq/commit/be7a528d6d556ea6ab423216182851ffd7c80e2c))
+* minor fix. ([1e6b6e9](https://github.com/mogenius/punq/commit/1e6b6e996a3eb4bb0ac1dfbc1b7178b97a330a3b))
+* minor fix. ([d05fd7e](https://github.com/mogenius/punq/commit/d05fd7e0221e173261fad5c45ef8ea67b955b554))
+* minor fix. ([c09ad3d](https://github.com/mogenius/punq/commit/c09ad3d3425ad92f3bb2162eb88d58352bcacad3))
+* moving create admin to user-service ([ce34d73](https://github.com/mogenius/punq/commit/ce34d73237da672616990f5cce144c6e75ed695a))
+* portforward improved. ([67b657e](https://github.com/mogenius/punq/commit/67b657e0041288f623df19ddfddb2cbf0b85281d))
+* rename HttpResult to K8sWorkloadResult ([712793b](https://github.com/mogenius/punq/commit/712793bc20898895135b16d7d5307c8dedff32a4))
+* reset build to ubuntu again. ([3f36b08](https://github.com/mogenius/punq/commit/3f36b083f9685b444a5955345818df3cfa376c39))
+* test actuated-aarch64 to improve build times. ([c762cb3](https://github.com/mogenius/punq/commit/c762cb30f4f5c18f283ea39f03078e7b5efbda71))
+* update context service return values ([08ce1e2](https://github.com/mogenius/punq/commit/08ce1e27f9036150d959cdc4ab0d2e7084e40ba1))
+* update context service return values ([9a40a2c](https://github.com/mogenius/punq/commit/9a40a2cae7344bbe327daa99483a6532519010ab))
+* update context swagger doc ([78f5e9b](https://github.com/mogenius/punq/commit/78f5e9bc647f1551d46a64402ffe8eff5da11095))
+* update CreateKeyPair, GetKeyPair, ValidationToken return values ([062089c](https://github.com/mogenius/punq/commit/062089cc599fbe1e695f61d2c1b19fecb781f0fb))
+* update user route; refactoring utils ([f036774](https://github.com/mogenius/punq/commit/f0367743b2f09c1ce0d2982bc414114b0d942c24))
+* user create, user update route ([7cd2da6](https://github.com/mogenius/punq/commit/7cd2da62f3a510f90fd6ddee5baa516b02a5f609))
+* user routes error handling ([d57ab29](https://github.com/mogenius/punq/commit/d57ab29e247e5f022175e83924f3f2bcf03b1b97))
+* workloads new get method and new deleteBy method. minor fixes. ([3f4e8ec](https://github.com/mogenius/punq/commit/3f4e8ecc140d825d28f6d7ff872e59ac1a0c75bc))
+* workloads new get method and new deleteBy method. minor fixes. ([59ea210](https://github.com/mogenius/punq/commit/59ea2100e79562e5dfade3e642afef2d405bf86f))
+
 ### [1.1.43](https://github.com/mogenius/punq/compare/v1.1.42...v1.1.43) (2023-09-06)
 =======
 ### [1.3.17](https://github.com/mogenius/punq/compare/dev1.3.16...dev1.3.17) (2023-09-08)
