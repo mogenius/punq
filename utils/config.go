@@ -197,7 +197,7 @@ func WriteDefaultConfig(stage string) {
 	}
 
 	// check if stage is set via env variable
-	envVarStage := strings.ToLower(os.Getenv("STAGE"))
+	envVarStage := strings.ToLower(os.Getenv("stage"))
 	if envVarStage != "" {
 		stage = envVarStage
 	} else {

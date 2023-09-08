@@ -62,6 +62,7 @@ jobs:
           file: Dockerfile-Operator
           context: .
           push: true
+          platforms: linux/amd64,linux/arm64
           build-args: |
             VERSION=${{ env.VERSION }}
             COMMIT_HASH=${{ env.COMMIT_HASH }}
