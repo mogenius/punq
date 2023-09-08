@@ -1,4 +1,11 @@
 
+### [1.3.17](https://github.com/mogenius/punq/compare/dev1.3.16...dev1.3.17) (2023-09-08)
+
+
+### Bug Fixes
+
+* added arm for develop again. ([a8c79e0](https://github.com/mogenius/punq/commit/a8c79e018f66a5b7d6644f0ef4622b1bde43aa0c))
+
 ### [1.3.16](https://github.com/mogenius/punq/compare/dev1.3.15...dev1.3.16) (2023-09-07)
 
 
