@@ -1,4 +1,6 @@
 
+### [1.3.19](https://github.com/mogenius/punq/compare/dev1.3.18...dev1.3.19) (2023-09-08)
+
 ### [1.3.18](https://github.com/mogenius/punq/compare/dev1.3.17...dev1.3.18) (2023-09-08)
 
 
