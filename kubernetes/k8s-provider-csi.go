@@ -3,7 +3,6 @@ package kubernetes
 import (
 	snapClientset "github.com/kubernetes-csi/external-snapshotter/client/v6/clientset/versioned"
 	"github.com/mogenius/punq/logger"
-	"github.com/mogenius/punq/utils"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -16,7 +15,7 @@ type KubeProviderSnapshot struct {
 func NewKubeProviderSnapshot() *KubeProviderSnapshot {
 	var kubeProvider *KubeProviderSnapshot
 	var err error
-	if utils.CONFIG.Kubernetes.RunInCluster {
+	if RunsInCluster {
 		kubeProvider, err = newKubeProviderCsiInCluster()
 	} else {
 		kubeProvider, err = newKubeProviderCsiLocal()

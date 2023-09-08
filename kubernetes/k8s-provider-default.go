@@ -1,16 +1,11 @@
 package kubernetes
 
 import (
-	"path/filepath"
-
-	"github.com/mogenius/punq/utils"
-
 	"github.com/mogenius/punq/logger"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
 )
 
 type KubeProvider struct {
@@ -21,7 +16,7 @@ type KubeProvider struct {
 func NewKubeProvider() *KubeProvider {
 	var kubeProvider *KubeProvider
 	var err error
-	if utils.CONFIG.Kubernetes.RunInCluster {
+	if RunsInCluster {
 		kubeProvider, err = newKubeProviderInCluster()
 	} else {
 		kubeProvider, err = newKubeProviderLocal()
@@ -34,10 +29,7 @@ func NewKubeProvider() *KubeProvider {
 }
 
 func newKubeProviderLocal() (*KubeProvider, error) {
-	var kubeconfig string = ""
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	}
+	var kubeconfig string = getKubeConfig()
 
 	restConfig, errConfig := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if errConfig != nil {

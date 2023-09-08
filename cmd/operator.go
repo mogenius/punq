@@ -13,9 +13,11 @@ var operatorCmd = &cobra.Command{
 	Short: "Run the operator inside the cluster!",
 	Long:  `Run the operator inside the cluster!`,
 	Run: func(cmd *cobra.Command, args []string) {
+		utils.PrintLogo()
 		println("\n###############################################")
 		utils.IsNewReleaseAvailable()
 		println("###############################################\n")
+		utils.PrintSettings()
 		operator.InitGin()
 	},
 }

@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/mogenius/punq/dtos"
@@ -31,65 +32,89 @@ func ListContexts() []dtos.PunqContext {
 	return contexts
 }
 
-func AddContext(ctx dtos.PunqContext) kubernetes.K8sWorkloadResult {
+func AddContext(ctx dtos.PunqContext) (interface{}, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 	if secret == nil {
-		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET))
+		msg := fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 
 	rawData, err := json.Marshal(ctx)
 	if err != nil {
-		logger.Log.Error("failed to Marshal context '%s'", ctx.Id)
+		msg := fmt.Sprintf("failed to Marshal context '%s'", ctx.Id)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 	secret.Data[ctx.Id] = rawData
 
-	return kubernetes.UpdateK8sSecret(*secret)
+	workloadResult := kubernetes.UpdateK8sSecret(*secret)
+	if workloadResult.Result != nil {
+		return workloadResult.Result, nil
+	}
+	return nil, errors.New(fmt.Sprintf("%v", workloadResult.Error))
 }
 
-func UpdateContext(ctx dtos.PunqContext) kubernetes.K8sWorkloadResult {
+func UpdateContext(ctx dtos.PunqContext) (interface{}, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 	if secret == nil {
-		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET))
+		msg := fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 
 	rawData, err := json.Marshal(ctx)
 	if err != nil {
-		logger.Log.Error("failed to Marshal context '%s'", ctx.Id)
+		msg := fmt.Sprintf("failed to Marshal context '%s'", ctx.Id)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 	secret.Data[ctx.Id] = rawData
 
-	return kubernetes.UpdateK8sSecret(*secret)
+	workloadResult := kubernetes.UpdateK8sSecret(*secret)
+	if workloadResult.Result != nil {
+		return workloadResult.Result, nil
+	}
+	return nil, errors.New(fmt.Sprintf("%v", workloadResult.Error))
 }
 
-func DeleteContext(id string) kubernetes.K8sWorkloadResult {
+func DeleteContext(id string) (interface{}, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 	if secret == nil {
-		return kubernetes.WorkloadResultError(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET))
+		msg := fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 
 	if id == utils.CONTEXTOWN {
-		return kubernetes.WorkloadResultError("own context cannot be deleted")
+		msg := fmt.Sprintf("own context cannot be deleted")
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 
 	if secret.Data[id] != nil {
 		delete(secret.Data, id)
 	} else {
-		return kubernetes.WorkloadResultError(fmt.Sprintf("Context '%s' not found.", id))
+		msg := fmt.Sprintf("Context '%s' not found.", id)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 
-	result := kubernetes.UpdateK8sSecret(*secret)
-	if result.Error == nil && result.Result == nil {
+	workloadResult := kubernetes.UpdateK8sSecret(*secret)
+	if workloadResult.Error == nil && workloadResult.Result == nil {
 		// success
-		result.Result = fmt.Sprintf("Context %s successfuly deleted.", id)
+		workloadResult.Result = fmt.Sprintf("Context %s successfuly deleted.", id)
+		return workloadResult.Result, nil
 	}
-	return result
+	return nil, errors.New(fmt.Sprintf("%v", workloadResult.Error))
 }
 
-func GetContext(id string) *dtos.PunqContext {
+func GetContext(id string) (*dtos.PunqContext, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 	if secret == nil {
-		logger.Log.Errorf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
-		return nil
+		msg := fmt.Sprintf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
+		logger.Log.Error(msg)
+		return nil, errors.New(msg)
 	}
 
 	for ctxId, ctxRaw := range secret.Data {
@@ -99,11 +124,13 @@ func GetContext(id string) *dtos.PunqContext {
 			logger.Log.Error("Failed to Unmarshal context '%s'.", ctxId)
 		}
 		if ctx.Id == id {
-			return &ctx
+			return &ctx, nil
 		}
 	}
 
-	return nil
+	msg := fmt.Sprintf("context not found")
+	logger.Log.Error(msg)
+	return nil, errors.New(msg)
 }
 
 func GetOwnContext() (*dtos.PunqContext, error) {

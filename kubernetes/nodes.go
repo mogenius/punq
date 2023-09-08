@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"os/exec"
 
+	"github.com/mogenius/punq/utils"
+
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
 
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -39,7 +42,7 @@ func GetNodeStats() []dtos.NodeStat {
 	return result
 }
 
-func ListK8sNodes() K8sWorkloadResult {
+func ListK8sNodes() utils.K8sWorkloadResult {
 	var provider *KubeProvider = NewKubeProvider()
 	if provider == nil {
 		err := fmt.Errorf("Failed to load kubeprovider.")
@@ -55,7 +58,17 @@ func ListK8sNodes() K8sWorkloadResult {
 	return WorkloadResult(nodeMetricsList.Items, nil)
 }
 
-func DescribeK8sNode(name string) K8sWorkloadResult {
+func GetK8sNode(name string) (*v1.Node, error) {
+	var provider *KubeProvider = NewKubeProvider()
+	return provider.ClientSet.CoreV1().Nodes().Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func DeleteK8sNode(name string) error {
+	var provider *KubeProvider = NewKubeProvider()
+	return provider.ClientSet.CoreV1().Nodes().Delete(context.TODO(), name, metav1.DeleteOptions{})
+}
+
+func DescribeK8sNode(name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "node", name)
 
 	output, err := cmd.CombinedOutput()

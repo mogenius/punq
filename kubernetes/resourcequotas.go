@@ -13,7 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllResourceQuotas(namespaceName string) K8sWorkloadResult {
+func AllResourceQuotas(namespaceName string) utils.K8sWorkloadResult {
 	result := []core.ResourceQuota{}
 
 	provider := NewKubeProvider()
@@ -31,7 +31,12 @@ func AllResourceQuotas(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sResourceQuota(data core.ResourceQuota) K8sWorkloadResult {
+func GetResourceQuota(namespaceName string, name string) (*core.ResourceQuota, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.CoreV1().ResourceQuotas(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func UpdateK8sResourceQuota(data core.ResourceQuota) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -41,7 +46,7 @@ func UpdateK8sResourceQuota(data core.ResourceQuota) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sResourceQuota(data core.ResourceQuota) K8sWorkloadResult {
+func DeleteK8sResourceQuota(data core.ResourceQuota) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -51,7 +56,13 @@ func DeleteK8sResourceQuota(data core.ResourceQuota) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sResourceQuota(namespace string, name string) K8sWorkloadResult {
+func DeleteK8sResourceQuotaBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
+}
+
+func DescribeK8sResourceQuota(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "resourcequotas", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -63,7 +74,7 @@ func DescribeK8sResourceQuota(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sResourceQuota(data core.ResourceQuota) K8sWorkloadResult {
+func CreateK8sResourceQuota(data core.ResourceQuota) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

@@ -50,9 +50,6 @@ jobs:
           mkdir ui/dist
           cp ui/index.html ui/dist/index.html
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -64,8 +61,8 @@ jobs:
         with:
           file: Dockerfile-Operator
           context: .
-          platforms: linux/amd64,linux/arm64
           push: true
+          platforms: linux/amd64,linux/arm64
           build-args: |
             VERSION=${{ env.VERSION }}
             COMMIT_HASH=${{ env.COMMIT_HASH }}

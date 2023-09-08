@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/mogenius/punq/services"
 	"os"
 
 	"github.com/mogenius/punq/kubernetes"
@@ -28,6 +29,8 @@ var installCmd = &cobra.Command{
 		}
 
 		kubernetes.Deploy(yellow(kubernetes.CurrentContextName()), ingressHostname)
+		services.InitUserService()
+		services.InitAuthService()
 	},
 }
 

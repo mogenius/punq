@@ -39,8 +39,13 @@ func SecretFor(namespace string, name string) *v1.Secret {
 	}
 	return secret
 }
+func GetSecret(namespace string, name string) (*v1.Secret, error) {
+	kubeProvider := NewKubeProvider()
+	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(namespace)
+	return secretClient.Get(context.TODO(), name, metav1.GetOptions{})
+}
 
-func AllK8sSecrets(namespaceName string) K8sWorkloadResult {
+func AllK8sSecrets(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.Secret{}
 
 	provider := NewKubeProvider()
@@ -58,7 +63,7 @@ func AllK8sSecrets(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sSecret(data v1.Secret) K8sWorkloadResult {
+func UpdateK8sSecret(data v1.Secret) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(data.Namespace)
 	_, err := secretClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -68,7 +73,7 @@ func UpdateK8sSecret(data v1.Secret) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sSecret(data v1.Secret) K8sWorkloadResult {
+func DeleteK8sSecret(data v1.Secret) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(data.Namespace)
 	err := secretClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -78,7 +83,13 @@ func DeleteK8sSecret(data v1.Secret) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sSecret(namespace string, name string) K8sWorkloadResult {
+func DeleteK8sSecretBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(namespace)
+	return secretClient.Delete(context.TODO(), name, metav1.DeleteOptions{})
+}
+
+func DescribeK8sSecret(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "secret", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -90,7 +101,7 @@ func DescribeK8sSecret(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sSecret(data v1.Secret) K8sWorkloadResult {
+func CreateK8sSecret(data v1.Secret) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().Secrets(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

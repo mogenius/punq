@@ -13,7 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllLeases(namespaceName string) K8sWorkloadResult {
+func AllLeases(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.Lease{}
 
 	provider := NewKubeProvider()
@@ -31,7 +31,12 @@ func AllLeases(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sLease(data v1.Lease) K8sWorkloadResult {
+func GetLeas(namespaceName string, name string) (*v1.Lease, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.CoordinationV1().Leases(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func UpdateK8sLease(data v1.Lease) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoordinationV1().Leases(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -41,7 +46,7 @@ func UpdateK8sLease(data v1.Lease) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sLease(data v1.Lease) K8sWorkloadResult {
+func DeleteK8sLease(data v1.Lease) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoordinationV1().Leases(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -51,7 +56,13 @@ func DeleteK8sLease(data v1.Lease) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sLease(namespace string, name string) K8sWorkloadResult {
+func DeleteK8sLeaseBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoordinationV1().Leases(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
+}
+
+func DescribeK8sLease(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "lease", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -63,7 +74,7 @@ func DescribeK8sLease(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sLease(data v1.Lease) K8sWorkloadResult {
+func CreateK8sLease(data v1.Lease) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoordinationV1().Leases(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

@@ -25,6 +25,8 @@ import (
 	"k8s.io/client-go/util/homedir"
 )
 
+var RunsInCluster bool = false
+
 const (
 	RES_NAMESPACE                   string = "namespace"
 	RES_POD                         string = "pod"
@@ -145,15 +147,10 @@ var (
 	SERVICEACCOUNTNAME     = fmt.Sprintf("%s-service-account-app", version.Name)
 	CLUSTERROLENAME        = fmt.Sprintf("%s--cluster-role-app", version.Name)
 	CLUSTERROLEBINDINGNAME = fmt.Sprintf("%s--cluster-role-binding-app", version.Name)
-	RBACRESOURCES          = []string{"pods", "services", "endpoints", "secrets"}
+	RBACRESOURCES          = []string{"*"}
 	SERVICENAME            = fmt.Sprintf("%s-service", version.Name)
 	INGRESSNAME            = fmt.Sprintf("%s-ingress", version.Name)
 )
-
-type K8sWorkloadResult struct {
-	Result interface{} `json:"result,omitempty"`
-	Error  interface{} `json:"error,omitempty"`
-}
 
 type K8sNewWorkload struct {
 	Name        string `json:"name"`
@@ -166,9 +163,13 @@ type MogeniusNfsInstallationStatus struct {
 	IsInstalled bool   `json:"isInstalled"`
 }
 
+func Init(runsInCluster bool) {
+	RunsInCluster = runsInCluster
+}
+
 func DEPLOYMENTNAME() string {
 	if utils.CONFIG.Misc.Stage != "prod" {
-		return fmt.Sprintf("ghcr.io/mogenius/%s-dev:dev%s", version.Name, version.Ver)
+		return fmt.Sprintf("ghcr.io/mogenius/%s-dev:latest", version.Name)
 	}
 	return fmt.Sprintf("ghcr.io/mogenius/%s:v%s", version.Name, version.Ver)
 }
@@ -200,19 +201,19 @@ func WorkloadsForAccesslevel(access dtos.AccessLevel) []string {
 	return resources
 }
 
-func WorkloadResult(result interface{}, err interface{}) K8sWorkloadResult {
+func WorkloadResult(result interface{}, err interface{}) utils.K8sWorkloadResult {
 	fmt.Println(reflect.TypeOf(err))
 	if fmt.Sprint(reflect.TypeOf(err)) == "*errors.errorString" {
 		err = err.(error).Error()
 	}
-	return K8sWorkloadResult{
+	return utils.K8sWorkloadResult{
 		Result: result,
 		Error:  err,
 	}
 }
 
-func WorkloadResultError(error string) K8sWorkloadResult {
-	return K8sWorkloadResult{
+func WorkloadResultError(error string) utils.K8sWorkloadResult {
+	return utils.K8sWorkloadResult{
 		Result: nil,
 		Error:  error,
 	}
@@ -227,10 +228,7 @@ func NewWorkload(name string, yaml string, description string) K8sNewWorkload {
 }
 
 func CurrentContextName() string {
-	var kubeconfig string = ""
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	}
+	var kubeconfig string = getKubeConfig()
 
 	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
@@ -355,11 +353,11 @@ func podStats(pods map[string]v1.Pod) ([]structs.Stats, error) {
 }
 
 func getKubeConfig() string {
-	var kubeconfig string
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	} else {
-		kubeconfig = ""
+	var kubeconfig string = os.Getenv("KUBECONFIG")
+	if kubeconfig == "" {
+		if home := homedir.HomeDir(); home != "" {
+			kubeconfig = filepath.Join(home, ".kube", "config")
+		}
 	}
 	return kubeconfig
 }

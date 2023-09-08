@@ -28,9 +28,20 @@ var proxyCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		go kubernetes.StartPortForward(utils.CONFIG.Browser.Port, utils.CONFIG.Kubernetes.ContainerPort)
+		readyCh := make(chan struct{})
+		stopCh := make(chan struct{}, 1)
+		go kubernetes.StartPortForward(utils.CONFIG.Browser.Port, utils.CONFIG.Kubernetes.ContainerPort, readyCh, stopCh)
 
-		utils.OpenBrowser(fmt.Sprintf("http://%s:%d/punq", utils.CONFIG.Browser.Host, utils.CONFIG.Browser.Port))
+		url := fmt.Sprintf("http://%s:%d/punq", utils.CONFIG.Browser.Host, utils.CONFIG.Browser.Port)
+
+		select {
+		case <-readyCh:
+			utils.OpenBrowser(url)
+			fmt.Printf("We opened a browser with %s for you.\n", url)
+			break
+		case <-stopCh:
+			break
+		}
 
 		quit := make(chan os.Signal)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

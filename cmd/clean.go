@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/mogenius/punq/services"
 	"os"
 
 	"github.com/mogenius/punq/kubernetes"
@@ -27,6 +28,7 @@ var cleanCmd = &cobra.Command{
 			os.Exit(0)
 		}
 		kubernetes.Remove(yellow(kubernetes.CurrentContextName()))
+		services.RemoveKeyPair()
 	},
 }
 

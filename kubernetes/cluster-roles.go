@@ -13,7 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllClusterRoles() K8sWorkloadResult {
+func AllClusterRoles() utils.K8sWorkloadResult {
 	result := []v1.ClusterRole{}
 
 	provider := NewKubeProvider()
@@ -31,7 +31,12 @@ func AllClusterRoles() K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sClusterRole(data v1.ClusterRole) K8sWorkloadResult {
+func GetClusterRole(name string) (*v1.ClusterRole, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.RbacV1().ClusterRoles().Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func UpdateK8sClusterRole(data v1.ClusterRole) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.RbacV1().ClusterRoles()
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -41,7 +46,7 @@ func UpdateK8sClusterRole(data v1.ClusterRole) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sClusterRole(data v1.ClusterRole) K8sWorkloadResult {
+func DeleteK8sClusterRole(data v1.ClusterRole) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.RbacV1().ClusterRoles()
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -51,7 +56,13 @@ func DeleteK8sClusterRole(data v1.ClusterRole) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sClusterRole(name string) K8sWorkloadResult {
+func DeleteK8sClusterRoleBy(name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.RbacV1().ClusterRoles()
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
+}
+
+func DescribeK8sClusterRole(name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "clusterrole", name)
 
 	output, err := cmd.CombinedOutput()
@@ -63,7 +74,7 @@ func DescribeK8sClusterRole(name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sClusterRole(data v1.ClusterRole) K8sWorkloadResult {
+func CreateK8sClusterRole(data v1.ClusterRole) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.RbacV1().ClusterRoles()
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

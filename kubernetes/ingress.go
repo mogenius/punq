@@ -33,7 +33,7 @@ func AllIngresses(namespaceName string) []v1.Ingress {
 	return result
 }
 
-func AllK8sIngresses(namespaceName string) K8sWorkloadResult {
+func AllK8sIngresses(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.Ingress{}
 
 	provider := NewKubeProvider()
@@ -51,7 +51,12 @@ func AllK8sIngresses(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sIngress(data v1.Ingress) K8sWorkloadResult {
+func GetK8sIngress(namespaceName string, name string) (*v1.Ingress, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.NetworkingV1().Ingresses(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func UpdateK8sIngress(data v1.Ingress) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.NetworkingV1().Ingresses(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -61,7 +66,7 @@ func UpdateK8sIngress(data v1.Ingress) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sIngress(data v1.Ingress) K8sWorkloadResult {
+func DeleteK8sIngress(data v1.Ingress) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.NetworkingV1().Ingresses(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -71,7 +76,13 @@ func DeleteK8sIngress(data v1.Ingress) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sIngress(namespace string, name string) K8sWorkloadResult {
+func DeleteK8sIngressBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.NetworkingV1().Ingresses(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
+}
+
+func DescribeK8sIngress(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "ingress", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
@@ -83,7 +94,7 @@ func DescribeK8sIngress(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sIngress(data v1.Ingress) K8sWorkloadResult {
+func CreateK8sIngress(data v1.Ingress) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.NetworkingV1().Ingresses(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})

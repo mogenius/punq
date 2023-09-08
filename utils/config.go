@@ -17,6 +17,7 @@ import (
 )
 
 const USERSSECRET = "punq-users"
+const JWTSECRET = "punq-jwt"
 const USERADMIN = "admin"
 const CONTEXTSSECRET = "punq-contexts"
 const CONTEXTOWN = "own-context"
@@ -54,26 +55,31 @@ var ChangeLog string
 var CONFIG Config
 var ConfigPath string
 
-func InitConfigYaml(showDebug bool, customConfigName string, useInClusterConfig bool) {
-	_, configPath := GetDirectories(customConfigName)
-	ConfigPath = configPath
+func InitConfigYaml(showDebug bool, customConfigName string, stage string) {
+	_, ConfigPath = GetDirectories(customConfigName)
 
-	if useInClusterConfig {
-		WriteDefaultConfig(useInClusterConfig)
-	} else {
-		if _, err := os.Stat(configPath); err == nil || os.IsExist(err) {
+	// create default config if not exists
+	// if stage is set, then we overwrite the config
+	if stage == "" {
+		if _, err := os.Stat(ConfigPath); err == nil || os.IsExist(err) {
 			// do nothing, file exists
 		} else {
-			WriteDefaultConfig(useInClusterConfig)
+			WriteDefaultConfig(stage)
 		}
+	} else {
+		WriteDefaultConfig(stage)
 	}
 
 	// read configuration from the file and environment variables
-	if err := cleanenv.ReadConfig(configPath, &CONFIG); err != nil {
+	if err := cleanenv.ReadConfig(ConfigPath, &CONFIG); err != nil {
 		if strings.HasPrefix(err.Error(), "config file parsing error:") {
 			logger.Log.Notice("Config file is corrupted. Creating a new one by using -r flag.")
 		}
 		logger.Log.Fatal(err)
+	}
+
+	if CONFIG.Kubernetes.RunInCluster {
+		ConfigPath = "RUNS_IN_CLUSTER_NO_CONFIG_NEEDED"
 	}
 
 	if showDebug {
@@ -180,7 +186,7 @@ func DeleteCurrentConfig() {
 	}
 }
 
-func WriteDefaultConfig(useInClusterConfig bool) {
+func WriteDefaultConfig(stage string) {
 	configDir, configPath := GetDirectories("")
 
 	// write it to default location
@@ -190,18 +196,26 @@ func WriteDefaultConfig(useInClusterConfig bool) {
 		logger.Log.Warning(err)
 	}
 
-	stage := strings.ToLower(os.Getenv("STAGE"))
-
-	if useInClusterConfig {
-		err = os.WriteFile(configPath, []byte(DefaultConfigFileProd), 0755)
+	// check if stage is set via env variable
+	envVarStage := strings.ToLower(os.Getenv("stage"))
+	if envVarStage != "" {
+		stage = envVarStage
 	} else {
-		if stage == "dev" {
-			err = os.WriteFile(configPath, []byte(DefaultConfigFileDev), 0755)
-		} else if stage == "prod" {
-			err = os.WriteFile(configPath, []byte(DefaultConfigFileProd), 0755)
-		} else {
-			err = os.WriteFile(configPath, []byte(DefaultConfigLocalFile), 0755)
+		// default stage is prod
+		if stage == "" {
+			stage = "prod"
 		}
+	}
+
+	if stage == "dev" {
+		err = os.WriteFile(configPath, []byte(DefaultConfigFileDev), 0755)
+	} else if stage == "prod" {
+		err = os.WriteFile(configPath, []byte(DefaultConfigFileProd), 0755)
+	} else if stage == "local" {
+		err = os.WriteFile(configPath, []byte(DefaultConfigLocalFile), 0755)
+	} else {
+		fmt.Println("No stage set. Using local config.")
+		err = os.WriteFile(configPath, []byte(DefaultConfigLocalFile), 0755)
 	}
 	if err != nil {
 		logger.Log.Error("Error writing " + configPath + " file")

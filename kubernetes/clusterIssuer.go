@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllClusterIssuers() K8sWorkloadResult {
+func AllClusterIssuers() utils.K8sWorkloadResult {
 	result := []cmapi.ClusterIssuer{}
 
 	provider := NewKubeProviderCertManager()
@@ -30,7 +30,12 @@ func AllClusterIssuers() K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sClusterIssuer(data cmapi.ClusterIssuer) K8sWorkloadResult {
+func GetClusterIssuer(name string) (*cmapi.ClusterIssuer, error) {
+	provider := NewKubeProviderCertManager()
+	return provider.ClientSet.CertmanagerV1().ClusterIssuers().Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func UpdateK8sClusterIssuer(data cmapi.ClusterIssuer) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.CertmanagerV1().ClusterIssuers()
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
@@ -40,7 +45,7 @@ func UpdateK8sClusterIssuer(data cmapi.ClusterIssuer) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sClusterIssuer(data cmapi.ClusterIssuer) K8sWorkloadResult {
+func DeleteK8sClusterIssuer(data cmapi.ClusterIssuer) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.CertmanagerV1().ClusterIssuers()
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
@@ -50,7 +55,13 @@ func DeleteK8sClusterIssuer(data cmapi.ClusterIssuer) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sClusterIssuer(name string) K8sWorkloadResult {
+func DeleteK8sClusterIssuerBy(name string) error {
+	kubeProvider := NewKubeProviderCertManager()
+	client := kubeProvider.ClientSet.CertmanagerV1().ClusterIssuers()
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
+}
+
+func DescribeK8sClusterIssuer(name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "clusterissuer", name)
 
 	output, err := cmd.CombinedOutput()
@@ -62,7 +73,7 @@ func DescribeK8sClusterIssuer(name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sClusterIssuer(data cmapi.ClusterIssuer) K8sWorkloadResult {
+func CreateK8sClusterIssuer(data cmapi.ClusterIssuer) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.CertmanagerV1().ClusterIssuers()
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
