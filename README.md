@@ -6,13 +6,13 @@
     <a href="https://github.com/mogenius/punq/blob/main/LICENSE">
         <img alt="GitHub License" src="https://img.shields.io/github/license/mogenius/punq?logo=GitHub&style=flat-square">
     </a>
-    <a href="https://github.com/mogenius/podloxx/releases/latest">
+    <a href="https://github.com/mogenius/punq/releases/latest">
         <img alt="GitHub Latest Release" src="https://img.shields.io/github/v/release/mogenius/punq?logo=GitHub&style=flat-square">
     </a>
-    <a href="https://github.com/mogenius/podloxx/releases">
+    <a href="https://github.com/mogenius/punq/releases">
       <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/mogenius/punq/total">
     </a>
-    <a href="https://github.com/mogenius/podloxx">
+    <a href="https://github.com/mogenius/punq">
       <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/mogenius/punq">
     </a>
 </p>
