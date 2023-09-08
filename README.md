@@ -1,3 +1,22 @@
+<p align="center">
+  <img src="/assets/punq_logo.png" alt="punq logo" width="400"/>
+</p>
+
+<p align="center">
+    <a href="https://github.com/mogenius/punq/blob/main/LICENSE">
+        <img alt="GitHub License" src="https://img.shields.io/github/license/mogenius/punq?logo=GitHub&style=flat-square">
+    </a>
+    <a href="https://github.com/mogenius/podloxx/releases/latest">
+        <img alt="GitHub Latest Release" src="https://img.shields.io/github/v/release/mogenius/punq?logo=GitHub&style=flat-square">
+    </a>
+    <a href="https://github.com/mogenius/podloxx/releases">
+      <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/mogenius/punq/total">
+    </a>
+    <a href="https://github.com/mogenius/podloxx">
+      <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/mogenius/punq">
+    </a>
+</p>
+
 # punq
 
 punq provides a WebApp and CLI to easily manage multiple Kubernetes clusters. It comes with integrated team collaboration, logs, and workload editor for clusters across different infrastructures. The goal of this project is to make DevOps' lifes easier by improving Kubernetes operations especially in teams.
@@ -49,7 +68,7 @@ The admin credentials for your punq instance are prompted to your terminal when 
 
 Have fun with punq! 🤘
 
-## Swagger
+## Development
 To update the documentation please run (in project root):
 ```
 swag init --parseDependency --parseInternal
@@ -61,4 +80,4 @@ punq is still still early stage and we're inviting you to contribute. Feel free 
 
 ---
 
-Made with ☕️ by the folks from [mogenius](https://mogenius.com)
+Made with 💜 by the folks from [mogenius](https://mogenius.com)
