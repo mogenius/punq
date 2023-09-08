@@ -39,6 +39,11 @@ func SecretFor(namespace string, name string) *v1.Secret {
 	}
 	return secret
 }
+func GetSecret(namespace string, name string) (*v1.Secret, error) {
+	kubeProvider := NewKubeProvider()
+	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(namespace)
+	return secretClient.Get(context.TODO(), name, metav1.GetOptions{})
+}
 
 func AllK8sSecrets(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.Secret{}
@@ -76,6 +81,12 @@ func DeleteK8sSecret(data v1.Secret) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sSecretBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(namespace)
+	return secretClient.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sSecret(namespace string, name string) utils.K8sWorkloadResult {

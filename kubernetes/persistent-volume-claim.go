@@ -26,6 +26,11 @@ func AllPersistentVolumeClaims(namespaceName string) []core.PersistentVolumeClai
 	return result
 }
 
+func GetPersistentVolumeClaim(namespaceName string, name string) (*core.PersistentVolumeClaim, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.CoreV1().PersistentVolumeClaims(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func AllK8sPersistentVolumeClaims(namespaceName string) utils.K8sWorkloadResult {
 	result := []core.PersistentVolumeClaim{}
 
@@ -60,6 +65,12 @@ func DeleteK8sPersistentVolumeClaim(data core.PersistentVolumeClaim) utils.K8sWo
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sPersistentVolumeClaimBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sPersistentVolumeClaim(namespace string, name string) utils.K8sWorkloadResult {

@@ -30,6 +30,11 @@ func AllClusterIssuers() utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetClusterIssuer(name string) (*cmapi.ClusterIssuer, error) {
+	provider := NewKubeProviderCertManager()
+	return provider.ClientSet.CertmanagerV1().ClusterIssuers().Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sClusterIssuer(data cmapi.ClusterIssuer) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.CertmanagerV1().ClusterIssuers()
@@ -48,6 +53,12 @@ func DeleteK8sClusterIssuer(data cmapi.ClusterIssuer) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sClusterIssuerBy(name string) error {
+	kubeProvider := NewKubeProviderCertManager()
+	client := kubeProvider.ClientSet.CertmanagerV1().ClusterIssuers()
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sClusterIssuer(name string) utils.K8sWorkloadResult {

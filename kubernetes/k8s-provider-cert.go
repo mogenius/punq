@@ -1,8 +1,6 @@
 package kubernetes
 
 import (
-	"github.com/mogenius/punq/utils"
-
 	"github.com/mogenius/punq/logger"
 
 	cmclientset "github.com/cert-manager/cert-manager/pkg/client/clientset/versioned"
@@ -18,7 +16,7 @@ type KubeProviderCertManager struct {
 func NewKubeProviderCertManager() *KubeProviderCertManager {
 	var kubeProvider *KubeProviderCertManager
 	var err error
-	if utils.CONFIG.Kubernetes.RunInCluster {
+	if RunsInCluster {
 		kubeProvider, err = newKubeProviderCertManagerInCluster()
 	} else {
 		kubeProvider, err = newKubeProviderCertManagerLocal()

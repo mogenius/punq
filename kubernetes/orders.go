@@ -30,6 +30,11 @@ func AllOrders(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetOrder(namespaceName string, name string) (*v1.Order, error) {
+	provider := NewKubeProviderCertManager()
+	return provider.ClientSet.AcmeV1().Orders(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sOrder(data v1.Order) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
@@ -48,6 +53,12 @@ func DeleteK8sOrder(data v1.Order) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sOrderBy(namespace string, name string) error {
+	kubeProvider := NewKubeProviderCertManager()
+	client := kubeProvider.ClientSet.AcmeV1().Orders(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sOrder(namespace string, name string) utils.K8sWorkloadResult {

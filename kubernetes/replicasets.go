@@ -30,6 +30,11 @@ func AllReplicasets(namespaceName string) []v1.ReplicaSet {
 	return result
 }
 
+func GetReplicaset(namespaceName string, name string) (*v1.ReplicaSet, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.AppsV1().ReplicaSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func AllK8sReplicasets(namespaceName string) utils.K8sWorkloadResult {
 	result := []v1.ReplicaSet{}
 
@@ -66,6 +71,12 @@ func DeleteK8sReplicaset(data v1.ReplicaSet) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sReplicasetBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.AppsV1().ReplicaSets(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sReplicaset(namespace string, name string) utils.K8sWorkloadResult {

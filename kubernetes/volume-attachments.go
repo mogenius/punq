@@ -25,6 +25,11 @@ func AllVolumeAttachments() utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetVolumeAttachment(name string) (*storage.VolumeAttachment, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.StorageV1().VolumeAttachments().Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sVolumeAttachment(data storage.VolumeAttachment) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
@@ -43,6 +48,12 @@ func DeleteK8sVolumeAttachment(data storage.VolumeAttachment) utils.K8sWorkloadR
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sVolumeAttachmentBy(name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sVolumeAttachment(name string) utils.K8sWorkloadResult {

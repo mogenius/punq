@@ -30,6 +30,11 @@ func AllRoleBindings(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetRoleBinding(namespaceName string, name string) (*v1.RoleBinding, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.RbacV1().RoleBindings(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sRoleBinding(data v1.RoleBinding) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.RbacV1().RoleBindings(data.Namespace)
@@ -48,6 +53,12 @@ func DeleteK8sRoleBinding(data v1.RoleBinding) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sRoleBindingBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.RbacV1().RoleBindings(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sRoleBinding(namespace string, name string) utils.K8sWorkloadResult {

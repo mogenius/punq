@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/version"
-	"os"
 
 	"github.com/mogenius/punq/utils"
 
@@ -113,9 +114,9 @@ func addRbac(kubeProvider *KubeProvider) error {
 		},
 		Rules: []rbac.PolicyRule{
 			{
-				APIGroups: []string{"", "extensions", "apps"},
+				APIGroups: []string{"", "*"},
 				Resources: RBACRESOURCES,
-				Verbs:     []string{"list", "get", "watch", "create", "update"},
+				Verbs:     []string{"*"},
 			},
 		},
 	}

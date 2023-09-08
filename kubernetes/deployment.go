@@ -11,26 +11,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func UpdateK8sDeployment(data v1.Deployment) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
-	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
-	if err != nil {
-		return WorkloadResult(nil, err)
-	}
-	return WorkloadResult(nil, nil)
-}
-
-func DeleteK8sDeployment(data v1.Deployment) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
-	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
-	if err != nil {
-		return WorkloadResult(nil, err)
-	}
-	return WorkloadResult(nil, nil)
-}
-
 func AllDeployments(namespaceName string) []v1.Deployment {
 	result := []v1.Deployment{}
 
@@ -65,6 +45,37 @@ func AllK8sDeployments(namespaceName string) utils.K8sWorkloadResult {
 		}
 	}
 	return WorkloadResult(result, nil)
+}
+
+func GetK8sDeployment(namespaceName string, name string) (*v1.Deployment, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.AppsV1().Deployments(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func UpdateK8sDeployment(data v1.Deployment) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sDeployment(data v1.Deployment) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
+	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sDeploymentBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.AppsV1().Deployments(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sDeployment(namespace string, name string) utils.K8sWorkloadResult {

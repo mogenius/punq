@@ -48,6 +48,11 @@ func AllK8sDaemonsets(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetK8sDaemonset(namespaceName string, name string) (*v1.DaemonSet, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.AppsV1().DaemonSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sDaemonSet(data v1.DaemonSet) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().DaemonSets(data.Namespace)
@@ -66,6 +71,12 @@ func DeleteK8sDaemonSet(data v1.DaemonSet) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sDaemonSetBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.AppsV1().DaemonSets(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sDaemonSet(namespace string, name string) utils.K8sWorkloadResult {

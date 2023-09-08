@@ -3,12 +3,14 @@ package kubernetes
 import (
 	"context"
 	"fmt"
-	"github.com/mogenius/punq/utils"
 	"os/exec"
+
+	"github.com/mogenius/punq/utils"
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
 
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -54,6 +56,16 @@ func ListK8sNodes() utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nodeMetricsList.Items, nil)
+}
+
+func GetK8sNode(name string) (*v1.Node, error) {
+	var provider *KubeProvider = NewKubeProvider()
+	return provider.ClientSet.CoreV1().Nodes().Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func DeleteK8sNode(name string) error {
+	var provider *KubeProvider = NewKubeProvider()
+	return provider.ClientSet.CoreV1().Nodes().Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sNode(name string) utils.K8sWorkloadResult {

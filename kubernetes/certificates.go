@@ -78,6 +78,12 @@ func DeleteK8sCertificate(data cmapi.Certificate) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
+func DeleteK8sCertificateBy(namespace string, name string) error {
+	kubeProvider := NewKubeProviderCertManager()
+	client := kubeProvider.ClientSet.CertmanagerV1().Certificates(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
+}
+
 func DescribeK8sCertificate(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "certificate", name, "-n", namespace)
 

@@ -137,6 +137,12 @@ func GetPod(namespace string, podName string) *v1.Pod {
 	return pod
 }
 
+func GetPodBy(namespace string, podName string) (*v1.Pod, error) {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().Pods(namespace)
+	return client.Get(context.TODO(), podName, metav1.GetOptions{})
+}
+
 func PodExists(namespace string, name string) ServicePodExistsResult {
 	result := ServicePodExistsResult{}
 
@@ -243,6 +249,12 @@ func DeleteK8sPod(data v1.Pod) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sPodBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	podClient := kubeProvider.ClientSet.CoreV1().Pods(namespace)
+	return podClient.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sPod(namespace string, name string) utils.K8sWorkloadResult {

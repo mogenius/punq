@@ -29,6 +29,11 @@ func AllEvents(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetEvent(namespaceName string, name string) (*v1Core.Event, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.CoreV1().Events(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func DescribeK8sEvent(namespace string, name string) utils.K8sWorkloadResult {
 	cmd := exec.Command("kubectl", "describe", "event", name, "-n", namespace)
 

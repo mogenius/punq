@@ -30,6 +30,11 @@ func AllCertificateSigningRequests(namespaceName string) utils.K8sWorkloadResult
 	return WorkloadResult(result, nil)
 }
 
+func GetCertificateSigningRequest(namespaceName string, name string) (*cmapi.CertificateRequest, error) {
+	provider := NewKubeProviderCertManager()
+	return provider.ClientSet.CertmanagerV1().CertificateRequests(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sCertificateSigningRequest(data cmapi.CertificateRequest) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager()
 	client := kubeProvider.ClientSet.CertmanagerV1().CertificateRequests(data.Namespace)
@@ -48,6 +53,12 @@ func DeleteK8sCertificateSigningRequest(data cmapi.CertificateRequest) utils.K8s
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sCertificateSigningRequestBy(namespace string, name string) error {
+	kubeProvider := NewKubeProviderCertManager()
+	client := kubeProvider.ClientSet.CertmanagerV1().CertificateRequests(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sCertificateSigningRequest(namespace string, name string) utils.K8sWorkloadResult {

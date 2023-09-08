@@ -4,6 +4,7 @@ import (
 	"os"
 
 	cc "github.com/ivanpirog/coloredcobra"
+	mokubernetes "github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/utils"
 	"github.com/spf13/cobra"
 )
@@ -34,6 +35,7 @@ var rootCmd = &cobra.Command{
 			utils.DeleteCurrentConfig()
 		}
 		utils.InitConfigYaml(debug, customConfig, stage)
+		mokubernetes.Init(utils.CONFIG.Kubernetes.RunInCluster)
 	},
 }
 

@@ -26,6 +26,11 @@ func AllVolumeSnapshots(namespace string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetVolumeSnapshot(namespace string, name string) (*snap.VolumeSnapshot, error) {
+	provider := NewKubeProviderSnapshot()
+	return provider.ClientSet.SnapshotV1().VolumeSnapshots(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sVolumeSnapshot(data snap.VolumeSnapshot) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, fmt.Errorf("UPDATE not available in VolumeSnapshot."))
 }
@@ -38,6 +43,12 @@ func DeleteK8sVolumeSnapshot(data snap.VolumeSnapshot) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sVolumeSnapshotBy(namespace string, name string) error {
+	kubeProvider := NewKubeProviderSnapshot()
+	client := kubeProvider.ClientSet.SnapshotV1().VolumeSnapshots(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sVolumeSnapshot(namespace string, name string) utils.K8sWorkloadResult {

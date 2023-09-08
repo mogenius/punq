@@ -30,6 +30,11 @@ func AllStatefulSets(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetStatefulSet(namespaceName string, name string) (*v1.StatefulSet, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.AppsV1().StatefulSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sStatefulset(data v1.StatefulSet) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.AppsV1().StatefulSets(data.Namespace)
@@ -48,6 +53,12 @@ func DeleteK8sStatefulset(data v1.StatefulSet) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sStatefulsetBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.AppsV1().StatefulSets(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sStatefulset(namespace string, name string) utils.K8sWorkloadResult {

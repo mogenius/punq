@@ -32,6 +32,12 @@ func ServiceFor(namespace string, serviceName string) *v1.Service {
 	return service
 }
 
+func GetService(namespace string, serviceName string) (*v1.Service, error) {
+	kubeProvider := NewKubeProvider()
+	serviceClient := kubeProvider.ClientSet.CoreV1().Services(namespace)
+	return serviceClient.Get(context.TODO(), serviceName, metav1.GetOptions{})
+}
+
 func AllServices(namespaceName string) []v1.Service {
 	result := []v1.Service{}
 
@@ -73,6 +79,12 @@ func DeleteK8sService(data v1.Service) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sServiceBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().Services(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sService(namespace string, name string) utils.K8sWorkloadResult {

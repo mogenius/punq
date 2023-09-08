@@ -29,6 +29,11 @@ func AllEndpoints(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetEndpoint(namespaceName string, name string) (*corev1.Endpoints, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.CoreV1().Endpoints(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sEndpoint(data corev1.Endpoints) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().Endpoints(data.Namespace)
@@ -47,6 +52,12 @@ func DeleteK8sEndpoint(data corev1.Endpoints) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sEndpointBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().Endpoints(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sEndpoint(namespace string, name string) utils.K8sWorkloadResult {

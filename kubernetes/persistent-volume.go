@@ -28,6 +28,11 @@ func AllPersistentVolumes() utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetPersistentVolume(name string) (*core.PersistentVolume, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.CoreV1().PersistentVolumes().Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sPersistentVolume(data core.PersistentVolume) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().PersistentVolumes()
@@ -46,6 +51,12 @@ func DeleteK8sPersistentVolume(data core.PersistentVolume) utils.K8sWorkloadResu
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sPersistentVolumeBy(name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().PersistentVolumes()
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sPersistentVolume(name string) utils.K8sWorkloadResult {

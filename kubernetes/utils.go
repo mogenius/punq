@@ -25,6 +25,8 @@ import (
 	"k8s.io/client-go/util/homedir"
 )
 
+var RunsInCluster bool = false
+
 const (
 	RES_NAMESPACE                   string = "namespace"
 	RES_POD                         string = "pod"
@@ -145,7 +147,7 @@ var (
 	SERVICEACCOUNTNAME     = fmt.Sprintf("%s-service-account-app", version.Name)
 	CLUSTERROLENAME        = fmt.Sprintf("%s--cluster-role-app", version.Name)
 	CLUSTERROLEBINDINGNAME = fmt.Sprintf("%s--cluster-role-binding-app", version.Name)
-	RBACRESOURCES          = []string{"pods", "services", "endpoints", "secrets"}
+	RBACRESOURCES          = []string{"*"}
 	SERVICENAME            = fmt.Sprintf("%s-service", version.Name)
 	INGRESSNAME            = fmt.Sprintf("%s-ingress", version.Name)
 )
@@ -159,6 +161,10 @@ type K8sNewWorkload struct {
 type MogeniusNfsInstallationStatus struct {
 	Error       string `json:"error,omitempty"`
 	IsInstalled bool   `json:"isInstalled"`
+}
+
+func Init(runsInCluster bool) {
+	RunsInCluster = runsInCluster
 }
 
 func DEPLOYMENTNAME() string {

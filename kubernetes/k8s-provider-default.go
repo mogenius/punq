@@ -1,8 +1,6 @@
 package kubernetes
 
 import (
-	"github.com/mogenius/punq/utils"
-
 	"github.com/mogenius/punq/logger"
 
 	"k8s.io/client-go/kubernetes"
@@ -18,7 +16,7 @@ type KubeProvider struct {
 func NewKubeProvider() *KubeProvider {
 	var kubeProvider *KubeProvider
 	var err error
-	if utils.CONFIG.Kubernetes.RunInCluster {
+	if RunsInCluster {
 		kubeProvider, err = newKubeProviderInCluster()
 	} else {
 		kubeProvider, err = newKubeProviderLocal()

@@ -2,7 +2,6 @@ package kubernetes
 
 import (
 	"github.com/mogenius/punq/logger"
-	"github.com/mogenius/punq/utils"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	metricsv "k8s.io/metrics/pkg/client/clientset/versioned"
@@ -16,7 +15,7 @@ type KubeProviderMetrics struct {
 func NewKubeProviderMetrics() *KubeProviderMetrics {
 	var kubeProvider *KubeProviderMetrics
 	var err error
-	if utils.CONFIG.Kubernetes.RunInCluster {
+	if RunsInCluster {
 		kubeProvider, err = newKubeProviderMetricsInCluster()
 	} else {
 		kubeProvider, err = newKubeProviderMetricsLocal()

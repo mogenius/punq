@@ -31,6 +31,11 @@ func AllResourceQuotas(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetResourceQuota(namespaceName string, name string) (*core.ResourceQuota, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.CoreV1().ResourceQuotas(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sResourceQuota(data core.ResourceQuota) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
@@ -49,6 +54,12 @@ func DeleteK8sResourceQuota(data core.ResourceQuota) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sResourceQuotaBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sResourceQuota(namespace string, name string) utils.K8sWorkloadResult {

@@ -28,6 +28,11 @@ func AllStorageClasses() utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetStorageClass(name string) (*storage.StorageClass, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.StorageV1().StorageClasses().Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sStorageClass(data storage.StorageClass) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
@@ -46,6 +51,12 @@ func DeleteK8sStorageClass(data storage.StorageClass) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sStorageClassBy(name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sStorageClass(name string) utils.K8sWorkloadResult {

@@ -30,6 +30,11 @@ func AllRoles(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetRole(namespaceName string, name string) (*v1.Role, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.RbacV1().Roles(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sRole(data v1.Role) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.RbacV1().Roles(data.Namespace)
@@ -48,6 +53,12 @@ func DeleteK8sRole(data v1.Role) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sRoleBy(namespace string, name string) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.RbacV1().Roles(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sRole(namespace string, name string) utils.K8sWorkloadResult {

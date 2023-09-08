@@ -59,6 +59,11 @@ func AllK8sConfigmaps(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
+func GetK8sConfigmap(namespaceName string, name string) (*v1.ConfigMap, error) {
+	provider := NewKubeProvider()
+	return provider.ClientSet.CoreV1().ConfigMaps(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
 func UpdateK8sConfigMap(data v1.ConfigMap) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider()
 	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
@@ -79,6 +84,12 @@ func DeleteK8sConfigmap(data v1.ConfigMap) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 	return WorkloadResult(nil, nil)
+}
+
+func DeleteK8sConfigmapBy(data v1.ConfigMap) error {
+	kubeProvider := NewKubeProvider()
+	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
+	return client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sConfigmap(namespace string, name string) utils.K8sWorkloadResult {
