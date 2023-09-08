@@ -1,4 +1,13 @@
 
+### [1.3.18](https://github.com/mogenius/punq/compare/dev1.3.17...dev1.3.18) (2023-09-08)
+
+
+### Bug Fixes
+
+* reset build to ubuntu again. ([3f36b08](https://github.com/mogenius/punq/commit/3f36b083f9685b444a5955345818df3cfa376c39))
+* test actuated-aarch64 to improve build times. ([c762cb3](https://github.com/mogenius/punq/commit/c762cb30f4f5c18f283ea39f03078e7b5efbda71))
+* workloads new get method and new deleteBy method. minor fixes. ([59ea210](https://github.com/mogenius/punq/commit/59ea2100e79562e5dfade3e642afef2d405bf86f))
+
 ### [1.3.17](https://github.com/mogenius/punq/compare/dev1.3.16...dev1.3.17) (2023-09-08)
 
 
