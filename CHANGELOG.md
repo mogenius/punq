@@ -1,4 +1,13 @@
 
+### [1.3.20](https://github.com/mogenius/punq/compare/dev1.3.19...dev1.3.20) (2023-09-11)
+
+
+### Bug Fixes
+
+* added swagger configuration to missing routes, refined routes and made slight fixes. ([dd5aa0a](https://github.com/mogenius/punq/commit/dd5aa0a171754bf4e751a7c334c1c9faa629ab15))
+* generate swagger ([44caa5f](https://github.com/mogenius/punq/commit/44caa5f2a685ad0d988c0ecd31331cd8d445f2ae))
+* workload routes ([2131d1f](https://github.com/mogenius/punq/commit/2131d1f1a595402a832f8fa9cf2f8861fa895338))
+
 ### [1.3.19](https://github.com/mogenius/punq/compare/dev1.3.18...dev1.3.19) (2023-09-08)
 
 ### [1.3.18](https://github.com/mogenius/punq/compare/dev1.3.17...dev1.3.18) (2023-09-08)
