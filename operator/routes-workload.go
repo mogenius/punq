@@ -2511,12 +2511,13 @@ func describeCrd(c *gin.Context) {
 // @Param name path string true "crds name"
 // @Security Bearer
 func deleteCrd(c *gin.Context) {
-	name := c.Param("name")
-	err := kubernetes.DeleteK8sCustomResourceDefinitionBy(name)
-	if err != nil {
-		utils.MalformedMessage(c, err.Error())
-		return
-	}
+	// name := c.Param("name")
+	// TODO
+	// err := kubernetes.DeleteK8sCustomResourceDefinition(name)
+	// if err != nil {
+	// 	utils.MalformedMessage(c, err.Error())
+	// 	return
+	// }
 	c.Status(http.StatusOK)
 }
 
