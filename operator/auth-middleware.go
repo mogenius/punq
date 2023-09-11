@@ -75,6 +75,11 @@ func CheckUserAuthorization(c *gin.Context) (*dtos.PunqUser, error) {
 
 	// updateLocalUserStore()
 
+	getGinContextUser := services.GetGinContextUser(c)
+	if getGinContextUser != nil && getGinContextUser.Id == userId {
+		return getGinContextUser, nil
+	}
+
 	user, err := services.GetUser(userId)
 	if err != nil {
 		return nil, err

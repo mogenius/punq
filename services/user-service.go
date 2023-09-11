@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/mogenius/punq/structs"
 	"time"
 
@@ -69,7 +70,11 @@ func CreateAdminUser() {
 		AccessLevel: dtos.ADMIN,
 	})
 
-	structs.PrettyPrint(adminUser)
+	// display admin user
+	displayAdminUser := adminUser
+	displayAdminUser.Password = password
+	structs.PrettyPrint(displayAdminUser)
+
 	secret = kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 	strData := make(map[string]string)
 	strData[PunqAdminIdKey] = adminUser.Id
@@ -307,4 +312,16 @@ func GetAdmin() (*dtos.PunqUser, error) {
 	}
 
 	return adminUser, nil
+}
+
+func GetGinContextUser(c *gin.Context) *dtos.PunqUser {
+	if temp, exists := c.Get("user"); exists {
+		user, ok := temp.(dtos.PunqUser)
+		if !ok {
+			utils.MalformedMessage(c, "Type Assertion failed")
+			return nil
+		}
+		return &user
+	}
+	return nil
 }

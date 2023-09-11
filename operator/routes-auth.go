@@ -65,12 +65,8 @@ func login(c *gin.Context) {
 // @Router /auth/authenticate [get]
 // @Security Bearer
 func authenticate(c *gin.Context) {
-	if temp, exists := c.Get("user"); exists {
-		user, ok := temp.(dtos.PunqUser)
-		if !ok {
-			utils.MalformedMessage(c, "Type Assertion failed")
-			return
-		}
+	user := services.GetGinContextUser(c)
+	if user != nil {
 		c.JSON(http.StatusOK, user)
 		return
 	}

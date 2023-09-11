@@ -86,10 +86,9 @@ func DeleteK8sConfigmap(data v1.ConfigMap) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sConfigmapBy(data v1.ConfigMap) error {
+func DeleteK8sConfigmapBy(namespaceName string, name string) error {
 	kubeProvider := NewKubeProvider()
-	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
-	return client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	return kubeProvider.ClientSet.CoreV1().ConfigMaps(namespaceName).Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 func DescribeK8sConfigmap(namespace string, name string) utils.K8sWorkloadResult {
