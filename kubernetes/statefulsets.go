@@ -12,10 +12,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllStatefulSets(namespaceName string) utils.K8sWorkloadResult {
+func AllStatefulSets(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.StatefulSet{}
 
-	provider := NewKubeProvider()
+	provider := NewKubeProvider(contextId)
 	statefulSetList, err := provider.ClientSet.AppsV1().StatefulSets(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllStatefulSets ERROR: %s", err.Error())
@@ -30,13 +30,13 @@ func AllStatefulSets(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func GetStatefulSet(namespaceName string, name string) (*v1.StatefulSet, error) {
-	provider := NewKubeProvider()
+func GetStatefulSet(namespaceName string, name string, contextId *string) (*v1.StatefulSet, error) {
+	provider := NewKubeProvider(contextId)
 	return provider.ClientSet.AppsV1().StatefulSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
-func UpdateK8sStatefulset(data v1.StatefulSet) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func UpdateK8sStatefulset(data v1.StatefulSet, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.AppsV1().StatefulSets(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
@@ -45,8 +45,8 @@ func UpdateK8sStatefulset(data v1.StatefulSet) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sStatefulset(data v1.StatefulSet) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func DeleteK8sStatefulset(data v1.StatefulSet, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.AppsV1().StatefulSets(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
@@ -55,8 +55,8 @@ func DeleteK8sStatefulset(data v1.StatefulSet) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sStatefulsetBy(namespace string, name string) error {
-	kubeProvider := NewKubeProvider()
+func DeleteK8sStatefulsetBy(namespace string, name string, contextId *string) error {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.AppsV1().StatefulSets(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
@@ -73,8 +73,8 @@ func DescribeK8sStatefulset(namespace string, name string) utils.K8sWorkloadResu
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sStatefulset(data v1.StatefulSet) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func CreateK8sStatefulset(data v1.StatefulSet, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.AppsV1().StatefulSets(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {

@@ -25,7 +25,7 @@ import (
 )
 
 func Deploy(clusterName string, ingressHostname string) {
-	provider := NewKubeProvider()
+	provider := NewKubeProvider(nil)
 	if provider == nil {
 		logger.Log.Fatal("Failed to load kubeprovider.")
 	}

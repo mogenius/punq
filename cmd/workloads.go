@@ -43,7 +43,7 @@ var podsListCmd = &cobra.Command{
 	Short: "List pods.",
 	Long:  `Similar to kubectl, punq can list workloads in an orderly fashion.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		kubernetes.ListPodsTerminal(namespace)
+		kubernetes.ListPodsTerminal(namespace, &contextId)
 	},
 }
 
@@ -58,10 +58,13 @@ var podDeleteCmd = &cobra.Command{
 		if resource == "" {
 			logger.Log.Fatal("-resource cannot be empty.")
 		}
+		if contextId == "" {
+			logger.Log.Fatal("contextId cannot be empty.")
+		}
 
-		pod := kubernetes.GetPod(namespace, resource)
+		pod := kubernetes.GetPod(namespace, resource, &contextId)
 		if pod != nil {
-			kubernetes.DeleteK8sPod(*pod)
+			kubernetes.DeleteK8sPod(*pod, &contextId)
 		} else {
 			fmt.Printf("Pod %s/%s not found.\n", namespace, resource)
 		}

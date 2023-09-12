@@ -5,6 +5,8 @@ punq.rb
 .envrc
 .cluster
 
+__debug*
+
 build-push-ghcr.sh
 build-client.sh
 

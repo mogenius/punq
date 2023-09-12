@@ -11,10 +11,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllEvents(namespaceName string) utils.K8sWorkloadResult {
+func AllEvents(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1Core.Event{}
 
-	provider := NewKubeProvider()
+	provider := NewKubeProvider(contextId)
 	eventList, err := provider.ClientSet.CoreV1().Events(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllEvents ERROR: %s", err.Error())
@@ -29,8 +29,8 @@ func AllEvents(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func GetEvent(namespaceName string, name string) (*v1Core.Event, error) {
-	provider := NewKubeProvider()
+func GetEvent(namespaceName string, name string, contextId *string) (*v1Core.Event, error) {
+	provider := NewKubeProvider(contextId)
 	return provider.ClientSet.CoreV1().Events(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 

@@ -128,7 +128,7 @@ func InitAuthService() {
 }
 
 func CreateKeyPair() (*KeyPair, error) {
-	provider := kubernetes.NewKubeProvider()
+	provider := kubernetes.NewKubeProvider(nil)
 	if provider == nil {
 		msg := fmt.Sprintf("Failed to load kubeprovider.")
 		logger.Log.Error(msg)
@@ -174,7 +174,7 @@ func CreateKeyPair() (*KeyPair, error) {
 }
 
 func RemoveKeyPair() {
-	provider := kubernetes.NewKubeProvider()
+	provider := kubernetes.NewKubeProvider(nil)
 	if provider == nil {
 		logger.Log.Fatal("Failed to load kubeprovider.")
 	}
@@ -192,7 +192,7 @@ func RemoveKeyPair() {
 }
 
 func GetKeyPair() (*KeyPair, error) {
-	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.JWTSECRET)
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.JWTSECRET, nil)
 	if secret == nil {
 		logger.Log.Warningf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.JWTSECRET)
 		return CreateKeyPair()
@@ -261,7 +261,7 @@ func ValidationToken(tokenString string) (*PunqClaims, error) {
 	})
 	claims, ok := token.Claims.(*PunqClaims)
 	if !ok {
-		msg := fmt.Sprintf("Type Assertion failed")
+		msg := fmt.Sprintf("Type Assertion failed. Expected PunqClaims but received something different.")
 		logger.Log.Error(msg)
 		return nil, errors.New(msg)
 	}

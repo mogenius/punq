@@ -12,10 +12,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllIssuer(namespaceName string) utils.K8sWorkloadResult {
+func AllIssuer(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []cmapi.Issuer{}
 
-	provider := NewKubeProviderCertManager()
+	provider := NewKubeProviderCertManager(contextId)
 	issuersList, err := provider.ClientSet.CertmanagerV1().Issuers(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllIssuer ERROR: %s", err.Error())
@@ -30,13 +30,13 @@ func AllIssuer(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func GetIssuer(namespaceName string, name string) (*cmapi.Issuer, error) {
-	provider := NewKubeProviderCertManager()
+func GetIssuer(namespaceName string, name string, contextId *string) (*cmapi.Issuer, error) {
+	provider := NewKubeProviderCertManager(contextId)
 	return provider.ClientSet.CertmanagerV1().Issuers(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
-func UpdateK8sIssuer(data cmapi.Issuer) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProviderCertManager()
+func UpdateK8sIssuer(data cmapi.Issuer, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.CertmanagerV1().Issuers(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
@@ -45,8 +45,8 @@ func UpdateK8sIssuer(data cmapi.Issuer) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sIssuer(data cmapi.Issuer) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProviderCertManager()
+func DeleteK8sIssuer(data cmapi.Issuer, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.CertmanagerV1().Issuers(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
@@ -55,8 +55,8 @@ func DeleteK8sIssuer(data cmapi.Issuer) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sIssuerBy(namespace string, name string) error {
-	kubeProvider := NewKubeProviderCertManager()
+func DeleteK8sIssuerBy(namespace string, name string, contextId *string) error {
+	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.CertmanagerV1().Issuers(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
@@ -73,8 +73,8 @@ func DescribeK8sIssuer(namespace string, name string) utils.K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sIssuer(data cmapi.Issuer) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProviderCertManager()
+func CreateK8sIssuer(data cmapi.Issuer, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.CertmanagerV1().Issuers(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {

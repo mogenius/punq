@@ -1,6 +1,9 @@
 package kubernetes
 
 import (
+	"encoding/base64"
+	"fmt"
+
 	"github.com/mogenius/punq/logger"
 
 	"k8s.io/client-go/kubernetes"
@@ -13,11 +16,11 @@ type KubeProvider struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProvider() *KubeProvider {
+func NewKubeProvider(contextId *string) *KubeProvider {
 	var kubeProvider *KubeProvider
 	var err error
 	if RunsInCluster {
-		kubeProvider, err = newKubeProviderInCluster()
+		kubeProvider, err = newKubeProviderInCluster(contextId)
 	} else {
 		kubeProvider, err = newKubeProviderLocal()
 	}
@@ -47,10 +50,15 @@ func newKubeProviderLocal() (*KubeProvider, error) {
 	}, nil
 }
 
-func newKubeProviderInCluster() (*KubeProvider, error) {
+func newKubeProviderInCluster(contextId *string) (*KubeProvider, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())
+	}
+
+	// CONTEXT SWITCHER
+	if contextId != nil {
+		config, err = ContextConfigLoader(contextId)
 	}
 
 	clientset, err := kubernetes.NewForConfig(config)
@@ -62,4 +70,28 @@ func newKubeProviderInCluster() (*KubeProvider, error) {
 		ClientSet:    clientset,
 		ClientConfig: *config,
 	}, nil
+}
+
+func ContextConfigLoader(contextId *string) (*rest.Config, error) {
+	// get current context
+	ctx := ContextForId(*contextId)
+	if ctx == nil {
+		return nil, fmt.Errorf("Context not found for id: %s", *contextId)
+	}
+
+	// decode base64
+	decodedBytes, err := base64.StdEncoding.DecodeString(ctx.ContextBase64)
+	if err != nil {
+		logger.Log.Errorf("Error decoding string:", err.Error())
+		return nil, err
+	}
+
+	configFromString, err := clientcmd.NewClientConfigFromBytes(decodedBytes)
+	if err != nil {
+		logger.Log.Errorf("Error creating client config from string:", err.Error())
+		return nil, err
+	}
+
+	config, err := configFromString.ClientConfig()
+	return config, err
 }

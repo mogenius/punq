@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/operator"
+	"github.com/mogenius/punq/services"
 
 	"github.com/mogenius/punq/utils"
 
@@ -18,6 +20,10 @@ var operatorCmd = &cobra.Command{
 		utils.IsNewReleaseAvailable()
 		println("###############################################\n")
 		utils.PrintSettings()
+
+		contexts := services.ListContexts()
+		logger.Log.Noticef("Initialized operator with %d contexts.", len(contexts))
+
 		operator.InitGin()
 	},
 }

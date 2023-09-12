@@ -1,13 +1,14 @@
 package operator
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/utils"
-	"net/http"
 )
 
 func InitUserRoutes(router *gin.Engine) {
@@ -57,8 +58,6 @@ func currentUserGet(c *gin.Context) {
 		return
 	}
 	utils.Unauthorized(c, "Unauthorized")
-	return
-
 }
 
 // @Tags User

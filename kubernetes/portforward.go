@@ -34,9 +34,9 @@ type PortForwardAPodRequest struct {
 	ReadyCh chan struct{}
 }
 
-func StartPortForward(localPort int, podPort int, readyChannel chan struct{}, stopChannel chan struct{}) {
+func StartPortForward(localPort int, podPort int, readyChannel chan struct{}, stopChannel chan struct{}, contextId *string) {
 	for {
-		pod := GetFirstPodForLabelName(utils.CONFIG.Kubernetes.OwnNamespace, "app=punq")
+		pod := GetFirstPodForLabelName(utils.CONFIG.Kubernetes.OwnNamespace, "app=punq", contextId)
 		if pod == nil {
 			return
 		}
@@ -66,7 +66,7 @@ func StartPortForward(localPort int, podPort int, readyChannel chan struct{}, st
 				ErrOut:    errOut,
 				StopCh:    stopChannel,
 				ReadyCh:   readyChannel,
-			})
+			}, contextId)
 			if err != nil {
 				logger.Log.Warning("ERROR DURING PORTFORWARD!")
 				panic(err)
@@ -89,8 +89,8 @@ func StartPortForward(localPort int, podPort int, readyChannel chan struct{}, st
 	}
 }
 
-func portForwardAPod(req PortForwardAPodRequest) error {
-	kubeProvider := NewKubeProvider()
+func portForwardAPod(req PortForwardAPodRequest, contextId *string) error {
+	kubeProvider := NewKubeProvider(contextId)
 
 	path := fmt.Sprintf("/api/v1/namespaces/%s/pods/%s/portforward", req.Pod.Namespace, req.Pod.Name)
 	hostIP := strings.TrimLeft(kubeProvider.ClientConfig.Host, "htps:/")

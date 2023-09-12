@@ -12,10 +12,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllJobs(namespaceName string) utils.K8sWorkloadResult {
+func AllJobs(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1job.Job{}
 
-	provider := NewKubeProvider()
+	provider := NewKubeProvider(contextId)
 	jobList, err := provider.ClientSet.BatchV1().Jobs(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllJobs ERROR: %s", err.Error())
@@ -30,13 +30,13 @@ func AllJobs(namespaceName string) utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func GetJob(namespaceName string, name string) (*v1job.Job, error) {
-	provider := NewKubeProvider()
+func GetJob(namespaceName string, name string, contextId *string) (*v1job.Job, error) {
+	provider := NewKubeProvider(contextId)
 	return provider.ClientSet.BatchV1().Jobs(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
-func UpdateK8sJob(data v1job.Job) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func UpdateK8sJob(data v1job.Job, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.BatchV1().Jobs(data.Namespace)
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
@@ -45,8 +45,8 @@ func UpdateK8sJob(data v1job.Job) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sJob(data v1job.Job) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func DeleteK8sJob(data v1job.Job, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.BatchV1().Jobs(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
@@ -55,8 +55,8 @@ func DeleteK8sJob(data v1job.Job) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sJobBy(namespace string, name string) error {
-	kubeProvider := NewKubeProvider()
+func DeleteK8sJobBy(namespace string, name string, contextId *string) error {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.BatchV1().Jobs(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
@@ -73,8 +73,8 @@ func DescribeK8sJob(namespace string, name string) utils.K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sJob(data v1job.Job) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func CreateK8sJob(data v1job.Job, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.BatchV1().Jobs(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {

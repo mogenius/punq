@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/mogenius/punq/structs"
-	"time"
 
 	"golang.org/x/crypto/bcrypt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -26,7 +27,7 @@ func InitUserService() {
 }
 
 func CreateUserSecret() {
-	provider := kubernetes.NewKubeProvider()
+	provider := kubernetes.NewKubeProvider(nil)
 	if provider == nil {
 		logger.Log.Fatal("Failed to load kubeprovider.")
 	}
@@ -52,7 +53,7 @@ func CreateUserSecret() {
 }
 
 func CreateAdminUser() {
-	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET, nil)
 	if secret == nil {
 		return
 	}
@@ -75,17 +76,17 @@ func CreateAdminUser() {
 	displayAdminUser.Password = password
 	structs.PrettyPrint(displayAdminUser)
 
-	secret = kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	secret = kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET, nil)
 	strData := make(map[string]string)
 	strData[PunqAdminIdKey] = adminUser.Id
 	secret.StringData = strData
-	kubernetes.UpdateK8sSecret(*secret)
+	kubernetes.UpdateK8sSecret(*secret, nil)
 }
 
 func ListUsers() []dtos.PunqUser {
 	users := []dtos.PunqUser{}
 
-	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET, nil)
 	if secret == nil {
 		logger.Log.Errorf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 		return users
@@ -107,7 +108,7 @@ func ListUsers() []dtos.PunqUser {
 }
 
 func AddUser(userCreateInput dtos.PunqUserCreateInput) (*dtos.PunqUser, error) {
-	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET, nil)
 	if secret == nil {
 		return nil, errors.New(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
 	}
@@ -164,13 +165,13 @@ func AddUser(userCreateInput dtos.PunqUserCreateInput) (*dtos.PunqUser, error) {
 	secret.StringData[user.Id] = string(rawData)
 
 	// add user to secret
-	kubernetes.UpdateK8sSecret(*secret)
+	kubernetes.UpdateK8sSecret(*secret, nil)
 
 	return &user, nil
 }
 
 func UpdateUser(userUpdateInput dtos.PunqUserUpdateInput) (*dtos.PunqUser, error) {
-	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET, nil)
 	if secret == nil {
 		return nil, errors.New(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
 	}
@@ -218,13 +219,13 @@ func UpdateUser(userUpdateInput dtos.PunqUserUpdateInput) (*dtos.PunqUser, error
 	secret.Data[userUpdateInput.Id] = rawData
 
 	// update user
-	kubernetes.UpdateK8sSecret(*secret)
+	kubernetes.UpdateK8sSecret(*secret, nil)
 
 	return user, nil
 }
 
 func DeleteUser(id string) error {
-	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET, nil)
 	if secret == nil {
 		return errors.New(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))
 	}
@@ -239,7 +240,7 @@ func DeleteUser(id string) error {
 		return errors.New(fmt.Sprintf("USer '%s' not found.", id))
 	}
 
-	result := kubernetes.UpdateK8sSecret(*secret)
+	result := kubernetes.UpdateK8sSecret(*secret, nil)
 	if result.Error == nil && result.Result == nil {
 		// success
 		result.Result = fmt.Sprintf("User %s successfuly deleted.", id)
@@ -248,7 +249,7 @@ func DeleteUser(id string) error {
 }
 
 func GetUser(id string) (*dtos.PunqUser, error) {
-	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET, nil)
 	if secret == nil {
 		msg := fmt.Sprintf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 		logger.Log.Error(msg)
@@ -270,7 +271,7 @@ func GetUser(id string) (*dtos.PunqUser, error) {
 }
 
 func GetUserByEmail(email string) (*dtos.PunqUser, error) {
-	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET, nil)
 	if secret == nil {
 		msg := fmt.Sprintf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 		logger.Log.Error(msg)
@@ -297,7 +298,7 @@ func GetUserByEmail(email string) (*dtos.PunqUser, error) {
 }
 
 func GetAdmin() (*dtos.PunqUser, error) {
-	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
+	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET, nil)
 	if secret == nil {
 		err := fmt.Errorf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 		logger.Log.Error(err)
@@ -318,7 +319,7 @@ func GetGinContextUser(c *gin.Context) *dtos.PunqUser {
 	if temp, exists := c.Get("user"); exists {
 		user, ok := temp.(dtos.PunqUser)
 		if !ok {
-			utils.MalformedMessage(c, "Type Assertion failed")
+			utils.MalformedMessage(c, "Type Assertion failed. Expected PunqUser but received something different.")
 			return nil
 		}
 		return &user

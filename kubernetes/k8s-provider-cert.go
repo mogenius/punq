@@ -13,11 +13,11 @@ type KubeProviderCertManager struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProviderCertManager() *KubeProviderCertManager {
+func NewKubeProviderCertManager(contextId *string) *KubeProviderCertManager {
 	var kubeProvider *KubeProviderCertManager
 	var err error
 	if RunsInCluster {
-		kubeProvider, err = newKubeProviderCertManagerInCluster()
+		kubeProvider, err = newKubeProviderCertManagerInCluster(contextId)
 	} else {
 		kubeProvider, err = newKubeProviderCertManagerLocal()
 	}
@@ -47,10 +47,15 @@ func newKubeProviderCertManagerLocal() (*KubeProviderCertManager, error) {
 	}, nil
 }
 
-func newKubeProviderCertManagerInCluster() (*KubeProviderCertManager, error) {
+func newKubeProviderCertManagerInCluster(contextId *string) (*KubeProviderCertManager, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())
+	}
+
+	// CONTEXT SWITCHER
+	if contextId != nil {
+		config, err = ContextConfigLoader(contextId)
 	}
 
 	clientset, err := cmclientset.NewForConfig(config)
