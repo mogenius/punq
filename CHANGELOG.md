@@ -1,4 +1,31 @@
 
+### [1.3.21](https://github.com/mogenius/punq/compare/dev1.3.20...dev1.3.21) (2023-09-12)
+
+
+### Bug Fixes
+
+* workload group route fix ([4fb42a5](https://github.com/mogenius/punq/commit/4fb42a51e81ae788816a9adf67c4f169641ac632))
+
+### [1.3.20](https://github.com/mogenius/punq/compare/dev1.3.19...dev1.3.20) (2023-09-11)
+
+
+### Bug Fixes
+
+* added swagger configuration to missing routes, refined routes and made slight fixes. ([dd5aa0a](https://github.com/mogenius/punq/commit/dd5aa0a171754bf4e751a7c334c1c9faa629ab15))
+* generate swagger ([44caa5f](https://github.com/mogenius/punq/commit/44caa5f2a685ad0d988c0ecd31331cd8d445f2ae))
+* workload routes ([2131d1f](https://github.com/mogenius/punq/commit/2131d1f1a595402a832f8fa9cf2f8861fa895338))
+
+### [1.3.19](https://github.com/mogenius/punq/compare/dev1.3.18...dev1.3.19) (2023-09-08)
+
+### [1.3.18](https://github.com/mogenius/punq/compare/dev1.3.17...dev1.3.18) (2023-09-08)
+
+
+### Bug Fixes
+
+* reset build to ubuntu again. ([3f36b08](https://github.com/mogenius/punq/commit/3f36b083f9685b444a5955345818df3cfa376c39))
+* test actuated-aarch64 to improve build times. ([c762cb3](https://github.com/mogenius/punq/commit/c762cb30f4f5c18f283ea39f03078e7b5efbda71))
+* workloads new get method and new deleteBy method. minor fixes. ([59ea210](https://github.com/mogenius/punq/commit/59ea2100e79562e5dfade3e642afef2d405bf86f))
+
 ### [1.3.17](https://github.com/mogenius/punq/compare/dev1.3.16...dev1.3.17) (2023-09-08)
 
 
