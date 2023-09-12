@@ -1,4 +1,11 @@
 
+### [1.3.21](https://github.com/mogenius/punq/compare/dev1.3.20...dev1.3.21) (2023-09-12)
+
+
+### Bug Fixes
+
+* workload group route fix ([4fb42a5](https://github.com/mogenius/punq/commit/4fb42a51e81ae788816a9adf67c4f169641ac632))
+
 ### [1.3.20](https://github.com/mogenius/punq/compare/dev1.3.19...dev1.3.20) (2023-09-11)
 
 
