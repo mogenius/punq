@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type K8sWorkloadResult struct {
@@ -44,6 +45,12 @@ func NotFound(c *gin.Context, msg string) {
 func Unauthorized(c *gin.Context, msg string) {
 	c.JSON(http.StatusUnauthorized, gin.H{
 		"err": msg,
+	})
+}
+
+func MissingHeader(c *gin.Context, header string) {
+	c.JSON(http.StatusBadRequest, gin.H{
+		"err": fmt.Sprintf("Missing header '%s'.", header),
 	})
 }
 

@@ -1,7 +1,6 @@
 package kubernetes
 
 import (
-	"encoding/base64"
 	"fmt"
 
 	"github.com/mogenius/punq/logger"
@@ -22,7 +21,11 @@ func NewKubeProvider(contextId *string) *KubeProvider {
 	if RunsInCluster {
 		kubeProvider, err = newKubeProviderInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderLocal()
+		if contextId == nil {
+			kubeProvider, err = newKubeProviderLocal()
+		} else {
+			kubeProvider, err = newKubeProviderInCluster(contextId)
+		}
 	}
 
 	if err != nil {
@@ -59,6 +62,9 @@ func newKubeProviderInCluster(contextId *string) (*KubeProvider, error) {
 	// CONTEXT SWITCHER
 	if contextId != nil {
 		config, err = ContextConfigLoader(contextId)
+		if err != nil || config == nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := kubernetes.NewForConfig(config)
@@ -79,14 +85,7 @@ func ContextConfigLoader(contextId *string) (*rest.Config, error) {
 		return nil, fmt.Errorf("Context not found for id: %s", *contextId)
 	}
 
-	// decode base64
-	decodedBytes, err := base64.StdEncoding.DecodeString(ctx.ContextBase64)
-	if err != nil {
-		logger.Log.Errorf("Error decoding string:", err.Error())
-		return nil, err
-	}
-
-	configFromString, err := clientcmd.NewClientConfigFromBytes(decodedBytes)
+	configFromString, err := clientcmd.NewClientConfigFromBytes([]byte(ctx.Context))
 	if err != nil {
 		logger.Log.Errorf("Error creating client config from string:", err.Error())
 		return nil, err

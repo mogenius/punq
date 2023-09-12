@@ -18,7 +18,11 @@ func NewKubeProviderSnapshot(contextId *string) *KubeProviderSnapshot {
 	if RunsInCluster {
 		kubeProvider, err = newKubeProviderCsiInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderCsiLocal()
+		if contextId == nil {
+			kubeProvider, err = newKubeProviderCsiLocal()
+		} else {
+			kubeProvider, err = newKubeProviderCsiInCluster(contextId)
+		}
 	}
 
 	if err != nil {
@@ -55,6 +59,9 @@ func newKubeProviderCsiInCluster(contextId *string) (*KubeProviderSnapshot, erro
 	// CONTEXT SWITCHER
 	if contextId != nil {
 		config, err = ContextConfigLoader(contextId)
+		if err != nil || config == nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := snapClientset.NewForConfig(config)

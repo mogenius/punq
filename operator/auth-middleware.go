@@ -3,12 +3,13 @@ package operator
 import (
 	"errors"
 	"fmt"
+	"regexp"
+
 	"github.com/gin-gonic/gin"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/utils"
-	"regexp"
 )
 
 // var users []dtos.PunqUser = []dtos.PunqUser{}
@@ -60,8 +61,12 @@ func Auth(requiredAccessLevel dtos.AccessLevel) gin.HandlerFunc {
 // }
 
 func CheckUserAuthorization(c *gin.Context) (*dtos.PunqUser, error) {
-	authorization, err := parseAuthHeader(utils.GetRequiredHeader(c, "authorization"))
+	token := utils.GetRequiredHeader(c, "authorization")
+	if token == "" {
+		return nil, fmt.Errorf("missing header 'authorization'")
+	}
 
+	authorization, err := parseAuthHeader(token)
 	if err != nil {
 		logger.Log.Error(err)
 		return nil, err

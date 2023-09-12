@@ -19,7 +19,11 @@ func NewKubeProviderCertManager(contextId *string) *KubeProviderCertManager {
 	if RunsInCluster {
 		kubeProvider, err = newKubeProviderCertManagerInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderCertManagerLocal()
+		if contextId == nil {
+			kubeProvider, err = newKubeProviderCertManagerLocal()
+		} else {
+			kubeProvider, err = newKubeProviderCertManagerInCluster(contextId)
+		}
 	}
 
 	if err != nil {
@@ -56,6 +60,9 @@ func newKubeProviderCertManagerInCluster(contextId *string) (*KubeProviderCertMa
 	// CONTEXT SWITCHER
 	if contextId != nil {
 		config, err = ContextConfigLoader(contextId)
+		if err != nil || config == nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := cmclientset.NewForConfig(config)

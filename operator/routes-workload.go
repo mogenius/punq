@@ -33,7 +33,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		workloadRoutes.GET("/available-resources", Auth(dtos.READER), allKubernetesResources)
 
 		// namespace
-		namespaceWorkloadRoutes := workloadRoutes.Group("/namespace", Auth(dtos.USER))
+		namespaceWorkloadRoutes := workloadRoutes.Group("/namespace", Auth(dtos.USER), RequireContextId())
 		{
 			namespaceWorkloadRoutes.GET("/", allNamespaces)                                                    // PARAM: -
 			namespaceWorkloadRoutes.GET("/:name", validateParam("name"), describeNamespaces)                   // PARAM: name
@@ -42,7 +42,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// pod
-		podWorkloadRoutes := workloadRoutes.Group("/pod", Auth(dtos.USER))
+		podWorkloadRoutes := workloadRoutes.Group("/pod", Auth(dtos.USER), RequireContextId())
 		{
 			podWorkloadRoutes.GET("/", allPods)
 			podWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describePod) // PARAM: namespace
@@ -52,7 +52,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// deployment
-		deploymentWorkloadRoutes := workloadRoutes.Group("/deployment", Auth(dtos.USER))
+		deploymentWorkloadRoutes := workloadRoutes.Group("/deployment", Auth(dtos.USER), RequireContextId())
 		{
 			deploymentWorkloadRoutes.GET("/", allDeployments)                                                                  // PARAM: namespace
 			deploymentWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeDeployment) // PARAM: namespace, name
@@ -62,7 +62,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// service
-		serviceWorkloadRoutes := workloadRoutes.Group("/service", Auth(dtos.USER))
+		serviceWorkloadRoutes := workloadRoutes.Group("/service", Auth(dtos.USER), RequireContextId())
 		{
 			serviceWorkloadRoutes.GET("/", allServices)                                                                  // PARAM: namespace
 			serviceWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeService) // PARAM: namespace, name
@@ -72,7 +72,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// ingress
-		ingressWorkloadRoutes := workloadRoutes.Group("/ingress", Auth(dtos.USER))
+		ingressWorkloadRoutes := workloadRoutes.Group("/ingress", Auth(dtos.USER), RequireContextId())
 		{
 			ingressWorkloadRoutes.GET("/", allIngresses)                                                                 // PARAM: namespace
 			ingressWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeIngress) // PARAM: namespace, name
@@ -82,7 +82,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// configmap
-		configmapWorkloadRoutes := workloadRoutes.Group("/configmap", Auth(dtos.USER))
+		configmapWorkloadRoutes := workloadRoutes.Group("/configmap", Auth(dtos.USER), RequireContextId())
 		{
 			configmapWorkloadRoutes.GET("/", allConfigmaps)                                                                  // PARAM: namespace
 			configmapWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeConfigmap) // PARAM: namespace, name
@@ -92,7 +92,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// secret
-		secretWorkloadRoutes := workloadRoutes.Group("/secret", Auth(dtos.ADMIN))
+		secretWorkloadRoutes := workloadRoutes.Group("/secret", Auth(dtos.ADMIN), RequireContextId())
 		{
 			secretWorkloadRoutes.GET("/", allSecrets)                                                                  // PARAM: namespace
 			secretWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeSecret) // PARAM: namespace, name
@@ -102,14 +102,14 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// node
-		nodeWorkloadRoutes := workloadRoutes.Group("/node", Auth(dtos.USER))
+		nodeWorkloadRoutes := workloadRoutes.Group("/node", Auth(dtos.USER), RequireContextId())
 		{
 			nodeWorkloadRoutes.GET("/", allNodes)                                          // -
 			nodeWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeNode) // PARAM: namespace
 		}
 
 		// daemon-set
-		daemonSetWorkloadRoutes := workloadRoutes.Group("/daemon-set", Auth(dtos.USER))
+		daemonSetWorkloadRoutes := workloadRoutes.Group("/daemon-set", Auth(dtos.USER), RequireContextId())
 		{
 			daemonSetWorkloadRoutes.GET("/", allDaemonSets)                                                                  // PARAM: namespace
 			daemonSetWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeDaemonSet) // PARAM: namespace, name
@@ -120,7 +120,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// stateful-set
-		statefulSetWorkloadRoutes := workloadRoutes.Group("/stateful-set", Auth(dtos.USER))
+		statefulSetWorkloadRoutes := workloadRoutes.Group("/stateful-set", Auth(dtos.USER), RequireContextId())
 		{
 			statefulSetWorkloadRoutes.GET("/", allStatefulSets)                                                                  // PARAM: namespace
 			statefulSetWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeStatefulSet) // PARAM: namespace, name
@@ -130,7 +130,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// job
-		jobWorkloadRoutes := workloadRoutes.Group("/job", Auth(dtos.USER))
+		jobWorkloadRoutes := workloadRoutes.Group("/job", Auth(dtos.USER), RequireContextId())
 		{
 			jobWorkloadRoutes.GET("/", allJobs)                                                                  // PARAM: namespace
 			jobWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeJob) // PARAM: namespace, name
@@ -140,7 +140,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// cron-job
-		cronJobWorkloadRoutes := workloadRoutes.Group("/cron-job", Auth(dtos.USER))
+		cronJobWorkloadRoutes := workloadRoutes.Group("/cron-job", Auth(dtos.USER), RequireContextId())
 		{
 			cronJobWorkloadRoutes.GET("/", allCronJobs)                                                                  // PARAM: namespace
 			cronJobWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeCronJob) // PARAM: namespace, name
@@ -150,7 +150,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// replicaset
-		replicaSetWorkloadRoutes := workloadRoutes.Group("/replica-set", Auth(dtos.USER))
+		replicaSetWorkloadRoutes := workloadRoutes.Group("/replica-set", Auth(dtos.USER), RequireContextId())
 		{
 			replicaSetWorkloadRoutes.GET("/", allReplicasets)                                                                  // PARAM: namespace
 			replicaSetWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeReplicaset) // PARAM: namespace, name
@@ -160,7 +160,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// persistent-volume
-		persistentVolumeWorkloadRoutes := workloadRoutes.Group("/persistent-volume", Auth(dtos.ADMIN))
+		persistentVolumeWorkloadRoutes := workloadRoutes.Group("/persistent-volume", Auth(dtos.ADMIN), RequireContextId())
 		{
 			persistentVolumeWorkloadRoutes.GET("/", allPersistentVolumes)                                          // PARAM: -
 			persistentVolumeWorkloadRoutes.GET("/describe/:name", validateParam("name"), describePersistentVolume) // PARAM: name
@@ -170,7 +170,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// persistent-volume-claim
-		persistentVolumeClaimWorkloadRoutes := workloadRoutes.Group("/persistent-volume-claim")
+		persistentVolumeClaimWorkloadRoutes := workloadRoutes.Group("/persistent-volume-claim", RequireContextId())
 		{
 			persistentVolumeClaimWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allPersistentVolumeClaims)                                      // PARAM: namespace
 			persistentVolumeClaimWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describePersistentVolumeClaim) // PARAM: namespace, name
@@ -180,7 +180,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// horizontal-pod-autoscaler
-		horizontalPodAutoscalerWorkloadRoutes := workloadRoutes.Group("/horizontal-pod-autoscaler")
+		horizontalPodAutoscalerWorkloadRoutes := workloadRoutes.Group("/horizontal-pod-autoscaler", RequireContextId())
 		{
 			horizontalPodAutoscalerWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allHpas)                                      // PARAM: namespace
 			horizontalPodAutoscalerWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeHpa) // PARAM: namespace, name
@@ -190,14 +190,14 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// event
-		eventWorkloadRoutes := workloadRoutes.Group("/event", Auth(dtos.USER))
+		eventWorkloadRoutes := workloadRoutes.Group("/event", Auth(dtos.USER), RequireContextId())
 		{
 			eventWorkloadRoutes.GET("/", allEvents)                                                                  // PARAM: namespace
 			eventWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeEvent) // PARAM: namespace, name
 		}
 
 		// certificate
-		certificateWorkloadRoutes := workloadRoutes.Group("/certificate", Auth(dtos.USER))
+		certificateWorkloadRoutes := workloadRoutes.Group("/certificate", Auth(dtos.USER), RequireContextId())
 		{
 			certificateWorkloadRoutes.GET("/", allCertificates)                                                                  // PARAM: namespace
 			certificateWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeCertificate) // PARAM: namespace, name
@@ -207,7 +207,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// certificate-request
-		certificateRequestWorkloadRoutes := workloadRoutes.Group("/certificate-request", Auth(dtos.USER))
+		certificateRequestWorkloadRoutes := workloadRoutes.Group("/certificate-request", Auth(dtos.USER), RequireContextId())
 		{
 			certificateRequestWorkloadRoutes.GET("/", validateParam("name"), allCertificateRequests)                                           // PARAM: namespace
 			certificateRequestWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeCertificateRequest) // PARAM: namespace, name
@@ -217,7 +217,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// orders
-		ordersWorkloadRoutes := workloadRoutes.Group("/orders", Auth(dtos.USER))
+		ordersWorkloadRoutes := workloadRoutes.Group("/orders", Auth(dtos.USER), RequireContextId())
 		{
 			ordersWorkloadRoutes.GET("/", allOrders)                                                                  // PARAM: namespace
 			ordersWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeOrder) // PARAM: namespace, name
@@ -227,7 +227,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// issuer
-		issuerWorkloadRoutes := workloadRoutes.Group("/issuer", Auth(dtos.USER))
+		issuerWorkloadRoutes := workloadRoutes.Group("/issuer", Auth(dtos.USER), RequireContextId())
 		{
 			issuerWorkloadRoutes.GET("/", allIssuers)                                                                  // PARAM: namespace
 			issuerWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeIssuer) // PARAM: namespace, name
@@ -237,7 +237,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// cluster-issuer
-		clusterIssuerWorkloadRoutes := workloadRoutes.Group("/cluster-issuer", Auth(dtos.ADMIN))
+		clusterIssuerWorkloadRoutes := workloadRoutes.Group("/cluster-issuer", Auth(dtos.ADMIN), RequireContextId())
 		{
 			clusterIssuerWorkloadRoutes.GET("/", allClusterIssuers)                                          // PARAM: -
 			clusterIssuerWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeClusterIssuer) // PARAM: name
@@ -247,7 +247,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// service-account
-		serviceAccountWorkloadRoutes := workloadRoutes.Group("/service-account", Auth(dtos.ADMIN))
+		serviceAccountWorkloadRoutes := workloadRoutes.Group("/service-account", Auth(dtos.ADMIN), RequireContextId())
 		{
 			serviceAccountWorkloadRoutes.GET("/", allServiceAccounts)                                                                  // PARAM: namespace
 			serviceAccountWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeServiceAccount) // PARAM: namespace, name
@@ -257,7 +257,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// role
-		roleWorkloadRoutes := workloadRoutes.Group("/role")
+		roleWorkloadRoutes := workloadRoutes.Group("/role", RequireContextId())
 		{
 			roleWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allRoles)                                      // PARAM: namespace
 			roleWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeRole) // PARAM: namespace, name
@@ -267,7 +267,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// role-binding
-		roleBindingWorkloadRoutes := workloadRoutes.Group("/role-binding")
+		roleBindingWorkloadRoutes := workloadRoutes.Group("/role-binding", RequireContextId())
 		{
 			roleBindingWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allRoleBindings)                                      // PARAM: namespace
 			roleBindingWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeRoleBinding) // PARAM: namespace, name
@@ -277,7 +277,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// cluster-role
-		clusterRoleWorkloadRoutes := workloadRoutes.Group("/cluster-role", Auth(dtos.ADMIN))
+		clusterRoleWorkloadRoutes := workloadRoutes.Group("/cluster-role", Auth(dtos.ADMIN), RequireContextId())
 		{
 			clusterRoleWorkloadRoutes.GET("/", allClusterRoles)                                          // PARAM: -
 			clusterRoleWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeClusterRole) // PARAM: name
@@ -287,7 +287,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// cluster-role-binding
-		clusterRoleBindingWorkloadRoutes := workloadRoutes.Group("/cluster-role-binding", Auth(dtos.ADMIN))
+		clusterRoleBindingWorkloadRoutes := workloadRoutes.Group("/cluster-role-binding", Auth(dtos.ADMIN), RequireContextId())
 		{
 			clusterRoleBindingWorkloadRoutes.GET("/", allClusterRoleBindings)                                          // PARAM: -
 			clusterRoleBindingWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeClusterRoleBinding) // PARAM: name
@@ -297,7 +297,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// volume-attachment
-		volumeAttachmentWorkloadRoutes := workloadRoutes.Group("/volume-attachment", Auth(dtos.ADMIN))
+		volumeAttachmentWorkloadRoutes := workloadRoutes.Group("/volume-attachment", Auth(dtos.ADMIN), RequireContextId())
 		{
 			volumeAttachmentWorkloadRoutes.GET("/", allVolumeAttachments)                                          // PARAM: -
 			volumeAttachmentWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeVolumeAttachment) // PARAM: name
@@ -307,7 +307,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// network-policy
-		networkPolicyWorkloadRoutes := workloadRoutes.Group("/network-policy")
+		networkPolicyWorkloadRoutes := workloadRoutes.Group("/network-policy", RequireContextId())
 		{
 			networkPolicyWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allNetworkPolicies)                                     // PARAM: namespace
 			networkPolicyWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeNetworkPolicy) // PARAM: namespace, name
@@ -317,7 +317,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// storage-class
-		storageClassWorkloadRoutes := workloadRoutes.Group("/storage-class")
+		storageClassWorkloadRoutes := workloadRoutes.Group("/storage-class", RequireContextId())
 		{
 			storageClassWorkloadRoutes.GET("/", Auth(dtos.USER), allStorageClasses)                                         // PARAM: namespace
 			storageClassWorkloadRoutes.GET("/describe/:name", Auth(dtos.USER), validateParam("name"), describeStorageClass) // PARAM: namespace, name
@@ -327,7 +327,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// crds
-		crdsWorkloadRoutes := workloadRoutes.Group("/crds", Auth(dtos.ADMIN))
+		crdsWorkloadRoutes := workloadRoutes.Group("/crds", Auth(dtos.ADMIN), RequireContextId())
 		{
 			crdsWorkloadRoutes.GET("/", allCrds)                                                            // PARAM: -
 			crdsWorkloadRoutes.GET("/describe/:name", validateParam("name"), Auth(dtos.ADMIN), describeCrd) // PARAM: name
@@ -337,7 +337,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// endpoints
-		endpointsWorkloadRoutes := workloadRoutes.Group("/endpoints", Auth(dtos.USER))
+		endpointsWorkloadRoutes := workloadRoutes.Group("/endpoints", Auth(dtos.USER), RequireContextId())
 		{
 			endpointsWorkloadRoutes.GET("/", allEndpoints)                                                                  // PARAM: namespace
 			endpointsWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeEndpoint) // PARAM: namespace, name
@@ -347,7 +347,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// leases
-		leasesWorkloadRoutes := workloadRoutes.Group("/leases", Auth(dtos.USER))
+		leasesWorkloadRoutes := workloadRoutes.Group("/leases", Auth(dtos.USER), RequireContextId())
 		{
 			leasesWorkloadRoutes.GET("/", allLeases)                                                                  // PARAM: namespace
 			leasesWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeLease) // PARAM: namespace, name
@@ -357,7 +357,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// priority-classes
-		priorityClassesWorkloadRoutes := workloadRoutes.Group("/priority-classes", Auth(dtos.ADMIN))
+		priorityClassesWorkloadRoutes := workloadRoutes.Group("/priority-classes", Auth(dtos.ADMIN), RequireContextId())
 		{
 			priorityClassesWorkloadRoutes.GET("/", allPriorityClasses)                                         // PARAM: -
 			priorityClassesWorkloadRoutes.GET("/describe/:name", validateParam("name"), describePriorityClass) // PARAM: name
@@ -367,7 +367,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// volume-snapshots
-		volumeSnapshotsWorkloadRoutes := workloadRoutes.Group("/volume-snapshots", Auth(dtos.USER))
+		volumeSnapshotsWorkloadRoutes := workloadRoutes.Group("/volume-snapshots", Auth(dtos.USER), RequireContextId())
 		{
 			volumeSnapshotsWorkloadRoutes.GET("/", allVolumeSnapshots)                                                                  // PARAM: namespace
 			volumeSnapshotsWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeVolumeSnapshot) // PARAM: namespace, name
@@ -377,7 +377,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		}
 
 		// resource-quota
-		resourceQuotaWorkloadRoutes := workloadRoutes.Group("/resource-quota", Auth(dtos.ADMIN))
+		resourceQuotaWorkloadRoutes := workloadRoutes.Group("/resource-quota", Auth(dtos.ADMIN), RequireContextId())
 		{
 			resourceQuotaWorkloadRoutes.GET("/", allResourceQuotas)                                                                  // PARAM: namespace
 			resourceQuotaWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeResourceQuota) // PARAM: namespace, name

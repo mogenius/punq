@@ -25,7 +25,7 @@ definitions:
         items:
           $ref: '#/definitions/dtos.PunqAccess'
         type: array
-      contextBase64:
+      context:
         type: string
       id:
         type: string
@@ -33,7 +33,7 @@ definitions:
         type: string
     required:
     - access
-    - contextBase64
+    - context
     - id
     - name
     type: object

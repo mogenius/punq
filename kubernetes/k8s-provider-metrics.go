@@ -18,7 +18,11 @@ func NewKubeProviderMetrics(contextId *string) *KubeProviderMetrics {
 	if RunsInCluster {
 		kubeProvider, err = newKubeProviderMetricsInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderMetricsLocal()
+		if contextId == nil {
+			kubeProvider, err = newKubeProviderMetricsLocal()
+		} else {
+			kubeProvider, err = newKubeProviderMetricsInCluster(contextId)
+		}
 	}
 
 	if err != nil {
@@ -55,6 +59,9 @@ func newKubeProviderMetricsInCluster(contextId *string) (*KubeProviderMetrics, e
 	// CONTEXT SWITCHER
 	if contextId != nil {
 		config, err = ContextConfigLoader(contextId)
+		if err != nil || config == nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := metricsv.NewForConfig(config)

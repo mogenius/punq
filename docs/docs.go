@@ -5376,7 +5376,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "access",
-                "contextBase64",
+                "context",
                 "id",
                 "name"
             ],
@@ -5387,7 +5387,7 @@ const docTemplate = `{
                         "$ref": "#/definitions/dtos.PunqAccess"
                     }
                 },
-                "contextBase64": {
+                "context": {
                     "type": "string"
                 },
                 "id": {

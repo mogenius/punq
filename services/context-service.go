@@ -170,7 +170,7 @@ func GetOwnContext() (*dtos.PunqContext, error) {
 }
 
 func GetGinContextId(c *gin.Context) *string {
-	if contextId := c.GetString("context-id"); contextId != "" {
+	if contextId := c.GetHeader("X-Context-Id"); contextId != "" {
 		return &contextId
 	}
 	return nil

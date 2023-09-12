@@ -259,6 +259,11 @@ func ValidationToken(tokenString string) (*PunqClaims, error) {
 		}
 		return ecdsaPublicKey, nil
 	})
+	if err != nil {
+		logger.Log.Error(err.Error())
+		return nil, err
+	}
+
 	claims, ok := token.Claims.(*PunqClaims)
 	if !ok {
 		msg := fmt.Sprintf("Type Assertion failed. Expected PunqClaims but received something different.")
