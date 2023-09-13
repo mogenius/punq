@@ -1,8 +1,7 @@
-ARG GOOS=linux
-ARG GOARCH=amd64
-
 FROM golang:1.21-alpine AS builder
 
+ARG GOOS
+ARG GOARCH
 ENV CGO_ENABLED=0
 
 ARG COMMIT_HASH=NOT_SET
@@ -28,6 +27,9 @@ RUN go build -ldflags="-w -s -extldflags= \
 
 
 FROM alpine:latest
+
+ARG GOOS
+ARG GOARCH
 
 RUN apk add --no-cache curl bash
 
