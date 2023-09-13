@@ -85,6 +85,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.PUNQ_TOKEN }}
+      
+      #
+      # TODO: NPM RUN BUILD GOES HERE
+      #
+      - name: npm run build
+        run: |
+          mkdir ui/dist
+          cp ui/index.html ui/dist/index.html
 
       - name: Build and push ARM64-linux image
         run: |
