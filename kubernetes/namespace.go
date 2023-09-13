@@ -96,8 +96,8 @@ func DeleteK8sNamespaceBy(name string, contextId *string) error {
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sNamespace(name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "namespace", name)
+func DescribeK8sNamespace(name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "namespace", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

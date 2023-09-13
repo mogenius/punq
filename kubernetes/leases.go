@@ -62,8 +62,8 @@ func DeleteK8sLeaseBy(namespace string, name string, contextId *string) error {
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sLease(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "lease", name, "-n", namespace)
+func DescribeK8sLease(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "lease", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

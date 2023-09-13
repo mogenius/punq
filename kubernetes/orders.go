@@ -61,8 +61,8 @@ func DeleteK8sOrderBy(namespace string, name string, contextId *string) error {
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sOrder(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "order", name, "-n", namespace)
+func DescribeK8sOrder(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "order", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

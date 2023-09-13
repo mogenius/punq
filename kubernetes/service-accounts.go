@@ -62,8 +62,8 @@ func DeleteK8sServiceAccountBy(namespace string, name string, contextId *string)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sServiceAccount(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "serviceaccount", name, "-n", namespace)
+func DescribeK8sServiceAccount(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "serviceaccount", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

@@ -59,8 +59,8 @@ func DeleteK8sStorageClassBy(name string, contextId *string) error {
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sStorageClass(name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "storageclass", name)
+func DescribeK8sStorageClass(name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "storageclass", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

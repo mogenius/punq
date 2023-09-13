@@ -745,6 +745,12 @@ paths:
       - Misc
   /workload/available-resources:
     get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -765,6 +771,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -777,6 +788,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -789,6 +806,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -807,6 +830,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -819,6 +847,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -831,6 +865,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -855,6 +895,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -875,6 +920,11 @@ paths:
       - description: certificate request name
         in: path
         name: name
+        required: true
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
         required: true
         type: string
       produces:
@@ -901,6 +951,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -923,6 +978,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -936,6 +996,12 @@ paths:
       - Workloads
   /workload/cluster-issuer:
     get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -948,6 +1014,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -960,6 +1032,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -979,6 +1057,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -996,6 +1079,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1009,6 +1097,12 @@ paths:
       - Workloads
   /workload/cluster-role:
     get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1021,6 +1115,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1033,6 +1133,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1046,6 +1152,12 @@ paths:
       - Workloads
   /workload/cluster-role-binding:
     get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1058,6 +1170,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1070,6 +1188,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1089,6 +1213,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1104,6 +1233,11 @@ paths:
       - description: cluster-role-binding name
         in: path
         name: name
+        required: true
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
         required: true
         type: string
       produces:
@@ -1125,6 +1259,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1142,6 +1281,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1156,6 +1300,11 @@ paths:
   /workload/configmap:
     get:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       - description: namespace name
         in: query
         name: namespace
@@ -1172,6 +1321,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1184,6 +1339,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1198,6 +1359,11 @@ paths:
   /workload/configmap/{namespace}/{name}:
     delete:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       - description: namespace
         in: path
         name: namespace
@@ -1230,6 +1396,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1243,6 +1414,12 @@ paths:
       - Workloads
   /workload/crds:
     get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1255,6 +1432,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1267,6 +1450,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1286,6 +1475,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1301,6 +1495,11 @@ paths:
       - description: crds name
         in: path
         name: name
+        required: true
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
         required: true
         type: string
       produces:
@@ -1321,6 +1520,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1333,6 +1537,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1345,6 +1555,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1369,6 +1585,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1391,6 +1612,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1409,6 +1635,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1421,6 +1652,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1433,6 +1670,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1457,6 +1700,11 @@ paths:
         name: namespace
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1479,6 +1727,11 @@ paths:
         name: namespace
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1497,6 +1750,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1509,6 +1767,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1521,6 +1785,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1545,6 +1815,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1567,6 +1842,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1585,6 +1865,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1597,6 +1882,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1609,6 +1900,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1633,6 +1930,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1655,6 +1957,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1672,6 +1979,11 @@ paths:
       - description: namespace name
         in: query
         name: namespace
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
         type: string
       produces:
       - application/json
@@ -1697,6 +2009,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1715,6 +2032,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1727,6 +2049,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1739,6 +2067,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1763,6 +2097,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1785,6 +2124,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1799,6 +2143,11 @@ paths:
   /workload/ingress:
     get:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       - description: namespace name
         in: query
         name: namespace
@@ -1815,6 +2164,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1827,6 +2182,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1841,6 +2202,11 @@ paths:
   /workload/ingress/{namespace}/{name}:
     delete:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       - description: namespace name
         in: path
         name: namespace
@@ -1873,6 +2239,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1891,6 +2262,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1903,6 +2279,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1915,6 +2297,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1939,6 +2327,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1961,6 +2354,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1979,6 +2377,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1991,6 +2394,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2003,6 +2412,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2027,6 +2442,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2049,6 +2469,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2067,6 +2492,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2079,6 +2509,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2091,6 +2527,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2115,6 +2557,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2137,6 +2584,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2155,6 +2607,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2169,6 +2626,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2187,6 +2650,11 @@ paths:
         in: path
         name: name
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2201,6 +2669,11 @@ paths:
       - description: name of the namespace
         in: path
         name: name
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
         type: string
       produces:
       - application/json
@@ -2222,6 +2695,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2234,6 +2712,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2246,6 +2730,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2270,6 +2760,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2292,6 +2787,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2305,6 +2805,12 @@ paths:
       - Workloads
   /workload/node:
     get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2322,6 +2828,11 @@ paths:
       - description: node name
         in: path
         name: name
+        required: true
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
         required: true
         type: string
       produces:
@@ -2342,6 +2853,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2354,6 +2870,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2366,6 +2888,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2390,6 +2918,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2412,6 +2945,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2425,6 +2963,12 @@ paths:
       - Workloads
   /workload/persistent-volume:
     get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2437,6 +2981,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2449,6 +2999,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2467,6 +3023,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2479,6 +3040,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2491,6 +3058,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2515,6 +3088,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2537,6 +3115,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2556,6 +3139,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2571,6 +3159,11 @@ paths:
       - description: persistent-volume name
         in: path
         name: name
+        required: true
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
         required: true
         type: string
       produces:
@@ -2591,6 +3184,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2603,6 +3201,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2615,6 +3219,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2639,6 +3249,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2661,6 +3276,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2674,6 +3294,12 @@ paths:
       - Workloads
   /workload/priority-classes:
     get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2686,6 +3312,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2698,6 +3330,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2717,6 +3355,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2732,6 +3375,11 @@ paths:
       - description: priority-classes name
         in: path
         name: name
+        required: true
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
         required: true
         type: string
       produces:
@@ -2752,6 +3400,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2764,6 +3417,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2776,6 +3435,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2800,6 +3465,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2822,6 +3492,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2840,6 +3515,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2852,6 +3532,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2864,6 +3550,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2888,6 +3580,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2910,6 +3607,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2928,6 +3630,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2940,6 +3647,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2952,6 +3665,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2970,6 +3689,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2982,6 +3706,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2994,6 +3724,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3018,6 +3754,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3038,6 +3779,11 @@ paths:
       - description: role-binding name
         in: path
         name: name
+        required: true
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
         required: true
         type: string
       produces:
@@ -3064,6 +3810,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3086,6 +3837,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3100,6 +3856,11 @@ paths:
   /workload/secret:
     get:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       - description: namespace name
         in: query
         name: namespace
@@ -3116,6 +3877,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3128,6 +3895,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3152,6 +3925,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3174,6 +3952,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3188,6 +3971,11 @@ paths:
   /workload/service:
     get:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       - description: namespace name
         in: query
         name: namespace
@@ -3204,6 +3992,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3216,6 +4010,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3234,6 +4034,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3246,6 +4051,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3258,6 +4069,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3282,6 +4099,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3304,6 +4126,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3318,6 +4145,11 @@ paths:
   /workload/service/{namespace}/{name:
     delete:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       - description: namespace name
         in: path
         name: namespace
@@ -3350,6 +4182,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3368,6 +4205,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3380,6 +4222,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3392,6 +4240,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3416,6 +4270,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3438,6 +4297,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3451,6 +4315,12 @@ paths:
       - Workloads
   /workload/storage-class:
     get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3463,6 +4333,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3475,6 +4351,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3494,6 +4376,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3511,6 +4398,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3524,6 +4416,12 @@ paths:
       - Workloads
   /workload/templates:
     get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3539,6 +4437,12 @@ paths:
       - General
   /workload/volume-attachment:
     get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3551,6 +4455,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3563,6 +4473,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3582,6 +4498,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3597,6 +4518,11 @@ paths:
       - description: volume-attachment name
         in: path
         name: name
+        required: true
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
         required: true
         type: string
       produces:
@@ -3617,6 +4543,11 @@ paths:
         in: query
         name: namespace
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3629,6 +4560,12 @@ paths:
       tags:
       - Workloads
     patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3641,6 +4578,12 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3665,6 +4608,11 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3685,6 +4633,11 @@ paths:
       - description: volume-snapshot name
         in: path
         name: name
+        required: true
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
         required: true
         type: string
       produces:

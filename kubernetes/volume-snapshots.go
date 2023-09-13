@@ -51,8 +51,8 @@ func DeleteK8sVolumeSnapshotBy(namespace string, name string, contextId *string)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sVolumeSnapshot(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "volumesnapshots", name, "-n", namespace)
+func DescribeK8sVolumeSnapshot(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "volumesnapshots", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

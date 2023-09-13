@@ -355,6 +355,15 @@ const docTemplate = `{
                 "tags": [
                     "General"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -387,6 +396,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -410,6 +426,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -430,6 +455,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -460,6 +494,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -483,6 +524,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -503,6 +553,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -540,6 +599,13 @@ const docTemplate = `{
                         "description": "certificate request name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -580,6 +646,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -615,6 +688,13 @@ const docTemplate = `{
                         "description": "certificate name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -655,6 +735,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -677,6 +764,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -698,6 +794,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -718,6 +823,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -748,6 +862,13 @@ const docTemplate = `{
                         "description": "cluster-issuer name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -781,6 +902,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -803,6 +931,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -824,6 +961,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -844,6 +990,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -868,6 +1023,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -889,6 +1053,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -909,6 +1082,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -939,6 +1121,13 @@ const docTemplate = `{
                         "description": "cluster-role-binding name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -972,6 +1161,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1000,6 +1196,13 @@ const docTemplate = `{
                         "description": "cluster-role name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1033,6 +1236,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1056,6 +1266,13 @@ const docTemplate = `{
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -1084,6 +1301,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1104,6 +1330,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1142,6 +1377,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1168,6 +1410,13 @@ const docTemplate = `{
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace",
@@ -1203,6 +1452,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1224,6 +1482,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1244,6 +1511,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1274,6 +1550,13 @@ const docTemplate = `{
                         "description": "crds name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1307,6 +1590,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1335,6 +1625,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1358,6 +1655,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1378,6 +1684,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1415,6 +1730,13 @@ const docTemplate = `{
                         "description": "cronjob name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1455,6 +1777,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1483,6 +1812,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1506,6 +1842,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1526,6 +1871,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1563,6 +1917,13 @@ const docTemplate = `{
                         "description": "name",
                         "name": "namespace",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1603,6 +1964,13 @@ const docTemplate = `{
                         "name": "namespace",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1631,6 +1999,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1654,6 +2029,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1674,6 +2058,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1711,6 +2104,13 @@ const docTemplate = `{
                         "description": "deployment name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1751,6 +2151,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1779,6 +2186,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1802,6 +2216,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1822,6 +2245,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1859,6 +2291,13 @@ const docTemplate = `{
                         "description": "endpoint name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1899,6 +2338,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1927,6 +2373,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1966,6 +2419,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1997,6 +2457,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2020,6 +2487,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2040,6 +2516,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2077,6 +2562,13 @@ const docTemplate = `{
                         "description": "hpa name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -2117,6 +2609,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2140,6 +2639,13 @@ const docTemplate = `{
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -2168,6 +2674,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2188,6 +2703,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2226,6 +2750,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2252,6 +2783,13 @@ const docTemplate = `{
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -2293,6 +2831,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2316,6 +2861,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2336,6 +2890,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2373,6 +2936,13 @@ const docTemplate = `{
                         "description": "issuer name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -2413,6 +2983,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2441,6 +3018,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2464,6 +3048,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2484,6 +3077,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2521,6 +3123,13 @@ const docTemplate = `{
                         "description": "job name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -2561,6 +3170,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2589,6 +3205,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2612,6 +3235,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2632,6 +3264,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2669,6 +3310,13 @@ const docTemplate = `{
                         "description": "lease name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -2709,6 +3357,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2737,6 +3392,13 @@ const docTemplate = `{
                         "description": "name of the namespace",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2762,6 +3424,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "201": {
@@ -2792,6 +3463,13 @@ const docTemplate = `{
                         "description": "name of the namespace",
                         "name": "name",
                         "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2824,6 +3502,13 @@ const docTemplate = `{
                         "description": "name of the namespace",
                         "name": "name",
                         "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2852,6 +3537,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2875,6 +3567,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2895,6 +3596,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2932,6 +3642,13 @@ const docTemplate = `{
                         "description": "network-policy name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -2972,6 +3689,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2993,6 +3717,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3023,6 +3756,13 @@ const docTemplate = `{
                         "description": "node name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3055,6 +3795,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3078,6 +3825,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3098,6 +3854,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3135,6 +3900,13 @@ const docTemplate = `{
                         "description": "order name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3175,6 +3947,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3197,6 +3976,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3218,6 +4006,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3238,6 +4035,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3268,6 +4074,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3291,6 +4104,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3311,6 +4133,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3348,6 +4179,13 @@ const docTemplate = `{
                         "description": "persistent-volume-claim name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3388,6 +4226,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3416,6 +4261,13 @@ const docTemplate = `{
                         "description": "persistent-volume name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3449,6 +4301,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3477,6 +4336,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3500,6 +4366,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3520,6 +4395,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3557,6 +4441,13 @@ const docTemplate = `{
                         "description": "pod name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3597,6 +4488,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3619,6 +4517,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3640,6 +4547,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3660,6 +4576,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3690,6 +4615,13 @@ const docTemplate = `{
                         "description": "priority-classes name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3723,6 +4655,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3751,6 +4690,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3774,6 +4720,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3794,6 +4749,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3831,6 +4795,13 @@ const docTemplate = `{
                         "description": "replica-set name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3871,6 +4842,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3899,6 +4877,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3922,6 +4907,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3942,6 +4936,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3979,6 +4982,13 @@ const docTemplate = `{
                         "description": "resource-quota name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4019,6 +5029,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4047,6 +5064,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4070,6 +5094,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4090,6 +5123,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4120,6 +5162,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4143,6 +5192,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4163,6 +5221,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4200,6 +5267,13 @@ const docTemplate = `{
                         "description": "role-binding name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4240,6 +5314,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4275,6 +5356,13 @@ const docTemplate = `{
                         "description": "role name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4315,6 +5403,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4338,6 +5433,13 @@ const docTemplate = `{
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -4366,6 +5468,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4386,6 +5497,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4423,6 +5543,13 @@ const docTemplate = `{
                         "description": "secret name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4463,6 +5590,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4486,6 +5620,13 @@ const docTemplate = `{
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -4514,6 +5655,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4534,6 +5684,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4564,6 +5723,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4587,6 +5753,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4607,6 +5782,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4644,6 +5828,13 @@ const docTemplate = `{
                         "description": "service-account name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4684,6 +5875,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4720,6 +5918,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4746,6 +5951,13 @@ const docTemplate = `{
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -4787,6 +5999,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4810,6 +6029,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4830,6 +6058,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4867,6 +6104,13 @@ const docTemplate = `{
                         "description": "stateful-set name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4907,6 +6151,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4929,6 +6180,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4950,6 +6210,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4970,6 +6239,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -5000,6 +6278,13 @@ const docTemplate = `{
                         "description": "storage-class name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -5033,6 +6318,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -5054,6 +6346,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "General"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -5081,6 +6382,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -5102,6 +6412,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -5122,6 +6441,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -5152,6 +6480,13 @@ const docTemplate = `{
                         "description": "volume-attachment name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -5185,6 +6520,13 @@ const docTemplate = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -5213,6 +6555,13 @@ const docTemplate = `{
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -5236,6 +6585,15 @@ const docTemplate = `{
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -5256,6 +6614,15 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -5293,6 +6660,13 @@ const docTemplate = `{
                         "description": "volume-snapshot name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -5332,6 +6706,13 @@ const docTemplate = `{
                         "description": "volume-snapshots name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],

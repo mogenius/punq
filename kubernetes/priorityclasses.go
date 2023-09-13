@@ -62,8 +62,8 @@ func DeleteK8sPriorityClassBy(name string, contextId *string) error {
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sPriorityClass(name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "priorityclasses", name)
+func DescribeK8sPriorityClass(name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "priorityclasses", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

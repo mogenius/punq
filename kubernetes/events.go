@@ -34,8 +34,8 @@ func GetEvent(namespaceName string, name string, contextId *string) (*v1Core.Eve
 	return provider.ClientSet.CoreV1().Events(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
-func DescribeK8sEvent(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "event", name, "-n", namespace)
+func DescribeK8sEvent(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "event", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

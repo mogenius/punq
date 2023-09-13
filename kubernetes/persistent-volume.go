@@ -59,8 +59,8 @@ func DeleteK8sPersistentVolumeBy(name string, contextId *string) error {
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sPersistentVolume(name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "persistentvolume", name)
+func DescribeK8sPersistentVolume(name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "persistentvolume", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

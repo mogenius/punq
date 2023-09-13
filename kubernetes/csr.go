@@ -61,8 +61,8 @@ func DeleteK8sCertificateSigningRequestBy(namespace string, name string, context
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sCertificateSigningRequest(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "-n", namespace, "csr", name)
+func DescribeK8sCertificateSigningRequest(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "-n", namespace, "csr", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

@@ -61,8 +61,8 @@ func DeleteK8sRoleBindingBy(namespace string, name string, contextId *string) er
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sRoleBinding(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "rolebinding", name, "-n", namespace)
+func DescribeK8sRoleBinding(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "rolebinding", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

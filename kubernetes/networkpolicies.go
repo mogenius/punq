@@ -61,8 +61,8 @@ func DeleteK8sNetworkPolicyBy(namespace string, name string, contextId *string) 
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sNetworkPolicy(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "netpol", name, "-n", namespace)
+func DescribeK8sNetworkPolicy(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "netpol", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

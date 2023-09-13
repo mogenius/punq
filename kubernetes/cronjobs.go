@@ -63,7 +63,7 @@ func DeleteK8sCronJobBy(namespace string, name string, contextId *string) error 
 }
 
 func DescribeK8sCronJob(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "cronjob", name, "-n", namespace)
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "cronjob", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

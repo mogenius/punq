@@ -68,8 +68,8 @@ func DeleteK8sNode(name string, contextId *string) error {
 	return provider.ClientSet.CoreV1().Nodes().Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sNode(name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "node", name)
+func DescribeK8sNode(name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "node", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

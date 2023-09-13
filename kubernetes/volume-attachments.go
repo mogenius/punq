@@ -56,8 +56,8 @@ func DeleteK8sVolumeAttachmentBy(name string, contextId *string) error {
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sVolumeAttachment(name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "volumeattachment", name)
+func DescribeK8sVolumeAttachment(name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "volumeattachment", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

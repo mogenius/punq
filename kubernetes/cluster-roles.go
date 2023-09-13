@@ -62,8 +62,8 @@ func DeleteK8sClusterRoleBy(name string, contextId *string) error {
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sClusterRole(name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "clusterrole", name)
+func DescribeK8sClusterRole(name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "clusterrole", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

@@ -61,8 +61,8 @@ func DeleteK8sJobBy(namespace string, name string, contextId *string) error {
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sJob(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "job", name, "-n", namespace)
+func DescribeK8sJob(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), ContextFlag(contextId), "describe", "job", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

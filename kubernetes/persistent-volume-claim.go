@@ -73,8 +73,8 @@ func DeleteK8sPersistentVolumeClaimBy(namespace string, name string, contextId *
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sPersistentVolumeClaim(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "persistentvolumeclaim", name, "-n", namespace)
+func DescribeK8sPersistentVolumeClaim(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "persistentvolumeclaim", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

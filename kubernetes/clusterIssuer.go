@@ -61,8 +61,8 @@ func DeleteK8sClusterIssuerBy(name string, contextId *string) error {
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sClusterIssuer(name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "clusterissuer", name)
+func DescribeK8sClusterIssuer(name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "clusterissuer", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

@@ -344,6 +344,15 @@
                 "tags": [
                     "General"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -376,6 +385,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -399,6 +415,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -419,6 +444,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -449,6 +483,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -472,6 +513,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -492,6 +542,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -529,6 +588,13 @@
                         "description": "certificate request name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -569,6 +635,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -604,6 +677,13 @@
                         "description": "certificate name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -644,6 +724,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -666,6 +753,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -687,6 +783,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -707,6 +812,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -737,6 +851,13 @@
                         "description": "cluster-issuer name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -770,6 +891,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -792,6 +920,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -813,6 +950,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -833,6 +979,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -857,6 +1012,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -878,6 +1042,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -898,6 +1071,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -928,6 +1110,13 @@
                         "description": "cluster-role-binding name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -961,6 +1150,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -989,6 +1185,13 @@
                         "description": "cluster-role name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1022,6 +1225,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1045,6 +1255,13 @@
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -1073,6 +1290,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1093,6 +1319,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1131,6 +1366,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1157,6 +1399,13 @@
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace",
@@ -1192,6 +1441,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1213,6 +1471,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1233,6 +1500,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1263,6 +1539,13 @@
                         "description": "crds name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1296,6 +1579,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1324,6 +1614,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1347,6 +1644,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1367,6 +1673,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1404,6 +1719,13 @@
                         "description": "cronjob name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1444,6 +1766,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1472,6 +1801,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1495,6 +1831,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1515,6 +1860,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1552,6 +1906,13 @@
                         "description": "name",
                         "name": "namespace",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1592,6 +1953,13 @@
                         "name": "namespace",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1620,6 +1988,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1643,6 +2018,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1663,6 +2047,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1700,6 +2093,13 @@
                         "description": "deployment name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1740,6 +2140,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1768,6 +2175,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1791,6 +2205,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1811,6 +2234,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1848,6 +2280,13 @@
                         "description": "endpoint name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1888,6 +2327,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1916,6 +2362,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1955,6 +2408,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1986,6 +2446,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2009,6 +2476,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2029,6 +2505,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2066,6 +2551,13 @@
                         "description": "hpa name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -2106,6 +2598,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2129,6 +2628,13 @@
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -2157,6 +2663,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2177,6 +2692,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2215,6 +2739,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2241,6 +2772,13 @@
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -2282,6 +2820,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2305,6 +2850,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2325,6 +2879,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2362,6 +2925,13 @@
                         "description": "issuer name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -2402,6 +2972,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2430,6 +3007,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2453,6 +3037,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2473,6 +3066,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2510,6 +3112,13 @@
                         "description": "job name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -2550,6 +3159,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2578,6 +3194,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2601,6 +3224,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2621,6 +3253,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2658,6 +3299,13 @@
                         "description": "lease name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -2698,6 +3346,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2726,6 +3381,13 @@
                         "description": "name of the namespace",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2751,6 +3413,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "201": {
@@ -2781,6 +3452,13 @@
                         "description": "name of the namespace",
                         "name": "name",
                         "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2813,6 +3491,13 @@
                         "description": "name of the namespace",
                         "name": "name",
                         "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2841,6 +3526,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2864,6 +3556,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2884,6 +3585,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -2921,6 +3631,13 @@
                         "description": "network-policy name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -2961,6 +3678,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2982,6 +3706,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3012,6 +3745,13 @@
                         "description": "node name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3044,6 +3784,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3067,6 +3814,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3087,6 +3843,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3124,6 +3889,13 @@
                         "description": "order name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3164,6 +3936,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3186,6 +3965,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3207,6 +3995,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3227,6 +4024,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3257,6 +4063,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3280,6 +4093,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3300,6 +4122,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3337,6 +4168,13 @@
                         "description": "persistent-volume-claim name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3377,6 +4215,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3405,6 +4250,13 @@
                         "description": "persistent-volume name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3438,6 +4290,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3466,6 +4325,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3489,6 +4355,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3509,6 +4384,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3546,6 +4430,13 @@
                         "description": "pod name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3586,6 +4477,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3608,6 +4506,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3629,6 +4536,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3649,6 +4565,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3679,6 +4604,13 @@
                         "description": "priority-classes name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3712,6 +4644,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3740,6 +4679,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3763,6 +4709,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3783,6 +4738,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3820,6 +4784,13 @@
                         "description": "replica-set name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3860,6 +4831,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3888,6 +4866,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3911,6 +4896,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3931,6 +4925,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3968,6 +4971,13 @@
                         "description": "resource-quota name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4008,6 +5018,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4036,6 +5053,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4059,6 +5083,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4079,6 +5112,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4109,6 +5151,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4132,6 +5181,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4152,6 +5210,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4189,6 +5256,13 @@
                         "description": "role-binding name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4229,6 +5303,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4264,6 +5345,13 @@
                         "description": "role name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4304,6 +5392,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4327,6 +5422,13 @@
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -4355,6 +5457,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4375,6 +5486,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4412,6 +5532,13 @@
                         "description": "secret name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4452,6 +5579,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4475,6 +5609,13 @@
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -4503,6 +5644,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4523,6 +5673,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4553,6 +5712,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4576,6 +5742,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4596,6 +5771,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4633,6 +5817,13 @@
                         "description": "service-account name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4673,6 +5864,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4709,6 +5907,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4735,6 +5940,13 @@
                     "Workloads"
                 ],
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "namespace name",
@@ -4776,6 +5988,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4799,6 +6018,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4819,6 +6047,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4856,6 +6093,13 @@
                         "description": "stateful-set name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4896,6 +6140,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4918,6 +6169,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4939,6 +6199,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4959,6 +6228,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4989,6 +6267,13 @@
                         "description": "storage-class name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -5022,6 +6307,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -5043,6 +6335,15 @@
                 ],
                 "tags": [
                     "General"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -5070,6 +6371,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -5091,6 +6401,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -5111,6 +6430,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -5141,6 +6469,13 @@
                         "description": "volume-attachment name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -5174,6 +6509,13 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -5202,6 +6544,13 @@
                         "description": "namespace name",
                         "name": "namespace",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -5225,6 +6574,15 @@
                 "tags": [
                     "Workloads"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -5245,6 +6603,15 @@
                 ],
                 "tags": [
                     "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -5282,6 +6649,13 @@
                         "description": "volume-snapshot name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -5321,6 +6695,13 @@
                         "description": "volume-snapshots name",
                         "name": "name",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
                         "required": true
                     }
                 ],

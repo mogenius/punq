@@ -394,6 +394,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 // @Success 200 {array} kubernetes.K8sNewWorkload
 // @Router /workload/templates [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allWorkloadTemplates(c *gin.Context) {
 	c.JSON(http.StatusOK, kubernetes.ListCreateTemplates())
 }
@@ -403,6 +404,7 @@ func allWorkloadTemplates(c *gin.Context) {
 // @Success 200 {array} string
 // @Router /workload/available-resources [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allKubernetesResources(c *gin.Context) {
 	user, err := CheckUserAuthorization(c)
 	if err != nil || user == nil {
@@ -421,6 +423,7 @@ func allKubernetesResources(c *gin.Context) {
 // @Router /workload/namespace [get]
 // @Param namespace query string false "name of the namespace"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allNamespaces(c *gin.Context) {
 	c.JSON(http.StatusOK, kubernetes.ListK8sNamespaces("", services.GetGinContextId(c)))
 }
@@ -432,9 +435,10 @@ func allNamespaces(c *gin.Context) {
 // @Router /workload/namespace/{name} [get]
 // @Param name path string false  "name of the namespace"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeNamespaces(c *gin.Context) {
 	name := c.Param("name")
-	c.JSON(http.StatusOK, kubernetes.DescribeK8sNamespace(name))
+	c.JSON(http.StatusOK, kubernetes.DescribeK8sNamespace(name, services.GetGinContextId(c)))
 }
 
 // NAMESPACES
@@ -443,6 +447,7 @@ func describeNamespaces(c *gin.Context) {
 // @Success 201 {object} utils.K8sWorkloadResult
 // @Router /workload/namespace [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createNamespace(c *gin.Context) {
 	var data v1.Namespace
 	err := c.MustBindWith(&data, binding.YAML)
@@ -459,6 +464,7 @@ func createNamespace(c *gin.Context) {
 // @Router /workload/namespace/{name} [delete]
 // @Param name path string false  "name of the namespace"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteNamespace(c *gin.Context) {
 	name := c.Param("name")
 	err := kubernetes.DeleteK8sNamespaceBy(name, services.GetGinContextId(c))
@@ -477,6 +483,7 @@ func deleteNamespace(c *gin.Context) {
 // @Router /workload/pod [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allPods(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sPods(namespace, services.GetGinContextId(c)))
@@ -489,6 +496,7 @@ func allPods(c *gin.Context) {
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "pod name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describePod(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -502,6 +510,7 @@ func describePod(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "pod name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deletePod(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -518,6 +527,7 @@ func deletePod(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/pod [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchPod(c *gin.Context) {
 	var data v1.Pod
 	err := c.MustBindWith(&data, binding.JSON)
@@ -533,6 +543,7 @@ func patchPod(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/pod [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createPod(c *gin.Context) {
 	var data v1.Pod
 	err := c.MustBindWith(&data, binding.YAML)
@@ -552,6 +563,7 @@ func createPod(c *gin.Context) {
 // @Router /workload/deployment [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allDeployments(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sDeployments(namespace, services.GetGinContextId(c)))
@@ -564,10 +576,11 @@ func allDeployments(c *gin.Context) {
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "deployment name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeDeployment(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sDeployment(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sDeployment(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -577,6 +590,7 @@ func describeDeployment(c *gin.Context) {
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "deployment name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteDeployment(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -593,6 +607,7 @@ func deleteDeployment(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/deployment [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchDeployment(c *gin.Context) {
 	var data v1Apps.Deployment
 	err := c.MustBindWith(&data, binding.JSON)
@@ -608,6 +623,7 @@ func patchDeployment(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/deployment [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createDeployment(c *gin.Context) {
 	var data v1Apps.Deployment
 	err := c.MustBindWith(&data, binding.YAML)
@@ -625,6 +641,7 @@ func createDeployment(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/service [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 // @Param namespace query string false  "namespace name"
 func allServices(c *gin.Context) {
 	namespace := c.Query("namespace")
@@ -638,10 +655,11 @@ func allServices(c *gin.Context) {
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "service name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeService(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sService(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sService(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -649,6 +667,7 @@ func describeService(c *gin.Context) {
 // @Success 200
 // @Router /workload/service/{namespace}/{name [delete]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "service name"
 func deleteService(c *gin.Context) {
@@ -667,6 +686,7 @@ func deleteService(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/service [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchService(c *gin.Context) {
 	var data v1.Service
 	err := c.MustBindWith(&data, binding.JSON)
@@ -682,6 +702,7 @@ func patchService(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/service [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createService(c *gin.Context) {
 	var data v1.Service
 	err := c.MustBindWith(&data, binding.YAML)
@@ -699,6 +720,7 @@ func createService(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/ingress [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 // @Param namespace query string false  "namespace name"
 func allIngresses(c *gin.Context) {
 	namespace := c.Query("namespace")
@@ -712,10 +734,11 @@ func allIngresses(c *gin.Context) {
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "ingress name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeIngress(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sIngress(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sIngress(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -723,6 +746,7 @@ func describeIngress(c *gin.Context) {
 // @Success 200
 // @Router /workload/ingress/{namespace}/{name} [delete]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "ingress name"
 func deleteIngress(c *gin.Context) {
@@ -741,6 +765,7 @@ func deleteIngress(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/ingress [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchIngress(c *gin.Context) {
 	var data v1Networking.Ingress
 	err := c.MustBindWith(&data, binding.JSON)
@@ -756,6 +781,7 @@ func patchIngress(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/ingress [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createIngress(c *gin.Context) {
 	var data v1Networking.Ingress
 	err := c.MustBindWith(&data, binding.YAML)
@@ -773,6 +799,7 @@ func createIngress(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/configmap [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 // @Param namespace query string false  "namespace name"
 func allConfigmaps(c *gin.Context) {
 	namespace := c.Query("namespace")
@@ -786,6 +813,7 @@ func allConfigmaps(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "configmap name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeConfigmap(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -797,6 +825,7 @@ func describeConfigmap(c *gin.Context) {
 // @Success 200
 // @Router /workload/configmap/{namespace}/{name} [delete]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 // @Param namespace path string true "namespace"
 // @Param name path string true "configmap name"
 func deleteConfigmap(c *gin.Context) {
@@ -815,6 +844,7 @@ func deleteConfigmap(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/configmap [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchConfigmap(c *gin.Context) {
 	var data v1.ConfigMap
 	err := c.MustBindWith(&data, binding.JSON)
@@ -830,6 +860,7 @@ func patchConfigmap(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/configmap [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createConfigmap(c *gin.Context) {
 	var data v1.ConfigMap
 	err := c.MustBindWith(&data, binding.YAML)
@@ -847,6 +878,7 @@ func createConfigmap(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/secret [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 // @Param namespace query string false  "namespace name"
 func allSecrets(c *gin.Context) {
 	namespace := c.Query("namespace")
@@ -860,10 +892,11 @@ func allSecrets(c *gin.Context) {
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "secret name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeSecret(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sSecret(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sSecret(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -873,6 +906,7 @@ func describeSecret(c *gin.Context) {
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "secret name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteSecret(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -889,6 +923,7 @@ func deleteSecret(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/secret [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchSecret(c *gin.Context) {
 	var data v1.Secret
 	err := c.MustBindWith(&data, binding.JSON)
@@ -904,6 +939,7 @@ func patchSecret(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/secret [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createSecret(c *gin.Context) {
 	var data v1.Secret
 	err := c.MustBindWith(&data, binding.YAML)
@@ -921,6 +957,7 @@ func createSecret(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/node [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allNodes(c *gin.Context) {
 	utils.HttpRespondForWorkloadResult(c, kubernetes.ListK8sNodes(services.GetGinContextId(c)))
 }
@@ -931,9 +968,10 @@ func allNodes(c *gin.Context) {
 // @Router /workload/node/describe/{name} [get]
 // @Param name path string true  "node name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeNode(c *gin.Context) {
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sNode(name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sNode(name, services.GetGinContextId(c)))
 }
 
 // ---------------------- DEAMONSETS ----------------------
@@ -944,6 +982,7 @@ func describeNode(c *gin.Context) {
 // @Router /workload/daemon-set [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allDaemonSets(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sDaemonsets(namespace, services.GetGinContextId(c)))
@@ -956,10 +995,11 @@ func allDaemonSets(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param namespace path string true "name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeDaemonSet(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sDaemonSet(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sDaemonSet(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -969,6 +1009,7 @@ func describeDaemonSet(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param namespace path string true "name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteDaemonSet(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -985,6 +1026,7 @@ func deleteDaemonSet(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/daemon-set [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchDaemonSet(c *gin.Context) {
 	var data v1Apps.DaemonSet
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1000,6 +1042,7 @@ func patchDaemonSet(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/daemon-set [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createDaemonSet(c *gin.Context) {
 	var data v1Apps.DaemonSet
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1018,6 +1061,7 @@ func createDaemonSet(c *gin.Context) {
 // @Router /workload/stateful-set [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allStatefulSets(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllStatefulSets(namespace, services.GetGinContextId(c)))
@@ -1030,10 +1074,11 @@ func allStatefulSets(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "stateful-set name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeStatefulSet(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sStatefulset(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sStatefulset(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1043,6 +1088,7 @@ func describeStatefulSet(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "stateful-set name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteStatefulSet(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -1059,6 +1105,7 @@ func deleteStatefulSet(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/stateful-set [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchStatefulSet(c *gin.Context) {
 	var data v1Apps.StatefulSet
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1074,6 +1121,7 @@ func patchStatefulSet(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/stateful-set [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createStatefulSet(c *gin.Context) {
 	var data v1Apps.StatefulSet
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1092,6 +1140,7 @@ func createStatefulSet(c *gin.Context) {
 // @Router /workload/job [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allJobs(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllJobs(namespace, services.GetGinContextId(c)))
@@ -1104,10 +1153,11 @@ func allJobs(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "job name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeJob(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sJob(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sJob(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1117,6 +1167,7 @@ func describeJob(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "job name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteJob(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -1133,6 +1184,7 @@ func deleteJob(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/job [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchJob(c *gin.Context) {
 	var data v1Job.Job
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1148,6 +1200,7 @@ func patchJob(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/job [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createJob(c *gin.Context) {
 	var data v1Job.Job
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1166,6 +1219,7 @@ func createJob(c *gin.Context) {
 // @Router /workload/cron-job [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allCronJobs(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllCronjobs(namespace, services.GetGinContextId(c)))
@@ -1178,6 +1232,7 @@ func allCronJobs(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "cronjob name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeCronJob(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -1191,6 +1246,7 @@ func describeCronJob(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "cronjob name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteCronJob(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -1207,6 +1263,7 @@ func deleteCronJob(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/cron-job [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchCronJob(c *gin.Context) {
 	var data v1Job.CronJob
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1222,6 +1279,7 @@ func patchCronJob(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/cron-job [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createCronJob(c *gin.Context) {
 	var data v1Job.CronJob
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1240,6 +1298,7 @@ func createCronJob(c *gin.Context) {
 // @Router /workload/replica-set [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allReplicasets(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sReplicasets(namespace, services.GetGinContextId(c)))
@@ -1252,10 +1311,11 @@ func allReplicasets(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "replica-set name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeReplicaset(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sReplicaset(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sReplicaset(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1265,6 +1325,7 @@ func describeReplicaset(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "replica-set name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteReplicaset(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -1281,6 +1342,7 @@ func deleteReplicaset(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/replica-set [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchReplicaset(c *gin.Context) {
 	var data v1Apps.ReplicaSet
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1296,6 +1358,7 @@ func patchReplicaset(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/replica-set [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createReplicaset(c *gin.Context) {
 	var data v1Apps.ReplicaSet
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1313,6 +1376,7 @@ func createReplicaset(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/persistent-volume [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allPersistentVolumes(c *gin.Context) {
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllPersistentVolumes(services.GetGinContextId(c)))
 }
@@ -1323,9 +1387,10 @@ func allPersistentVolumes(c *gin.Context) {
 // @Router /workload/persistent-volume/describe/{name} [get]
 // @Param name path string true "persistent-volume name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describePersistentVolume(c *gin.Context) {
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPersistentVolume(name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPersistentVolume(name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1334,6 +1399,7 @@ func describePersistentVolume(c *gin.Context) {
 // @Router /workload/persistent-volume/{name} [delete]
 // @Param name path string true "persistent-volume name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deletePersistentVolume(c *gin.Context) {
 	name := c.Param("name")
 	err := kubernetes.DeleteK8sPersistentVolumeBy(name, services.GetGinContextId(c))
@@ -1349,6 +1415,7 @@ func deletePersistentVolume(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/persistent-volume [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchPersistentVolume(c *gin.Context) {
 	var data v1.PersistentVolume
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1364,6 +1431,7 @@ func patchPersistentVolume(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/persistent-volume [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createPersistentVolume(c *gin.Context) {
 	var data v1.PersistentVolume
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1382,6 +1450,7 @@ func createPersistentVolume(c *gin.Context) {
 // @Router /workload/persistent-volume-claim [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allPersistentVolumeClaims(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sPersistentVolumeClaims(namespace, services.GetGinContextId(c)))
@@ -1394,10 +1463,11 @@ func allPersistentVolumeClaims(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "persistent-volume-claim name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describePersistentVolumeClaim(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPersistentVolumeClaim(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPersistentVolumeClaim(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1407,6 +1477,7 @@ func describePersistentVolumeClaim(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "persistent-volume-claim name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deletePersistentVolumeClaim(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -1423,6 +1494,7 @@ func deletePersistentVolumeClaim(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/persistent-volume-claim [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchPersistentVolumeClaim(c *gin.Context) {
 	var data v1.PersistentVolumeClaim
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1438,6 +1510,7 @@ func patchPersistentVolumeClaim(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/persistent-volume-claim [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createPersistentVolumeClaim(c *gin.Context) {
 	var data v1.PersistentVolumeClaim
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1456,6 +1529,7 @@ func createPersistentVolumeClaim(c *gin.Context) {
 // @Router /workload/horizontal-pod-autoscaler [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allHpas(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllHpas(namespace, services.GetGinContextId(c)))
@@ -1468,10 +1542,11 @@ func allHpas(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "hpa name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeHpa(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sHpa(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sHpa(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1481,6 +1556,7 @@ func describeHpa(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "hpa name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteHpa(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -1497,6 +1573,7 @@ func deleteHpa(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/horizontal-pod-autoscaler [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchHpa(c *gin.Context) {
 	var data v2Scale.HorizontalPodAutoscaler
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1512,6 +1589,7 @@ func patchHpa(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/horizontal-pod-autoscaler [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createHpa(c *gin.Context) {
 	var data v2Scale.HorizontalPodAutoscaler
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1530,6 +1608,7 @@ func createHpa(c *gin.Context) {
 // @Router /workload/event [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allEvents(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllEvents(namespace, services.GetGinContextId(c)))
@@ -1542,10 +1621,11 @@ func allEvents(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "event name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeEvent(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sEvent(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sEvent(namespace, name, services.GetGinContextId(c)))
 }
 
 // ---------------------- CERTIFICATES ----------------------------
@@ -1556,6 +1636,7 @@ func describeEvent(c *gin.Context) {
 // @Router /workload/certificate [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allCertificates(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sCertificates(namespace, services.GetGinContextId(c)))
@@ -1568,10 +1649,11 @@ func allCertificates(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "certificate name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeCertificate(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sCertificate(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sCertificate(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1581,6 +1663,7 @@ func describeCertificate(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "certificate name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteCertificate(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -1597,6 +1680,7 @@ func deleteCertificate(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/certificate [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchCertificate(c *gin.Context) {
 	var data cmapi.Certificate
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1612,6 +1696,7 @@ func patchCertificate(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/certificate [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createCertificate(c *gin.Context) {
 	var data cmapi.Certificate
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1630,6 +1715,7 @@ func createCertificate(c *gin.Context) {
 // @Router /workload/certificate-request [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allCertificateRequests(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllCertificateSigningRequests(namespace, services.GetGinContextId(c)))
@@ -1642,10 +1728,11 @@ func allCertificateRequests(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "certificate request name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeCertificateRequest(c *gin.Context) {
 	name := c.Param("name")
 	namespace := c.Param("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sCertificateSigningRequest(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sCertificateSigningRequest(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1655,6 +1742,7 @@ func describeCertificateRequest(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "certificate request name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteCertificateRequest(c *gin.Context) {
 
 	namespace := c.Param("namespace")
@@ -1672,6 +1760,7 @@ func deleteCertificateRequest(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/certificate-request [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchCertificateRequest(c *gin.Context) {
 	var data cmapi.CertificateRequest
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1687,6 +1776,7 @@ func patchCertificateRequest(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/certificate-request [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createCertificateRequest(c *gin.Context) {
 	var data cmapi.CertificateRequest
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1705,6 +1795,7 @@ func createCertificateRequest(c *gin.Context) {
 // @Router /workload/orders [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allOrders(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllOrders(namespace, services.GetGinContextId(c)))
@@ -1717,10 +1808,11 @@ func allOrders(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "order name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeOrder(c *gin.Context) {
 	name := c.Param("name")
 	namespace := c.Param("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sOrder(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sOrder(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1730,6 +1822,7 @@ func describeOrder(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "order name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteOrder(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -1746,6 +1839,7 @@ func deleteOrder(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/orders [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchOrder(c *gin.Context) {
 	var data v1Cert.Order
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1761,6 +1855,7 @@ func patchOrder(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/orders [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createOrder(c *gin.Context) {
 	var data v1Cert.Order
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1779,6 +1874,7 @@ func createOrder(c *gin.Context) {
 // @Router /workload/issuer [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allIssuers(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllIssuer(namespace, services.GetGinContextId(c)))
@@ -1791,10 +1887,11 @@ func allIssuers(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "issuer name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeIssuer(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sIssuer(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sIssuer(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1804,6 +1901,7 @@ func describeIssuer(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "issuer name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteIssuer(c *gin.Context) {
 
 	namespace := c.Param("namespace")
@@ -1821,6 +1919,7 @@ func deleteIssuer(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/issuer [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchIssuer(c *gin.Context) {
 	var data cmapi.Issuer
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1836,6 +1935,7 @@ func patchIssuer(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/issuer [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createIssuer(c *gin.Context) {
 	var data cmapi.Issuer
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1853,6 +1953,7 @@ func createIssuer(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/cluster-issuer [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allClusterIssuers(c *gin.Context) {
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllClusterIssuers(services.GetGinContextId(c)))
 }
@@ -1863,9 +1964,10 @@ func allClusterIssuers(c *gin.Context) {
 // @Router /workload/cluster-issuer/describe/{name} [get]
 // @Param name path string true "cluster-issuer name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeClusterIssuer(c *gin.Context) {
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sClusterIssuer(name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sClusterIssuer(name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1874,6 +1976,7 @@ func describeClusterIssuer(c *gin.Context) {
 // @Router /workload/cluster-issuer/{name} [delete]
 // @Param name path string true "cluster-issuer name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteClusterIssuer(c *gin.Context) {
 	name := c.Param("name")
 	err := kubernetes.DeleteK8sClusterIssuerBy(name, services.GetGinContextId(c))
@@ -1889,6 +1992,7 @@ func deleteClusterIssuer(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/cluster-issuer [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchClusterIssuer(c *gin.Context) {
 	var data cmapi.ClusterIssuer
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1904,6 +2008,7 @@ func patchClusterIssuer(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/cluster-issuer [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createClusterIssuer(c *gin.Context) {
 	var data cmapi.ClusterIssuer
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1922,6 +2027,7 @@ func createClusterIssuer(c *gin.Context) {
 // @Router /workload/service-account [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allServiceAccounts(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllServiceAccounts(namespace, services.GetGinContextId(c)))
@@ -1934,10 +2040,11 @@ func allServiceAccounts(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "service-account name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeServiceAccount(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sServiceAccount(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sServiceAccount(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1947,6 +2054,7 @@ func describeServiceAccount(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "service-account name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteServiceAccount(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -1963,6 +2071,7 @@ func deleteServiceAccount(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/service-account [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchServiceAccount(c *gin.Context) {
 	var data v1.ServiceAccount
 	err := c.MustBindWith(&data, binding.JSON)
@@ -1978,6 +2087,7 @@ func patchServiceAccount(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/service-account [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createServiceAccount(c *gin.Context) {
 	var data v1.ServiceAccount
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1996,6 +2106,7 @@ func createServiceAccount(c *gin.Context) {
 // @Router /workload/role [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allRoles(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllRoles(namespace, services.GetGinContextId(c)))
@@ -2008,10 +2119,11 @@ func allRoles(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "role name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeRole(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sRole(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sRole(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2021,6 +2133,7 @@ func describeRole(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "role name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteRole(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -2037,6 +2150,7 @@ func deleteRole(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/role [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchRole(c *gin.Context) {
 	var data v1Rbac.Role
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2052,6 +2166,7 @@ func patchRole(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/role [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createRole(c *gin.Context) {
 	var data v1Rbac.Role
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2070,6 +2185,7 @@ func createRole(c *gin.Context) {
 // @Router /workload/role-binding [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allRoleBindings(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllRoleBindings(namespace, services.GetGinContextId(c)))
@@ -2082,10 +2198,11 @@ func allRoleBindings(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "role-binding name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeRoleBinding(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sRoleBinding(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sRoleBinding(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2095,6 +2212,7 @@ func describeRoleBinding(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "role-binding name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteRoleBinding(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -2111,6 +2229,7 @@ func deleteRoleBinding(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/role-binding [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchRoleBinding(c *gin.Context) {
 	var data v1Rbac.RoleBinding
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2126,6 +2245,7 @@ func patchRoleBinding(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/role-binding [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createRoleBinding(c *gin.Context) {
 	var data v1Rbac.RoleBinding
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2143,6 +2263,7 @@ func createRoleBinding(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/cluster-role [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allClusterRoles(c *gin.Context) {
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllClusterRoles(services.GetGinContextId(c)))
 }
@@ -2153,9 +2274,10 @@ func allClusterRoles(c *gin.Context) {
 // @Router /workload/cluster-role/describe/{name} [get]
 // @Param name path string true "cluster-role name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeClusterRole(c *gin.Context) {
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sClusterRole(name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sClusterRole(name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2164,6 +2286,7 @@ func describeClusterRole(c *gin.Context) {
 // @Router /workload/cluster-role/{name} [delete]
 // @Param name path string true "cluster-role name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteClusterRole(c *gin.Context) {
 
 	name := c.Param("name")
@@ -2180,6 +2303,7 @@ func deleteClusterRole(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/cluster-role [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchClusterRole(c *gin.Context) {
 	var data v1Rbac.ClusterRole
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2195,6 +2319,7 @@ func patchClusterRole(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/cluster-role [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createClusterRole(c *gin.Context) {
 	var data v1Rbac.ClusterRole
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2212,6 +2337,7 @@ func createClusterRole(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/cluster-role-binding [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allClusterRoleBindings(c *gin.Context) {
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllClusterRoleBindings(services.GetGinContextId(c)))
 }
@@ -2222,9 +2348,10 @@ func allClusterRoleBindings(c *gin.Context) {
 // @Router /workload/cluster-role-binding/describe/{name} [get]
 // @Param name path string true "cluster-role-binding name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeClusterRoleBinding(c *gin.Context) {
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sClusterRoleBinding(name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sClusterRoleBinding(name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2233,6 +2360,7 @@ func describeClusterRoleBinding(c *gin.Context) {
 // @Router /workload/cluster-role-binding/{name} [delete]
 // @Param name path string true "cluster-role-binding name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteClusterRoleBinding(c *gin.Context) {
 	name := c.Param("name")
 	err := kubernetes.DeleteK8sClusterRoleBindingBy(name, services.GetGinContextId(c))
@@ -2248,6 +2376,7 @@ func deleteClusterRoleBinding(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/cluster-role-binding [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchClusterRoleBinding(c *gin.Context) {
 	var data v1Rbac.ClusterRoleBinding
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2263,6 +2392,7 @@ func patchClusterRoleBinding(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/cluster-role-binding [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createClusterRoleBinding(c *gin.Context) {
 	var data v1Rbac.ClusterRoleBinding
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2280,6 +2410,7 @@ func createClusterRoleBinding(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/volume-attachment [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allVolumeAttachments(c *gin.Context) {
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllVolumeAttachments(services.GetGinContextId(c)))
 }
@@ -2290,9 +2421,10 @@ func allVolumeAttachments(c *gin.Context) {
 // @Router /workload/volume-attachment/describe/{name} [get]
 // @Param name path string true "volume-attachment name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeVolumeAttachment(c *gin.Context) {
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sVolumeAttachment(name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sVolumeAttachment(name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2301,6 +2433,7 @@ func describeVolumeAttachment(c *gin.Context) {
 // @Router /workload/volume-attachment/{name} [delete]
 // @Param name path string true "volume-attachment name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteVolumeAttachment(c *gin.Context) {
 	name := c.Param("name")
 	err := kubernetes.DeleteK8sVolumeAttachmentBy(name, services.GetGinContextId(c))
@@ -2316,6 +2449,7 @@ func deleteVolumeAttachment(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/volume-attachment [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchVolumeAttachment(c *gin.Context) {
 	var data v1Storage.VolumeAttachment
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2331,6 +2465,7 @@ func patchVolumeAttachment(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/volume-attachment [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createVolumeAttachment(c *gin.Context) {
 	var data v1Storage.VolumeAttachment
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2349,6 +2484,7 @@ func createVolumeAttachment(c *gin.Context) {
 // @Router /workload/network-policy [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allNetworkPolicies(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllNetworkPolicies(namespace, services.GetGinContextId(c)))
@@ -2361,10 +2497,11 @@ func allNetworkPolicies(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "network-policy name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeNetworkPolicy(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sNetworkPolicy(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sNetworkPolicy(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2374,6 +2511,7 @@ func describeNetworkPolicy(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "network-policy name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteNetworkPolicy(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -2390,6 +2528,7 @@ func deleteNetworkPolicy(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/network-policy [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchNetworkPolicy(c *gin.Context) {
 	var data v1Networking.NetworkPolicy
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2405,6 +2544,7 @@ func patchNetworkPolicy(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/network-policy [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createNetworkPolicy(c *gin.Context) {
 	var data v1Networking.NetworkPolicy
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2422,6 +2562,7 @@ func createNetworkPolicy(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/storage-class [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allStorageClasses(c *gin.Context) {
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllStorageClasses(services.GetGinContextId(c)))
 }
@@ -2432,9 +2573,10 @@ func allStorageClasses(c *gin.Context) {
 // @Router /workload/storage-class/describe/{name} [get]
 // @Param name path string true "storage-class name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeStorageClass(c *gin.Context) {
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sStorageClass(name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sStorageClass(name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2443,6 +2585,7 @@ func describeStorageClass(c *gin.Context) {
 // @Router /workload/storage-class/{namespace}/{name} [delete]
 // @Param name path string true "storage-class name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteStorageClass(c *gin.Context) {
 	name := c.Param("name")
 	err := kubernetes.DeleteK8sStorageClassBy(name, services.GetGinContextId(c))
@@ -2458,6 +2601,7 @@ func deleteStorageClass(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/storage-class [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchStorageClass(c *gin.Context) {
 	var data v1Storage.StorageClass
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2473,6 +2617,7 @@ func patchStorageClass(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/storage-class [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createStorageClass(c *gin.Context) {
 	var data v1Storage.StorageClass
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2490,6 +2635,7 @@ func createStorageClass(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/crds [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allCrds(c *gin.Context) {
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllCustomResourceDefinitions())
 }
@@ -2500,9 +2646,10 @@ func allCrds(c *gin.Context) {
 // @Router /workload/crds/describe/{name} [get]
 // @Param name path string true "crds name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeCrd(c *gin.Context) {
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sCustomResourceDefinition(name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sCustomResourceDefinition(name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2511,6 +2658,7 @@ func describeCrd(c *gin.Context) {
 // @Router /workload/crds/{name} [delete]
 // @Param name path string true "crds name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteCrd(c *gin.Context) {
 	// name := c.Param("name")
 	// TODO
@@ -2527,6 +2675,7 @@ func deleteCrd(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/crds [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchCrd(c *gin.Context) {
 	var data apiExt.CustomResourceDefinition
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2542,6 +2691,7 @@ func patchCrd(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/crds [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createCrd(c *gin.Context) {
 	var data apiExt.CustomResourceDefinition
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2560,6 +2710,7 @@ func createCrd(c *gin.Context) {
 // @Router /workload/endpoints [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allEndpoints(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllEndpoints(namespace, services.GetGinContextId(c)))
@@ -2572,10 +2723,11 @@ func allEndpoints(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "endpoint name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeEndpoint(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sEndpoint(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sEndpoint(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2585,6 +2737,7 @@ func describeEndpoint(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "endpoints request name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteEndpoint(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -2601,6 +2754,7 @@ func deleteEndpoint(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/endpoints [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchEndpoint(c *gin.Context) {
 	var data v1.Endpoints
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2616,6 +2770,7 @@ func patchEndpoint(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/endpoints [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createEndpoint(c *gin.Context) {
 	var data v1.Endpoints
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2634,6 +2789,7 @@ func createEndpoint(c *gin.Context) {
 // @Router /workload/leases [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allLeases(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllLeases(namespace, services.GetGinContextId(c)))
@@ -2646,10 +2802,11 @@ func allLeases(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "lease name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeLease(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sLease(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sLease(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2659,6 +2816,7 @@ func describeLease(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "lease name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteLease(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -2675,6 +2833,7 @@ func deleteLease(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/leases [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchLease(c *gin.Context) {
 	var data v1Coordination.Lease
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2690,6 +2849,7 @@ func patchLease(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/leases [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createLease(c *gin.Context) {
 	var data v1Coordination.Lease
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2707,6 +2867,7 @@ func createLease(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/priority-classes [get]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allPriorityClasses(c *gin.Context) {
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllPriorityClasses(services.GetGinContextId(c)))
 }
@@ -2717,9 +2878,10 @@ func allPriorityClasses(c *gin.Context) {
 // @Router /workload/priority-classes/describe/{name} [get]
 // @Param name path string true "priority-classes name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describePriorityClass(c *gin.Context) {
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPriorityClass(name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPriorityClass(name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2728,6 +2890,7 @@ func describePriorityClass(c *gin.Context) {
 // @Router /workload/priority-classes/{namespace}/{name} [delete]
 // @Param name path string true "priority-class name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deletePriorityClass(c *gin.Context) {
 	name := c.Param("name")
 	err := kubernetes.DeleteK8sPriorityClassBy(name, services.GetGinContextId(c))
@@ -2743,6 +2906,7 @@ func deletePriorityClass(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/priority-classes [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchPriorityClass(c *gin.Context) {
 	var data v1Scheduling.PriorityClass
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2758,6 +2922,7 @@ func patchPriorityClass(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/priority-classes [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createPriorityClass(c *gin.Context) {
 	var data v1Scheduling.PriorityClass
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2776,6 +2941,7 @@ func createPriorityClass(c *gin.Context) {
 // @Router /workload/volume-snapshots [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allVolumeSnapshots(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllVolumeSnapshots(namespace, services.GetGinContextId(c)))
@@ -2788,10 +2954,11 @@ func allVolumeSnapshots(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "volume-snapshot name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeVolumeSnapshot(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sVolumeSnapshot(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sVolumeSnapshot(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2801,6 +2968,7 @@ func describeVolumeSnapshot(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "volume-snapshots name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteVolumeSnapshot(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
@@ -2817,6 +2985,7 @@ func deleteVolumeSnapshot(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/volume-snapshots [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchVolumeSnapshot(c *gin.Context) {
 	var data v6Snap.VolumeSnapshot
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2832,6 +3001,7 @@ func patchVolumeSnapshot(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/volume-snapshots [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createVolumeSnapshot(c *gin.Context) {
 	var data v6Snap.VolumeSnapshot
 	err := c.MustBindWith(&data, binding.YAML)
@@ -2850,6 +3020,7 @@ func createVolumeSnapshot(c *gin.Context) {
 // @Router /workload/resource-quota [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allResourceQuotas(c *gin.Context) {
 	namespace := c.Query("namespace")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.AllResourceQuotas(namespace, services.GetGinContextId(c)))
@@ -2862,10 +3033,11 @@ func allResourceQuotas(c *gin.Context) {
 // @Param namespace path string true "namespace"
 // @Param name path string true "resource-quota name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeResourceQuota(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sResourceQuota(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sResourceQuota(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2875,6 +3047,7 @@ func describeResourceQuota(c *gin.Context) {
 // @Param namespace path string true "namespace name"
 // @Param name path string true "resource-quota name"
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteResourceQuota(c *gin.Context) {
 
 	namespace := c.Param("namespace")
@@ -2892,6 +3065,7 @@ func deleteResourceQuota(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/resource-quota [patch]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchResourceQuota(c *gin.Context) {
 	var data v1.ResourceQuota
 	err := c.MustBindWith(&data, binding.JSON)
@@ -2907,6 +3081,7 @@ func patchResourceQuota(c *gin.Context) {
 // @Success 200 {object} utils.K8sWorkloadResult
 // @Router /workload/resource-quota [post]
 // @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createResourceQuota(c *gin.Context) {
 	var data v1.ResourceQuota
 	err := c.MustBindWith(&data, binding.YAML)

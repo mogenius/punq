@@ -61,8 +61,8 @@ func DeleteK8sStatefulsetBy(namespace string, name string, contextId *string) er
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sStatefulset(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "statefulset", name, "-n", namespace)
+func DescribeK8sStatefulset(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "statefulset", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

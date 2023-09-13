@@ -79,8 +79,8 @@ func DeleteK8sDaemonSetBy(namespace string, name string, contextId *string) erro
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sDaemonSet(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "daemonset", name, "-n", namespace)
+func DescribeK8sDaemonSet(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "daemonset", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

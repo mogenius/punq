@@ -62,8 +62,8 @@ func DeleteK8sResourceQuotaBy(namespace string, name string, contextId *string) 
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sResourceQuota(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "resourcequotas", name, "-n", namespace)
+func DescribeK8sResourceQuota(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "resourcequotas", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
