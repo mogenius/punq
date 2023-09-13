@@ -23,7 +23,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.MO_K8s_TOKEN }}
+          password: ${{ secrets.PUNQ_TOKEN }}
 
       - name: Create Sematic Release Version
         run: |
@@ -50,7 +50,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.MO_K8s_TOKEN }}
+          password: ${{ secrets.PUNQ_TOKEN }}
 
       #
       # TODO: NPM RUN BUILD GOES HERE
