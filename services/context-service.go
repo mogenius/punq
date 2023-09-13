@@ -30,7 +30,7 @@ func ListContexts() []dtos.PunqContext {
 		contexts = append(contexts, ctx)
 	}
 
-	kubernetes.AllContexts = contexts
+	kubernetes.ContextAddMany(contexts)
 
 	return contexts
 }

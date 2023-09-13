@@ -91,8 +91,8 @@ func DeleteK8sConfigmapBy(namespaceName string, name string, contextId *string) 
 	return kubeProvider.ClientSet.CoreV1().ConfigMaps(namespaceName).Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sConfigmap(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "configmap", name, "-n", namespace)
+func DescribeK8sConfigmap(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "configmap", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

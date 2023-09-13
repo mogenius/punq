@@ -492,7 +492,7 @@ func allPods(c *gin.Context) {
 func describePod(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPod(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPod(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -789,7 +789,7 @@ func allConfigmaps(c *gin.Context) {
 func describeConfigmap(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sConfigmap(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sConfigmap(namespace, name, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
