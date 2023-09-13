@@ -1,7 +1,5 @@
 FROM golang:1.21-alpine AS builder
 
-RUN apk add --no-cache curl bash
-
 ENV CGO_ENABLED=0
 ARG GOOS=linux
 ARG GOARCH=amd64
@@ -26,6 +24,8 @@ RUN go build -ldflags="-w -s -extldflags= \
 
 
 FROM alpine:latest
+
+RUN apk add --no-cache curl bash
 
 # Install kubectl
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/$GOARCH/kubectl"
