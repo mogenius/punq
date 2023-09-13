@@ -17,6 +17,9 @@ RUN go mod download
 
 COPY . .
 
+RUN echo "$GOOS $GOARCH"
+RUN echo "${COMMIT_HASH} ${BUILD_TIMESTAMP} ${VERSION} ${GIT_BRANCH}"
+
 RUN go build -ldflags="-w -s -extldflags= \
   -X 'github.com/mogenius/punq/version.GitCommitHash=${COMMIT_HASH}' \
   -X 'github.com/mogenius/punq/version.Branch=${GIT_BRANCH}' \
