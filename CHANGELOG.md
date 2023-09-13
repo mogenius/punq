@@ -1,4 +1,11 @@
 
+### [1.3.35](https://github.com/mogenius/punq/compare/dev1.3.34...dev1.3.35) (2023-09-13)
+
+
+### Bug Fixes
+
+* all describes are working again. added x-content-id header to swagger. ([b10e7c4](https://github.com/mogenius/punq/commit/b10e7c479cdb4e7e1c8ddf2bcec49a63cc419192))
+
 ### [1.3.34](https://github.com/mogenius/punq/compare/dev1.3.33...dev1.3.34) (2023-09-13)
 
 
