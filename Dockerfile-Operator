@@ -17,7 +17,7 @@ RUN go mod download
 
 COPY . .
 
-RUN echo "$GOOS $GOARCH"
+RUN echo "${GOOS} ${GOARCH}"
 RUN echo "${COMMIT_HASH} ${BUILD_TIMESTAMP} ${VERSION} ${GIT_BRANCH}"
 
 RUN go build -ldflags="-w -s -extldflags= \
@@ -30,6 +30,8 @@ RUN go build -ldflags="-w -s -extldflags= \
 FROM alpine:latest
 
 RUN apk add --no-cache curl bash
+
+RUN echo "${GOOS} ${GOARCH}"
 
 # Install kubectl
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${GOARCH}/kubectl"
