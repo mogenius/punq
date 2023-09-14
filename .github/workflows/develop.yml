@@ -14,12 +14,12 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -41,12 +41,12 @@ jobs:
     runs-on: [self-hosted, X64]
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -75,12 +75,12 @@ jobs:
     runs-on: [self-hosted, ARM64]
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -109,12 +109,12 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -144,12 +144,12 @@ jobs:
 #     runs-on: ubuntu-latest
 #     steps:
 #       - name: Checkout repository
-#         uses: actions/checkout@v2
+#         uses: actions/checkout@v4
 #         with:
 #           fetch-depth: 0
 
 #       - name: Login to GitHub Container Registry
-#         uses: docker/login-action@v2
+#         uses: docker/login-action@v3
 #         with:
 #           registry: ghcr.io
 #           username: ${{ github.actor }}
