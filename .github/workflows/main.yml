@@ -51,7 +51,10 @@ jobs:
           go-version: '1.21'
 
       - name: Execute make all
-        run: make all
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.21'
+      - run: make all
 
       - name: Create release
         run: |
