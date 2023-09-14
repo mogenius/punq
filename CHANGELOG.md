@@ -1,4 +1,11 @@
 
+### [1.3.36](https://github.com/mogenius/punq/compare/dev1.3.35...dev1.3.36) (2023-09-14)
+
+
+### Bug Fixes
+
+* minor updates. prepared code for exec. ([cc5c467](https://github.com/mogenius/punq/commit/cc5c467f992664f0320344fb2b6fae92e7acddf8))
+
 ### [1.3.35](https://github.com/mogenius/punq/compare/dev1.3.34...dev1.3.35) (2023-09-13)
 
 
