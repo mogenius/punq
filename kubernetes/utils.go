@@ -243,19 +243,19 @@ func CurrentContextName() string {
 	return config.CurrentContext
 }
 
-func Hostname() string {
-	provider := NewKubeProvider()
+func Hostname(contextId *string) string {
+	provider := NewKubeProvider(contextId)
 	return provider.ClientConfig.Host
 }
 
-func ClusterStatus() dtos.ClusterStatusDto {
+func ClusterStatus(contextId *string) dtos.ClusterStatusDto {
 	var currentPods = make(map[string]v1.Pod)
-	pods := listAllPods()
+	pods := listAllPods(contextId)
 	for _, pod := range pods {
 		currentPods[pod.Name] = pod
 	}
 
-	result, err := podStats(currentPods)
+	result, err := podStats(currentPods, contextId)
 	if err != nil {
 		logger.Log.Error("podStats:", err)
 	}
@@ -284,10 +284,10 @@ func ClusterStatus() dtos.ClusterStatusDto {
 	}
 }
 
-func listAllPods() []v1.Pod {
+func listAllPods(contextId *string) []v1.Pod {
 	var result []v1.Pod
 
-	kubeProvider := NewKubeProvider()
+	kubeProvider := NewKubeProvider(contextId)
 	pods, err := kubeProvider.ClientSet.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system,metadata.namespace!=default"})
 
 	if err != nil {
@@ -297,8 +297,8 @@ func listAllPods() []v1.Pod {
 	return pods.Items
 }
 
-func ListNodes() []v1.Node {
-	var provider *KubeProvider = NewKubeProvider()
+func ListNodes(contextId *string) []v1.Node {
+	var provider *KubeProvider = NewKubeProvider(contextId)
 	if provider == nil {
 		logger.Log.Errorf("Failed to load kubeprovider.")
 		return []v1.Node{}
@@ -312,8 +312,8 @@ func ListNodes() []v1.Node {
 	return nodeMetricsList.Items
 }
 
-func podStats(pods map[string]v1.Pod) ([]structs.Stats, error) {
-	var provider *KubeProviderMetrics = NewKubeProviderMetrics()
+func podStats(pods map[string]v1.Pod, contextId *string) ([]structs.Stats, error) {
+	var provider *KubeProviderMetrics = NewKubeProviderMetrics(contextId)
 	if provider == nil {
 		err := fmt.Errorf("Failed to load kubeprovider.")
 		logger.Log.Errorf(err.Error())

@@ -9,10 +9,10 @@ import (
 )
 
 type PunqContext struct {
-	Id            string       `json:"id" validate:"required"`
-	Name          string       `json:"name" validate:"required"`
-	ContextBase64 string       `json:"contextBase64" validate:"required"`
-	Access        []PunqAccess `json:"access" validate:"required"`
+	Id      string       `json:"id" validate:"required"`
+	Name    string       `json:"name" validate:"required"`
+	Context string       `json:"context" validate:"required"`
+	Access  []PunqAccess `json:"access" validate:"required"`
 }
 
 func (c *PunqContext) AddAccess(userId string, accessLevel AccessLevel) {

@@ -1,13 +1,14 @@
 package operator
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/utils"
-	"net/http"
 )
 
 func InitUserRoutes(router *gin.Engine) {
@@ -16,8 +17,8 @@ func InitUserRoutes(router *gin.Engine) {
 	{
 		userRoutes.GET("/all", userList)
 		userRoutes.GET("/", currentUserGet)
-		userRoutes.GET("/:id", userGet)
-		userRoutes.DELETE("/:id", userDelete)
+		userRoutes.GET("/:id", validateParam("id"), userGet)
+		userRoutes.DELETE("/:id", validateParam("id"), userDelete)
 		userRoutes.PATCH("/", userUpdate)
 		userRoutes.POST("/", userAdd)
 	}
@@ -51,18 +52,12 @@ func userDelete(c *gin.Context) {
 // @Router /user [get]
 // @Security Bearer
 func currentUserGet(c *gin.Context) {
-	if temp, exists := c.Get("user"); exists {
-		user, ok := temp.(dtos.PunqUser)
-		if !ok {
-			utils.MalformedMessage(c, "Type Assertion failed")
-			return
-		}
+	user := services.GetGinContextUser(c)
+	if user != nil {
 		c.JSON(http.StatusOK, user)
 		return
 	}
 	utils.Unauthorized(c, "Unauthorized")
-	return
-
 }
 
 // @Tags User

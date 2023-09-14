@@ -12,10 +12,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllStorageClasses() utils.K8sWorkloadResult {
+func AllStorageClasses(contextId *string) utils.K8sWorkloadResult {
 	result := []storage.StorageClass{}
 
-	provider := NewKubeProvider()
+	provider := NewKubeProvider(contextId)
 	scList, err := provider.ClientSet.StorageV1().StorageClasses().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllStorageClasses ERROR: %s", err.Error())
@@ -28,13 +28,13 @@ func AllStorageClasses() utils.K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func GetStorageClass(name string) (*storage.StorageClass, error) {
-	provider := NewKubeProvider()
+func GetStorageClass(name string, contextId *string) (*storage.StorageClass, error) {
+	provider := NewKubeProvider(contextId)
 	return provider.ClientSet.StorageV1().StorageClasses().Get(context.TODO(), name, metav1.GetOptions{})
 }
 
-func UpdateK8sStorageClass(data storage.StorageClass) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func UpdateK8sStorageClass(data storage.StorageClass, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
 	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
@@ -43,8 +43,8 @@ func UpdateK8sStorageClass(data storage.StorageClass) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sStorageClass(data storage.StorageClass) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func DeleteK8sStorageClass(data storage.StorageClass, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
@@ -53,14 +53,14 @@ func DeleteK8sStorageClass(data storage.StorageClass) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sStorageClassBy(name string) error {
-	kubeProvider := NewKubeProvider()
+func DeleteK8sStorageClassBy(name string, contextId *string) error {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sStorageClass(name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "storageclass", name)
+func DescribeK8sStorageClass(name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "storageclass", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -71,8 +71,8 @@ func DescribeK8sStorageClass(name string) utils.K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sStorageClass(data storage.StorageClass) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func CreateK8sStorageClass(data storage.StorageClass, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.StorageV1().StorageClasses()
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {

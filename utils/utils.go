@@ -141,7 +141,7 @@ func OpenBrowser(url string) {
 	}
 
 	if err != nil {
-		fmt.Errorf("error while opening browser, %v", err)
+		fmt.Println(fmt.Errorf("error while opening browser, %v", err))
 	}
 }
 

@@ -1,6 +1,8 @@
 FROM golang:1.21-alpine AS builder
 
-ENV CGO_ENABLED=0 GOOS=linux
+ARG GOOS
+ARG GOARCH
+ENV CGO_ENABLED=0
 
 ARG COMMIT_HASH=NOT_SET
 ARG GIT_BRANCH=NOT_SET
@@ -14,14 +16,29 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s -extldflags= \
+RUN echo "${GOOS} ${GOARCH}"
+RUN echo "${COMMIT_HASH} ${BUILD_TIMESTAMP} ${VERSION} ${GIT_BRANCH}"
+
+RUN go build -ldflags="-w -s -extldflags= \
   -X 'github.com/mogenius/punq/version.GitCommitHash=${COMMIT_HASH}' \
   -X 'github.com/mogenius/punq/version.Branch=${GIT_BRANCH}' \
   -X 'github.com/mogenius/punq/version.BuildTimestamp=${BUILD_TIMESTAMP}' \
   -X 'github.com/mogenius/punq/version.Ver=${VERSION}'" -o bin/punq-operator .
 
 
-FROM scratch
+FROM alpine:latest
+
+ARG GOOS
+ARG GOARCH
+
+RUN apk add --no-cache curl bash
+
+RUN echo "${GOOS} ${GOARCH}"
+
+# Install kubectl
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${GOARCH}/kubectl"
+RUN chmod +x kubectl
+RUN mv kubectl /usr/local/bin/kubectl
 
 WORKDIR /app
 

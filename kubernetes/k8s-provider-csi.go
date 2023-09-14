@@ -12,13 +12,17 @@ type KubeProviderSnapshot struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProviderSnapshot() *KubeProviderSnapshot {
+func NewKubeProviderSnapshot(contextId *string) *KubeProviderSnapshot {
 	var kubeProvider *KubeProviderSnapshot
 	var err error
 	if RunsInCluster {
-		kubeProvider, err = newKubeProviderCsiInCluster()
+		kubeProvider, err = newKubeProviderCsiInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderCsiLocal()
+		if contextId == nil {
+			kubeProvider, err = newKubeProviderCsiLocal()
+		} else {
+			kubeProvider, err = newKubeProviderCsiInCluster(contextId)
+		}
 	}
 
 	if err != nil {
@@ -46,10 +50,18 @@ func newKubeProviderCsiLocal() (*KubeProviderSnapshot, error) {
 	}, nil
 }
 
-func newKubeProviderCsiInCluster() (*KubeProviderSnapshot, error) {
+func newKubeProviderCsiInCluster(contextId *string) (*KubeProviderSnapshot, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())
+	}
+
+	// CONTEXT SWITCHER
+	if contextId != nil {
+		config, err = ContextConfigLoader(contextId)
+		if err != nil || config == nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := snapClientset.NewForConfig(config)

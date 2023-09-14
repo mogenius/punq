@@ -25,7 +25,7 @@ import (
 )
 
 func Deploy(clusterName string, ingressHostname string) {
-	provider := NewKubeProvider()
+	provider := NewKubeProvider(nil)
 	if provider == nil {
 		logger.Log.Fatal("Failed to load kubeprovider.")
 	}
@@ -52,7 +52,7 @@ func Deploy(clusterName string, ingressHostname string) {
 		logger.Log.Fatalf("Error creating context secret. Aborting: %s.", err.Error())
 	}
 	// if adminUser != nil {
-	// 	fmt.Printf("Contexts saved (%d bytes).\n", len(ownContext.ContextBase64))
+	// 	fmt.Printf("Contexts saved (%d bytes).\n", len(ownContext.Context))
 	// }
 
 	if ingressHostname != "" {
@@ -292,9 +292,9 @@ func writeContextSecret(secretClient v1.SecretInterface, existingSecret *core.Se
 		}
 
 		ownContext := dtos.PunqContext{
-			Id:            utils.CONTEXTOWN,
-			Name:          utils.CONTEXTOWN,
-			ContextBase64: string(kubeconfigData),
+			Id:      utils.CONTEXTOWN,
+			Name:    utils.CONTEXTOWN,
+			Context: string(kubeconfigData),
 		}
 
 		rawAdmin, err := json.Marshal(ownContext)

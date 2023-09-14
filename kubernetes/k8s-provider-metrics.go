@@ -12,13 +12,17 @@ type KubeProviderMetrics struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProviderMetrics() *KubeProviderMetrics {
+func NewKubeProviderMetrics(contextId *string) *KubeProviderMetrics {
 	var kubeProvider *KubeProviderMetrics
 	var err error
 	if RunsInCluster {
-		kubeProvider, err = newKubeProviderMetricsInCluster()
+		kubeProvider, err = newKubeProviderMetricsInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderMetricsLocal()
+		if contextId == nil {
+			kubeProvider, err = newKubeProviderMetricsLocal()
+		} else {
+			kubeProvider, err = newKubeProviderMetricsInCluster(contextId)
+		}
 	}
 
 	if err != nil {
@@ -46,10 +50,18 @@ func newKubeProviderMetricsLocal() (*KubeProviderMetrics, error) {
 	}, nil
 }
 
-func newKubeProviderMetricsInCluster() (*KubeProviderMetrics, error) {
+func newKubeProviderMetricsInCluster(contextId *string) (*KubeProviderMetrics, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())
+	}
+
+	// CONTEXT SWITCHER
+	if contextId != nil {
+		config, err = ContextConfigLoader(contextId)
+		if err != nil || config == nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := metricsv.NewForConfig(config)

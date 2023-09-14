@@ -23,8 +23,8 @@ type ServicePodExistsResult struct {
 	PodExists bool `json:"podExists"`
 }
 
-func PodStatus(namespace string, name string, statusOnly bool) *v1.Pod {
-	kubeProvider := NewKubeProvider()
+func PodStatus(namespace string, name string, statusOnly bool, contextId *string) *v1.Pod {
+	kubeProvider := NewKubeProvider(contextId)
 	getOptions := metav1.GetOptions{}
 
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(namespace)
@@ -83,9 +83,9 @@ func LastTerminatedStateToString(terminatedState *v1.ContainerStateTerminated) s
 	return buf.String()
 }
 
-func ServicePodStatus(namespace string, serviceName string) []v1.Pod {
+func ServicePodStatus(namespace string, serviceName string, contextId *string) []v1.Pod {
 	result := []v1.Pod{}
-	kubeProvider := NewKubeProvider()
+	kubeProvider := NewKubeProvider(contextId)
 
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(namespace)
 
@@ -107,8 +107,8 @@ func ServicePodStatus(namespace string, serviceName string) []v1.Pod {
 }
 
 // labelname should look like app=my-app-name (like you defined your label)
-func GetFirstPodForLabelName(namespace string, labelName string) *v1.Pod {
-	kubeProvider := NewKubeProvider()
+func GetFirstPodForLabelName(namespace string, labelName string, contextId *string) *v1.Pod {
+	kubeProvider := NewKubeProvider(contextId)
 
 	pods, err := kubeProvider.ClientSet.CoreV1().Pods(namespace).List(context.TODO(), metav1.ListOptions{LabelSelector: labelName})
 
@@ -125,8 +125,8 @@ func GetFirstPodForLabelName(namespace string, labelName string) *v1.Pod {
 	return nil
 }
 
-func GetPod(namespace string, podName string) *v1.Pod {
-	kubeProvider := NewKubeProvider()
+func GetPod(namespace string, podName string, contextId *string) *v1.Pod {
+	kubeProvider := NewKubeProvider(contextId)
 
 	client := kubeProvider.ClientSet.CoreV1().Pods(namespace)
 	pod, err := client.Get(context.TODO(), podName, metav1.GetOptions{})
@@ -137,16 +137,16 @@ func GetPod(namespace string, podName string) *v1.Pod {
 	return pod
 }
 
-func GetPodBy(namespace string, podName string) (*v1.Pod, error) {
-	kubeProvider := NewKubeProvider()
+func GetPodBy(namespace string, podName string, contextId *string) (*v1.Pod, error) {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().Pods(namespace)
 	return client.Get(context.TODO(), podName, metav1.GetOptions{})
 }
 
-func PodExists(namespace string, name string) ServicePodExistsResult {
+func PodExists(namespace string, name string, contextId *string) ServicePodExistsResult {
 	result := ServicePodExistsResult{}
 
-	kubeProvider := NewKubeProvider()
+	kubeProvider := NewKubeProvider(contextId)
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(namespace)
 	pod, err := podClient.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil || pod == nil {
@@ -158,10 +158,10 @@ func PodExists(namespace string, name string) ServicePodExistsResult {
 	return result
 }
 
-func AllPods(namespaceName string) []v1.Pod {
+func AllPods(namespaceName string, contextId *string) []v1.Pod {
 	result := []v1.Pod{}
 
-	provider := NewKubeProvider()
+	provider := NewKubeProvider(contextId)
 	podsList, err := provider.ClientSet.CoreV1().Pods(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllPods podMetricsList ERROR: %s", err.Error())
@@ -176,23 +176,23 @@ func AllPods(namespaceName string) []v1.Pod {
 	return result
 }
 
-func AllK8sPods(namespaceName string) utils.K8sWorkloadResult {
-	result := AllPods(namespaceName)
+func AllK8sPods(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+	result := AllPods(namespaceName, contextId)
 	return WorkloadResult(result, nil)
 }
 
-func AllPodNames() []string {
+func AllPodNames(contextId *string) []string {
 	result := []string{}
-	allPods := AllPods("")
+	allPods := AllPods("", contextId)
 	for _, pod := range allPods {
 		result = append(result, pod.ObjectMeta.Name)
 	}
 	return result
 }
 
-func AllPodNamesForLabel(namespace string, labelKey string, labelValue string) []string {
+func AllPodNamesForLabel(namespace string, labelKey string, labelValue string, contextId *string) []string {
 	result := []string{}
-	allPods := AllPods(namespace)
+	allPods := AllPods(namespace, contextId)
 	for _, pod := range allPods {
 		if pod.Labels[labelKey] == labelValue {
 			result = append(result, pod.ObjectMeta.Name)
@@ -201,10 +201,10 @@ func AllPodNamesForLabel(namespace string, labelKey string, labelValue string) [
 	return result
 }
 
-func PodIdsFor(namespace string, serviceId *string) []string {
+func PodIdsFor(namespace string, serviceId *string, contextId *string) []string {
 	result := []string{}
 
-	var provider *KubeProviderMetrics = NewKubeProviderMetrics()
+	var provider *KubeProviderMetrics = NewKubeProviderMetrics(contextId)
 	if provider == nil {
 		logger.Log.Errorf("Failed to load kubeprovider")
 		return result
@@ -231,8 +231,8 @@ func PodIdsFor(namespace string, serviceId *string) []string {
 	return result
 }
 
-func UpdateK8sPod(data v1.Pod) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func UpdateK8sPod(data v1.Pod, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(data.Namespace)
 	_, err := podClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
@@ -241,8 +241,8 @@ func UpdateK8sPod(data v1.Pod) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sPod(data v1.Pod) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func DeleteK8sPod(data v1.Pod, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(data.Namespace)
 	err := podClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
@@ -251,14 +251,14 @@ func DeleteK8sPod(data v1.Pod) utils.K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DeleteK8sPodBy(namespace string, name string) error {
-	kubeProvider := NewKubeProvider()
+func DeleteK8sPodBy(namespace string, name string, contextId *string) error {
+	kubeProvider := NewKubeProvider(contextId)
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(namespace)
 	return podClient.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
-func DescribeK8sPod(namespace string, name string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "pod", name, "-n", namespace)
+func DescribeK8sPod(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), ContextFlag(contextId), "describe", "pod", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -269,8 +269,8 @@ func DescribeK8sPod(namespace string, name string) utils.K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sPod(data v1.Pod) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func CreateK8sPod(data v1.Pod, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().Pods(data.Namespace)
 	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
@@ -292,8 +292,8 @@ func filterStatus(pod *v1.Pod) {
 	pod.Spec = v1.PodSpec{}
 }
 
-func ListPodsTerminal(namespace string) {
-	pods := AllPods(namespace)
+func ListPodsTerminal(namespace string, contextId *string) {
+	pods := AllPods(namespace, contextId)
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"#", "Namespace", "Name", "Ready", "Status", "Restarts", "Age"})

@@ -14,9 +14,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func GetIngressControllerIps(useLocalKubeConfig bool) []net.IP {
+func GetIngressControllerIps(useLocalKubeConfig bool, contextId *string) []net.IP {
 	var result []net.IP
-	var kubeProvider *KubeProvider = NewKubeProvider()
+	var kubeProvider *KubeProvider = NewKubeProvider(contextId)
 	if kubeProvider == nil {
 		logger.Log.Errorf("Failed to load kubeprovider.")
 		return []net.IP{}
@@ -41,9 +41,9 @@ func GetIngressControllerIps(useLocalKubeConfig bool) []net.IP {
 	return result
 }
 
-func GetClusterExternalIps() []string {
+func GetClusterExternalIps(contextId *string) []string {
 	var result []string = []string{}
-	kubeProvider := NewKubeProvider()
+	kubeProvider := NewKubeProvider(contextId)
 	labelSelector := "app.kubernetes.io/component=controller,app.kubernetes.io/name=ingress-nginx"
 	services, err := kubeProvider.ClientSet.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{LabelSelector: labelSelector})
 

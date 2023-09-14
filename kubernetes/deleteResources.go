@@ -14,7 +14,7 @@ import (
 )
 
 func Remove(clusterName string) {
-	provider := NewKubeProvider()
+	provider := NewKubeProvider(nil)
 	if provider == nil {
 		logger.Log.Fatal("Failed to load kubeprovider.")
 	}

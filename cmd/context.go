@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/base64"
 	"os"
 
 	"github.com/mogenius/punq/dtos"
@@ -42,11 +41,10 @@ var addContextCmd = &cobra.Command{
 		if err != nil {
 			logger.Log.Fatalf("Error reading file '%s': %s", filePath, err.Error())
 		}
-		encodedData := base64.StdEncoding.EncodeToString(dataBytes)
 
 		newContext := dtos.PunqContext{
-			Id:            utils.NanoId(),
-			ContextBase64: encodedData,
+			Id:      utils.NanoId(),
+			Context: string(dataBytes),
 		}
 
 		services.AddContext(newContext)
