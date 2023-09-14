@@ -4,6 +4,18 @@
 
 ### Bug Fixes
 
+* pipeline improved. ([954a0cd](https://github.com/mogenius/punq/commit/954a0cdf665d6e7de4060a2455bd396dd8e20a00))
+* pipeline improved. ([abe91b9](https://github.com/mogenius/punq/commit/abe91b94f0ee98eb741db73647e86265430f5d53))
+* pipeline improved. ([430fdc7](https://github.com/mogenius/punq/commit/430fdc77cfeedd6942b79e4690063df16f7d94ef))
+* pipeline improved. ([8b970af](https://github.com/mogenius/punq/commit/8b970af5e4e088c9b295a5b36f4ff2d5052a5409))
+* pipeline improved. ([d7c8aac](https://github.com/mogenius/punq/commit/d7c8aac580f470e43c031caa76d90e2b4edd1524))
+* pipeline improved. ([06e9e20](https://github.com/mogenius/punq/commit/06e9e202c24cf0c63850b63fc64af2059af32b5a))
+
+### [1.2.2](https://github.com/mogenius/punq/compare/v1.2.1...v1.2.2) (2023-09-14)
+
+
+### Bug Fixes
+
 * pipeline improved. ([abe91b9](https://github.com/mogenius/punq/commit/abe91b94f0ee98eb741db73647e86265430f5d53))
 * pipeline improved. ([430fdc7](https://github.com/mogenius/punq/commit/430fdc77cfeedd6942b79e4690063df16f7d94ef))
 * pipeline improved. ([8b970af](https://github.com/mogenius/punq/commit/8b970af5e4e088c9b295a5b36f4ff2d5052a5409))
