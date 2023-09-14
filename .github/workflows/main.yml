@@ -8,7 +8,8 @@ on:
 env:
   IMAGE_NAME: ghcr.io/mogenius/punq
   DOCKERFILE: Dockerfile-Operator
-  VERSION: 
+  VERSION:
+  HOME: /root
 
 jobs:
   prepare:
@@ -29,7 +30,7 @@ jobs:
       - name: Create Sematic Release Version
         run: |
           # npm install -g standard-version
-          export HOME=/root
+          # export HOME=/root
           git config --system http.sslVerify false
           git config --global user.email "punqs@mogenius.com"
           git config --global user.name "punq"
