@@ -12,7 +12,7 @@ env:
 
 jobs:
   prepare:
-    runs-on: [self-hosted, X64]
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -44,6 +44,11 @@ jobs:
         run: |
           mkdir ui/dist
           cp ui/index.html ui/dist/index.html
+
+      - name: Setup Go environment
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.21'
 
       - name: Execute make all
         run: make all
