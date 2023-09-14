@@ -1,4 +1,13 @@
 
+### [1.3.37](https://github.com/mogenius/punq/compare/dev1.3.36...dev1.3.37) (2023-09-14)
+
+
+### Bug Fixes
+
+* cronjob change restart policy ([ff44293](https://github.com/mogenius/punq/commit/ff44293ef6a868f399ec3525ccd724765244675e))
+* pipeline improved. ([06e9e20](https://github.com/mogenius/punq/commit/06e9e202c24cf0c63850b63fc64af2059af32b5a))
+* workloads new get method and new deleteBy method. minor fixes. ([3f4e8ec](https://github.com/mogenius/punq/commit/3f4e8ecc140d825d28f6d7ff872e59ac1a0c75bc))
+
 ### [1.2.1](https://github.com/mogenius/punq/compare/v1.2.0...v1.2.1) (2023-09-14)
 
 
