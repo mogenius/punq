@@ -5,8 +5,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/mogenius/punq/services"
 	"os"
+
+	"github.com/mogenius/punq/services"
 
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/utils"
@@ -15,7 +16,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// cleanCmd represents the clean command
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
 	Short: "Remove all components from your cluster.",

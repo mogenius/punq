@@ -13,7 +13,6 @@ import (
 	"github.com/mogenius/punq/kubernetes"
 )
 
-// versionCmd represents the version command
 var clusterCmd = &cobra.Command{
 	Use:   "cluster",
 	Short: "Print information and exit.",

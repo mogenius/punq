@@ -9,6 +9,7 @@ __debug*
 
 build-push-ghcr.sh
 build-client.sh
+own-context.yaml
 
 .DS_Store
 

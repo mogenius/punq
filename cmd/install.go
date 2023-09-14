@@ -5,8 +5,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/mogenius/punq/services"
 	"os"
+
+	"github.com/mogenius/punq/services"
 
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/utils"
@@ -15,7 +16,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// installCmd represents the install command
 var installCmd = &cobra.Command{
 	Use:   "install",
 	Short: "Install the application into your cluster without auto-removal.",
