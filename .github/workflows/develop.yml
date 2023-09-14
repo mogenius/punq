@@ -1,4 +1,4 @@
-name: Build, Package, Release
+name: develop
 
 on:
   push:
