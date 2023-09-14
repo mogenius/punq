@@ -1,5 +1,34 @@
 
-<<<<<<< HEAD
+### [1.2.1](https://github.com/mogenius/punq/compare/v1.2.0...v1.2.1) (2023-09-14)
+
+
+### Bug Fixes
+
+* added swagger configuration to missing routes, refined routes and made slight fixes. ([dd5aa0a](https://github.com/mogenius/punq/commit/dd5aa0a171754bf4e751a7c334c1c9faa629ab15))
+* all describes are working again. added x-content-id header to swagger. ([b10e7c4](https://github.com/mogenius/punq/commit/b10e7c479cdb4e7e1c8ddf2bcec49a63cc419192))
+* context-id introduced. ([e9ea9b2](https://github.com/mogenius/punq/commit/e9ea9b2de59363d1692a2669c8ad2da694c543d9))
+* context-id introduced. ([419f88f](https://github.com/mogenius/punq/commit/419f88f4b816cd2098a6096d3955dc0d511d9e0f))
+* context-id introduced. ([7ed9bda](https://github.com/mogenius/punq/commit/7ed9bdae697e26592a549e3e459460bd9470dcba))
+* generate swagger ([44caa5f](https://github.com/mogenius/punq/commit/44caa5f2a685ad0d988c0ecd31331cd8d445f2ae))
+* minor updates. prepared code for exec. ([cc5c467](https://github.com/mogenius/punq/commit/cc5c467f992664f0320344fb2b6fae92e7acddf8))
+* test. ([190e020](https://github.com/mogenius/punq/commit/190e0202b0eb280678fcb4fd0b79e35c0edc345c))
+* test. ([e342d2b](https://github.com/mogenius/punq/commit/e342d2b2e4ff8696d3b4627a524716d67d7960bd))
+* test. ([a7f2698](https://github.com/mogenius/punq/commit/a7f2698410f63d3270d81d2d124b0f373dfdcb23))
+* test. ([cfe2c9d](https://github.com/mogenius/punq/commit/cfe2c9d7935e9eda5ac5611f25a7559e51d15cf4))
+* test. ([24b8f83](https://github.com/mogenius/punq/commit/24b8f83d8766946b7d96d31269ea211b7238efb9))
+* test. ([89da09d](https://github.com/mogenius/punq/commit/89da09d76eb8af0ebdca1115b18f735c1c160454))
+* test. ([8c31708](https://github.com/mogenius/punq/commit/8c317089685fe672f780c3098a0837950613a8bf))
+* test. ([c520c9e](https://github.com/mogenius/punq/commit/c520c9e1a2de70aaf8a0d138b6f9d320124e176f))
+* test. ([f3c7e9d](https://github.com/mogenius/punq/commit/f3c7e9d61348b6849c6ee9260cc837888f8006ec))
+* test. ([867bae2](https://github.com/mogenius/punq/commit/867bae284efdffc2aafe7179504aa5edf037a878))
+* test. ([6d51d8b](https://github.com/mogenius/punq/commit/6d51d8ba5097cb200a3e319b64b01e049e193f9f))
+* test. ([d0885d3](https://github.com/mogenius/punq/commit/d0885d3c7afded54c08882906e9ae3b6946430e4))
+* test. ([f0c5411](https://github.com/mogenius/punq/commit/f0c54110f060656058b8ce2189d0fb3fd6dc1d98))
+* test. ([969db3c](https://github.com/mogenius/punq/commit/969db3c8e33cbb242cb6d8e622662d469902e6e6))
+* test. ([e01ff96](https://github.com/mogenius/punq/commit/e01ff9630e3fde1de29ba953f6ad39255dbedf71))
+* workload group route fix ([4fb42a5](https://github.com/mogenius/punq/commit/4fb42a51e81ae788816a9adf67c4f169641ac632))
+* workload routes ([2131d1f](https://github.com/mogenius/punq/commit/2131d1f1a595402a832f8fa9cf2f8861fa895338))
+
 ## [1.2.0](https://github.com/mogenius/punq/compare/v1.1.43...v1.2.0) (2023-09-08)
 
 
