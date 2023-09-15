@@ -40,10 +40,7 @@ jobs:
           standard-version --header ""
           git push --follow-tags origin main
 
-      #
-      # TODO: NPM RUN BUILD GOES HERE
-      #
-      - name: npm run build
+      - name: download and inject punq-frontend
         run: |
           curl https://github.com/mogenius/punq-frontend/releases/download/latest/latest.tar.gz -L -o ui.tar.gz
           mkdir -p ui/dist
