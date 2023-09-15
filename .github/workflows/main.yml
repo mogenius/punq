@@ -51,14 +51,14 @@ jobs:
         with:
           go-version: '1.21'
 
+      - name: Authenticate GitHub CLI
+        run: gh auth login --with-token <<< "${{ secrets.PUNQ_TOKEN }}"
+
       - name: Execute make all
         uses: actions/setup-go@v2
         with:
           go-version: '1.21'
       - run: make all
-
-      - name: Authenticate GitHub CLI
-        run: gh auth login --with-token <<< "${{ secrets.PUNQ_TOKEN }}"
 
       - name: Create release
         run: |
