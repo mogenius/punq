@@ -1,4 +1,6 @@
 
+### [1.2.9](https://github.com/mogenius/punq/compare/v1.2.8...v1.2.9) (2023-09-15)
+
 ### [1.2.8](https://github.com/mogenius/punq/compare/v1.2.7...v1.2.8) (2023-09-15)
 
 
