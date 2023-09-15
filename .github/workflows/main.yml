@@ -1,18 +1,21 @@
-name: Build, Package, Release
+name: MAIN
 
 on:
   push:
     branches:
       - main
+  repository_dispatch:
+    types: [build-from-punq-frontend]
 
 env:
   IMAGE_NAME: ghcr.io/mogenius/punq
   DOCKERFILE: Dockerfile-Operator
-  VERSION: 
+  VERSION:
+  HOME: /root
 
 jobs:
   prepare:
-    runs-on: self-hosted
+    runs-on: [self-hosted, X64]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,24 +32,31 @@ jobs:
       - name: Create Sematic Release Version
         run: |
           # npm install -g standard-version
-          export HOME=/root
+          # export HOME=/root
           git config --system http.sslVerify false
           git config --global user.email "punqs@mogenius.com"
           git config --global user.name "punq"
           git config --global credential.helper cache
           standard-version --header ""
-          git push --follow-tags origin develop
+          git push --follow-tags origin main
 
       #
       # TODO: NPM RUN BUILD GOES HERE
       #
       - name: npm run build
         run: |
-          mkdir ui/dist
-          cp ui/index.html ui/dist/index.html
+          curl https://github.com/mogenius/punq-frontend/releases/download/latest/latest.tar.gz -L -o ui.tar.gz
+          mkdir -p ui/dist
+          tar -xzf ui.tar.gz -C ui/dist
+
+      - name: Authenticate GitHub CLI
+        run: gh auth login --with-token <<< "${{ secrets.PUNQ_TOKEN }}"
 
       - name: Execute make all
-        run: make all
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+      - run: make all
 
       - name: Create release
         run: |
