@@ -93,6 +93,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/context/info": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Context"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ClusterInfoDto"
+                        }
+                    }
+                }
+            }
+        },
         "/context/{ctxId}": {
             "get": {
                 "security": [
@@ -6737,6 +6760,102 @@ const docTemplate = `{
                 "USER",
                 "ADMIN"
             ]
+        },
+        "dtos.ClusterInfoDto": {
+            "type": "object",
+            "properties": {
+                "clusterStatus": {
+                    "$ref": "#/definitions/dtos.ClusterStatusDto"
+                },
+                "nodeStats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dtos.NodeStat"
+                    }
+                }
+            }
+        },
+        "dtos.ClusterStatusDto": {
+            "type": "object",
+            "properties": {
+                "clusterName": {
+                    "type": "string"
+                },
+                "cpu": {
+                    "type": "integer"
+                },
+                "cpuLimit": {
+                    "type": "integer"
+                },
+                "currentTime": {
+                    "type": "string"
+                },
+                "ephemeralStorageLimit": {
+                    "type": "string"
+                },
+                "kubernetesVersion": {
+                    "type": "string"
+                },
+                "memory": {
+                    "type": "string"
+                },
+                "memoryLimit": {
+                    "type": "string"
+                },
+                "platform": {
+                    "type": "string"
+                },
+                "pods": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dtos.NodeStat": {
+            "type": "object",
+            "required": [
+                "architecture",
+                "cpus",
+                "ephemeralInBytes",
+                "kubletVersion",
+                "maschineId",
+                "maxPods",
+                "memoryInBytes",
+                "name",
+                "osImage",
+                "osType"
+            ],
+            "properties": {
+                "architecture": {
+                    "type": "string"
+                },
+                "cpus": {
+                    "type": "integer"
+                },
+                "ephemeralInBytes": {
+                    "type": "integer"
+                },
+                "kubletVersion": {
+                    "type": "string"
+                },
+                "maschineId": {
+                    "type": "string"
+                },
+                "maxPods": {
+                    "type": "integer"
+                },
+                "memoryInBytes": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "osImage": {
+                    "type": "string"
+                },
+                "osType": {
+                    "type": "string"
+                }
+            }
         },
         "dtos.PunqAccess": {
             "type": "object",
