@@ -1,14 +1,14 @@
 {
-    "version": "1.2.11",
+    "version": "1.2.14",
     "license": "MIT",
     "homepage": "https://punq.dev",
     "bin": "punq.exe",
-    "pre_install": "Rename-Item \"$dir\\punq-v1.2.11-windows-amd64\" punq.exe",
+    "pre_install": "Rename-Item \"$dir\\punq-v1.2.14-windows-amd64\" punq.exe",
     "description": "View your kubernetes workloads relatively neat!",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/mogenius/punq/releases/download/v1.2.11/punq-v1.2.11-windows-amd64",
-            "hash": "dd360015253ed987751f47cab32cd3b238a137597f2dcb215246b141410c7193"
+            "url": "https://github.com/mogenius/punq/releases/download/v1.2.14/punq-v1.2.14-windows-amd64",
+            "hash": "a294bc15a4cfcf7c368139fa9b04e10dbb4c53cd8c63a18e7675e1e2e3f85be2"
         }
     }
 }
