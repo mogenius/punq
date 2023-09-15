@@ -9,6 +9,72 @@ definitions:
     - READER
     - USER
     - ADMIN
+  dtos.ClusterInfoDto:
+    properties:
+      clusterStatus:
+        $ref: '#/definitions/dtos.ClusterStatusDto'
+      nodeStats:
+        items:
+          $ref: '#/definitions/dtos.NodeStat'
+        type: array
+    type: object
+  dtos.ClusterStatusDto:
+    properties:
+      clusterName:
+        type: string
+      cpu:
+        type: integer
+      cpuLimit:
+        type: integer
+      currentTime:
+        type: string
+      ephemeralStorageLimit:
+        type: string
+      kubernetesVersion:
+        type: string
+      memory:
+        type: string
+      memoryLimit:
+        type: string
+      platform:
+        type: string
+      pods:
+        type: integer
+    type: object
+  dtos.NodeStat:
+    properties:
+      architecture:
+        type: string
+      cpus:
+        type: integer
+      ephemeralInBytes:
+        type: integer
+      kubletVersion:
+        type: string
+      maschineId:
+        type: string
+      maxPods:
+        type: integer
+      memoryInBytes:
+        type: integer
+      name:
+        type: string
+      osImage:
+        type: string
+      osType:
+        type: string
+    required:
+    - architecture
+    - cpus
+    - ephemeralInBytes
+    - kubletVersion
+    - maschineId
+    - maxPods
+    - memoryInBytes
+    - name
+    - osImage
+    - osType
+    type: object
   dtos.PunqAccess:
     properties:
       level:
@@ -629,6 +695,19 @@ paths:
             items:
               $ref: '#/definitions/dtos.PunqContext'
             type: array
+      security:
+      - Bearer: []
+      tags:
+      - Context
+  /context/info:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.ClusterInfoDto'
       security:
       - Bearer: []
       tags:

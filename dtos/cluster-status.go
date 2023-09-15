@@ -11,6 +11,8 @@ type ClusterStatusDto struct {
 	MemoryLimit           string `json:"memoryLimit"`
 	EphemeralStorageLimit string `json:"ephemeralStorageLimit"`
 	CurrentTime           string `json:"currentTime"`
+	KubernetesVersion     string `json:"kubernetesVersion"`
+	Platform              string `json:"platform"`
 }
 
 func ClusterStatusDtoExmapleData() ClusterStatusDto {
@@ -23,5 +25,7 @@ func ClusterStatusDtoExmapleData() ClusterStatusDto {
 		MemoryLimit:           "1456",
 		EphemeralStorageLimit: "166",
 		CurrentTime:           time.Now().Format(time.RFC3339),
+		KubernetesVersion:     "v1.27.2",
+		Platform:              "linux/arm64",
 	}
 }

@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"context"
 	"fmt"
+	version2 "k8s.io/apimachinery/pkg/version"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -273,6 +274,15 @@ func ClusterStatus(contextId *string) dtos.ClusterStatusDto {
 		ephemeralStorageLimit += pod.EphemeralStorageLimit
 	}
 
+	kubernetesVersion := ""
+	platform := ""
+
+	info := KubernetesVersion(contextId)
+	if info != nil {
+		kubernetesVersion = info.String()
+		platform = info.Platform
+	}
+
 	return dtos.ClusterStatusDto{
 		ClusterName:           utils.CONFIG.Kubernetes.ClusterName,
 		Pods:                  len(result),
@@ -281,7 +291,28 @@ func ClusterStatus(contextId *string) dtos.ClusterStatusDto {
 		Memory:                utils.BytesToHumanReadable(memory),
 		MemoryLimit:           utils.BytesToHumanReadable(memoryLimit),
 		EphemeralStorageLimit: utils.BytesToHumanReadable(ephemeralStorageLimit),
+		KubernetesVersion:     kubernetesVersion,
+		Platform:              platform,
 	}
+}
+
+func KubernetesVersion(contextId *string) *version2.Info {
+
+	kubeProvider := NewKubeProvider(contextId)
+	info, err := kubeProvider.ClientSet.Discovery().ServerVersion()
+	if err != nil {
+		logger.Log.Error("Error KubernetesVersion:", err)
+		return nil
+	}
+	return info
+}
+
+func ClusterInfo(contextId *string) dtos.ClusterInfoDto {
+	result := dtos.ClusterInfoDto{
+		ClusterStatus: ClusterStatus(contextId),
+		NodeStats:     GetNodeStats(contextId),
+	}
+	return result
 }
 
 func listAllPods(contextId *string) []v1.Pod {
