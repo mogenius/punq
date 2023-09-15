@@ -140,13 +140,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.PUNQ_TOKEN }}
 
-      #
-      # TODO: NPM RUN BUILD GOES HERE
-      #
-      - name: npm run build
+      - name: download and inject punq-frontend
         run: |
-          mkdir ui/dist
-          cp ui/index.html ui/dist/index.html
+          curl https://github.com/mogenius/punq-frontend/releases/download/latest/latest.tar.gz -L -o ui.tar.gz
+          mkdir -p ui/dist
+          tar -xzf ui.tar.gz -C ui/dist
 
       - name: Build and push AMD64 image
         run: |
@@ -174,13 +172,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.PUNQ_TOKEN }}
       
-      #
-      # TODO: NPM RUN BUILD GOES HERE
-      #
-      - name: npm run build
+      - name: download and inject punq-frontend
         run: |
-          mkdir ui/dist
-          cp ui/index.html ui/dist/index.html
+          curl https://github.com/mogenius/punq-frontend/releases/download/latest/latest.tar.gz -L -o ui.tar.gz
+          mkdir -p ui/dist
+          tar -xzf ui.tar.gz -C ui/dist
 
       - name: Build and push ARM64-linux image
         run: |
