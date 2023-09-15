@@ -1,4 +1,11 @@
 
+### [1.2.13](https://github.com/mogenius/punq/compare/v1.2.12...v1.2.13) (2023-09-15)
+
+
+### Bug Fixes
+
+* pipeline improved. ([5feef96](https://github.com/mogenius/punq/commit/5feef96e6ceb7113d72aef75d2b1d0ab5b2368c6))
+
 ### [1.2.12](https://github.com/mogenius/punq/compare/v1.2.11...v1.2.12) (2023-09-15)
 
 ### [1.2.11](https://github.com/mogenius/punq/compare/v1.2.10...v1.2.11) (2023-09-15)
