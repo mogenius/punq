@@ -1,4 +1,11 @@
 
+### [1.3.49](https://github.com/mogenius/punq/compare/dev1.3.48...dev1.3.49) (2023-09-15)
+
+
+### Bug Fixes
+
+* add pod logs stream ([9a3b731](https://github.com/mogenius/punq/commit/9a3b7310c227ec17dca3a822f64d288a2e602f6b))
+
 ### [1.3.48](https://github.com/mogenius/punq/compare/dev1.3.47...dev1.3.48) (2023-09-15)
 
 
