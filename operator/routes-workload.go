@@ -37,6 +37,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		{
 			namespaceWorkloadRoutes.GET("/", allNamespaces)                                                    // PARAM: -
 			namespaceWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeNamespaces)          // PARAM: name
+			namespaceWorkloadRoutes.PATCH("/", patchNamespace)                                                 // BODY: json-object
 			namespaceWorkloadRoutes.DELETE("/:name", Auth(dtos.ADMIN), validateParam("name"), deleteNamespace) // PARAM: name
 			namespaceWorkloadRoutes.POST("", createNamespace)                                                  // BODY: yaml-object
 		}
@@ -455,6 +456,22 @@ func createNamespace(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, kubernetes.CreateK8sNamespace(data, services.GetGinContextId(c)))
+}
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /workload/namespace [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func patchNamespace(c *gin.Context) {
+	var data v1.Namespace
+	err := c.MustBindWith(&data, binding.JSON)
+	if err != nil {
+		utils.MalformedMessage(c, err.Error())
+		return
+	}
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sNamespace(data, services.GetGinContextId(c)))
 }
 
 // NAMESPACES

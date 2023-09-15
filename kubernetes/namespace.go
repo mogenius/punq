@@ -125,6 +125,16 @@ func CreateK8sNamespace(data v1.Namespace, contextId *string) utils.K8sWorkloadR
 	return WorkloadResult(nil, nil)
 }
 
+func UpdateK8sNamespace(data v1.Namespace, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
+	client := kubeProvider.ClientSet.CoreV1().Namespaces()
+	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	return WorkloadResult(nil, nil)
+}
+
 func NewK8sNamespace() K8sNewWorkload {
 	return NewWorkload(
 		RES_NAMESPACE,
