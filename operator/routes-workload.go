@@ -36,7 +36,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		namespaceWorkloadRoutes := workloadRoutes.Group("/namespace", Auth(dtos.USER), RequireContextId())
 		{
 			namespaceWorkloadRoutes.GET("/", allNamespaces)                                                    // PARAM: -
-			namespaceWorkloadRoutes.GET("/:name", validateParam("name"), describeNamespaces)                   // PARAM: name
+			namespaceWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeNamespaces)          // PARAM: name
 			namespaceWorkloadRoutes.DELETE("/:name", Auth(dtos.ADMIN), validateParam("name"), deleteNamespace) // PARAM: name
 			namespaceWorkloadRoutes.POST("", createNamespace)                                                  // BODY: yaml-object
 		}
@@ -432,8 +432,8 @@ func allNamespaces(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {array} v1.Namespace
-// @Router /workload/namespace/{name} [get]
-// @Param name path string false  "name of the namespace"
+// @Router /workload/namespace/describe/{name} [get]
+// @Param name path string true "name of the namespace"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func describeNamespaces(c *gin.Context) {
