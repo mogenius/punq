@@ -1,4 +1,11 @@
 
+### [1.3.48](https://github.com/mogenius/punq/compare/dev1.3.47...dev1.3.48) (2023-09-15)
+
+
+### Bug Fixes
+
+* repaired return types for create and patch. ([13021de](https://github.com/mogenius/punq/commit/13021de7f116e25b95836848ce2f791b51717c28))
+
 ### [1.3.47](https://github.com/mogenius/punq/compare/dev1.3.46...dev1.3.47) (2023-09-15)
 
 
