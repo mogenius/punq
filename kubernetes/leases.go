@@ -39,11 +39,11 @@ func GetLeas(namespaceName string, name string, contextId *string) (*v1.Lease, e
 func UpdateK8sLease(data v1.Lease, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoordinationV1().Leases(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sLease(data v1.Lease, contextId *string) utils.K8sWorkloadResult {
@@ -77,11 +77,11 @@ func DescribeK8sLease(namespace string, name string, contextId *string) utils.K8
 func CreateK8sLease(data v1.Lease, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoordinationV1().Leases(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sLease() K8sNewWorkload {

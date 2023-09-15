@@ -64,11 +64,11 @@ func AllK8sServices(namespaceName string, contextId *string) utils.K8sWorkloadRe
 func UpdateK8sService(data v1.Service, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().Services(data.ObjectMeta.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sService(data v1.Service, contextId *string) utils.K8sWorkloadResult {
@@ -102,11 +102,11 @@ func DescribeK8sService(namespace string, name string, contextId *string) utils.
 func CreateK8sService(data v1.Service, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().Services(data.ObjectMeta.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sService() K8sNewWorkload {

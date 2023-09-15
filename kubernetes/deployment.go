@@ -55,11 +55,11 @@ func GetK8sDeployment(namespaceName string, name string, contextId *string) (*v1
 func UpdateK8sDeployment(data v1.Deployment, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sDeployment(data v1.Deployment, contextId *string) utils.K8sWorkloadResult {
@@ -93,11 +93,11 @@ func DescribeK8sDeployment(namespace string, name string, contextId *string) uti
 func CreateK8sDeployment(data v1.Deployment, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sDeployment() K8sNewWorkload {

@@ -66,11 +66,11 @@ func AllK8sSecrets(namespaceName string, contextId *string) utils.K8sWorkloadRes
 func UpdateK8sSecret(data v1.Secret, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(data.Namespace)
-	_, err := secretClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := secretClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sSecret(data v1.Secret, contextId *string) utils.K8sWorkloadResult {
@@ -104,11 +104,11 @@ func DescribeK8sSecret(namespace string, name string, contextId *string) utils.K
 func CreateK8sSecret(data v1.Secret, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().Secrets(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sSecret() K8sNewWorkload {
