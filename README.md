@@ -16,6 +16,8 @@
       <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/mogenius/punq">
     </a>
 </p>
+[![MAIN](https://github.com/mogenius/punq/actions/workflows/main.yml/badge.svg)](https://github.com/mogenius/punq/actions/workflows/main.yml)
+[![develop](https://github.com/mogenius/punq/actions/workflows/develop.yml/badge.svg?branch=develop)](https://github.com/mogenius/punq/actions/workflows/develop.yml)
 
 # punq
 
