@@ -1,7 +1,12 @@
 package operator
 
 import (
+	"bufio"
+	"context"
+	"github.com/mogenius/punq/logger"
+	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/utils"
@@ -47,6 +52,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		{
 			podWorkloadRoutes.GET("/", allPods)
 			podWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describePod) // PARAM: namespace
+			podWorkloadRoutes.GET("/logs/:namespace/:name", validateParam("namespace", "name"), logsPod)         // PARAM: namespace
 			podWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deletePod)         // PARAM: namespace, name
 			podWorkloadRoutes.PATCH("/", patchPod)                                                               // BODY: json-object
 			podWorkloadRoutes.POST("/", createPod)                                                               // BODY: yaml-object
@@ -518,6 +524,67 @@ func describePod(c *gin.Context) {
 	namespace := c.Param("namespace")
 	name := c.Param("name")
 	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPod(namespace, name, services.GetGinContextId(c)))
+}
+
+// @Tags Workloads
+// @Produce text/event-stream
+// @Success 200 {string} string "streaming data"
+// @Router /workload/pod/logs/{namespace}/{name} [get]
+// @Param namespace path string true  "namespace name"
+// @Param name path string true  "pod name"
+// @Param since-seconds query string false  "since-seconds"
+// @Security Bearer
+// @Param X-Context-Id header string true "X-Context-Id"
+func logsPod(c *gin.Context) {
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+
+	i, err := strconv.ParseInt(c.Query("since-seconds"), 10, 64)
+	if err != nil {
+		i = -1
+	}
+
+	// req, err := kubernetes.StreamLog(namespace, name, i, services.GetGinContextId(c))
+	req, err := kubernetes.StreamLog(namespace, name, i, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	rc, err := req.Stream(context.TODO())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rc.Close()
+
+	// set header
+	c.Writer.Header().Set("Content-Type", "text/event-stream")
+	c.Writer.Header().Set("Cache-Control", "no-cache")
+	c.Writer.Header().Set("Connection", "keep-alive")
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+
+	// get CloseNotify channel
+	closeChannel := c.Writer.CloseNotify()
+
+	go func() {
+		<-closeChannel
+		logger.Log.Debug("Client closed the connection!")
+	}()
+
+	logger.Log.Debug("Client opening the connection!")
+
+	c.Stream(func(w io.Writer) bool {
+		line, err := bufio.NewReader(rc).ReadBytes('\n')
+		if err != nil {
+			return false
+		}
+		_, err = w.Write(line)
+		if err != nil {
+			return false
+		}
+		return true
+	})
 }
 
 // @Tags Workloads

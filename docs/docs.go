@@ -4484,6 +4484,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/workload/pod/logs/{namespace}/{name}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "pod name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "since-seconds",
+                        "name": "since-seconds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "X-Context-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "streaming data",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/workload/pod/{namespace}/{name}": {
             "delete": {
                 "security": [

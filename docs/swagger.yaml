@@ -3371,6 +3371,39 @@ paths:
       - Bearer: []
       tags:
       - Workloads
+  /workload/pod/logs/{namespace}/{name}:
+    get:
+      parameters:
+      - description: namespace name
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: pod name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: since-seconds
+        in: query
+        name: since-seconds
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: X-Context-Id
+        required: true
+        type: string
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: streaming data
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
   /workload/priority-classes:
     get:
       parameters:
