@@ -1,4 +1,11 @@
 
+### [1.3.46](https://github.com/mogenius/punq/compare/dev1.3.45...dev1.3.46) (2023-09-15)
+
+
+### Bug Fixes
+
+* repaired describe namespace route. ([f53eba7](https://github.com/mogenius/punq/commit/f53eba7f4ec88716e2895b002b527cc5594efd82))
+
 ### [1.3.45](https://github.com/mogenius/punq/compare/dev1.3.44...dev1.3.45) (2023-09-15)
 
 
