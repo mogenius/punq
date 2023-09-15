@@ -30,9 +30,9 @@ var proxyCmd = &cobra.Command{
 
 		readyCh := make(chan struct{})
 		stopCh := make(chan struct{}, 1)
-		go kubernetes.StartPortForward(utils.CONFIG.Browser.Port, utils.CONFIG.Kubernetes.ContainerPort, readyCh, stopCh, &contextId)
+		go kubernetes.StartPortForward(utils.CONFIG.Backend.Port, utils.CONFIG.Backend.Port, readyCh, stopCh, &contextId)
 
-		url := fmt.Sprintf("http://%s:%d/punq", utils.CONFIG.Browser.Host, utils.CONFIG.Browser.Port)
+		url := fmt.Sprintf("http://%s:%d/punq", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port)
 
 		select {
 		case <-readyCh:

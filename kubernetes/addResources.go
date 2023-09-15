@@ -69,10 +69,14 @@ func addService(provider *KubeProvider) {
 	punqService := utils.InitPunqService()
 	punqService.ObjectMeta.Name = SERVICENAME
 	punqService.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
-	punqService.Spec.Ports[0].Name = fmt.Sprintf("8080-%s", SERVICENAME)
+	punqService.Spec.Ports[0].Name = fmt.Sprintf("%d-%s-backend", utils.CONFIG.Backend.Port, SERVICENAME)
 	punqService.Spec.Ports[0].Protocol = core.ProtocolTCP
-	punqService.Spec.Ports[0].Port = 8080
-	punqService.Spec.Ports[0].TargetPort = intstr.Parse("8080")
+	punqService.Spec.Ports[0].Port = int32(utils.CONFIG.Backend.Port)
+	punqService.Spec.Ports[0].TargetPort = intstr.Parse(fmt.Sprint(utils.CONFIG.Backend.Port))
+	punqService.Spec.Ports[1].Name = fmt.Sprintf("%d-%s-frontend", utils.CONFIG.Frontend.Port, SERVICENAME)
+	punqService.Spec.Ports[1].Protocol = core.ProtocolTCP
+	punqService.Spec.Ports[1].Port = int32(utils.CONFIG.Frontend.Port)
+	punqService.Spec.Ports[1].TargetPort = intstr.Parse(fmt.Sprint(utils.CONFIG.Frontend.Port))
 	punqService.Spec.Selector["app"] = version.Name
 
 	serviceClient := provider.ClientSet.CoreV1().Services(utils.CONFIG.Kubernetes.OwnNamespace)
@@ -333,7 +337,7 @@ func addDeployment(kubeProvider *KubeProvider) {
 	deploymentContainer.WithName(version.Name)
 	deploymentContainer.WithImage(DEPLOYMENTNAME())
 
-	deploymentContainer.WithPorts(applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Kubernetes.ContainerPort)))
+	deploymentContainer.WithPorts(applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Backend.Port)).WithContainerPort(int32(utils.CONFIG.Frontend.Port)))
 
 	// envVars := []applyconfcore.EnvVarApplyConfiguration{}
 	// envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{

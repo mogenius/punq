@@ -16,9 +16,16 @@
       <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/mogenius/punq">
     </a>
 </p>
+<p align="center">
+    <a href="https://github.com/mogenius/punq">
+      <img alt="GitHub repo size" src="https://github.com/mogenius/punq/actions/workflows/main.yml/badge.svg">
+    </a>
+    <a href="https://github.com/mogenius/punq">
+      <img alt="GitHub repo size" src="https://github.com/mogenius/punq/actions/workflows/develop.yml/badge.svg?branch=develop">
+    </a>
+</p>
 
 # punq
-
 punq provides a WebApp and CLI to easily manage multiple Kubernetes clusters. It comes with integrated team collaboration, logs, and workload editor for clusters across different infrastructures. The goal of this project is to make DevOps' lifes easier by improving Kubernetes operations especially in teams.
 
 ## How it works
