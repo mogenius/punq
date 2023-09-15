@@ -45,8 +45,8 @@ jobs:
       #
       - name: npm run build
         run: |
-          mkdir ui/dist
-          cp ui/index.html ui/dist/index.html
+          curl https://github.com/mogenius/punq-frontend/releases/download/latest/latest.tar.gz -L -o ui.tar.gz
+          tar -xzf ui.tar.gz -C ui/dist
 
       - name: Authenticate GitHub CLI
         run: gh auth login --with-token <<< "${{ secrets.PUNQ_TOKEN }}"
