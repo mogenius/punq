@@ -1,4 +1,13 @@
 
+### [1.2.17](https://github.com/mogenius/punq/compare/v1.2.16...v1.2.17) (2023-09-15)
+
+
+### Bug Fixes
+
+* multiple improvements. ([dc5a303](https://github.com/mogenius/punq/commit/dc5a3030167d6c260ea8d13c0fbad2f67905e8a8))
+* multiple improvements. ([c7340b5](https://github.com/mogenius/punq/commit/c7340b5d5681baf2fb2237949e9f0f12e3a24d98))
+* multiple improvements. ([80e5858](https://github.com/mogenius/punq/commit/80e5858aadcdaba86388305923cc5f98e2950b8a))
+
 ### [1.2.16](https://github.com/mogenius/punq/compare/v1.2.15...v1.2.16) (2023-09-15)
 
 
