@@ -1,5 +1,26 @@
 
-<<<<<<< HEAD
+### [1.3.39](https://github.com/mogenius/punq/compare/dev1.3.38...dev1.3.39) (2023-09-15)
+
+
+### Bug Fixes
+
+* added local cmd. ([8244009](https://github.com/mogenius/punq/commit/82440098ddea86baec04a0c28598fef9099d1b50))
+* pipeline improved. ([53603f0](https://github.com/mogenius/punq/commit/53603f07358f43e865d23bd21d6d9e277a09a5a8))
+* pipeline improved. ([924b8c7](https://github.com/mogenius/punq/commit/924b8c72f101096470c4e3d149a86c3a7413b180))
+* pipeline improved. ([5feef96](https://github.com/mogenius/punq/commit/5feef96e6ceb7113d72aef75d2b1d0ab5b2368c6))
+* pipeline improved. ([7df5312](https://github.com/mogenius/punq/commit/7df531234167c80c4b48906ee5c61598f26de9ec))
+* pipeline improved. ([b92cbbc](https://github.com/mogenius/punq/commit/b92cbbcc47dffc425327184d350c4f5526ce1d78))
+* pipeline improved. ([8339563](https://github.com/mogenius/punq/commit/8339563cc539ffc5ee7d96344b9257fd618d308f))
+* pipeline improved. ([f98087b](https://github.com/mogenius/punq/commit/f98087bd54f178c3c109757ff735948bdb1c9f36))
+* pipeline improved. ([1134d63](https://github.com/mogenius/punq/commit/1134d633f49e3c57ef6feeda434e5fff03d17803))
+* pipeline improved. ([3f2ea36](https://github.com/mogenius/punq/commit/3f2ea3652f06bc03168ad27ca26a4db2fc337b60))
+* pipeline improved. ([c1f972d](https://github.com/mogenius/punq/commit/c1f972d825cb8fe8da331150f3a54a6ccb4e6fdf))
+* pipeline improved. ([954a0cd](https://github.com/mogenius/punq/commit/954a0cdf665d6e7de4060a2455bd396dd8e20a00))
+* pipeline improved. ([abe91b9](https://github.com/mogenius/punq/commit/abe91b94f0ee98eb741db73647e86265430f5d53))
+* pipeline improved. ([430fdc7](https://github.com/mogenius/punq/commit/430fdc77cfeedd6942b79e4690063df16f7d94ef))
+* pipeline improved. ([8b970af](https://github.com/mogenius/punq/commit/8b970af5e4e088c9b295a5b36f4ff2d5052a5409))
+* pipeline improved. ([d7c8aac](https://github.com/mogenius/punq/commit/d7c8aac580f470e43c031caa76d90e2b4edd1524))
+
 ### [1.3.38](https://github.com/mogenius/punq/compare/dev1.3.37...dev1.3.38) (2023-09-15)
 =======
 ### [1.2.13](https://github.com/mogenius/punq/compare/v1.2.12...v1.2.13) (2023-09-15)
