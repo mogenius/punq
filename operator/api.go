@@ -3,21 +3,19 @@ package operator
 import (
 	"embed"
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/mogenius/punq/docs"
-	"github.com/mogenius/punq/logger"
-	"github.com/mogenius/punq/version"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"io/fs"
 	"net/http"
 	"path"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/mogenius/punq/logger"
+	"github.com/mogenius/punq/utils"
 )
 
 var HtmlDirFs embed.FS
 
-func InitGin() {
+func InitFrontend() {
 	//gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	config := cors.DefaultConfig()
@@ -26,17 +24,20 @@ func InitGin() {
 
 	router.Use(cors.New(config))
 
-	router.StaticFS("/punq", embedFs())
+	router.StaticFS("/", embedFs())
 
-	docs.SwaggerInfo.BasePath = "/"
-	docs.SwaggerInfo.Title = "punq API documentation"
-	docs.SwaggerInfo.Description = "This is the documentation of all available API calls for the punq UI."
-	docs.SwaggerInfo.Version = version.Ver
-	//docs.SwaggerInfo.Host = fmt.Sprintf("0.0.0.0:%d", utils.CONFIG.Browser.Port)
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler,
-		//ginSwagger.URL(fmt.Sprintf("http://%s:%d/swagger/doc.json", utils.CONFIG.Browser.Host, utils.CONFIG.Browser.Port)),
-		ginSwagger.DefaultModelsExpandDepth(5),
-		ginSwagger.DocExpansion("none")))
+	err := router.Run(fmt.Sprintf(":%d", utils.CONFIG.Frontend.Port))
+	logger.Log.Errorf("Frontend (gin) stopped with error: %s", err.Error())
+}
+
+func InitBackend() {
+	// gin.SetMode(gin.ReleaseMode)
+	router := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "authorization"}
+
+	router.Use(cors.New(config))
 
 	InitContextRoutes(router)
 	InitAuthRoutes(router)
@@ -44,8 +45,8 @@ func InitGin() {
 	InitGeneralRoutes(router)
 	InitWorkloadRoutes(router)
 
-	err := router.Run(fmt.Sprintf(":%d", OPERATOR_PORT))
-	logger.Log.Errorf("Gin stopped with error: %s", err.Error())
+	err := router.Run(fmt.Sprintf(":%d", utils.CONFIG.Backend.Port))
+	logger.Log.Errorf("Operator (gin) stopped with error: %s", err.Error())
 }
 
 func embedFs() http.FileSystem {

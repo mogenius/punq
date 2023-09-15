@@ -1,5 +1,3 @@
 package operator
 
-const (
-	OPERATOR_PORT = 8080
-)
+// nothing here yet

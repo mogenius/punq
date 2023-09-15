@@ -26,9 +26,9 @@ var localCmd = &cobra.Command{
 		contexts := services.ListContexts()
 		logger.Log.Noticef("Initialized operator with %d contexts.", len(contexts))
 
-		utils.OpenBrowser(fmt.Sprintf("http://%s:%d/punq", utils.CONFIG.Browser.Host, utils.CONFIG.Browser.Port))
-
-		operator.InitGin()
+		go operator.InitFrontend()
+		utils.OpenBrowser(fmt.Sprintf("http://%s:%d", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port))
+		operator.InitBackend()
 	},
 }
 

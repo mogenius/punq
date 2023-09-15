@@ -30,15 +30,18 @@ type ClusterSecret struct {
 }
 
 type Config struct {
-	Browser struct {
-		Host string `yaml:"host" env:"browser_host" env-description:"Host of the browser app."`
-		Port int    `yaml:"port" env:"browser_port" env-description:"Port of the browser app."`
-	} `yaml:"browser"`
+	Frontend struct {
+		Host string `yaml:"host" env:"frontend_host" env-description:"Host of the frontend server."`
+		Port int    `yaml:"port" env:"frontend_port" env-description:"Port of the frontend server."`
+	} `yaml:"frontend"`
+	Backend struct {
+		Host string `yaml:"host" env:"backend_host" env-description:"Host of the backend server."`
+		Port int    `yaml:"port" env:"backend_port" env-description:"Port of the backend server."`
+	} `yaml:"backend"`
 	Kubernetes struct {
-		ClusterName   string `yaml:"cluster_name" env:"cluster_name" env-description:"The Name of the Kubernetes Cluster"`
-		OwnNamespace  string `yaml:"own_namespace" env:"OWN_NAMESPACE" env-description:"The Namespace of mogenius platform"`
-		RunInCluster  bool   `yaml:"run_in_cluster" env:"run_in_cluster" env-description:"If set to true, the application will run in the cluster (using the service account token). Otherwise it will try to load your local default context." env-default:"false"`
-		ContainerPort int    `yaml:"container_port" env:"container_port" env-description:"Port of the container to listen for connections." env-default:"8080"`
+		ClusterName  string `yaml:"cluster_name" env:"cluster_name" env-description:"The Name of the Kubernetes Cluster"`
+		OwnNamespace string `yaml:"own_namespace" env:"OWN_NAMESPACE" env-description:"The Namespace of mogenius platform"`
+		RunInCluster bool   `yaml:"run_in_cluster" env:"run_in_cluster" env-description:"If set to true, the application will run in the cluster (using the service account token). Otherwise it will try to load your local default context." env-default:"false"`
 	} `yaml:"kubernetes"`
 	Misc struct {
 		Stage            string   `yaml:"stage" env:"stage" env-description:"mogenius k8s-manager stage" env-default:"prod"`
@@ -110,15 +113,18 @@ func InitConfigYaml(showDebug bool, customConfigName string, stage string) {
 }
 
 func PrintSettings() {
-	fmt.Printf("BROWSER\n")
-	fmt.Printf("Host:                     %s\n", CONFIG.Browser.Host)
-	fmt.Printf("Port:                     %d\n", CONFIG.Browser.Port)
+	fmt.Printf("Frontend\n")
+	fmt.Printf("Host:                     %s\n", CONFIG.Frontend.Host)
+	fmt.Printf("Port:                     %d\n", CONFIG.Frontend.Port)
+
+	fmt.Printf("\nBackend\n")
+	fmt.Printf("Host:                     %s\n", CONFIG.Backend.Host)
+	fmt.Printf("Port:                     %d\n", CONFIG.Backend.Port)
 
 	fmt.Printf("\nKUBERNETES\n")
 	fmt.Printf("ClusterName:              %s\n", CONFIG.Kubernetes.ClusterName)
 	fmt.Printf("OwnNamespace:             %s\n", CONFIG.Kubernetes.OwnNamespace)
 	fmt.Printf("RunInCluster:             %t\n", CONFIG.Kubernetes.RunInCluster)
-	fmt.Printf("ContainerPort:            %d\n", CONFIG.Kubernetes.ContainerPort)
 
 	fmt.Printf("\nMISC\n")
 	fmt.Printf("Stage:                    %s\n", CONFIG.Misc.Stage)
