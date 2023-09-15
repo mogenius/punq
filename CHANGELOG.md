@@ -1,4 +1,11 @@
 
+### [1.3.47](https://github.com/mogenius/punq/compare/dev1.3.46...dev1.3.47) (2023-09-15)
+
+
+### Bug Fixes
+
+* added patch namespace. ([f7c02bf](https://github.com/mogenius/punq/commit/f7c02bf2e16c7440b84545e56c03552978b0914e))
+
 ### [1.3.46](https://github.com/mogenius/punq/compare/dev1.3.45...dev1.3.46) (2023-09-15)
 
 
