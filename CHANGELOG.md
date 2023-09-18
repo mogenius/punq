@@ -1,4 +1,11 @@
 
+### [1.3.61](https://github.com/mogenius/punq/compare/dev1.3.60...dev1.3.61) (2023-09-18)
+
+
+### Bug Fixes
+
+* update logs sse ([0a65d34](https://github.com/mogenius/punq/commit/0a65d34a11fe73d46eefda394e0b836e5d14195b))
+
 ### [1.3.60](https://github.com/mogenius/punq/compare/dev1.3.59...dev1.3.60) (2023-09-18)
 
 
