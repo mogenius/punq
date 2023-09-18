@@ -1,4 +1,11 @@
 
+### [1.3.64](https://github.com/mogenius/punq/compare/dev1.3.63...dev1.3.64) (2023-09-18)
+
+
+### Bug Fixes
+
+* proxy command works again. ([42da082](https://github.com/mogenius/punq/commit/42da082b6f99f3932203bf0a2b84a8a536e6d002))
+
 ### [1.3.63](https://github.com/mogenius/punq/compare/dev1.3.62...dev1.3.63) (2023-09-18)
 
 
