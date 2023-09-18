@@ -1,4 +1,11 @@
 
+### [1.3.56](https://github.com/mogenius/punq/compare/dev1.3.55...dev1.3.56) (2023-09-18)
+
+
+### Bug Fixes
+
+* swagger updated. ([4aa83fb](https://github.com/mogenius/punq/commit/4aa83fb05b4bd9f08eb50be792d2912b2d3ea047))
+
 ### [1.3.55](https://github.com/mogenius/punq/compare/dev1.3.54...dev1.3.55) (2023-09-18)
 
 
