@@ -169,13 +169,6 @@ func Init(runsInCluster bool) {
 	RunsInCluster = runsInCluster
 }
 
-func DEPLOYMENTNAME() string {
-	if utils.CONFIG.Misc.Stage != "prod" {
-		return fmt.Sprintf("ghcr.io/mogenius/%s-dev:latest", version.Name)
-	}
-	return fmt.Sprintf("ghcr.io/mogenius/%s:v%s", version.Name, version.Ver)
-}
-
 func ListWorkloadsOnTerminal(access dtos.AccessLevel) {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)

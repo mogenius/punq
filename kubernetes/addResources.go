@@ -338,7 +338,7 @@ func addDeployment(kubeProvider *KubeProvider) {
 	deploymentContainer := applyconfcore.Container()
 	deploymentContainer.WithImagePullPolicy(core.PullAlways)
 	deploymentContainer.WithName(version.Name)
-	deploymentContainer.WithImage(DEPLOYMENTNAME())
+	deploymentContainer.WithImage(version.OperatorImage)
 
 	deploymentContainer.WithPorts(applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Backend.Port)).WithContainerPort(int32(utils.CONFIG.Frontend.Port)))
 
