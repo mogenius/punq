@@ -1,4 +1,11 @@
 
+### [1.3.65](https://github.com/mogenius/punq/compare/dev1.3.64...dev1.3.65) (2023-09-18)
+
+
+### Bug Fixes
+
+* upgrade operator added. ([3f44db9](https://github.com/mogenius/punq/commit/3f44db977204e57e4b59561845f905610a79013a))
+
 ### [1.3.64](https://github.com/mogenius/punq/compare/dev1.3.63...dev1.3.64) (2023-09-18)
 
 
