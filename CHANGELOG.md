@@ -1,4 +1,28 @@
 
+### [1.2.19](https://github.com/mogenius/punq/compare/v1.2.18...v1.2.19) (2023-09-18)
+
+
+### Bug Fixes
+
+* add pod logs stream ([9a3b731](https://github.com/mogenius/punq/commit/9a3b7310c227ec17dca3a822f64d288a2e602f6b))
+* added patch namespace. ([f7c02bf](https://github.com/mogenius/punq/commit/f7c02bf2e16c7440b84545e56c03552978b0914e))
+* contextloader improved. ([f5b0b20](https://github.com/mogenius/punq/commit/f5b0b207d215db8af6d6af40e9b498afe9ed8598))
+* minor println fix. ([f6965aa](https://github.com/mogenius/punq/commit/f6965aa40664b3990b8a739a2835306caacb33db))
+* multiple improvements. ([75ac00d](https://github.com/mogenius/punq/commit/75ac00d1d3c612623b8df4ef7e14c506d7d8b5b8))
+* multiple improvements. ([7b28ef8](https://github.com/mogenius/punq/commit/7b28ef8005e55bbc9927802e5b901c1e81e8f897))
+* multiple improvements. ([e80a5f4](https://github.com/mogenius/punq/commit/e80a5f4c95068458fe56fe6a1d6e6d2ed4f71fa3))
+* multiple improvements. ([0fe80d3](https://github.com/mogenius/punq/commit/0fe80d3c31d6a00828aaf6997c4393f46fe92ff6))
+* multiple improvements. ([5edbbe9](https://github.com/mogenius/punq/commit/5edbbe911f1de970ca7ca78f36add7bf944d9bf6))
+* new backend url. ([14fc6db](https://github.com/mogenius/punq/commit/14fc6db1f5640ce971e77da3e730cf5b89fa0745))
+* new backend url. ([c7e2bd3](https://github.com/mogenius/punq/commit/c7e2bd3606761c61a697e5322df49c89572b5be8))
+* new deployment. ([9fc02bc](https://github.com/mogenius/punq/commit/9fc02bc8d0b2316c11c6c688c84ec7763dc0c284))
+* new deployment. ([e632ea7](https://github.com/mogenius/punq/commit/e632ea73a21019ba72fef1aebfea825922d06ec8))
+* repaired describe namespace route. ([f53eba7](https://github.com/mogenius/punq/commit/f53eba7f4ec88716e2895b002b527cc5594efd82))
+* repaired return types for create and patch. ([13021de](https://github.com/mogenius/punq/commit/13021de7f116e25b95836848ce2f791b51717c28))
+* swagger updated. ([4aa83fb](https://github.com/mogenius/punq/commit/4aa83fb05b4bd9f08eb50be792d2912b2d3ea047))
+* versioning improved. ([ef70ced](https://github.com/mogenius/punq/commit/ef70cedd04820633488f607d12d2564f1f9cb6cc))
+* versioning improved. ([fa2fdf6](https://github.com/mogenius/punq/commit/fa2fdf6f7bb215847e6121e921cb92ddb8d3d0f1))
+
 ### [1.3.59](https://github.com/mogenius/punq/compare/dev1.3.58...dev1.3.59) (2023-09-18)
 
 
