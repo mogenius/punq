@@ -1,4 +1,11 @@
 
+### [1.3.58](https://github.com/mogenius/punq/compare/dev1.3.57...dev1.3.58) (2023-09-18)
+
+
+### Bug Fixes
+
+* contextloader improved. ([f5b0b20](https://github.com/mogenius/punq/commit/f5b0b207d215db8af6d6af40e9b498afe9ed8598))
+
 ### [1.3.57](https://github.com/mogenius/punq/compare/dev1.3.56...dev1.3.57) (2023-09-18)
 
 
