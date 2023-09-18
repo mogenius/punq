@@ -18,7 +18,7 @@ func NewKubeProviderMetrics(contextId *string) *KubeProviderMetrics {
 	if RunsInCluster {
 		kubeProvider, err = newKubeProviderMetricsInCluster(contextId)
 	} else {
-		if contextId == nil {
+		if contextId == nil || *contextId == "" {
 			kubeProvider, err = newKubeProviderMetricsLocal()
 		} else {
 			kubeProvider, err = newKubeProviderMetricsInCluster(contextId)

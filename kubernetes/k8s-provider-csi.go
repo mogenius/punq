@@ -18,7 +18,7 @@ func NewKubeProviderSnapshot(contextId *string) *KubeProviderSnapshot {
 	if RunsInCluster {
 		kubeProvider, err = newKubeProviderCsiInCluster(contextId)
 	} else {
-		if contextId == nil {
+		if contextId == nil || *contextId == "" {
 			kubeProvider, err = newKubeProviderCsiLocal()
 		} else {
 			kubeProvider, err = newKubeProviderCsiInCluster(contextId)

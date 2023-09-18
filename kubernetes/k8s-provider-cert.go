@@ -19,7 +19,7 @@ func NewKubeProviderCertManager(contextId *string) *KubeProviderCertManager {
 	if RunsInCluster {
 		kubeProvider, err = newKubeProviderCertManagerInCluster(contextId)
 	} else {
-		if contextId == nil {
+		if contextId == nil || *contextId == "" {
 			kubeProvider, err = newKubeProviderCertManagerLocal()
 		} else {
 			kubeProvider, err = newKubeProviderCertManagerInCluster(contextId)
