@@ -545,8 +545,7 @@ func logsPod(c *gin.Context) {
 		i = -1
 	}
 
-	// req, err := kubernetes.StreamLog(namespace, name, i, services.GetGinContextId(c))
-	req, err := kubernetes.StreamLog(namespace, name, i, nil)
+	req, err := kubernetes.StreamLog(namespace, name, i, services.GetGinContextId(c))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -578,12 +577,14 @@ func logsPod(c *gin.Context) {
 	c.Stream(func(w io.Writer) bool {
 		line, err := bufio.NewReader(rc).ReadBytes('\n')
 		if err != nil {
+			c.SSEvent("error", err.Error())
 			return false
 		}
-		_, err = w.Write(line)
-		if err != nil {
-			return false
-		}
+		c.SSEvent("message", line)
+		// _, err = w.Write(line)
+		// if err != nil {
+		// 	return false
+		// }
 		return true
 	})
 }
