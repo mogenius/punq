@@ -1,9 +1,10 @@
 package operator
 
 import (
+	"net/http"
+
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/utils"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mogenius/punq/dtos"
@@ -27,7 +28,7 @@ func InitContextRoutes(router *gin.Engine) {
 // @Tags Context
 // @Produce json
 // @Success 200 {array} dtos.PunqContext
-// @Router /context/all [get]
+// @Router /backend/context/all [get]
 // @Security Bearer
 func allContexts(c *gin.Context) {
 	c.JSON(http.StatusOK, services.ListContexts())
@@ -36,7 +37,7 @@ func allContexts(c *gin.Context) {
 // @Tags Context
 // @Produce json
 // @Success 200 {object} dtos.ClusterInfoDto
-// @Router /context/info [get]
+// @Router /backend/context/info [get]
 // @Security Bearer
 func getInfoContexts(c *gin.Context) {
 	c.JSON(http.StatusOK, kubernetes.ClusterInfo(services.GetGinContextId(c)))
@@ -45,7 +46,7 @@ func getInfoContexts(c *gin.Context) {
 // @Tags Context
 // @Produce json
 // @Success 200 {object} dtos.PunqContext
-// @Router /context/{ctxId} [get]
+// @Router /backend/context/{ctxId} [get]
 // @Param ctxId path string false  "ctxId of the context-id"
 // @Security Bearer
 func getContext(c *gin.Context) {
@@ -63,7 +64,7 @@ func getContext(c *gin.Context) {
 // @Tags Context
 // @Produce json
 // @Success 200 {object} dtos.PunqContext
-// @Router /context/{ctxId} [delete]
+// @Router /backend/context/{ctxId} [delete]
 // @Param ctxId path string false  "ID of the context"
 // @Security Bearer
 func deleteContext(c *gin.Context) {
