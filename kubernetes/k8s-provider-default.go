@@ -21,7 +21,7 @@ func NewKubeProvider(contextId *string) *KubeProvider {
 	if RunsInCluster {
 		kubeProvider, err = newKubeProviderInCluster(contextId)
 	} else {
-		if contextId == nil {
+		if contextId == nil || *contextId == "" {
 			kubeProvider, err = newKubeProviderLocal()
 		} else {
 			kubeProvider, err = newKubeProviderInCluster(contextId)

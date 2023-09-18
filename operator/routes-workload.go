@@ -1,7 +1,6 @@
 package operator
 
 import (
-	"bufio"
 	"context"
 	"io"
 	"net/http"
@@ -545,19 +544,18 @@ func logsPod(c *gin.Context) {
 		i = -1
 	}
 
-	// req, err := kubernetes.StreamLog(namespace, name, i, services.GetGinContextId(c))
-	req, err := kubernetes.StreamLog(namespace, name, i, nil)
+	req, err := kubernetes.StreamLog(namespace, name, i, services.GetGinContextId(c))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	rc, err := req.Stream(context.TODO())
+	stream, err := req.Stream(context.Background())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	defer rc.Close()
+	defer stream.Close()
 
 	// set header
 	c.Writer.Header().Set("Content-Type", "text/event-stream")
@@ -575,15 +573,15 @@ func logsPod(c *gin.Context) {
 
 	logger.Log.Debug("Client opening the connection!")
 
+	buf := make([]byte, 1024)
 	c.Stream(func(w io.Writer) bool {
-		line, err := bufio.NewReader(rc).ReadBytes('\n')
+		n, err := stream.Read(buf)
 		if err != nil {
-			return false
+			c.SSEvent("error", err.Error())
+			return true
 		}
-		_, err = w.Write(line)
-		if err != nil {
-			return false
-		}
+		message := string(buf[:n])
+		c.SSEvent("message", message)
 		return true
 	})
 }

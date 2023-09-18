@@ -57,7 +57,7 @@ func IsNewReleaseAvailable() bool {
 		return false
 	}
 
-	fmt.Printf("Your version:      v%s\n", version.Ver)
+	fmt.Printf("Your version:      %s\n", version.Ver)
 	fmt.Printf("Available version: %s        (published: %s ago)\n", release.TagName, JsonStringToHumanDuration(release.Published))
 
 	if strings.Contains(release.TagName, version.Ver) {
