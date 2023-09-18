@@ -400,7 +400,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 // @Tags General
 // @Produce json
 // @Success 200 {array} kubernetes.K8sNewWorkload
-// @Router /backend/workload/templates [get]
+// @Router /backend/workload/templates/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allWorkloadTemplates(c *gin.Context) {
@@ -410,7 +410,7 @@ func allWorkloadTemplates(c *gin.Context) {
 // @Tags General
 // @Produce json
 // @Success 200 {array} string
-// @Router /backend/workload/available-resources [get]
+// @Router /backend/workload/available-resources/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allKubernetesResources(c *gin.Context) {
@@ -428,7 +428,7 @@ func allKubernetesResources(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {array} v1.Namespace
-// @Router /backend/workload/namespace [get]
+// @Router /backend/workload/namespace/ [get]
 // @Param namespace query string false "name of the namespace"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -440,7 +440,7 @@ func allNamespaces(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {array} v1.Namespace
-// @Router /backend/workload/namespace/describe/{name} [get]
+// @Router /backend/workload/namespace/describe/{name}/ [get]
 // @Param name path string true "name of the namespace"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -504,7 +504,7 @@ func deleteNamespace(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/pod [get]
+// @Router /backend/workload/pod/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -516,7 +516,7 @@ func allPods(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/pod/describe/{namespace}/{name} [get]
+// @Router /backend/workload/pod/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "pod name"
 // @Security Bearer
@@ -530,7 +530,7 @@ func describePod(c *gin.Context) {
 // @Tags Workloads
 // @Produce text/event-stream
 // @Success 200 {string} string "streaming data"
-// @Router /backend/workload/pod/logs/{namespace}/{name} [get]
+// @Router /backend/workload/pod/logs/{namespace}/{name}/ [get]
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "pod name"
 // @Param since-seconds query string false  "since-seconds"
@@ -645,7 +645,7 @@ func createPod(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/deployment [get]
+// @Router /backend/workload/deployment/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -657,7 +657,7 @@ func allDeployments(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/deployment/describe/{namespace}/{name} [get]
+// @Router /backend/workload/deployment/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "deployment name"
 // @Security Bearer
@@ -724,7 +724,7 @@ func createDeployment(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/service [get]
+// @Router /backend/workload/service/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 // @Param namespace query string false  "namespace name"
@@ -736,7 +736,7 @@ func allServices(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/service/describe/{namespace}/{name} [get]
+// @Router /backend/workload/service/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "service name"
 // @Security Bearer
@@ -803,7 +803,7 @@ func createService(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/ingress [get]
+// @Router /backend/workload/ingress/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 // @Param namespace query string false  "namespace name"
@@ -815,7 +815,7 @@ func allIngresses(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/ingress/describe/{namespace}/{name} [get]
+// @Router /backend/workload/ingress/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "ingress name"
 // @Security Bearer
@@ -882,7 +882,7 @@ func createIngress(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/configmap [get]
+// @Router /backend/workload/configmap/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 // @Param namespace query string false  "namespace name"
@@ -894,7 +894,7 @@ func allConfigmaps(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/configmap/describe/{namespace}/{name} [get]
+// @Router /backend/workload/configmap/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "configmap name"
 // @Security Bearer
@@ -961,7 +961,7 @@ func createConfigmap(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/secret [get]
+// @Router /backend/workload/secret/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 // @Param namespace query string false  "namespace name"
@@ -973,7 +973,7 @@ func allSecrets(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/secret/describe/{namespace}/{name} [get]
+// @Router /backend/workload/secret/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true  "namespace name"
 // @Param name path string true  "secret name"
 // @Security Bearer
@@ -1040,7 +1040,7 @@ func createSecret(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/node [get]
+// @Router /backend/workload/node/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allNodes(c *gin.Context) {
@@ -1050,7 +1050,7 @@ func allNodes(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/node/describe/{name} [get]
+// @Router /backend/workload/node/describe/{name}/ [get]
 // @Param name path string true  "node name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1064,7 +1064,7 @@ func describeNode(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/daemon-set [get]
+// @Router /backend/workload/daemon-set/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1076,7 +1076,7 @@ func allDaemonSets(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/daemon-set/describe/{namespace}/{name} [get]
+// @Router /backend/workload/daemon-set/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param namespace path string true "name"
 // @Security Bearer
@@ -1143,7 +1143,7 @@ func createDaemonSet(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/stateful-set [get]
+// @Router /backend/workload/stateful-set/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1155,7 +1155,7 @@ func allStatefulSets(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/stateful-set/describe/{namespace}/{name} [get]
+// @Router /backend/workload/stateful-set/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "stateful-set name"
 // @Security Bearer
@@ -1222,7 +1222,7 @@ func createStatefulSet(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/job [get]
+// @Router /backend/workload/job/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1234,7 +1234,7 @@ func allJobs(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/job/describe/{namespace}/{name} [get]
+// @Router /backend/workload/job/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "job name"
 // @Security Bearer
@@ -1301,7 +1301,7 @@ func createJob(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/cron-job [get]
+// @Router /backend/workload/cron-job/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1313,7 +1313,7 @@ func allCronJobs(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/cron-job/describe/{namespace}/{name} [get]
+// @Router /backend/workload/cron-job/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "cronjob name"
 // @Security Bearer
@@ -1380,7 +1380,7 @@ func createCronJob(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/replica-set [get]
+// @Router /backend/workload/replica-set/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1392,7 +1392,7 @@ func allReplicasets(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/replica-set/describe/{namespace}/{name} [get]
+// @Router /backend/workload/replica-set/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "replica-set name"
 // @Security Bearer
@@ -1459,7 +1459,7 @@ func createReplicaset(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/persistent-volume [get]
+// @Router /backend/workload/persistent-volume/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allPersistentVolumes(c *gin.Context) {
@@ -1469,7 +1469,7 @@ func allPersistentVolumes(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/persistent-volume/describe/{name} [get]
+// @Router /backend/workload/persistent-volume/describe/{name}/ [get]
 // @Param name path string true "persistent-volume name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1532,7 +1532,7 @@ func createPersistentVolume(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/persistent-volume-claim [get]
+// @Router /backend/workload/persistent-volume-claim/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1544,7 +1544,7 @@ func allPersistentVolumeClaims(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/persistent-volume-claim/describe/{namespace}/{name} [get]
+// @Router /backend/workload/persistent-volume-claim/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "persistent-volume-claim name"
 // @Security Bearer
@@ -1611,7 +1611,7 @@ func createPersistentVolumeClaim(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/horizontal-pod-autoscaler [get]
+// @Router /backend/workload/horizontal-pod-autoscaler/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1623,7 +1623,7 @@ func allHpas(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/horizontal-pod-autoscaler/describe/{namespace}/{name} [get]
+// @Router /backend/workload/horizontal-pod-autoscaler/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "hpa name"
 // @Security Bearer
@@ -1690,7 +1690,7 @@ func createHpa(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/event [get]
+// @Router /backend/workload/event/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1702,7 +1702,7 @@ func allEvents(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/event/describe/{namespace}/{name} [get]
+// @Router /backend/workload/event/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "event name"
 // @Security Bearer
@@ -1718,7 +1718,7 @@ func describeEvent(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/certificate [get]
+// @Router /backend/workload/certificate/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1730,7 +1730,7 @@ func allCertificates(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/certificate/describe/{namespace}/{name} [get]
+// @Router /backend/workload/certificate/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "certificate name"
 // @Security Bearer
@@ -1797,7 +1797,7 @@ func createCertificate(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/certificate-request [get]
+// @Router /backend/workload/certificate-request/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1809,7 +1809,7 @@ func allCertificateRequests(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/certificate-request/describe/{namespace}/{name} [get]
+// @Router /backend/workload/certificate-request/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "certificate request name"
 // @Security Bearer
@@ -1877,7 +1877,7 @@ func createCertificateRequest(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/orders [get]
+// @Router /backend/workload/orders/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1889,7 +1889,7 @@ func allOrders(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/orders/describe/{namespace}/{name} [get]
+// @Router /backend/workload/orders/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "order name"
 // @Security Bearer
@@ -1956,7 +1956,7 @@ func createOrder(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/issuer [get]
+// @Router /backend/workload/issuer/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -1968,7 +1968,7 @@ func allIssuers(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/issuer/describe/{namespace}/{name} [get]
+// @Router /backend/workload/issuer/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "issuer name"
 // @Security Bearer
@@ -2036,7 +2036,7 @@ func createIssuer(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/cluster-issuer [get]
+// @Router /backend/workload/cluster-issuer/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allClusterIssuers(c *gin.Context) {
@@ -2046,7 +2046,7 @@ func allClusterIssuers(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/cluster-issuer/describe/{name} [get]
+// @Router /backend/workload/cluster-issuer/describe/{name}/ [get]
 // @Param name path string true "cluster-issuer name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2109,7 +2109,7 @@ func createClusterIssuer(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/service-account [get]
+// @Router /backend/workload/service-account/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2121,7 +2121,7 @@ func allServiceAccounts(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/service-account/describe/{namespace}/{name} [get]
+// @Router /backend/workload/service-account/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "service-account name"
 // @Security Bearer
@@ -2188,7 +2188,7 @@ func createServiceAccount(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/role [get]
+// @Router /backend/workload/role/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2200,7 +2200,7 @@ func allRoles(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/role/describe/{namespace}/{name} [get]
+// @Router /backend/workload/role/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "role name"
 // @Security Bearer
@@ -2267,7 +2267,7 @@ func createRole(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/role-binding [get]
+// @Router /backend/workload/role-binding/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2279,7 +2279,7 @@ func allRoleBindings(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/role-binding/describe/{namespace}/{name} [get]
+// @Router /backend/workload/role-binding/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "role-binding name"
 // @Security Bearer
@@ -2346,7 +2346,7 @@ func createRoleBinding(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/cluster-role [get]
+// @Router /backend/workload/cluster-role/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allClusterRoles(c *gin.Context) {
@@ -2356,7 +2356,7 @@ func allClusterRoles(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/cluster-role/describe/{name} [get]
+// @Router /backend/workload/cluster-role/describe/{name}/ [get]
 // @Param name path string true "cluster-role name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2420,7 +2420,7 @@ func createClusterRole(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/cluster-role-binding [get]
+// @Router /backend/workload/cluster-role-binding/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allClusterRoleBindings(c *gin.Context) {
@@ -2430,7 +2430,7 @@ func allClusterRoleBindings(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/cluster-role-binding/describe/{name} [get]
+// @Router /backend/workload/cluster-role-binding/describe/{name}/ [get]
 // @Param name path string true "cluster-role-binding name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2493,7 +2493,7 @@ func createClusterRoleBinding(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/volume-attachment [get]
+// @Router /backend/workload/volume-attachment/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allVolumeAttachments(c *gin.Context) {
@@ -2503,7 +2503,7 @@ func allVolumeAttachments(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/volume-attachment/describe/{name} [get]
+// @Router /backend/workload/volume-attachment/describe/{name}/ [get]
 // @Param name path string true "volume-attachment name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2566,7 +2566,7 @@ func createVolumeAttachment(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/network-policy [get]
+// @Router /backend/workload/network-policy/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2578,7 +2578,7 @@ func allNetworkPolicies(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/network-policy/describe/{namespace}/{name} [get]
+// @Router /backend/workload/network-policy/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "network-policy name"
 // @Security Bearer
@@ -2645,7 +2645,7 @@ func createNetworkPolicy(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/storage-class [get]
+// @Router /backend/workload/storage-class/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allStorageClasses(c *gin.Context) {
@@ -2655,7 +2655,7 @@ func allStorageClasses(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/storage-class/describe/{name} [get]
+// @Router /backend/workload/storage-class/describe/{name}/ [get]
 // @Param name path string true "storage-class name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2718,7 +2718,7 @@ func createStorageClass(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/crds [get]
+// @Router /backend/workload/crds/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allCrds(c *gin.Context) {
@@ -2728,7 +2728,7 @@ func allCrds(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/crds/describe/{name} [get]
+// @Router /backend/workload/crds/describe/{name}/ [get]
 // @Param name path string true "crds name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2792,7 +2792,7 @@ func createCrd(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/endpoints [get]
+// @Router /backend/workload/endpoints/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2804,7 +2804,7 @@ func allEndpoints(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/endpoints/describe/{namespace}/{name} [get]
+// @Router /backend/workload/endpoints/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "endpoint name"
 // @Security Bearer
@@ -2871,7 +2871,7 @@ func createEndpoint(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/leases [get]
+// @Router /backend/workload/leases/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -2883,7 +2883,7 @@ func allLeases(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/leases/describe/{namespace}/{name} [get]
+// @Router /backend/workload/leases/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "lease name"
 // @Security Bearer
@@ -2950,7 +2950,7 @@ func createLease(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/priority-classes [get]
+// @Router /backend/workload/priority-classes/ [get]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allPriorityClasses(c *gin.Context) {
@@ -2960,7 +2960,7 @@ func allPriorityClasses(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/priority-classes/describe/{name} [get]
+// @Router /backend/workload/priority-classes/describe/{name}/ [get]
 // @Param name path string true "priority-classes name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -3023,7 +3023,7 @@ func createPriorityClass(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/volume-snapshots [get]
+// @Router /backend/workload/volume-snapshots/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -3035,7 +3035,7 @@ func allVolumeSnapshots(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/volume-snapshots/describe/{namespace}/{name} [get]
+// @Router /backend/workload/volume-snapshots/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "volume-snapshot name"
 // @Security Bearer
@@ -3102,7 +3102,7 @@ func createVolumeSnapshot(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/resource-quota [get]
+// @Router /backend/workload/resource-quota/ [get]
 // @Param namespace query string false "namespace name"
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
@@ -3114,7 +3114,7 @@ func allResourceQuotas(c *gin.Context) {
 // @Tags Workloads
 // @Produce json
 // @Success 200 {object} utils.K8sWorkloadResult
-// @Router /backend/workload/resource-quota/describe/{namespace}/{name} [get]
+// @Router /backend/workload/resource-quota/describe/{namespace}/{name}/ [get]
 // @Param namespace path string true "namespace"
 // @Param name path string true "resource-quota name"
 // @Security Bearer

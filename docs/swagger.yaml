@@ -824,7 +824,7 @@ paths:
             $ref: '#/definitions/structs.Version'
       tags:
       - Misc
-  /backend/workload/available-resources:
+  /backend/workload/available-resources/:
     get:
       parameters:
       - description: X-Context-Id
@@ -846,28 +846,6 @@ paths:
       tags:
       - General
   /backend/workload/certificate:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -905,28 +883,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/certificate-request:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -947,6 +903,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/certificate-request/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -990,7 +969,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/certificate-request/describe/{namespace}/{name}:
+  /backend/workload/certificate-request/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -1002,6 +981,29 @@ paths:
         in: path
         name: name
         required: true
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/certificate/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
         type: string
       - description: X-Context-Id
         in: header
@@ -1046,7 +1048,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/certificate/describe/{namespace}/{name}:
+  /backend/workload/certificate/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -1076,24 +1078,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/cluster-issuer:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -1113,6 +1097,25 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/cluster-issuer/:
+    get:
       parameters:
       - description: X-Context-Id
         in: header
@@ -1152,7 +1155,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/cluster-issuer/describe/{name}:
+  /backend/workload/cluster-issuer/describe/{name}/:
     get:
       parameters:
       - description: cluster-issuer name
@@ -1177,24 +1180,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/cluster-role:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -1232,24 +1217,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/cluster-role-binding:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -1269,6 +1236,25 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/cluster-role-binding/:
+    get:
       parameters:
       - description: X-Context-Id
         in: header
@@ -1308,7 +1294,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/cluster-role-binding/describe/{name}:
+  /backend/workload/cluster-role-binding/describe/{name}/:
     get:
       parameters:
       - description: cluster-role-binding name
@@ -1316,6 +1302,25 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/cluster-role/:
+    get:
+      parameters:
       - description: X-Context-Id
         in: header
         name: string
@@ -1354,7 +1359,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/cluster-role/describe/{name}:
+  /backend/workload/cluster-role/describe/{name}/:
     get:
       parameters:
       - description: cluster-role name
@@ -1379,28 +1384,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/configmap:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -1425,6 +1408,29 @@ paths:
         in: header
         name: string
         required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/configmap/:
+    get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      - description: namespace name
+        in: query
+        name: namespace
         type: string
       produces:
       - application/json
@@ -1464,7 +1470,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/configmap/describe/{namespace}/{name}:
+  /backend/workload/configmap/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -1494,24 +1500,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/crds:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -1531,6 +1519,25 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/crds/:
+    get:
       parameters:
       - description: X-Context-Id
         in: header
@@ -1570,7 +1577,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/crds/describe/{name}:
+  /backend/workload/crds/describe/{name}/:
     get:
       parameters:
       - description: crds name
@@ -1595,28 +1602,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/cron-job:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -1637,6 +1622,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/cron-job/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -1680,7 +1688,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/cron-job/describe/{namespace}/{name}:
+  /backend/workload/cron-job/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -1710,28 +1718,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/daemon-set:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -1752,6 +1738,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/daemon-set/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -1795,7 +1804,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/daemon-set/describe/{namespace}/{name}:
+  /backend/workload/daemon-set/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -1825,28 +1834,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/deployment:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -1867,6 +1854,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/deployment/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -1910,7 +1920,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/deployment/describe/{namespace}/{name}:
+  /backend/workload/deployment/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace name
@@ -1940,28 +1950,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/endpoints:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -1982,6 +1970,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/endpoints/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -2025,7 +2036,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/endpoints/describe/{namespace}/{name}:
+  /backend/workload/endpoints/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -2054,7 +2065,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/event:
+  /backend/workload/event/:
     get:
       parameters:
       - description: namespace name
@@ -2077,7 +2088,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/event/describe/{namespace}/{name}:
+  /backend/workload/event/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -2107,28 +2118,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/horizontal-pod-autoscaler:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -2149,6 +2138,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/horizontal-pod-autoscaler/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -2192,7 +2204,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/horizontal-pod-autoscaler/describe/{namespace}/{name}:
+  /backend/workload/horizontal-pod-autoscaler/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -2222,28 +2234,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/ingress:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -2268,6 +2258,29 @@ paths:
         in: header
         name: string
         required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/ingress/:
+    get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      - description: namespace name
+        in: query
+        name: namespace
         type: string
       produces:
       - application/json
@@ -2307,7 +2320,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/ingress/describe/{namespace}/{name}:
+  /backend/workload/ingress/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace name
@@ -2337,28 +2350,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/issuer:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -2379,6 +2370,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/issuer/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -2422,7 +2436,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/issuer/describe/{namespace}/{name}:
+  /backend/workload/issuer/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -2452,28 +2466,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/job:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -2494,6 +2486,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/job/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -2537,7 +2552,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/job/describe/{namespace}/{name}:
+  /backend/workload/job/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -2567,28 +2582,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/leases:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -2609,6 +2602,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/leases/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -2652,7 +2668,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/leases/describe/{namespace}/{name}:
+  /backend/workload/leases/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -2682,30 +2698,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/namespace:
-    get:
-      parameters:
-      - description: name of the namespace
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/v1.Namespace'
-            type: array
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -2742,6 +2734,31 @@ paths:
       - Bearer: []
       tags:
       - Workloads
+  /backend/workload/namespace/:
+    get:
+      parameters:
+      - description: name of the namespace
+        in: query
+        name: namespace
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/v1.Namespace'
+            type: array
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
   /backend/workload/namespace/{name}:
     delete:
       parameters:
@@ -2763,7 +2780,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/namespace/describe/{name}:
+  /backend/workload/namespace/describe/{name}/:
     get:
       parameters:
       - description: name of the namespace
@@ -2790,28 +2807,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/network-policy:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -2832,6 +2827,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/network-policy/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -2875,7 +2893,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/network-policy/describe/{namespace}/{name}:
+  /backend/workload/network-policy/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -2904,7 +2922,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/node:
+  /backend/workload/node/:
     get:
       parameters:
       - description: X-Context-Id
@@ -2923,7 +2941,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/node/describe/{name}:
+  /backend/workload/node/describe/{name}/:
     get:
       parameters:
       - description: node name
@@ -2948,28 +2966,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/orders:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -2990,6 +2986,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/orders/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -3033,7 +3052,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/orders/describe/{namespace}/{name}:
+  /backend/workload/orders/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -3063,24 +3082,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/persistent-volume:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -3118,28 +3119,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/persistent-volume-claim:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -3160,6 +3139,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/persistent-volume-claim/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -3203,7 +3205,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/persistent-volume-claim/describe/{namespace}/{name}:
+  /backend/workload/persistent-volume-claim/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -3216,6 +3218,25 @@ paths:
         name: name
         required: true
         type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/persistent-volume/:
+    get:
+      parameters:
       - description: X-Context-Id
         in: header
         name: string
@@ -3254,7 +3275,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/persistent-volume/describe/{name}:
+  /backend/workload/persistent-volume/describe/{name}/:
     get:
       parameters:
       - description: persistent-volume name
@@ -3279,28 +3300,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/pod:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -3321,6 +3320,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/pod/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -3364,7 +3386,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/pod/describe/{namespace}/{name}:
+  /backend/workload/pod/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace name
@@ -3393,7 +3415,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/pod/logs/{namespace}/{name}:
+  /backend/workload/pod/logs/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace name
@@ -3427,24 +3449,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/priority-classes:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -3464,6 +3468,25 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/priority-classes/:
+    get:
       parameters:
       - description: X-Context-Id
         in: header
@@ -3503,7 +3526,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/priority-classes/describe/{name}:
+  /backend/workload/priority-classes/describe/{name}/:
     get:
       parameters:
       - description: priority-classes name
@@ -3528,28 +3551,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/replica-set:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -3570,6 +3571,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/replica-set/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -3613,7 +3637,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/replica-set/describe/{namespace}/{name}:
+  /backend/workload/replica-set/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -3643,28 +3667,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/resource-quota:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -3685,6 +3687,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/resource-quota/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -3728,7 +3753,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/resource-quota/describe/{namespace}/{name}:
+  /backend/workload/resource-quota/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -3758,28 +3783,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/role:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -3817,28 +3820,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/role-binding:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -3859,6 +3840,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/role-binding/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -3902,7 +3906,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/role-binding/describe/{namespace}/{name}:
+  /backend/workload/role-binding/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -3914,6 +3918,29 @@ paths:
         in: path
         name: name
         required: true
+        type: string
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/role/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
         type: string
       - description: X-Context-Id
         in: header
@@ -3958,7 +3985,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/role/describe/{namespace}/{name}:
+  /backend/workload/role/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -3988,28 +4015,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/secret:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -4034,6 +4039,29 @@ paths:
         in: header
         name: string
         required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/secret/:
+    get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      - description: namespace name
+        in: query
+        name: namespace
         type: string
       produces:
       - application/json
@@ -4073,7 +4101,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/secret/describe/{namespace}/{name}:
+  /backend/workload/secret/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace name
@@ -4103,28 +4131,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/service:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -4162,28 +4168,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/service-account:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -4204,6 +4188,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/service-account/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -4247,7 +4254,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/service-account/describe/{namespace}/{name}:
+  /backend/workload/service-account/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -4264,6 +4271,29 @@ paths:
         in: header
         name: string
         required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/service/:
+    get:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      - description: namespace name
+        in: query
+        name: namespace
         type: string
       produces:
       - application/json
@@ -4303,7 +4333,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/service/describe/{namespace}/{name}:
+  /backend/workload/service/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace name
@@ -4333,28 +4363,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/stateful-set:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -4375,6 +4383,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/stateful-set/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -4418,7 +4449,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/stateful-set/describe/{namespace}/{name}:
+  /backend/workload/stateful-set/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace
@@ -4448,24 +4479,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/storage-class:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -4485,6 +4498,25 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/storage-class/:
+    get:
       parameters:
       - description: X-Context-Id
         in: header
@@ -4524,7 +4556,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/storage-class/describe/{name}:
+  /backend/workload/storage-class/describe/{name}/:
     get:
       parameters:
       - description: storage-class name
@@ -4548,7 +4580,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/templates:
+  /backend/workload/templates/:
     get:
       parameters:
       - description: X-Context-Id
@@ -4570,24 +4602,6 @@ paths:
       tags:
       - General
   /backend/workload/volume-attachment:
-    get:
-      parameters:
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -4607,6 +4621,25 @@ paths:
       tags:
       - Workloads
     post:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/volume-attachment/:
+    get:
       parameters:
       - description: X-Context-Id
         in: header
@@ -4646,7 +4679,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/volume-attachment/describe/{name}:
+  /backend/workload/volume-attachment/describe/{name}/:
     get:
       parameters:
       - description: volume-attachment name
@@ -4671,28 +4704,6 @@ paths:
       tags:
       - Workloads
   /backend/workload/volume-snapshots:
-    get:
-      parameters:
-      - description: namespace name
-        in: query
-        name: namespace
-        type: string
-      - description: X-Context-Id
-        in: header
-        name: string
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.K8sWorkloadResult'
-      security:
-      - Bearer: []
-      tags:
-      - Workloads
     patch:
       parameters:
       - description: X-Context-Id
@@ -4713,6 +4724,29 @@ paths:
       - Workloads
     post:
       parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
+  /backend/workload/volume-snapshots/:
+    get:
+      parameters:
+      - description: namespace name
+        in: query
+        name: namespace
+        type: string
       - description: X-Context-Id
         in: header
         name: string
@@ -4756,7 +4790,7 @@ paths:
       - Bearer: []
       tags:
       - Workloads
-  /backend/workload/volume-snapshots/describe/{namespace}/{name}:
+  /backend/workload/volume-snapshots/describe/{namespace}/{name}/:
     get:
       parameters:
       - description: namespace

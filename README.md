@@ -83,6 +83,7 @@ Have fun with punq! 🤘
 To update the documentation please run (in project root):
 
 ```
+go install github.com/swaggo/swag/cmd/swag@latest
 swag init --parseDependency --parseInternal
 ```
 
