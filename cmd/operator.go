@@ -24,7 +24,8 @@ var operatorCmd = &cobra.Command{
 		contexts := services.ListContexts()
 		logger.Log.Noticef("Initialized operator with %d contexts.", len(contexts))
 
-		operator.InitBackend()
+		go operator.InitBackend()
+		operator.InitFrontend()
 	},
 }
 

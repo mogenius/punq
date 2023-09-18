@@ -15,9 +15,16 @@ spec:
     http:
       paths:
       - pathType: Prefix
+        path: "/api"
+        backend:
+          service:
+            name: api
+            port:
+              number: 8080
+      - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: test
+            name: backend
             port:
-              number: 8080
+              number: 8081

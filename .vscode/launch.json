@@ -27,7 +27,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "main.go",
-            "args": ["install"],
+            "args": ["install", "-i", "punq.mogenius.dev"],
             "asRoot": false,
             "console": "integratedTerminal"
         },

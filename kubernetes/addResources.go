@@ -96,6 +96,9 @@ func addIngress(provider *KubeProvider, ingressHostname string) {
 	punqIngress.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
 	punqIngress.Spec.Rules[0].Host = ingressHostname
 	punqIngress.Spec.Rules[0].HTTP.Paths[0].Backend.Service.Name = SERVICENAME
+	punqIngress.Spec.Rules[0].HTTP.Paths[0].Backend.Service.Port.Number = int32(utils.CONFIG.Frontend.Port)
+	punqIngress.Spec.Rules[0].HTTP.Paths[1].Backend.Service.Name = SERVICENAME
+	punqIngress.Spec.Rules[0].HTTP.Paths[1].Backend.Service.Port.Number = int32(utils.CONFIG.Backend.Port)
 
 	ingressClient := provider.ClientSet.NetworkingV1().Ingresses(utils.CONFIG.Kubernetes.OwnNamespace)
 	_, err := ingressClient.Create(context.TODO(), &punqIngress, metav1.CreateOptions{})
