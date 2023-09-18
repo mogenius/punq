@@ -3,10 +3,11 @@ package operator
 import (
 	"bufio"
 	"context"
-	"github.com/mogenius/punq/logger"
 	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/mogenius/punq/logger"
 
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/utils"
@@ -40,10 +41,10 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		// namespace
 		namespaceWorkloadRoutes := workloadRoutes.Group("/namespace", Auth(dtos.USER), RequireContextId())
 		{
-			namespaceWorkloadRoutes.GET("/", allNamespaces)                                                    // PARAM: -
+			namespaceWorkloadRoutes.GET("", allNamespaces)                                                     // PARAM: -
 			namespaceWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeNamespaces)          // PARAM: name
-			namespaceWorkloadRoutes.PATCH("/", patchNamespace)                                                 // BODY: json-object
 			namespaceWorkloadRoutes.DELETE("/:name", Auth(dtos.ADMIN), validateParam("name"), deleteNamespace) // PARAM: name
+			namespaceWorkloadRoutes.PATCH("", patchNamespace)                                                  // BODY: json-object
 			namespaceWorkloadRoutes.POST("", createNamespace)                                                  // BODY: yaml-object
 		}
 
