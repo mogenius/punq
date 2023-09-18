@@ -38,11 +38,11 @@ func GetIssuer(namespaceName string, name string, contextId *string) (*cmapi.Iss
 func UpdateK8sIssuer(data cmapi.Issuer, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.CertmanagerV1().Issuers(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sIssuer(data cmapi.Issuer, contextId *string) utils.K8sWorkloadResult {
@@ -76,11 +76,11 @@ func DescribeK8sIssuer(namespace string, name string, contextId *string) utils.K
 func CreateK8sIssuer(data cmapi.Issuer, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.CertmanagerV1().Issuers(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sIssuer() K8sNewWorkload {

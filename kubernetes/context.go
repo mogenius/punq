@@ -35,6 +35,12 @@ func ContextAddMany(ctxs []dtos.PunqContext) {
 	}
 }
 
+func ContextUpdateLocalCache(ctxs []dtos.PunqContext) {
+	if len(ctxs) > 0 {
+		allContexts = ctxs
+	}
+}
+
 func ContextList() []dtos.PunqContext {
 	return allContexts
 }

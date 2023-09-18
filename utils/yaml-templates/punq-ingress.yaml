@@ -1,23 +1,28 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
 metadata:
-  name: punq-ingress
-  namespace: punq
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/cors-allow-headers: DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization,Authentication,X-Context-Id
     nginx.ingress.kubernetes.io/cors-allow-origin: '*'
     nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+  name: punq-ingress
+  namespace: punq
 spec:
+  ingressClassName: nginx
   rules:
   - host: punq.mogenius.dev
     http:
       paths:
-      - pathType: Prefix
-        path: "/"
-        backend:
+      - backend:
           service:
-            name: test
+            name: punq-service
             port:
               number: 8080
+        path: /backend/(.*)
+        pathType: Prefix
+      - backend:
+          service:
+            name: punq-service
+            port:
+              number: 8081
+        path: /(.*)
+        pathType: Prefix

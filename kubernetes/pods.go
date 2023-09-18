@@ -234,11 +234,11 @@ func PodIdsFor(namespace string, serviceId *string, contextId *string) []string 
 func UpdateK8sPod(data v1.Pod, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(data.Namespace)
-	_, err := podClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := podClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sPod(data v1.Pod, contextId *string) utils.K8sWorkloadResult {
@@ -272,11 +272,11 @@ func DescribeK8sPod(namespace string, name string, contextId *string) utils.K8sW
 func CreateK8sPod(data v1.Pod, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().Pods(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sPod() K8sNewWorkload {

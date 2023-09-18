@@ -38,11 +38,11 @@ func GetNetworkPolicy(namespaceName string, name string, contextId *string) (*v1
 func UpdateK8sNetworkPolicy(data v1.NetworkPolicy, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.NetworkingV1().NetworkPolicies(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sNetworkPolicy(data v1.NetworkPolicy, contextId *string) utils.K8sWorkloadResult {
@@ -76,11 +76,11 @@ func DescribeK8sNetworkPolicy(namespace string, name string, contextId *string) 
 func CreateK8sNetworkpolicy(data v1.NetworkPolicy, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.NetworkingV1().NetworkPolicies(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sNetPol() K8sNewWorkload {

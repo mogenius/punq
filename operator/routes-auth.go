@@ -1,12 +1,13 @@
 package operator
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/utils"
-	"net/http"
 )
 
 type LoginInput struct {
@@ -27,7 +28,7 @@ func InitAuthRoutes(router *gin.Engine) {
 // @Tags Auth
 // @Produce json
 // @Success 200 {object} dtos.PunqToken
-// @Router /auth/login [post]
+// @Router /backend/auth/login [post]
 // @Param body body LoginInput true "LoginInput"
 func login(c *gin.Context) {
 	input := LoginInput{}
@@ -62,7 +63,7 @@ func login(c *gin.Context) {
 // @Tags Auth
 // @Produce json
 // @Success 200 {object} dtos.PunqToken
-// @Router /auth/authenticate [get]
+// @Router /backend/auth/authenticate [get]
 // @Security Bearer
 func authenticate(c *gin.Context) {
 	user := services.GetGinContextUser(c)

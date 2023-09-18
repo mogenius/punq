@@ -33,11 +33,11 @@ func GetVolumeAttachment(name string, contextId *string) (*storage.VolumeAttachm
 func UpdateK8sVolumeAttachment(data storage.VolumeAttachment, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sVolumeAttachment(data storage.VolumeAttachment, contextId *string) utils.K8sWorkloadResult {
@@ -71,11 +71,11 @@ func DescribeK8sVolumeAttachment(name string, contextId *string) utils.K8sWorklo
 func CreateK8sVolumeAttachment(data storage.VolumeAttachment, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sVolumeAttachment() K8sNewWorkload {

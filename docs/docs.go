@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/authenticate": {
+        "/backend/auth/authenticate": {
             "get": {
                 "security": [
                     {
@@ -38,7 +38,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/login": {
+        "/backend/auth/login": {
             "post": {
                 "produces": [
                     "application/json"
@@ -67,7 +67,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/context/all": {
+        "/backend/context/all": {
             "get": {
                 "security": [
                     {
@@ -93,7 +93,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/context/info": {
+        "/backend/context/info": {
             "get": {
                 "security": [
                     {
@@ -116,7 +116,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/context/{ctxId}": {
+        "/backend/context/{ctxId}": {
             "get": {
                 "security": [
                     {
@@ -176,7 +176,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user": {
+        "/backend/user": {
             "get": {
                 "security": [
                     {
@@ -261,7 +261,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/all": {
+        "/backend/user/all": {
             "get": {
                 "security": [
                     {
@@ -287,7 +287,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/{id}": {
+        "/backend/user/{id}": {
             "get": {
                 "security": [
                     {
@@ -347,7 +347,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/version": {
+        "/backend/version": {
             "get": {
                 "produces": [
                     "application/json"
@@ -365,7 +365,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/available-resources": {
+        "/backend/workload/available-resources/": {
             "get": {
                 "security": [
                     {
@@ -400,43 +400,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/certificate": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/certificate": {
             "post": {
                 "security": [
                     {
@@ -498,43 +462,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/certificate-request": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/certificate-request": {
             "post": {
                 "security": [
                     {
@@ -596,7 +524,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/certificate-request/describe/{namespace}/{name}": {
+        "/backend/workload/certificate-request/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/certificate-request/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -642,7 +608,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/certificate-request/{namespace}/{name}": {
+        "/backend/workload/certificate-request/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -685,7 +651,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/certificate/describe/{namespace}/{name}": {
+        "/backend/workload/certificate/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/certificate/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -731,7 +735,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/certificate/{namespace}/{name}": {
+        "/backend/workload/certificate/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -774,37 +778,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cluster-issuer": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/cluster-issuer": {
             "post": {
                 "security": [
                     {
@@ -866,7 +840,39 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cluster-issuer/describe/{name}": {
+        "/backend/workload/cluster-issuer/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/cluster-issuer/describe/{name}/": {
             "get": {
                 "security": [
                     {
@@ -905,7 +911,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cluster-issuer/{name}": {
+        "/backend/workload/cluster-issuer/{name}": {
             "delete": {
                 "security": [
                     {
@@ -941,37 +947,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cluster-role": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/cluster-role": {
             "post": {
                 "security": [
                     {
@@ -1033,37 +1009,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cluster-role-binding": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/cluster-role-binding": {
             "post": {
                 "security": [
                     {
@@ -1125,7 +1071,39 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cluster-role-binding/describe/{name}": {
+        "/backend/workload/cluster-role-binding/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/cluster-role-binding/describe/{name}/": {
             "get": {
                 "security": [
                     {
@@ -1164,7 +1142,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cluster-role-binding/{name}": {
+        "/backend/workload/cluster-role-binding/{name}": {
             "delete": {
                 "security": [
                     {
@@ -1200,7 +1178,39 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cluster-role/describe/{name}": {
+        "/backend/workload/cluster-role/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/cluster-role/describe/{name}/": {
             "get": {
                 "security": [
                     {
@@ -1239,7 +1249,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cluster-role/{name}": {
+        "/backend/workload/cluster-role/{name}": {
             "delete": {
                 "security": [
                     {
@@ -1275,7 +1285,69 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/configmap": {
+        "/backend/workload/configmap": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/configmap/": {
             "get": {
                 "security": [
                     {
@@ -1311,69 +1383,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
             }
         },
-        "/workload/configmap/describe/{namespace}/{name}": {
+        "/backend/workload/configmap/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -1419,7 +1431,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/configmap/{namespace}/{name}": {
+        "/backend/workload/configmap/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -1462,37 +1474,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/crds": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/crds": {
             "post": {
                 "security": [
                     {
@@ -1554,7 +1536,39 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/crds/describe/{name}": {
+        "/backend/workload/crds/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/crds/describe/{name}/": {
             "get": {
                 "security": [
                     {
@@ -1593,7 +1607,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/crds/{name}": {
+        "/backend/workload/crds/{name}": {
             "delete": {
                 "security": [
                     {
@@ -1629,43 +1643,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cron-job": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/cron-job": {
             "post": {
                 "security": [
                     {
@@ -1727,7 +1705,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cron-job/describe/{namespace}/{name}": {
+        "/backend/workload/cron-job/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/cron-job/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -1773,7 +1789,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/cron-job/{namespace}/{name}": {
+        "/backend/workload/cron-job/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -1816,43 +1832,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/daemon-set": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/daemon-set": {
             "post": {
                 "security": [
                     {
@@ -1914,7 +1894,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/daemon-set/describe/{namespace}/{name}": {
+        "/backend/workload/daemon-set/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/daemon-set/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -1960,7 +1978,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/daemon-set/{namespace}/{name}": {
+        "/backend/workload/daemon-set/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -2003,43 +2021,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/deployment": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/deployment": {
             "post": {
                 "security": [
                     {
@@ -2101,7 +2083,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/deployment/describe/{namespace}/{name}": {
+        "/backend/workload/deployment/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/deployment/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -2147,7 +2167,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/deployment/{namespace}/{name}": {
+        "/backend/workload/deployment/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -2190,43 +2210,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/endpoints": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/endpoints": {
             "post": {
                 "security": [
                     {
@@ -2288,7 +2272,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/endpoints/describe/{namespace}/{name}": {
+        "/backend/workload/endpoints/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/endpoints/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -2334,7 +2356,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/endpoints/{namespace}/{name}": {
+        "/backend/workload/endpoints/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -2377,7 +2399,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/event": {
+        "/backend/workload/event/": {
             "get": {
                 "security": [
                     {
@@ -2415,7 +2437,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/event/describe/{namespace}/{name}": {
+        "/backend/workload/event/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -2461,43 +2483,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/horizontal-pod-autoscaler": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/horizontal-pod-autoscaler": {
             "post": {
                 "security": [
                     {
@@ -2559,7 +2545,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/horizontal-pod-autoscaler/describe/{namespace}/{name}": {
+        "/backend/workload/horizontal-pod-autoscaler/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/horizontal-pod-autoscaler/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -2605,7 +2629,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/horizontal-pod-autoscaler/{namespace}/{name}": {
+        "/backend/workload/horizontal-pod-autoscaler/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -2648,43 +2672,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/ingress": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/ingress": {
             "post": {
                 "security": [
                     {
@@ -2746,7 +2734,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/ingress/describe/{namespace}/{name}": {
+        "/backend/workload/ingress/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/ingress/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -2792,7 +2818,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/ingress/{namespace}/{name}": {
+        "/backend/workload/ingress/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -2835,43 +2861,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/issuer": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/issuer": {
             "post": {
                 "security": [
                     {
@@ -2933,7 +2923,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/issuer/describe/{namespace}/{name}": {
+        "/backend/workload/issuer/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/issuer/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -2979,7 +3007,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/issuer/{namespace}/{name}": {
+        "/backend/workload/issuer/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -3022,43 +3050,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/job": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/job": {
             "post": {
                 "security": [
                     {
@@ -3120,7 +3112,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/job/describe/{namespace}/{name}": {
+        "/backend/workload/job/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/job/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -3166,7 +3196,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/job/{namespace}/{name}": {
+        "/backend/workload/job/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -3209,43 +3239,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/leases": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/leases": {
             "post": {
                 "security": [
                     {
@@ -3307,7 +3301,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/leases/describe/{namespace}/{name}": {
+        "/backend/workload/leases/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/leases/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -3353,7 +3385,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/leases/{namespace}/{name}": {
+        "/backend/workload/leases/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -3396,46 +3428,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/namespace": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "name of the namespace",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/v1.Namespace"
-                            }
-                        }
-                    }
-                }
-            },
+        "/backend/workload/namespace": {
             "post": {
                 "security": [
                     {
@@ -3465,9 +3458,39 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
             }
         },
-        "/workload/namespace/{name}": {
+        "/backend/workload/namespace/": {
             "get": {
                 "security": [
                     {
@@ -3484,8 +3507,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name of the namespace",
-                        "name": "name",
-                        "in": "path"
+                        "name": "namespace",
+                        "in": "query"
                     },
                     {
                         "type": "string",
@@ -3506,7 +3529,51 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/backend/workload/namespace/describe/{name}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name of the namespace",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/v1.Namespace"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/namespace/{name}": {
             "delete": {
                 "security": [
                     {
@@ -3541,43 +3608,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/network-policy": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/network-policy": {
             "post": {
                 "security": [
                     {
@@ -3639,7 +3670,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/network-policy/describe/{namespace}/{name}": {
+        "/backend/workload/network-policy/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/network-policy/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -3685,7 +3754,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/network-policy/{namespace}/{name}": {
+        "/backend/workload/network-policy/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -3728,7 +3797,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/node": {
+        "/backend/workload/node/": {
             "get": {
                 "security": [
                     {
@@ -3760,7 +3829,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/node/describe/{name}": {
+        "/backend/workload/node/describe/{name}/": {
             "get": {
                 "security": [
                     {
@@ -3799,43 +3868,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/orders": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/orders": {
             "post": {
                 "security": [
                     {
@@ -3897,7 +3930,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/orders/describe/{namespace}/{name}": {
+        "/backend/workload/orders/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/orders/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -3943,7 +4014,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/orders/{namespace}/{name}": {
+        "/backend/workload/orders/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -3986,37 +4057,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/persistent-volume": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/persistent-volume": {
             "post": {
                 "security": [
                     {
@@ -4078,7 +4119,69 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/persistent-volume-claim": {
+        "/backend/workload/persistent-volume-claim": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/persistent-volume-claim/": {
             "get": {
                 "security": [
                     {
@@ -4114,69 +4217,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
             }
         },
-        "/workload/persistent-volume-claim/describe/{namespace}/{name}": {
+        "/backend/workload/persistent-volume-claim/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -4222,7 +4265,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/persistent-volume-claim/{namespace}/{name}": {
+        "/backend/workload/persistent-volume-claim/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -4265,7 +4308,39 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/persistent-volume/describe/{name}": {
+        "/backend/workload/persistent-volume/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/persistent-volume/describe/{name}/": {
             "get": {
                 "security": [
                     {
@@ -4304,7 +4379,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/persistent-volume/{name}": {
+        "/backend/workload/persistent-volume/{name}": {
             "delete": {
                 "security": [
                     {
@@ -4340,7 +4415,69 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/pod": {
+        "/backend/workload/pod": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/pod/": {
             "get": {
                 "security": [
                     {
@@ -4376,69 +4513,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
             }
         },
-        "/workload/pod/describe/{namespace}/{name}": {
+        "/backend/workload/pod/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -4484,7 +4561,59 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/pod/{namespace}/{name}": {
+        "/backend/workload/pod/logs/{namespace}/{name}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "pod name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "since-seconds",
+                        "name": "since-seconds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "X-Context-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "streaming data",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/pod/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -4527,37 +4656,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/priority-classes": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/priority-classes": {
             "post": {
                 "security": [
                     {
@@ -4619,7 +4718,39 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/priority-classes/describe/{name}": {
+        "/backend/workload/priority-classes/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/priority-classes/describe/{name}/": {
             "get": {
                 "security": [
                     {
@@ -4658,7 +4789,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/priority-classes/{namespace}/{name}": {
+        "/backend/workload/priority-classes/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -4694,43 +4825,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/replica-set": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/replica-set": {
             "post": {
                 "security": [
                     {
@@ -4792,7 +4887,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/replica-set/describe/{namespace}/{name}": {
+        "/backend/workload/replica-set/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/replica-set/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -4838,7 +4971,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/replica-set/{namespace}/{name}": {
+        "/backend/workload/replica-set/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -4881,43 +5014,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/resource-quota": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/resource-quota": {
             "post": {
                 "security": [
                     {
@@ -4979,7 +5076,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/resource-quota/describe/{namespace}/{name}": {
+        "/backend/workload/resource-quota/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/resource-quota/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -5025,7 +5160,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/resource-quota/{namespace}/{name}": {
+        "/backend/workload/resource-quota/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -5068,43 +5203,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/role": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/role": {
             "post": {
                 "security": [
                     {
@@ -5166,43 +5265,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/role-binding": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/role-binding": {
             "post": {
                 "security": [
                     {
@@ -5264,7 +5327,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/role-binding/describe/{namespace}/{name}": {
+        "/backend/workload/role-binding/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/role-binding/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -5310,7 +5411,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/role-binding/{namespace}/{name}": {
+        "/backend/workload/role-binding/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -5353,7 +5454,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/role/describe/{namespace}/{name}": {
+        "/backend/workload/role/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/role/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -5399,7 +5538,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/role/{namespace}/{name}": {
+        "/backend/workload/role/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -5442,43 +5581,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/secret": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/secret": {
             "post": {
                 "security": [
                     {
@@ -5540,7 +5643,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/secret/describe/{namespace}/{name}": {
+        "/backend/workload/secret/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/secret/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -5586,7 +5727,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/secret/{namespace}/{name}": {
+        "/backend/workload/secret/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -5629,43 +5770,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/service": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/service": {
             "post": {
                 "security": [
                     {
@@ -5727,43 +5832,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/service-account": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/service-account": {
             "post": {
                 "security": [
                     {
@@ -5825,7 +5894,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/service-account/describe/{namespace}/{name}": {
+        "/backend/workload/service-account/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/service-account/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -5871,7 +5978,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/service-account/{namespace}/{name}": {
+        "/backend/workload/service-account/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -5914,7 +6021,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/service/describe/{namespace}/{name}": {
+        "/backend/workload/service/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/service/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -5960,7 +6105,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/service/{namespace}/{name": {
+        "/backend/workload/service/{namespace}/{name": {
             "delete": {
                 "security": [
                     {
@@ -6003,7 +6148,69 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/stateful-set": {
+        "/backend/workload/stateful-set": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/stateful-set/": {
             "get": {
                 "security": [
                     {
@@ -6039,7 +6246,98 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/backend/workload/stateful-set/describe/{namespace}/{name}/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stateful-set name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/stateful-set/{namespace}/{name}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stateful-set name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/backend/workload/storage-class": {
             "post": {
                 "security": [
                     {
@@ -6101,96 +6399,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/stateful-set/describe/{namespace}/{name}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace",
-                        "name": "namespace",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "stateful-set name",
-                        "name": "name",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/workload/stateful-set/{namespace}/{name}": {
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace",
-                        "name": "namespace",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "stateful-set name",
-                        "name": "name",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/workload/storage-class": {
+        "/backend/workload/storage-class/": {
             "get": {
                 "security": [
                     {
@@ -6220,69 +6429,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
             }
         },
-        "/workload/storage-class/describe/{name}": {
+        "/backend/workload/storage-class/describe/{name}/": {
             "get": {
                 "security": [
                     {
@@ -6321,7 +6470,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/storage-class/{namespace}/{name}": {
+        "/backend/workload/storage-class/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -6357,7 +6506,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/templates": {
+        "/backend/workload/templates/": {
             "get": {
                 "security": [
                     {
@@ -6392,37 +6541,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/volume-attachment": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/volume-attachment": {
             "post": {
                 "security": [
                     {
@@ -6484,7 +6603,39 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/volume-attachment/describe/{name}": {
+        "/backend/workload/volume-attachment/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/volume-attachment/describe/{name}/": {
             "get": {
                 "security": [
                     {
@@ -6523,7 +6674,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/volume-attachment/{name}": {
+        "/backend/workload/volume-attachment/{name}": {
             "delete": {
                 "security": [
                     {
@@ -6559,43 +6710,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/volume-snapshots": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Workloads"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "namespace name",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "X-Context-Id",
-                        "name": "string",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.K8sWorkloadResult"
-                        }
-                    }
-                }
-            },
+        "/backend/workload/volume-snapshots": {
             "post": {
                 "security": [
                     {
@@ -6657,7 +6772,45 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/volume-snapshots/describe/{namespace}/{name}": {
+        "/backend/workload/volume-snapshots/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace name",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/workload/volume-snapshots/describe/{namespace}/{name}/": {
             "get": {
                 "security": [
                     {
@@ -6703,7 +6856,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/workload/volume-snapshots/{namespace}/{name}": {
+        "/backend/workload/volume-snapshots/{namespace}/{name}": {
             "delete": {
                 "security": [
                     {
@@ -7045,6 +7198,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "operatorImage": {
                     "type": "string"
                 },
                 "version": {

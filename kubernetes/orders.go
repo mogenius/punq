@@ -38,11 +38,11 @@ func GetOrder(namespaceName string, name string, contextId *string) (*v1.Order, 
 func UpdateK8sOrder(data v1.Order, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sOrder(data v1.Order, contextId *string) utils.K8sWorkloadResult {
@@ -76,11 +76,11 @@ func DescribeK8sOrder(namespace string, name string, contextId *string) utils.K8
 func CreateK8sOrder(data v1.Order, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sOrder() K8sNewWorkload {

@@ -5,6 +5,7 @@ ARG GOARCH
 ENV CGO_ENABLED=0
 
 ARG COMMIT_HASH=NOT_SET
+ARG OPERATOR_IMAGE=NOT_SET
 ARG GIT_BRANCH=NOT_SET
 ARG BUILD_TIMESTAMP=NOT_SET
 ARG VERSION=NOT_SET
@@ -21,6 +22,7 @@ RUN echo "${COMMIT_HASH} ${BUILD_TIMESTAMP} ${VERSION} ${GIT_BRANCH}"
 
 RUN go build -ldflags="-w -s -extldflags= \
   -X 'github.com/mogenius/punq/version.GitCommitHash=${COMMIT_HASH}' \
+  -X 'github.com/mogenius/punq/version.OperatorImage=${OPERATOR_IMAGE}' \
   -X 'github.com/mogenius/punq/version.Branch=${GIT_BRANCH}' \
   -X 'github.com/mogenius/punq/version.BuildTimestamp=${BUILD_TIMESTAMP}' \
   -X 'github.com/mogenius/punq/version.Ver=${VERSION}'" -o bin/punq-operator .

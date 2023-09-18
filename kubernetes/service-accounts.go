@@ -39,11 +39,11 @@ func GetServiceAccount(namespaceName string, name string, contextId *string) (*v
 func UpdateK8sServiceAccount(data v1.ServiceAccount, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sServiceAccount(data v1.ServiceAccount, contextId *string) utils.K8sWorkloadResult {
@@ -77,11 +77,11 @@ func DescribeK8sServiceAccount(namespace string, name string, contextId *string)
 func CreateK8sServiceAccount(data v1.ServiceAccount, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sServiceAccount() K8sNewWorkload {

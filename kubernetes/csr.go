@@ -38,11 +38,11 @@ func GetCertificateSigningRequest(namespaceName string, name string, contextId *
 func UpdateK8sCertificateSigningRequest(data cmapi.CertificateRequest, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.CertmanagerV1().CertificateRequests(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sCertificateSigningRequest(data cmapi.CertificateRequest, contextId *string) utils.K8sWorkloadResult {
@@ -76,11 +76,11 @@ func DescribeK8sCertificateSigningRequest(namespace string, name string, context
 func CreateK8sCertificateSigningRequest(data cmapi.CertificateRequest, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.CertmanagerV1().CertificateRequests(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sCertificateSigningRequest() K8sNewWorkload {

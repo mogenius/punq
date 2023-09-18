@@ -66,11 +66,11 @@ func DescribeK8sVolumeSnapshot(namespace string, name string, contextId *string)
 func CreateK8sVolumeSnapshot(data snap.VolumeSnapshot, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProviderSnapshot(contextId)
 	client := kubeProvider.ClientSet.SnapshotV1().VolumeSnapshots(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sVolumeSnapshots() K8sNewWorkload {

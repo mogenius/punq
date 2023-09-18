@@ -26,11 +26,13 @@
 </p>
 
 # punq
+
 punq provides a WebApp and CLI to easily manage multiple Kubernetes clusters. It comes with integrated team collaboration, logs, and workload editor for clusters across different infrastructures. The goal of this project is to make DevOps' lifes easier by improving Kubernetes operations especially in teams.
 
 ## How it works
 
 punq is self-hosted on a Kubernetes cluster to run an instance for you and your team members. Each instance consists of the following services:
+
 - The operator written in Golang
 - An Angular application serving the user interface
 
@@ -48,6 +50,7 @@ brew install punq
 ```
 
 ### Windows
+
 ```
 Install: https://scoop.sh/
 scoop bucket add mogenius https://github.com/mogenius/punq
@@ -68,7 +71,7 @@ punq
 # Set up the ingress with your domain to serve the punq web application
 punq -i yourdomain.com
 # Manage users and permissions
-punq user 
+punq user
 ```
 
 The admin credentials for your punq instance are prompted to your terminal when punq is started. Use them to log in to the punq web application and start adding clusters.
@@ -76,8 +79,11 @@ The admin credentials for your punq instance are prompted to your terminal when 
 Have fun with punq! 🤘
 
 ## Development
+
 To update the documentation please run (in project root):
+
 ```
+go install github.com/swaggo/swag/cmd/swag@latest
 swag init --parseDependency --parseInternal
 ```
 
@@ -88,3 +94,5 @@ punq is still still early stage and we're inviting you to contribute. Feel free 
 ---
 
 Made with 💜 by the folks from [mogenius](https://mogenius.com)
+
+#

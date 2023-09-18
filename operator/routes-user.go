@@ -28,7 +28,7 @@ func InitUserRoutes(router *gin.Engine) {
 // @Tags User
 // @Produce json
 // @Success 200 {array} dtos.PunqUser
-// @Router /user/all [get]
+// @Router /backend/user/all [get]
 // @Security Bearer
 func userList(c *gin.Context) {
 	users := services.ListUsers()
@@ -38,7 +38,7 @@ func userList(c *gin.Context) {
 // @Tags User
 // @Produce json
 // @Success 200 {object} dtos.PunqUser
-// @Router /user/{id} [delete]
+// @Router /backend/user/{id} [delete]
 // @Param id path string false  "ID of the user"
 // @Security Bearer
 func userDelete(c *gin.Context) {
@@ -49,7 +49,7 @@ func userDelete(c *gin.Context) {
 // @Tags User
 // @Produce json
 // @Success 200 {object} dtos.PunqUser
-// @Router /user [get]
+// @Router /backend/user [get]
 // @Security Bearer
 func currentUserGet(c *gin.Context) {
 	user := services.GetGinContextUser(c)
@@ -63,7 +63,7 @@ func currentUserGet(c *gin.Context) {
 // @Tags User
 // @Produce json
 // @Success 200 {object} dtos.PunqUser
-// @Router /user/{id} [get]
+// @Router /backend/user/{id} [get]
 // @Param id path string false  "ID of the user"
 // @Security Bearer
 func userGet(c *gin.Context) {
@@ -81,7 +81,7 @@ func userGet(c *gin.Context) {
 // @Tags User
 // @Produce json
 // @Success 200 {object} dtos.PunqUser
-// @Router /user [patch]
+// @Router /backend/user [patch]
 // @Param body body dtos.PunqUserUpdateInput false "PunqUserUpdateInput"
 // @Security Bearer
 func userUpdate(c *gin.Context) {
@@ -102,7 +102,7 @@ func userUpdate(c *gin.Context) {
 // @Tags User
 // @Produce json
 // @Success 200 {object} dtos.PunqUser
-// @Router /user [post]
+// @Router /backend/user [post]
 // @Param body body dtos.PunqUserCreateInput false "PunqUserCreateInput"
 // @Security Bearer
 func userAdd(c *gin.Context) {

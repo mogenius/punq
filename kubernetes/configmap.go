@@ -67,12 +67,12 @@ func GetK8sConfigmap(namespaceName string, name string, contextId *string) (*v1.
 func UpdateK8sConfigMap(data v1.ConfigMap, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		logger.Log.Errorf("UpdateK8sConfigMap ERROR: %s", err.Error())
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sConfigmap(data v1.ConfigMap, contextId *string) utils.K8sWorkloadResult {
@@ -106,11 +106,11 @@ func DescribeK8sConfigmap(namespace string, name string, contextId *string) util
 func CreateK8sConfigMap(data v1.ConfigMap, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sConfigmap() K8sNewWorkload {

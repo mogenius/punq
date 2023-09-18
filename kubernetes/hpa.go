@@ -38,11 +38,11 @@ func GetHpa(namespaceName string, name string, contextId *string) (*v2.Horizonta
 func UpdateK8sHpa(data v2.HorizontalPodAutoscaler, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func DeleteK8sHpa(data v2.HorizontalPodAutoscaler, contextId *string) utils.K8sWorkloadResult {
@@ -76,11 +76,11 @@ func DescribeK8sHpa(namespace string, name string, contextId *string) utils.K8sW
 func CreateK8sHpa(data v2.HorizontalPodAutoscaler, contextId *string) utils.K8sWorkloadResult {
 	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sHpa() K8sNewWorkload {
