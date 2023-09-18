@@ -41,11 +41,11 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		// namespace
 		namespaceWorkloadRoutes := workloadRoutes.Group("/namespace", Auth(dtos.USER), RequireContextId())
 		{
-			namespaceWorkloadRoutes.GET("", allNamespaces)                                                     // PARAM: -
+			namespaceWorkloadRoutes.GET("/", allNamespaces)                                                    // PARAM: -
 			namespaceWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeNamespaces)          // PARAM: name
 			namespaceWorkloadRoutes.DELETE("/:name", Auth(dtos.ADMIN), validateParam("name"), deleteNamespace) // PARAM: name
-			namespaceWorkloadRoutes.PATCH("", patchNamespace)                                                  // BODY: json-object
-			namespaceWorkloadRoutes.POST("", createNamespace)                                                  // BODY: yaml-object
+			namespaceWorkloadRoutes.PATCH("/", patchNamespace)                                                 // BODY: json-object
+			namespaceWorkloadRoutes.POST("/", createNamespace)                                                 // BODY: yaml-object
 		}
 
 		// pod

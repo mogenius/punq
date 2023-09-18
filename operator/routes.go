@@ -17,5 +17,5 @@ func InitGeneralRoutes(router *gin.Engine) {
 // @Success 200 {object} structs.Version
 // @Router /version [get]
 func versionData(c *gin.Context) {
-	c.JSON(http.StatusOK, structs.VersionFrom(punqVersion.Name, punqVersion.Ver, punqVersion.Branch, punqVersion.BuildTimestamp, punqVersion.GitCommitHash))
+	c.JSON(http.StatusOK, structs.VersionFrom(punqVersion.Name, punqVersion.Ver, punqVersion.Branch, punqVersion.BuildTimestamp, punqVersion.GitCommitHash, punqVersion.OperatorImage))
 }

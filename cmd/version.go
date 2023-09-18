@@ -21,12 +21,12 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.PrintLogo()
 		yellow := color.New(color.FgYellow).SprintFunc()
-		fmt.Printf("        CLI:       %s\n", yellow(version.Ver))
-		fmt.Printf("        Operator:  %s\n", yellow(version.Ver))
-		fmt.Printf("        Branch:    %s\n", yellow(version.Branch))
-		fmt.Printf("        Commit:    %s\n", yellow(version.GitCommitHash))
-		fmt.Printf("        Timestamp: %s\n", yellow(version.BuildTimestamp))
-		fmt.Printf("        Arch:      %s/%s\n", yellow(runtime.GOOS), yellow(runtime.GOARCH))
+		fmt.Printf("        CLI:            %s\n", yellow(version.Ver))
+		fmt.Printf("        OperatorImage:  %s\n", yellow(version.OperatorImage))
+		fmt.Printf("        Branch:         %s\n", yellow(version.Branch))
+		fmt.Printf("        Commit:         %s\n", yellow(version.GitCommitHash))
+		fmt.Printf("        Timestamp:      %s\n", yellow(version.BuildTimestamp))
+		fmt.Printf("        Arch:           %s/%s\n", yellow(runtime.GOOS), yellow(runtime.GOARCH))
 		fmt.Println("")
 
 		if checkForUpdates {
