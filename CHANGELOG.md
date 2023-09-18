@@ -1,4 +1,11 @@
 
+### [1.3.54](https://github.com/mogenius/punq/compare/dev1.3.53...dev1.3.54) (2023-09-18)
+
+
+### Bug Fixes
+
+* new backend url. ([c7e2bd3](https://github.com/mogenius/punq/commit/c7e2bd3606761c61a697e5322df49c89572b5be8))
+
 ### [1.3.53](https://github.com/mogenius/punq/compare/dev1.3.52...dev1.3.53) (2023-09-18)
 
 
