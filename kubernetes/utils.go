@@ -3,11 +3,12 @@ package kubernetes
 import (
 	"context"
 	"fmt"
-	version2 "k8s.io/apimachinery/pkg/version"
 	"os"
 	"path/filepath"
 	"reflect"
 	"time"
+
+	version2 "k8s.io/apimachinery/pkg/version"
 
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/mogenius/punq/version"
@@ -203,7 +204,6 @@ func WorkloadsForAccesslevel(access dtos.AccessLevel) []string {
 }
 
 func WorkloadResult(result interface{}, err interface{}) utils.K8sWorkloadResult {
-	fmt.Println(reflect.TypeOf(err))
 	if fmt.Sprint(reflect.TypeOf(err)) == "*errors.errorString" {
 		err = err.(error).Error()
 	}
