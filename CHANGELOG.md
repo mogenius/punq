@@ -1,4 +1,11 @@
 
+### [1.3.53](https://github.com/mogenius/punq/compare/dev1.3.52...dev1.3.53) (2023-09-18)
+
+
+### Bug Fixes
+
+* multiple improvements. ([7b28ef8](https://github.com/mogenius/punq/commit/7b28ef8005e55bbc9927802e5b901c1e81e8f897))
+
 ### [1.3.52](https://github.com/mogenius/punq/compare/dev1.3.51...dev1.3.52) (2023-09-18)
 
 
