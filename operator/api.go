@@ -11,6 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
+	"github.com/mogenius/punq/version"
+
+	"github.com/mogenius/punq/docs"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var HtmlDirFs embed.FS
@@ -38,6 +43,12 @@ func InitBackend() {
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "authorization"}
 
 	router.Use(cors.New(config))
+
+	docs.SwaggerInfo.BasePath = "/"
+	docs.SwaggerInfo.Title = "punq API documentation"
+	docs.SwaggerInfo.Description = "This is the documentation of all available API calls for the punq UI."
+	docs.SwaggerInfo.Version = version.Ver
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.DefaultModelsExpandDepth(3), ginSwagger.DocExpansion("none")))
 
 	InitContextRoutes(router)
 	InitAuthRoutes(router)

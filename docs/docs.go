@@ -3465,9 +3465,39 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workloads"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.K8sWorkloadResult"
+                        }
+                    }
+                }
             }
         },
-        "/workload/namespace/{name}": {
+        "/workload/namespace/describe/{name}": {
             "get": {
                 "security": [
                     {
@@ -3485,7 +3515,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "name of the namespace",
                         "name": "name",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -3506,7 +3537,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/workload/namespace/{name}": {
             "delete": {
                 "security": [
                     {

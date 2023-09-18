@@ -2704,6 +2704,24 @@ paths:
       - Bearer: []
       tags:
       - Workloads
+    patch:
+      parameters:
+      - description: X-Context-Id
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.K8sWorkloadResult'
+      security:
+      - Bearer: []
+      tags:
+      - Workloads
     post:
       parameters:
       - description: X-Context-Id
@@ -2743,11 +2761,13 @@ paths:
       - Bearer: []
       tags:
       - Workloads
+  /workload/namespace/describe/{name}:
     get:
       parameters:
       - description: name of the namespace
         in: path
         name: name
+        required: true
         type: string
       - description: X-Context-Id
         in: header
