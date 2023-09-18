@@ -30,7 +30,7 @@ func ListContexts() []dtos.PunqContext {
 		contexts = append(contexts, ctx)
 	}
 
-	kubernetes.ContextAddMany(contexts)
+	kubernetes.ContextUpdateLocalCache(contexts)
 
 	return contexts
 }
