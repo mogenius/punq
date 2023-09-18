@@ -1,4 +1,11 @@
 
+### [1.3.62](https://github.com/mogenius/punq/compare/dev1.3.61...dev1.3.62) (2023-09-18)
+
+
+### Bug Fixes
+
+* kubecontext loader local problem. ([19e06f9](https://github.com/mogenius/punq/commit/19e06f9c57620ece32518fbb970052a359c93fa5))
+
 ### [1.3.61](https://github.com/mogenius/punq/compare/dev1.3.60...dev1.3.61) (2023-09-18)
 
 
