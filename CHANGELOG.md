@@ -1,4 +1,11 @@
 
+### [1.3.63](https://github.com/mogenius/punq/compare/dev1.3.62...dev1.3.63) (2023-09-18)
+
+
+### Bug Fixes
+
+* update pod logs ([1933d04](https://github.com/mogenius/punq/commit/1933d04f14162846c55264d7b297c3a9c906c29f))
+
 ### [1.3.62](https://github.com/mogenius/punq/compare/dev1.3.61...dev1.3.62) (2023-09-18)
 
 
