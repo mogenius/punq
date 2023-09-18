@@ -1,4 +1,11 @@
 
+### [1.3.59](https://github.com/mogenius/punq/compare/dev1.3.58...dev1.3.59) (2023-09-18)
+
+
+### Bug Fixes
+
+* minor println fix. ([f6965aa](https://github.com/mogenius/punq/commit/f6965aa40664b3990b8a739a2835306caacb33db))
+
 ### [1.3.58](https://github.com/mogenius/punq/compare/dev1.3.57...dev1.3.58) (2023-09-18)
 
 
