@@ -28,18 +28,32 @@ var proxyCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		readyCh := make(chan struct{})
-		stopCh := make(chan struct{}, 1)
-		go kubernetes.StartPortForward(utils.CONFIG.Backend.Port, utils.CONFIG.Backend.Port, readyCh, stopCh, &contextId)
+		// FORWARD BACKEND
+		readyBackendCh := make(chan struct{})
+		stopBackendCh := make(chan struct{}, 1)
+		go kubernetes.StartPortForward(utils.CONFIG.Backend.Port, utils.CONFIG.Backend.Port, readyBackendCh, stopBackendCh, &contextId)
 
-		url := fmt.Sprintf("http://%s:%d/punq", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port)
+		// FORWARD FRONTEND
+		readyFrontendCh := make(chan struct{})
+		stopFrontendCh := make(chan struct{}, 1)
+		go kubernetes.StartPortForward(utils.CONFIG.Frontend.Port, utils.CONFIG.Frontend.Port, readyFrontendCh, stopFrontendCh, &contextId)
 
 		select {
-		case <-readyCh:
+		case <-readyBackendCh:
+			fmt.Printf("Backend %s:%d is ready! 🚀🚀🚀\n", utils.CONFIG.Backend.Host, utils.CONFIG.Backend.Port)
+			break
+		case <-stopBackendCh:
+			break
+		}
+
+		select {
+		case <-readyFrontendCh:
+			url := fmt.Sprintf("http://%s:%d", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port)
+			fmt.Printf("Frontend %s:%d is ready! 🚀🚀🚀\n", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port)
 			utils.OpenBrowser(url)
 			fmt.Printf("We opened a browser with %s for you.\n", url)
 			break
-		case <-stopCh:
+		case <-stopFrontendCh:
 			break
 		}
 
