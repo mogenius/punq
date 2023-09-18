@@ -31,16 +31,19 @@ var proxyCmd = &cobra.Command{
 		// FORWARD BACKEND
 		readyBackendCh := make(chan struct{})
 		stopBackendCh := make(chan struct{}, 1)
+		backendUrl := fmt.Sprintf("http://%s:%d/version", utils.CONFIG.Backend.Host, utils.CONFIG.Backend.Port)
 		go kubernetes.StartPortForward(utils.CONFIG.Backend.Port, utils.CONFIG.Backend.Port, readyBackendCh, stopBackendCh, &contextId)
 
 		// FORWARD FRONTEND
 		readyFrontendCh := make(chan struct{})
 		stopFrontendCh := make(chan struct{}, 1)
+		frontendUrl := fmt.Sprintf("http://%s:%d", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port)
 		go kubernetes.StartPortForward(utils.CONFIG.Frontend.Port, utils.CONFIG.Frontend.Port, readyFrontendCh, stopFrontendCh, &contextId)
 
 		select {
 		case <-readyBackendCh:
-			fmt.Printf("Backend %s:%d is ready! 🚀🚀🚀\n", utils.CONFIG.Backend.Host, utils.CONFIG.Backend.Port)
+			fmt.Printf("Backend %s is ready! 🚀🚀🚀\n", backendUrl)
+			utils.OpenBrowser(backendUrl)
 			break
 		case <-stopBackendCh:
 			break
@@ -48,10 +51,9 @@ var proxyCmd = &cobra.Command{
 
 		select {
 		case <-readyFrontendCh:
-			url := fmt.Sprintf("http://%s:%d", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port)
-			fmt.Printf("Frontend %s:%d is ready! 🚀🚀🚀\n", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port)
-			utils.OpenBrowser(url)
-			fmt.Printf("We opened a browser with %s for you.\n", url)
+
+			fmt.Printf("Frontend %s is ready! 🚀🚀🚀\n", frontendUrl)
+			utils.OpenBrowser(frontendUrl)
 			break
 		case <-stopFrontendCh:
 			break

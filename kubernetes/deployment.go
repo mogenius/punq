@@ -106,3 +106,16 @@ func NewK8sDeployment() K8sNewWorkload {
 		utils.InitDeploymentYaml(),
 		"A Deployment provides declarative updates for Pods and ReplicaSets. You describe a desired state in a Deployment, and the Deployment controller changes the actual state to the desired state at a controlled rate. In this example, a Deployment named 'my-app-deployment' is created. It will create 3 replicas of the pod, each running a single container from the 'my-app-image:1.0.0' image and exposing port 8080.")
 }
+
+func UpdateDeploymentImage(namespace string, name string, image string, contextId *string) error {
+	provider := NewKubeProvider(contextId)
+	deploymentClient := provider.ClientSet.AppsV1().Deployments(namespace)
+	deployment, err := deploymentClient.Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+
+	deployment.Spec.Template.Spec.Containers[0].Image = image
+	_, err = deploymentClient.Update(context.Background(), deployment, metav1.UpdateOptions{})
+	return err
+}
