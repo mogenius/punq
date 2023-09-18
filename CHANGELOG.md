@@ -1,4 +1,16 @@
 
+### [1.2.20](https://github.com/mogenius/punq/compare/v1.2.19...v1.2.20) (2023-09-18)
+
+
+### Bug Fixes
+
+* kubecontext loader local problem. ([19e06f9](https://github.com/mogenius/punq/commit/19e06f9c57620ece32518fbb970052a359c93fa5))
+* proxy command works again. ([42da082](https://github.com/mogenius/punq/commit/42da082b6f99f3932203bf0a2b84a8a536e6d002))
+* update logs sse ([0a65d34](https://github.com/mogenius/punq/commit/0a65d34a11fe73d46eefda394e0b836e5d14195b))
+* update pod logs ([1933d04](https://github.com/mogenius/punq/commit/1933d04f14162846c55264d7b297c3a9c906c29f))
+* upgrade operator added. ([274a4ba](https://github.com/mogenius/punq/commit/274a4ba51170a6fc9323590b4f7b37fa9a39686f))
+* upgrade operator added. ([3f44db9](https://github.com/mogenius/punq/commit/3f44db977204e57e4b59561845f905610a79013a))
+
 ### [1.2.19](https://github.com/mogenius/punq/compare/v1.2.18...v1.2.19) (2023-09-18)
 
 
