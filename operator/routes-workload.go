@@ -554,6 +554,7 @@ func logsPod(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+
 	}
 	defer stream.Close()
 
@@ -578,7 +579,7 @@ func logsPod(c *gin.Context) {
 		n, err := stream.Read(buf)
 		if err != nil {
 			c.SSEvent("error", err.Error())
-			return true
+			return false
 		}
 		message := string(buf[:n])
 		c.SSEvent("message", message)

@@ -35,6 +35,23 @@ type Release struct {
 	Published string `json:"published_at"`
 }
 
+func IsProduction() bool {
+	stage := os.Getenv("stage")
+	if stage == "" {
+		stage = os.Getenv("STAGE")
+	}
+	return Equals([]string{"prod", "production"}, strings.ToLower(stage))
+}
+
+func Equals(s []string, str string) bool {
+	for _, v := range s {
+		if str == v {
+			return true
+		}
+	}
+	return false
+}
+
 func IsNewReleaseAvailable() bool {
 	latestRelease := "https://api.github.com/repos/mogenius/punq/releases/latest"
 	resp, err := http.Get(latestRelease)
