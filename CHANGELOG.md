@@ -1,4 +1,11 @@
 
+### [1.3.67](https://github.com/mogenius/punq/compare/dev1.3.66...dev1.3.67) (2023-09-19)
+
+
+### Bug Fixes
+
+* cpu-load. ([b5d4d55](https://github.com/mogenius/punq/commit/b5d4d55df49e0002a73e2196ddb68164724d85ca))
+
 ### [1.3.66](https://github.com/mogenius/punq/compare/dev1.3.65...dev1.3.66) (2023-09-19)
 
 
