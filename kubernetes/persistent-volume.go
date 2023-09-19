@@ -12,10 +12,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllPersistentVolumes() K8sWorkloadResult {
+func AllPersistentVolumes(contextId *string) utils.K8sWorkloadResult {
 	result := []core.PersistentVolume{}
 
-	provider := NewKubeProvider()
+	provider := NewKubeProvider(contextId)
 	pvList, err := provider.ClientSet.CoreV1().PersistentVolumes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllPersistentVolumes ERROR: %s", err.Error())
@@ -28,18 +28,23 @@ func AllPersistentVolumes() K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sPersistentVolume(data core.PersistentVolume) K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func GetPersistentVolume(name string, contextId *string) (*core.PersistentVolume, error) {
+	provider := NewKubeProvider(contextId)
+	return provider.ClientSet.CoreV1().PersistentVolumes().Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func UpdateK8sPersistentVolume(data core.PersistentVolume, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().PersistentVolumes()
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
-func DeleteK8sPersistentVolume(data core.PersistentVolume) K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func DeleteK8sPersistentVolume(data core.PersistentVolume, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().PersistentVolumes()
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
@@ -48,8 +53,14 @@ func DeleteK8sPersistentVolume(data core.PersistentVolume) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sPersistentVolume(name string) K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "persistentvolume", name)
+func DeleteK8sPersistentVolumeBy(name string, contextId *string) error {
+	kubeProvider := NewKubeProvider(contextId)
+	client := kubeProvider.ClientSet.CoreV1().PersistentVolumes()
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
+}
+
+func DescribeK8sPersistentVolume(name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "persistentvolume", name)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -60,14 +71,14 @@ func DescribeK8sPersistentVolume(name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sPersistentVolume(data core.PersistentVolume) K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func CreateK8sPersistentVolume(data core.PersistentVolume, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.CoreV1().PersistentVolumes()
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sVolume() K8sNewWorkload {

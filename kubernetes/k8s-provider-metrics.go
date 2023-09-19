@@ -2,7 +2,6 @@ package kubernetes
 
 import (
 	"github.com/mogenius/punq/logger"
-	"github.com/mogenius/punq/utils"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	metricsv "k8s.io/metrics/pkg/client/clientset/versioned"
@@ -13,13 +12,17 @@ type KubeProviderMetrics struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProviderMetrics() *KubeProviderMetrics {
+func NewKubeProviderMetrics(contextId *string) *KubeProviderMetrics {
 	var kubeProvider *KubeProviderMetrics
 	var err error
-	if utils.CONFIG.Kubernetes.RunInCluster {
-		kubeProvider, err = newKubeProviderMetricsInCluster()
+	if RunsInCluster {
+		kubeProvider, err = newKubeProviderMetricsInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderMetricsLocal()
+		if contextId == nil || *contextId == "" {
+			kubeProvider, err = newKubeProviderMetricsLocal()
+		} else {
+			kubeProvider, err = newKubeProviderMetricsInCluster(contextId)
+		}
 	}
 
 	if err != nil {
@@ -47,10 +50,18 @@ func newKubeProviderMetricsLocal() (*KubeProviderMetrics, error) {
 	}, nil
 }
 
-func newKubeProviderMetricsInCluster() (*KubeProviderMetrics, error) {
+func newKubeProviderMetricsInCluster(contextId *string) (*KubeProviderMetrics, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())
+	}
+
+	// CONTEXT SWITCHER
+	if contextId != nil {
+		config, err = ContextConfigLoader(contextId)
+		if err != nil || config == nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := metricsv.NewForConfig(config)

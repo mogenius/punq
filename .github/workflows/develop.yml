@@ -1,76 +1,131 @@
-name: Build, Package, Release
+name: develop
 
 on:
   push:
     branches:
       - develop
 
+env:
+  IMAGE_NAME: ghcr.io/mogenius/punq-dev
+  DOCKERFILE: Dockerfile-Operator
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  prepare:
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.PUNQ_TOKEN }}
-  
+
       - name: Create Sematic Release Version
         run: |
-          npm install -g standard-version
-          git config --global user.email "punq@mogenius.com"
+          # npm install -g standard-version
+          export HOME=/root
+          git config --system http.sslVerify false
+          git config --global user.email "punqs@mogenius.com"
           git config --global user.name "punq"
           git config --global credential.helper cache
-          standard-version --header "" --tag-prefix "dev"
+          standard-version -t dev --header ""
           git push --follow-tags origin develop
-          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          COMMIT_HASH=$(git rev-parse --short HEAD)
-          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
-          GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-          BUILD_TIMESTAMP=$(date)
-          echo "BUILD_TIMESTAMP=$BUILD_TIMESTAMP" >> $GITHUB_ENV
-          echo "$VERSION"
-          echo "BUILD_TIMESTAMP"
-          echo "GIT_BRANCH"
-          echo "COMMIT_HASH"
 
-      #
-      # TODO: NPM RUN BUILD GOES HERE
-      #
-      - name: npm run build
-        run: |
-          mkdir ui/dist
-          cp ui/index.html ui/dist/index.html
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      # Build and push Docker image with Buildx (don't push on PR)
-      # https://github.com/docker/build-push-action
-      - name: Build and push Docker image
-        id: build-and-push
-        uses: docker/build-push-action@v4
+  build-amd64:
+    needs: prepare
+    runs-on: [self-hosted, X64]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
         with:
-          file: Dockerfile-Operator
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          build-args: |
-            VERSION=${{ env.VERSION }}
-            COMMIT_HASH=${{ env.COMMIT_HASH }}
-            GIT_BRANCH=${{ env.GIT_BRANCH }}
-            BUILD_TIMESTAMP=${{ env.BUILD_TIMESTAMP }}
-          tags: |
-            ghcr.io/mogenius/punq-dev:latest
-            ghcr.io/mogenius/punq-dev:${{ env.VERSION }}
+          fetch-depth: 0
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PUNQ_TOKEN }}
+
+      - name: download and inject punq-frontend
+        run: |
+          curl https://github.com/mogenius/punq-frontend/releases/download/latest/latest.tar.gz -L -o ui.tar.gz
+          mkdir -p ui/dist
+          tar -xzf ui.tar.gz -C ui/dist
+
+      - name: Build and push AMD64 image
+        run: |
+          GIT_BRANCH=$(git branch | grep \* | cut -d ' ' -f2 | tr '[:upper:]' '[:lower:]')
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          BUILD_TIMESTAMP=$(date -Iseconds)
+          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+          OPERATOR_IMAGE="${{ env.IMAGE_NAME }}:$VERSION"
+          docker build -f ${{ env.DOCKERFILE }} --build-arg GOOS=linux --build-arg GOARCH=amd64 --build-arg VERSION="$VERSION" --build-arg OPERATOR_IMAGE="$OPERATOR_IMAGE" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" --build-arg GIT_BRANCH="$GIT_BRANCH" --build-arg COMMIT_HASH="$COMMIT_HASH" -t ${{ env.IMAGE_NAME }}:$VERSION-amd64 -t ${{ env.IMAGE_NAME }}:latest-amd64 .
+          docker push ${{ env.IMAGE_NAME }}:$VERSION-amd64
+
+  build-arm64-linux:
+    needs: prepare
+    runs-on: [self-hosted, ARM64]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PUNQ_TOKEN }}
+      
+      - name: download and inject punq-frontend
+        run: |
+          curl https://github.com/mogenius/punq-frontend/releases/download/latest/latest.tar.gz -L -o ui.tar.gz
+          mkdir -p ui/dist
+          tar -xzf ui.tar.gz -C ui/dist
+
+      - name: Build and push ARM64-linux image
+        run: |
+          GIT_BRANCH=$(git branch | grep \* | cut -d ' ' -f2 | tr '[:upper:]' '[:lower:]')
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          BUILD_TIMESTAMP=$(date -Iseconds)
+          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+          OPERATOR_IMAGE="${{ env.IMAGE_NAME }}:$VERSION"
+          docker build --platform=linux/arm64 -f ${{ env.DOCKERFILE }} --build-arg GOOS=linux --build-arg GOARCH=arm64 --build-arg VERSION="$VERSION" --build-arg OPERATOR_IMAGE="$OPERATOR_IMAGE" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" --build-arg GIT_BRANCH="$GIT_BRANCH" --build-arg COMMIT_HASH="$COMMIT_HASH" -t ${{ env.IMAGE_NAME }}:$VERSION-arm64-linux -t ${{ env.IMAGE_NAME }}:latest-arm64-linux .
+          docker push ${{ env.IMAGE_NAME }}:$VERSION-arm64-linux
+
+  merge-images:
+    needs: [build-amd64, build-arm64-linux, prepare]
+    runs-on: self-hosted
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PUNQ_TOKEN }}
+
+      - name: Merge images into a multi-arch manifest
+        run: |
+          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+          docker manifest create ${{ env.IMAGE_NAME }}:$VERSION \
+              --amend ${{ env.IMAGE_NAME }}:$VERSION-amd64 \
+              --amend ${{ env.IMAGE_NAME }}:$VERSION-arm64-linux
+          docker manifest push ${{ env.IMAGE_NAME }}:$VERSION
+          docker manifest create ${{ env.IMAGE_NAME }}:latest \
+              --amend ${{ env.IMAGE_NAME }}:$VERSION-amd64 \
+              --amend ${{ env.IMAGE_NAME }}:$VERSION-arm64-linux
+          docker manifest push ${{ env.IMAGE_NAME }}:latest

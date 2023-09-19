@@ -57,14 +57,14 @@ func IsNewReleaseAvailable() bool {
 		return false
 	}
 
-	fmt.Printf("Your version:      v%s\n", version.Ver)
-	fmt.Printf("Available version: %s (published: %s ago)\n", release.TagName, JsonStringToHumanDuration(release.Published))
+	fmt.Printf("Your version:      %s\n", version.Ver)
+	fmt.Printf("Available version: %s        (published: %s ago)\n", release.TagName, JsonStringToHumanDuration(release.Published))
 
 	if strings.Contains(release.TagName, version.Ver) {
 		fmt.Println("You are up-to-date 🥰.")
 		return false
 	} else {
-		fmt.Println("Your version is outdated 😭! Please update punq: https://punq.dev")
+		fmt.Println("Your version is outdated 😭!\n❗️Please update punq: https://punq.dev\n")
 		return true
 	}
 }
@@ -141,7 +141,7 @@ func OpenBrowser(url string) {
 	}
 
 	if err != nil {
-		fmt.Errorf("error while opening browser, %v", err)
+		fmt.Println(fmt.Errorf("error while opening browser, %v", err))
 	}
 }
 

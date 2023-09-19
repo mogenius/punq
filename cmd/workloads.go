@@ -43,7 +43,24 @@ var podsListCmd = &cobra.Command{
 	Short: "List pods.",
 	Long:  `Similar to kubectl, punq can list workloads in an orderly fashion.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		kubernetes.ListPodsTerminal(namespace)
+		kubernetes.ListPodsTerminal(namespace, &contextId)
+	},
+}
+var podsDescrineCmd = &cobra.Command{
+	Use:   "describe",
+	Short: "Describe pod.",
+	Long:  `Similar to kubectl, punq can describe workloads in an orderly fashion.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if namespace == "" {
+			logger.Log.Fatal("-namespace cannot be empty.")
+		}
+		if resource == "" {
+			logger.Log.Fatal("-resource cannot be empty.")
+		}
+		if contextId == "" {
+			logger.Log.Fatal("contextId cannot be empty.")
+		}
+		kubernetes.DescribeK8sPod(namespace, resource, &contextId)
 	},
 }
 
@@ -58,10 +75,13 @@ var podDeleteCmd = &cobra.Command{
 		if resource == "" {
 			logger.Log.Fatal("-resource cannot be empty.")
 		}
+		if contextId == "" {
+			logger.Log.Fatal("contextId cannot be empty.")
+		}
 
-		pod := kubernetes.GetPod(namespace, resource)
+		pod := kubernetes.GetPod(namespace, resource, &contextId)
 		if pod != nil {
-			kubernetes.DeleteK8sPod(*pod)
+			kubernetes.DeleteK8sPod(*pod, &contextId)
 		} else {
 			fmt.Printf("Pod %s/%s not found.\n", namespace, resource)
 		}
@@ -76,6 +96,11 @@ func init() {
 	podsCmd.AddCommand(podsListCmd)
 	podsListCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
 	podsListCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
+	podsCmd.AddCommand(podsDescrineCmd)
+	podsDescrineCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
+	podsDescrineCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
+	podsDescrineCmd.Flags().StringVarP(&contextId, "context", "c", "", "Define a context name")
+
 	podsCmd.AddCommand(podDeleteCmd)
 	podDeleteCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
 	podDeleteCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")

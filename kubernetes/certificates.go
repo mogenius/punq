@@ -12,10 +12,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllCertificates(namespaceName string) []cmapi.Certificate {
+func AllCertificates(namespaceName string, contextId *string) []cmapi.Certificate {
 	result := []cmapi.Certificate{}
 
-	provider := NewKubeProviderCertManager()
+	provider := NewKubeProviderCertManager(contextId)
 	certificatesList, err := provider.ClientSet.CertmanagerV1().Certificates(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllCertificates ERROR: %s", err.Error())
@@ -30,8 +30,8 @@ func AllCertificates(namespaceName string) []cmapi.Certificate {
 	return result
 }
 
-func GetCertificate(namespaceName string, resourceName string) (*cmapi.Certificate, error) {
-	provider := NewKubeProviderCertManager()
+func GetCertificate(namespaceName string, resourceName string, contextId *string) (*cmapi.Certificate, error) {
+	provider := NewKubeProviderCertManager(contextId)
 	certificate, err := provider.ClientSet.CertmanagerV1().Certificates(namespaceName).Get(context.TODO(), resourceName, metav1.GetOptions{})
 	if err != nil {
 		logger.Log.Errorf("GetCertificate ERROR: %s", err.Error())
@@ -40,10 +40,10 @@ func GetCertificate(namespaceName string, resourceName string) (*cmapi.Certifica
 	return certificate, nil
 }
 
-func AllK8sCertificates(namespaceName string) K8sWorkloadResult {
+func AllK8sCertificates(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []cmapi.Certificate{}
 
-	provider := NewKubeProviderCertManager()
+	provider := NewKubeProviderCertManager(contextId)
 	certificatesList, err := provider.ClientSet.CertmanagerV1().Certificates(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllCertificates ERROR: %s", err.Error())
@@ -58,18 +58,18 @@ func AllK8sCertificates(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sCertificate(data cmapi.Certificate) K8sWorkloadResult {
-	kubeProvider := NewKubeProviderCertManager()
+func UpdateK8sCertificate(data cmapi.Certificate, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.CertmanagerV1().Certificates(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
-func DeleteK8sCertificate(data cmapi.Certificate) K8sWorkloadResult {
-	kubeProvider := NewKubeProviderCertManager()
+func DeleteK8sCertificate(data cmapi.Certificate, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.CertmanagerV1().Certificates(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
@@ -78,8 +78,14 @@ func DeleteK8sCertificate(data cmapi.Certificate) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sCertificate(namespace string, name string) K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "certificate", name, "-n", namespace)
+func DeleteK8sCertificateBy(namespace string, name string, contextId *string) error {
+	kubeProvider := NewKubeProviderCertManager(contextId)
+	client := kubeProvider.ClientSet.CertmanagerV1().Certificates(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
+}
+
+func DescribeK8sCertificate(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "certificate", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -90,14 +96,14 @@ func DescribeK8sCertificate(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sCertificate(data cmapi.Certificate) K8sWorkloadResult {
-	kubeProvider := NewKubeProviderCertManager()
+func CreateK8sCertificate(data cmapi.Certificate, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProviderCertManager(contextId)
 	client := kubeProvider.ClientSet.CertmanagerV1().Certificates(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sCertificate() K8sNewWorkload {

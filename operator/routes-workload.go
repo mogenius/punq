@@ -1,7 +1,15 @@
 package operator
 
 import (
+	"context"
+	"io"
 	"net/http"
+	"strconv"
+
+	"github.com/mogenius/punq/logger"
+
+	"github.com/mogenius/punq/services"
+	"github.com/mogenius/punq/utils"
 
 	v1Cert "github.com/cert-manager/cert-manager/pkg/apis/acme/v1"
 	cmapi "github.com/cert-manager/cert-manager/pkg/apis/certmanager/v1"
@@ -23,1507 +31,3146 @@ import (
 )
 
 func InitWorkloadRoutes(router *gin.Engine) {
-	router.GET("/workload/templates", Auth(dtos.USER), allWorkloadTemplates)
-	router.GET("/workload/available-resources", Auth(dtos.READER), allKubernetesResources)
 
-	router.GET("/workload/namespace/all", Auth(dtos.USER), allNamespaces)   // QUERY: -
-	router.DELETE("/workload/namespace", Auth(dtos.ADMIN), deleteNamespace) // BODY: json-object
-	router.POST("/workload/namespace", Auth(dtos.USER), createNamespace)    // BODY: yaml-object
+	workloadRoutes := router.Group("/workload")
+	{
+		workloadRoutes.GET("/templates", Auth(dtos.USER), allWorkloadTemplates)
+		workloadRoutes.GET("/available-resources", Auth(dtos.READER), allKubernetesResources)
 
-	router.GET("/workload/pod", Auth(dtos.USER), allPods)              // QUERY: namespace
-	router.GET("/workload/pod/describe", Auth(dtos.USER), describePod) // QUERY: namespace, name
-	router.DELETE("/workload/pod", Auth(dtos.USER), deletePod)         // BODY: json-object
-	router.PATCH("/workload/pod", Auth(dtos.USER), patchPod)           // BODY: json-object
-	router.POST("/workload/pod", Auth(dtos.USER), createPod)           // BODY: yaml-object
+		// namespace
+		namespaceWorkloadRoutes := workloadRoutes.Group("/namespace", Auth(dtos.USER), RequireContextId())
+		{
+			namespaceWorkloadRoutes.GET("/", allNamespaces)                                                    // PARAM: -
+			namespaceWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeNamespaces)          // PARAM: name
+			namespaceWorkloadRoutes.DELETE("/:name", Auth(dtos.ADMIN), validateParam("name"), deleteNamespace) // PARAM: name
+			namespaceWorkloadRoutes.PATCH("/", patchNamespace)                                                 // BODY: json-object
+			namespaceWorkloadRoutes.POST("/", createNamespace)                                                 // BODY: yaml-object
+		}
 
-	router.GET("/workload/deployment", Auth(dtos.USER), allDeployments)              // QUERY: namespace
-	router.GET("/workload/deployment/describe", Auth(dtos.USER), describeDeployment) // QUERY: namespace, name
-	router.DELETE("/workload/deployment", Auth(dtos.USER), deleteDeployment)         // BODY: json-object
-	router.PATCH("/workload/deployment", Auth(dtos.USER), patchDeployment)           // BODY: json-object
-	router.POST("/workload/deployment", Auth(dtos.USER), createDeployment)           // BODY: yaml-object
+		// pod
+		podWorkloadRoutes := workloadRoutes.Group("/pod", Auth(dtos.USER), RequireContextId())
+		{
+			podWorkloadRoutes.GET("/", allPods)
+			podWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describePod) // PARAM: namespace
+			podWorkloadRoutes.GET("/logs/:namespace/:name", validateParam("namespace", "name"), logsPod)         // PARAM: namespace
+			podWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deletePod)         // PARAM: namespace, name
+			podWorkloadRoutes.PATCH("/", patchPod)                                                               // BODY: json-object
+			podWorkloadRoutes.POST("/", createPod)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/service", Auth(dtos.USER), allServices)              // QUERY: namespace
-	router.GET("/workload/service/describe", Auth(dtos.USER), describeService) // QUERY: namespace, name
-	router.DELETE("/workload/service", Auth(dtos.USER), deleteService)         // BODY: json-object
-	router.PATCH("/workload/service", Auth(dtos.USER), patchService)           // BODY: json-object
-	router.POST("/workload/service", Auth(dtos.USER), createService)           // BODY: yaml-object
+		// deployment
+		deploymentWorkloadRoutes := workloadRoutes.Group("/deployment", Auth(dtos.USER), RequireContextId())
+		{
+			deploymentWorkloadRoutes.GET("/", allDeployments)                                                                  // PARAM: namespace
+			deploymentWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeDeployment) // PARAM: namespace, name
+			deploymentWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteDeployment)         // PARAM: namespace, name
+			deploymentWorkloadRoutes.PATCH("/", patchDeployment)                                                               // BODY: json-object
+			deploymentWorkloadRoutes.POST("/´", createDeployment)                                                              // BODY: yaml-object
+		}
 
-	router.GET("/workload/ingress", Auth(dtos.USER), allIngresses)             // QUERY: namespace
-	router.GET("/workload/ingress/describe", Auth(dtos.USER), describeIngress) // QUERY: namespace, name
-	router.DELETE("/workload/ingress", Auth(dtos.USER), deleteIngress)         // BODY: json-object
-	router.PATCH("/workload/ingress", Auth(dtos.USER), patchIngress)           // BODY: json-object
-	router.POST("/workload/ingress", Auth(dtos.USER), createIngress)           // BODY: yaml-object
+		// service
+		serviceWorkloadRoutes := workloadRoutes.Group("/service", Auth(dtos.USER), RequireContextId())
+		{
+			serviceWorkloadRoutes.GET("/", allServices)                                                                  // PARAM: namespace
+			serviceWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeService) // PARAM: namespace, name
+			serviceWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteService)         // PARAM: namespace, name
+			serviceWorkloadRoutes.PATCH("/", patchService)                                                               // BODY: json-object
+			serviceWorkloadRoutes.POST("/", createService)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/configmap", Auth(dtos.USER), allConfigmaps)              // QUERY: namespace
-	router.GET("/workload/configmap/describe", Auth(dtos.USER), describeConfigmap) // QUERY: namespace, name
-	router.DELETE("/workload/configmap", Auth(dtos.USER), deleteConfigmap)         // BODY: json-object
-	router.PATCH("/workload/configmap", Auth(dtos.USER), patchConfigmap)           // BODY: json-object
-	router.POST("/workload/configmap", Auth(dtos.USER), createConfigmap)           // BODY: yaml-object
+		// ingress
+		ingressWorkloadRoutes := workloadRoutes.Group("/ingress", Auth(dtos.USER), RequireContextId())
+		{
+			ingressWorkloadRoutes.GET("/", allIngresses)                                                                 // PARAM: namespace
+			ingressWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeIngress) // PARAM: namespace, name
+			ingressWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteIngress)         // PARAM: json-object
+			ingressWorkloadRoutes.PATCH("/", patchIngress)                                                               // BODY: json-object
+			ingressWorkloadRoutes.POST("/", createIngress)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/secret", Auth(dtos.ADMIN), allSecrets)              // QUERY: namespace
-	router.GET("/workload/secret/describe", Auth(dtos.ADMIN), describeSecret) // QUERY: namespace, name
-	router.DELETE("/workload/secret", Auth(dtos.ADMIN), deleteSecret)         // BODY: json-object
-	router.PATCH("/workload/secret", Auth(dtos.ADMIN), patchSecret)           // BODY: json-object
-	router.POST("/workload/secret", Auth(dtos.ADMIN), createSecret)           // BODY: yaml-object
+		// configmap
+		configmapWorkloadRoutes := workloadRoutes.Group("/configmap", Auth(dtos.USER), RequireContextId())
+		{
+			configmapWorkloadRoutes.GET("/", allConfigmaps)                                                                  // PARAM: namespace
+			configmapWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeConfigmap) // PARAM: namespace, name
+			configmapWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteConfigmap)         // PARAM: namespace, name
+			configmapWorkloadRoutes.PATCH("/", patchConfigmap)                                                               // BODY: json-object
+			workloadRoutes.POST("/´", createConfigmap)                                                                       // BODY: yaml-object
+		}
 
-	router.GET("/workload/node", Auth(dtos.USER), allNodes)              // QUERY: -
-	router.GET("/workload/node/describe", Auth(dtos.USER), describeNode) // QUERY:  name
+		// secret
+		secretWorkloadRoutes := workloadRoutes.Group("/secret", Auth(dtos.ADMIN), RequireContextId())
+		{
+			secretWorkloadRoutes.GET("/", allSecrets)                                                                  // PARAM: namespace
+			secretWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeSecret) // PARAM: namespace, name
+			secretWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteSecret)         // PARAM: namespace, name
+			secretWorkloadRoutes.PATCH("/", patchSecret)                                                               // BODY: json-object
+			secretWorkloadRoutes.POST("/", createSecret)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/daemon_set", Auth(dtos.USER), allDaemonSets)              // QUERY: namespace
-	router.GET("/workload/daemon_set/describe", Auth(dtos.USER), describeDaemonSet) // QUERY: namespace, name
-	router.DELETE("/workload/daemon_set", Auth(dtos.USER), deleteDaemonSet)         // BODY: json-object
-	router.PATCH("/workload/daemon_set", Auth(dtos.USER), patchDaemonSet)           // BODY: json-object
-	router.POST("/workload/daemon_set", Auth(dtos.USER), createDaemonSet)           // BODY: yaml-object
+		// node
+		nodeWorkloadRoutes := workloadRoutes.Group("/node", Auth(dtos.USER), RequireContextId())
+		{
+			nodeWorkloadRoutes.GET("/", allNodes)                                          // -
+			nodeWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeNode) // PARAM: namespace
+		}
 
-	router.GET("/workload/stateful_set", Auth(dtos.USER), allStatefulSets)              // QUERY: namespace
-	router.GET("/workload/stateful_set/describe", Auth(dtos.USER), describeStatefulSet) // QUERY: namespace, name
-	router.DELETE("/workload/stateful_set", Auth(dtos.USER), deleteStatefulSet)         // BODY: json-object
-	router.PATCH("/workload/stateful_set", Auth(dtos.USER), patchStatefulSet)           // BODY: json-object
-	router.POST("/workload/stateful_set", Auth(dtos.USER), createStatefulSet)           // BODY: yaml-object
+		// daemon-set
+		daemonSetWorkloadRoutes := workloadRoutes.Group("/daemon-set", Auth(dtos.USER), RequireContextId())
+		{
+			daemonSetWorkloadRoutes.GET("/", allDaemonSets)                                                                  // PARAM: namespace
+			daemonSetWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeDaemonSet) // PARAM: namespace, name
+			daemonSetWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteDaemonSet)         // PARAM: namespace, name
+			daemonSetWorkloadRoutes.PATCH("/", patchDaemonSet)                                                               // BODY: json-object
+			daemonSetWorkloadRoutes.POST("/", createDaemonSet)                                                               // BODY: yaml-object
 
-	router.GET("/workload/job", Auth(dtos.USER), allJobs)              // QUERY: namespace
-	router.GET("/workload/job/describe", Auth(dtos.USER), describeJob) // QUERY: namespace, name
-	router.DELETE("/workload/job", Auth(dtos.USER), deleteJob)         // BODY: json-object
-	router.PATCH("/workload/job", Auth(dtos.USER), patchJob)           // BODY: json-object
-	router.POST("/workload/job", Auth(dtos.USER), createJob)           // BODY: yaml-object
+		}
 
-	router.GET("/workload/cron_job", Auth(dtos.USER), allCronJobs)              // QUERY: namespace
-	router.GET("/workload/cron_job/describe", Auth(dtos.USER), describeCronJob) // QUERY: namespace, name
-	router.DELETE("/workload/cron_job", Auth(dtos.USER), deleteCronJob)         // BODY: json-object
-	router.PATCH("/workload/cron_job", Auth(dtos.USER), patchCronJob)           // BODY: json-object
-	router.POST("/workload/cron_job", Auth(dtos.USER), createCronJob)           // BODY: yaml-object
+		// stateful-set
+		statefulSetWorkloadRoutes := workloadRoutes.Group("/stateful-set", Auth(dtos.USER), RequireContextId())
+		{
+			statefulSetWorkloadRoutes.GET("/", allStatefulSets)                                                                  // PARAM: namespace
+			statefulSetWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeStatefulSet) // PARAM: namespace, name
+			statefulSetWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteStatefulSet)         // PARAM: namespace, name
+			statefulSetWorkloadRoutes.PATCH("/", patchStatefulSet)                                                               // BODY: json-object
+			statefulSetWorkloadRoutes.POST("/", createStatefulSet)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/replica_set", Auth(dtos.USER), allReplicasets)              // QUERY: namespace
-	router.GET("/workload/replica_set/describe", Auth(dtos.USER), describeReplicaset) // QUERY: namespace, name
-	router.DELETE("/workload/replica_set", Auth(dtos.USER), deleteReplicaset)         // BODY: json-object
-	router.PATCH("/workload/replica_set", Auth(dtos.USER), patchReplicaset)           // BODY: json-object
-	router.POST("/workload/replica_set", Auth(dtos.USER), createReplicaset)           // BODY: yaml-object
+		// job
+		jobWorkloadRoutes := workloadRoutes.Group("/job", Auth(dtos.USER), RequireContextId())
+		{
+			jobWorkloadRoutes.GET("/", allJobs)                                                                  // PARAM: namespace
+			jobWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeJob) // PARAM: namespace, name
+			jobWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteJob)         // PARAM: namespace, name
+			jobWorkloadRoutes.PATCH("/", patchJob)                                                               // BODY: json-object
+			jobWorkloadRoutes.POST("/", createJob)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/persistent_volume", Auth(dtos.ADMIN), allPersistentVolumes)              // QUERY: -
-	router.GET("/workload/persistent_volume/describe", Auth(dtos.ADMIN), describePersistentVolume) // QUERY: name
-	router.DELETE("/workload/persistent_volume", Auth(dtos.ADMIN), deletePersistentVolume)         // BODY: json-object
-	router.PATCH("/workload/persistent_volume", Auth(dtos.ADMIN), patchPersistentVolume)           // BODY: json-object
-	router.POST("/workload/persistent_volume", Auth(dtos.ADMIN), createPersistentVolume)           // BODY: yaml-object
+		// cron-job
+		cronJobWorkloadRoutes := workloadRoutes.Group("/cron-job", Auth(dtos.USER), RequireContextId())
+		{
+			cronJobWorkloadRoutes.GET("/", allCronJobs)                                                                  // PARAM: namespace
+			cronJobWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeCronJob) // PARAM: namespace, name
+			cronJobWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteCronJob)         // PARAM: namespace, name
+			cronJobWorkloadRoutes.PATCH("/", patchCronJob)                                                               // BODY: json-object
+			cronJobWorkloadRoutes.POST("/", createCronJob)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/persistent_volume_claim", Auth(dtos.USER), allPersistentVolumeClaims)              // QUERY: namespace
-	router.GET("/workload/persistent_volume_claim/describe", Auth(dtos.USER), describePersistentVolumeClaim) // QUERY: namespace, name
-	router.DELETE("/workload/persistent_volume_claim", Auth(dtos.ADMIN), deletePersistentVolumeClaim)        // BODY: json-object
-	router.PATCH("/workload/persistent_volume_claim", Auth(dtos.ADMIN), patchPersistentVolumeClaim)          // BODY: json-object
-	router.POST("/workload/persistent_volume_claim", Auth(dtos.ADMIN), createPersistentVolumeClaim)          // BODY: yaml-object
+		// replicaset
+		replicaSetWorkloadRoutes := workloadRoutes.Group("/replica-set", Auth(dtos.USER), RequireContextId())
+		{
+			replicaSetWorkloadRoutes.GET("/", allReplicasets)                                                                  // PARAM: namespace
+			replicaSetWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeReplicaset) // PARAM: namespace, name
+			replicaSetWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteReplicaset)         // PARAM: namespace, name
+			replicaSetWorkloadRoutes.PATCH("(", patchReplicaset)                                                               // BODY: json-object
+			replicaSetWorkloadRoutes.POST("/", createReplicaset)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/horizontal_pod_autoscaler", Auth(dtos.USER), allHpas)              // QUERY: namespace
-	router.GET("/workload/horizontal_pod_autoscaler/describe", Auth(dtos.USER), describeHpa) // QUERY: namespace, name
-	router.DELETE("/workload/horizontal_pod_autoscaler", Auth(dtos.ADMIN), deleteHpa)        // BODY: json-object
-	router.PATCH("/workload/horizontal_pod_autoscaler", Auth(dtos.ADMIN), patchHpa)          // BODY: json-object
-	router.POST("/workload/horizontal_pod_autoscaler", Auth(dtos.ADMIN), createHpa)          // BODY: yaml-object
+		// persistent-volume
+		persistentVolumeWorkloadRoutes := workloadRoutes.Group("/persistent-volume", Auth(dtos.ADMIN), RequireContextId())
+		{
+			persistentVolumeWorkloadRoutes.GET("/", allPersistentVolumes)                                          // PARAM: -
+			persistentVolumeWorkloadRoutes.GET("/describe/:name", validateParam("name"), describePersistentVolume) // PARAM: name
+			persistentVolumeWorkloadRoutes.DELETE("/:name", validateParam("name"), deletePersistentVolume)         // PARAM: name
+			persistentVolumeWorkloadRoutes.PATCH("/", patchPersistentVolume)                                       // BODY: json-object
+			persistentVolumeWorkloadRoutes.POST("/", createPersistentVolume)                                       // BODY: yaml-object
+		}
 
-	router.GET("/workload/event", Auth(dtos.USER), allEvents)              // QUERY: namespace
-	router.GET("/workload/event/describe", Auth(dtos.USER), describeEvent) // QUERY: namespace, name
+		// persistent-volume-claim
+		persistentVolumeClaimWorkloadRoutes := workloadRoutes.Group("/persistent-volume-claim", RequireContextId())
+		{
+			persistentVolumeClaimWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allPersistentVolumeClaims)                                      // PARAM: namespace
+			persistentVolumeClaimWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describePersistentVolumeClaim) // PARAM: namespace, name
+			persistentVolumeClaimWorkloadRoutes.DELETE("/:namespace/:name", Auth(dtos.ADMIN), validateParam("namespace", "name"), deletePersistentVolumeClaim)        // PARAM: namespace, name
+			persistentVolumeClaimWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchPersistentVolumeClaim)                                                              // BODY: json-object
+			persistentVolumeClaimWorkloadRoutes.POST("/", Auth(dtos.ADMIN), createPersistentVolumeClaim)                                                              // BODY: yaml-object
+		}
 
-	router.GET("/workload/certificate", Auth(dtos.USER), allCertificates)              // QUERY: namespace
-	router.GET("/workload/certificate/describe", Auth(dtos.USER), describeCertificate) // QUERY: namespace, name
-	router.DELETE("/workload/certificate", Auth(dtos.USER), deleteCertificate)         // BODY: json-object
-	router.PATCH("/workload/certificate", Auth(dtos.USER), patchCertificate)           // BODY: json-object
-	router.POST("/workload/certificate", Auth(dtos.USER), createCertificate)           // BODY: yaml-object
+		// horizontal-pod-autoscaler
+		horizontalPodAutoscalerWorkloadRoutes := workloadRoutes.Group("/horizontal-pod-autoscaler", RequireContextId())
+		{
+			horizontalPodAutoscalerWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allHpas)                                      // PARAM: namespace
+			horizontalPodAutoscalerWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeHpa) // PARAM: namespace, name
+			horizontalPodAutoscalerWorkloadRoutes.DELETE("/:namespace/:name", Auth(dtos.ADMIN), validateParam("namespace", "name"), deleteHpa)        // PARAM: namespace, name
+			horizontalPodAutoscalerWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchHpa)                                                              // BODY: json-object
+			horizontalPodAutoscalerWorkloadRoutes.POST("/", Auth(dtos.ADMIN), createHpa)                                                              // BODY: yaml-object
+		}
 
-	router.GET("/workload/certificaterequest", Auth(dtos.USER), allCertificateRequests)              // QUERY: namespace
-	router.GET("/workload/certificaterequest/describe", Auth(dtos.USER), describeCertificateRequest) // QUERY: namespace, name
-	router.DELETE("/workload/certificaterequest", Auth(dtos.USER), deleteCertificateRequest)         // BODY: json-object
-	router.PATCH("/workload/certificaterequest", Auth(dtos.USER), patchCertificateRequest)           // BODY: json-object
-	router.POST("/workload/certificaterequest", Auth(dtos.USER), createCertificateRequest)           // BODY: yaml-object
+		// event
+		eventWorkloadRoutes := workloadRoutes.Group("/event", Auth(dtos.USER), RequireContextId())
+		{
+			eventWorkloadRoutes.GET("/", allEvents)                                                                  // PARAM: namespace
+			eventWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeEvent) // PARAM: namespace, name
+		}
 
-	router.GET("/workload/orders", Auth(dtos.USER), allOrders)              // QUERY: namespace
-	router.GET("/workload/orders/describe", Auth(dtos.USER), describeOrder) // QUERY: namespace, name
-	router.DELETE("/workload/orders", Auth(dtos.USER), deleteOrder)         // BODY: json-object
-	router.PATCH("/workload/orders", Auth(dtos.USER), patchOrder)           // BODY: json-object
-	router.POST("/workload/orders", Auth(dtos.USER), createOrder)           // BODY: yaml-object
+		// certificate
+		certificateWorkloadRoutes := workloadRoutes.Group("/certificate", Auth(dtos.USER), RequireContextId())
+		{
+			certificateWorkloadRoutes.GET("/", allCertificates)                                                                  // PARAM: namespace
+			certificateWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeCertificate) // PARAM: namespace, name
+			certificateWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteCertificate)         // PARAM: namespace, name
+			certificateWorkloadRoutes.PATCH("/", patchCertificate)                                                               // BODY: json-object
+			certificateWorkloadRoutes.POST("/", createCertificate)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/issuer", Auth(dtos.USER), allIssuers)              // QUERY: namespace
-	router.GET("/workload/issuer/describe", Auth(dtos.USER), describeIssuer) // QUERY: namespace, name
-	router.DELETE("/workload/issuer", Auth(dtos.USER), deleteIssuer)         // BODY: json-object
-	router.PATCH("/workload/issuer", Auth(dtos.USER), patchIssuer)           // BODY: json-object
-	router.POST("/workload/issuer", Auth(dtos.USER), createIssuer)           // BODY: yaml-object
+		// certificate-request
+		certificateRequestWorkloadRoutes := workloadRoutes.Group("/certificate-request", Auth(dtos.USER), RequireContextId())
+		{
+			certificateRequestWorkloadRoutes.GET("/", validateParam("name"), allCertificateRequests)                                           // PARAM: namespace
+			certificateRequestWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeCertificateRequest) // PARAM: namespace, name
+			certificateRequestWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteCertificateRequest)         // PARAM: namespace, name
+			certificateRequestWorkloadRoutes.PATCH("/", patchCertificateRequest)                                                               // BODY: json-object
+			certificateRequestWorkloadRoutes.POST("/", createCertificateRequest)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/clusterissuer", Auth(dtos.ADMIN), allClusterIssuers)              // QUERY: -
-	router.GET("/workload/clusterissuer/describe", Auth(dtos.ADMIN), describeClusterIssuer) // QUERY: name
-	router.DELETE("/workload/clusterissuer", Auth(dtos.ADMIN), deleteClusterIssuer)         // BODY: json-object
-	router.PATCH("/workload/clusterissuer", Auth(dtos.ADMIN), patchClusterIssuer)           // BODY: json-object
-	router.POST("/workload/clusterissuer", Auth(dtos.ADMIN), createClusterIssuer)           // BODY: yaml-object
+		// orders
+		ordersWorkloadRoutes := workloadRoutes.Group("/orders", Auth(dtos.USER), RequireContextId())
+		{
+			ordersWorkloadRoutes.GET("/", allOrders)                                                                  // PARAM: namespace
+			ordersWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeOrder) // PARAM: namespace, name
+			ordersWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteOrder)         // PARAM: namespace, name
+			ordersWorkloadRoutes.PATCH("/", patchOrder)                                                               // BODY: json-object
+			ordersWorkloadRoutes.POST("/", createOrder)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/service_account", Auth(dtos.ADMIN), allServiceAccounts)              // QUERY: namespace
-	router.GET("/workload/service_account/describe", Auth(dtos.ADMIN), describeServiceAccount) // QUERY: namespace, name
-	router.DELETE("/workload/service_account", Auth(dtos.ADMIN), deleteServiceAccount)         // BODY: json-object
-	router.PATCH("/workload/service_account", Auth(dtos.ADMIN), patchServiceAccount)           // BODY: json-object
-	router.POST("/workload/service_account", Auth(dtos.ADMIN), createServiceAccount)           // BODY: yaml-object
+		// issuer
+		issuerWorkloadRoutes := workloadRoutes.Group("/issuer", Auth(dtos.USER), RequireContextId())
+		{
+			issuerWorkloadRoutes.GET("/", allIssuers)                                                                  // PARAM: namespace
+			issuerWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeIssuer) // PARAM: namespace, name
+			issuerWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteIssuer)         // PARAM: namespace, name
+			issuerWorkloadRoutes.PATCH("/", patchIssuer)                                                               // BODY: json-object
+			issuerWorkloadRoutes.POST("/", createIssuer)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/role", Auth(dtos.USER), allRoles)              // QUERY: namespace
-	router.GET("/workload/role/describe", Auth(dtos.USER), describeRole) // QUERY: namespace, name
-	router.DELETE("/workload/role", Auth(dtos.ADMIN), deleteRole)        // BODY: json-object
-	router.PATCH("/workload/role", Auth(dtos.ADMIN), patchRole)          // BODY: json-object
-	router.POST("/workload/role", Auth(dtos.ADMIN), createRole)          // BODY: yaml-object
+		// cluster-issuer
+		clusterIssuerWorkloadRoutes := workloadRoutes.Group("/cluster-issuer", Auth(dtos.ADMIN), RequireContextId())
+		{
+			clusterIssuerWorkloadRoutes.GET("/", allClusterIssuers)                                          // PARAM: -
+			clusterIssuerWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeClusterIssuer) // PARAM: name
+			clusterIssuerWorkloadRoutes.DELETE("/:name", validateParam("name"), deleteClusterIssuer)         // PARAM: name
+			clusterIssuerWorkloadRoutes.PATCH("/", patchClusterIssuer)                                       // BODY: json-object
+			clusterIssuerWorkloadRoutes.POST("/", createClusterIssuer)                                       // BODY: yaml-object
+		}
 
-	router.GET("/workload/role_binding", Auth(dtos.USER), allRoleBindings)              // QUERY: namespace
-	router.GET("/workload/role_binding/describe", Auth(dtos.USER), describeRoleBinding) // QUERY: namespace, name
-	router.DELETE("/workload/role_binding", Auth(dtos.ADMIN), deleteRoleBinding)        // BODY: json-object
-	router.PATCH("/workload/role_binding", Auth(dtos.ADMIN), patchRoleBinding)          // BODY: json-object
-	router.POST("/workload/role_binding", Auth(dtos.ADMIN), createRoleBinding)          // BODY: yaml-object
+		// service-account
+		serviceAccountWorkloadRoutes := workloadRoutes.Group("/service-account", Auth(dtos.ADMIN), RequireContextId())
+		{
+			serviceAccountWorkloadRoutes.GET("/", allServiceAccounts)                                                                  // PARAM: namespace
+			serviceAccountWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeServiceAccount) // PARAM: namespace, name
+			serviceAccountWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteServiceAccount)         // PARAM: namespace, name
+			serviceAccountWorkloadRoutes.PATCH("/", patchServiceAccount)                                                               // BODY: json-object
+			serviceAccountWorkloadRoutes.POST("/", createServiceAccount)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/cluster_role", Auth(dtos.ADMIN), allClusterRoles)              // QUERY: -
-	router.GET("/workload/cluster_role/describe", Auth(dtos.ADMIN), describeClusterRole) // QUERY: name
-	router.DELETE("/workload/cluster_role", Auth(dtos.ADMIN), deleteClusterRole)         // BODY: json-object
-	router.PATCH("/workload/cluster_role", Auth(dtos.ADMIN), patchClusterRole)           // BODY: json-object
-	router.POST("/workload/cluster_role", Auth(dtos.ADMIN), createClusterRole)           // BODY: yaml-object
+		// role
+		roleWorkloadRoutes := workloadRoutes.Group("/role", RequireContextId())
+		{
+			roleWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allRoles)                                      // PARAM: namespace
+			roleWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeRole) // PARAM: namespace, name
+			roleWorkloadRoutes.DELETE("/:namespace/:name", Auth(dtos.ADMIN), validateParam("namespace", "name"), deleteRole)        // PARAM: namespace, name
+			roleWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchRole)                                                              // BODY: json-object
+			roleWorkloadRoutes.POST("/", Auth(dtos.ADMIN), createRole)                                                              // BODY: yaml-object
+		}
 
-	router.GET("/workload/cluster_role_binding", Auth(dtos.ADMIN), allClusterRoleBindings)              // QUERY: -
-	router.GET("/workload/cluster_role_binding/describe", Auth(dtos.ADMIN), describeClusterRoleBinding) // QUERY: name
-	router.DELETE("/workload/cluster_role_binding", Auth(dtos.ADMIN), deleteClusterRoleBinding)         // BODY: json-object
-	router.PATCH("/workload/cluster_role_binding", Auth(dtos.ADMIN), patchClusterRoleBinding)           // BODY: json-object
-	router.POST("/workload/cluster_role_binding", Auth(dtos.ADMIN), createClusterRoleBinding)           // BODY: yaml-object
+		// role-binding
+		roleBindingWorkloadRoutes := workloadRoutes.Group("/role-binding", RequireContextId())
+		{
+			roleBindingWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allRoleBindings)                                      // PARAM: namespace
+			roleBindingWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeRoleBinding) // PARAM: namespace, name
+			roleBindingWorkloadRoutes.DELETE("/:namespace/:name", Auth(dtos.ADMIN), validateParam("namespace", "name"), deleteRoleBinding)        // PARAM: namespace, name
+			roleBindingWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchRoleBinding)                                                              // BODY: json-object
+			roleBindingWorkloadRoutes.POST("/", Auth(dtos.ADMIN), createRoleBinding)                                                              // BODY: yaml-object
+		}
 
-	router.GET("/workload/volume_attachment", Auth(dtos.ADMIN), allVolumeAttachments)              // QUERY: -
-	router.GET("/workload/volume_attachment/describe", Auth(dtos.ADMIN), describeVolumeAttachment) // QUERY: name
-	router.DELETE("/workload/volume_attachment", Auth(dtos.ADMIN), deleteVolumeAttachment)         // BODY: json-object
-	router.PATCH("/workload/volume_attachment", Auth(dtos.ADMIN), patchVolumeAttachment)           // BODY: json-object
-	router.POST("/workload/volume_attachment", Auth(dtos.ADMIN), createVolumeAttachment)           // BODY: yaml-object
+		// cluster-role
+		clusterRoleWorkloadRoutes := workloadRoutes.Group("/cluster-role", Auth(dtos.ADMIN), RequireContextId())
+		{
+			clusterRoleWorkloadRoutes.GET("/", allClusterRoles)                                          // PARAM: -
+			clusterRoleWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeClusterRole) // PARAM: name
+			clusterRoleWorkloadRoutes.DELETE("/:name", validateParam("name"), deleteClusterRole)         // PARAM: name
+			clusterRoleWorkloadRoutes.PATCH("/cluster_role", patchClusterRole)                           // BODY: json-object
+			clusterRoleWorkloadRoutes.POST("/cluster_role", createClusterRole)                           // BODY: yaml-object
+		}
 
-	router.GET("/workload/network_policy", Auth(dtos.USER), allNetworkPolicies)             // QUERY: namespace
-	router.GET("/workload/network_policy/describe", Auth(dtos.USER), describeNetworkPolicy) // QUERY: namespace, name
-	router.DELETE("/workload/network_policy", Auth(dtos.ADMIN), deleteNetworkPolicy)        // BODY: json-object
-	router.PATCH("/workload/network_policy", Auth(dtos.ADMIN), patchNetworkPolicy)          // BODY: json-object
-	router.POST("/workload/network_policy", Auth(dtos.ADMIN), createNetworkPolicy)          // BODY: yaml-object
+		// cluster-role-binding
+		clusterRoleBindingWorkloadRoutes := workloadRoutes.Group("/cluster-role-binding", Auth(dtos.ADMIN), RequireContextId())
+		{
+			clusterRoleBindingWorkloadRoutes.GET("/", allClusterRoleBindings)                                          // PARAM: -
+			clusterRoleBindingWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeClusterRoleBinding) // PARAM: name
+			clusterRoleBindingWorkloadRoutes.DELETE("/:name", validateParam("name"), deleteClusterRoleBinding)         // PARAM: name
+			clusterRoleBindingWorkloadRoutes.PATCH("/", patchClusterRoleBinding)                                       // BODY: json-object
+			clusterRoleBindingWorkloadRoutes.POST("/", createClusterRoleBinding)                                       // BODY: yaml-object
+		}
 
-	router.GET("/workload/storageclass", Auth(dtos.USER), allStorageClasses)             // QUERY: namespace
-	router.GET("/workload/storageclass/describe", Auth(dtos.USER), describeStorageClass) // QUERY: namespace, name
-	router.DELETE("/workload/storageclass", Auth(dtos.ADMIN), deleteStorageClass)        // BODY: json-object
-	router.PATCH("/workload/storageclass", Auth(dtos.ADMIN), patchStorageClass)          // BODY: json-object
-	router.POST("/workload/storageclass", Auth(dtos.ADMIN), createStorageClass)          // BODY: yaml-object
+		// volume-attachment
+		volumeAttachmentWorkloadRoutes := workloadRoutes.Group("/volume-attachment", Auth(dtos.ADMIN), RequireContextId())
+		{
+			volumeAttachmentWorkloadRoutes.GET("/", allVolumeAttachments)                                          // PARAM: -
+			volumeAttachmentWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeVolumeAttachment) // PARAM: name
+			volumeAttachmentWorkloadRoutes.DELETE("/:name", validateParam("name"), deleteVolumeAttachment)         // PARAM: name
+			volumeAttachmentWorkloadRoutes.PATCH("/", patchVolumeAttachment)                                       // BODY: json-object
+			volumeAttachmentWorkloadRoutes.POST("/", createVolumeAttachment)                                       // BODY: yaml-object
+		}
 
-	router.GET("/workload/crds", Auth(dtos.ADMIN), allCrds)              // QUERY: -
-	router.GET("/workload/crds/describe", Auth(dtos.ADMIN), describeCrd) // QUERY: name
-	router.DELETE("/workload/crds", Auth(dtos.ADMIN), deleteCrd)         // BODY: json-object
-	router.PATCH("/workload/crds", Auth(dtos.ADMIN), patchCrd)           // BODY: json-object
-	router.POST("/workload/crds", Auth(dtos.ADMIN), createCrd)           // BODY: yaml-object
+		// network-policy
+		networkPolicyWorkloadRoutes := workloadRoutes.Group("/network-policy", RequireContextId())
+		{
+			networkPolicyWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allNetworkPolicies)                                     // PARAM: namespace
+			networkPolicyWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeNetworkPolicy) // PARAM: namespace, name
+			networkPolicyWorkloadRoutes.DELETE("/:namespace/:name", Auth(dtos.ADMIN), validateParam("namespace", "name"), deleteNetworkPolicy)        // PARAM: namespace, name
+			networkPolicyWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchNetworkPolicy)                                                              // BODY: json-object
+			networkPolicyWorkloadRoutes.POST("/", Auth(dtos.ADMIN), createNetworkPolicy)                                                              // BODY: yaml-object
+		}
 
-	router.GET("/workload/endpoints", Auth(dtos.USER), allEndpoints)              // QUERY: namespace
-	router.GET("/workload/endpoints/describe", Auth(dtos.USER), describeEndpoint) // QUERY: namespace, name
-	router.DELETE("/workload/endpoints", Auth(dtos.USER), deleteEndpoint)         // BODY: json-object
-	router.PATCH("/workload/endpoints", Auth(dtos.USER), patchEndpoint)           // BODY: json-object
-	router.POST("/workload/endpoints", Auth(dtos.USER), createEndpoint)           // BODY: yaml-object
+		// storage-class
+		storageClassWorkloadRoutes := workloadRoutes.Group("/storage-class", RequireContextId())
+		{
+			storageClassWorkloadRoutes.GET("/", Auth(dtos.USER), allStorageClasses)                                         // PARAM: namespace
+			storageClassWorkloadRoutes.GET("/describe/:name", Auth(dtos.USER), validateParam("name"), describeStorageClass) // PARAM: namespace, name
+			storageClassWorkloadRoutes.DELETE("/:name", Auth(dtos.ADMIN), validateParam("name"), deleteStorageClass)        // PARAM: namespace, name
+			storageClassWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchStorageClass)                                      // BODY: json-object
+			storageClassWorkloadRoutes.POST("/", Auth(dtos.ADMIN), createStorageClass)                                      // BODY: yaml-object
+		}
 
-	router.GET("/workload/leases", Auth(dtos.USER), allLeases)              // QUERY: namespace
-	router.GET("/workload/leases/describe", Auth(dtos.USER), describeLease) // QUERY: namespace, name
-	router.DELETE("/workload/leases", Auth(dtos.USER), deleteLease)         // BODY: json-object
-	router.PATCH("/workload/leases", Auth(dtos.USER), patchLease)           // BODY: json-object
-	router.POST("/workload/leases", Auth(dtos.USER), createLease)           // BODY: yaml-object
+		// crds
+		crdsWorkloadRoutes := workloadRoutes.Group("/crds", Auth(dtos.ADMIN), RequireContextId())
+		{
+			crdsWorkloadRoutes.GET("/", allCrds)                                                            // PARAM: -
+			crdsWorkloadRoutes.GET("/describe/:name", validateParam("name"), Auth(dtos.ADMIN), describeCrd) // PARAM: name
+			crdsWorkloadRoutes.DELETE("/:name", validateParam("name"), Auth(dtos.ADMIN), deleteCrd)         // PARAM: name
+			crdsWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchCrd)                                       // BODY: json-object
+			crdsWorkloadRoutes.POST("/", Auth(dtos.ADMIN), createCrd)                                       // BODY: yaml-object
+		}
 
-	router.GET("/workload/priorityclasses", Auth(dtos.ADMIN), allPriorityClasses)             // QUERY: -
-	router.GET("/workload/priorityclasses/describe", Auth(dtos.ADMIN), describePriorityClass) // QUERY: name
-	router.DELETE("/workload/priorityclasses", Auth(dtos.ADMIN), deletePriorityClass)         // BODY: json-object
-	router.PATCH("/workload/priorityclasses", Auth(dtos.ADMIN), patchPriorityClass)           // BODY: json-object
-	router.POST("/workload/priorityclasses", Auth(dtos.ADMIN), createPriorityClass)           // BODY: yaml-object
+		// endpoints
+		endpointsWorkloadRoutes := workloadRoutes.Group("/endpoints", Auth(dtos.USER), RequireContextId())
+		{
+			endpointsWorkloadRoutes.GET("/", allEndpoints)                                                                  // PARAM: namespace
+			endpointsWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeEndpoint) // PARAM: namespace, name
+			endpointsWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteEndpoint)         // PARAM: namespace, name
+			endpointsWorkloadRoutes.PATCH("/", patchEndpoint)                                                               // BODY: json-object
+			endpointsWorkloadRoutes.POST("/", createEndpoint)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/volumesnapshots", Auth(dtos.USER), allVolumeSnapshots)              // QUERY: namespace
-	router.GET("/workload/volumesnapshots/describe", Auth(dtos.USER), describeVolumeSnapshot) // QUERY: namespace, name
-	router.DELETE("/workload/volumesnapshots", Auth(dtos.USER), deleteVolumeSnapshot)         // BODY: json-object
-	router.PATCH("/workload/volumesnapshots", Auth(dtos.USER), patchVolumeSnapshot)           // BODY: json-object
-	router.POST("/workload/volumesnapshots", Auth(dtos.USER), createVolumeSnapshot)           // BODY: yaml-object
+		// leases
+		leasesWorkloadRoutes := workloadRoutes.Group("/leases", Auth(dtos.USER), RequireContextId())
+		{
+			leasesWorkloadRoutes.GET("/", allLeases)                                                                  // PARAM: namespace
+			leasesWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeLease) // PARAM: namespace, name
+			leasesWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteLease)         // PARAM: namespace, name
+			leasesWorkloadRoutes.PATCH("/", patchLease)                                                               // BODY: json-object
+			leasesWorkloadRoutes.POST("/", createLease)                                                               // BODY: yaml-object
+		}
 
-	router.GET("/workload/resourcequota", Auth(dtos.ADMIN), allResourceQuotas)              // QUERY: namespace
-	router.GET("/workload/resourcequota/describe", Auth(dtos.ADMIN), describeResourceQuota) // QUERY: namespace, name
-	router.DELETE("/workload/resourcequota", Auth(dtos.ADMIN), deleteResourceQuota)         // BODY: json-object
-	router.PATCH("/workload/resourcequota", Auth(dtos.ADMIN), patchResourceQuota)           // BODY: json-object
-	router.POST("/workload/resourcequota", Auth(dtos.ADMIN), createResourceQuota)           // BODY: yaml-object
+		// priority-classes
+		priorityClassesWorkloadRoutes := workloadRoutes.Group("/priority-classes", Auth(dtos.ADMIN), RequireContextId())
+		{
+			priorityClassesWorkloadRoutes.GET("/", allPriorityClasses)                                         // PARAM: -
+			priorityClassesWorkloadRoutes.GET("/describe/:name", validateParam("name"), describePriorityClass) // PARAM: name
+			priorityClassesWorkloadRoutes.DELETE("/:name", validateParam("name"), deletePriorityClass)         // PARAM: name
+			priorityClassesWorkloadRoutes.PATCH("/", patchPriorityClass)                                       // BODY: json-object
+			priorityClassesWorkloadRoutes.POST("/", createPriorityClass)                                       // BODY: yaml-object
+		}
+
+		// volume-snapshots
+		volumeSnapshotsWorkloadRoutes := workloadRoutes.Group("/volume-snapshots", Auth(dtos.USER), RequireContextId())
+		{
+			volumeSnapshotsWorkloadRoutes.GET("/", allVolumeSnapshots)                                                                  // PARAM: namespace
+			volumeSnapshotsWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeVolumeSnapshot) // PARAM: namespace, name
+			volumeSnapshotsWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteVolumeSnapshot)         // PARAM: namespace, name
+			volumeSnapshotsWorkloadRoutes.PATCH("/", patchVolumeSnapshot)                                                               // BODY: json-object
+			volumeSnapshotsWorkloadRoutes.POST("/", createVolumeSnapshot)                                                               // BODY: yaml-object
+		}
+
+		// resource-quota
+		resourceQuotaWorkloadRoutes := workloadRoutes.Group("/resource-quota", Auth(dtos.ADMIN), RequireContextId())
+		{
+			resourceQuotaWorkloadRoutes.GET("/", allResourceQuotas)                                                                  // PARAM: namespace
+			resourceQuotaWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeResourceQuota) // PARAM: namespace, name
+			resourceQuotaWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteResourceQuota)         // PARAM: namespace, name
+			resourceQuotaWorkloadRoutes.PATCH("/", patchResourceQuota)                                                               // BODY: json-object
+			resourceQuotaWorkloadRoutes.POST("/", createResourceQuota)                                                               // BODY: yaml-object
+		}
+	}
 }
 
 // GENERAL
+// @Tags General
+// @Produce json
+// @Success 200 {array} kubernetes.K8sNewWorkload
+// @Router /backend/workload/templates/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allWorkloadTemplates(c *gin.Context) {
 	c.JSON(http.StatusOK, kubernetes.ListCreateTemplates())
 }
 
+// @Tags General
+// @Produce json
+// @Success 200 {array} string
+// @Router /backend/workload/available-resources/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allKubernetesResources(c *gin.Context) {
 	user, err := CheckUserAuthorization(c)
 	if err != nil || user == nil {
-		MalformedMessage(c, "User not found.")
+		utils.MalformedMessage(c, "User not found.")
 		return
 	}
 	c.JSON(http.StatusOK, kubernetes.WorkloadsForAccesslevel(user.AccessLevel))
 }
 
+// ---------------------- NAMESPACES ----------------------
+
 // NAMESPACES
+// @Tags Workloads
+// @Produce json
+// @Success 200 {array} v1.Namespace
+// @Router /backend/workload/namespace/ [get]
+// @Param namespace query string false "name of the namespace"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allNamespaces(c *gin.Context) {
-	c.JSON(http.StatusOK, kubernetes.ListAllNamespace())
+	c.JSON(http.StatusOK, kubernetes.ListK8sNamespaces("", services.GetGinContextId(c)))
 }
+
+// NAMESPACES
+// @Tags Workloads
+// @Produce json
+// @Success 200 {array} v1.Namespace
+// @Router /backend/workload/namespace/describe/{name}/ [get]
+// @Param name path string true "name of the namespace"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func describeNamespaces(c *gin.Context) {
+	name := c.Param("name")
+	c.JSON(http.StatusOK, kubernetes.DescribeK8sNamespace(name, services.GetGinContextId(c)))
+}
+
+// NAMESPACES
+// @Tags Workloads
+// @Produce json
+// @Success 201 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/namespace [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createNamespace(c *gin.Context) {
 	var data v1.Namespace
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
 		return
 	}
-	c.JSON(http.StatusOK, kubernetes.CreateK8sNamespace(data))
+	c.JSON(http.StatusCreated, kubernetes.CreateK8sNamespace(data, services.GetGinContextId(c)))
 }
-func deleteNamespace(c *gin.Context) {
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/namespace [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func patchNamespace(c *gin.Context) {
 	var data v1.Namespace
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, kubernetes.DeleteK8sNamespace(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sNamespace(data, services.GetGinContextId(c)))
 }
 
-// PODS
-func allPods(c *gin.Context) {
-	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sPods(namespace))
-}
-func describePod(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sPod(namespace, name))
-}
-func deletePod(c *gin.Context) {
-	var data v1.Pod
-	err := c.MustBindWith(&data, binding.JSON)
+// NAMESPACES
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/namespace/{name} [delete]
+// @Param name path string false  "name of the namespace"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func deleteNamespace(c *gin.Context) {
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sNamespaceBy(name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sPod(data))
+	c.Status(http.StatusOK)
 }
+
+// ---------------------- PODS ----------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/pod/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func allPods(c *gin.Context) {
+	namespace := c.Query("namespace")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sPods(namespace, services.GetGinContextId(c)))
+}
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/pod/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true  "namespace name"
+// @Param name path string true  "pod name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func describePod(c *gin.Context) {
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPod(namespace, name, services.GetGinContextId(c)))
+}
+
+// @Tags Workloads
+// @Produce text/event-stream
+// @Success 200 {string} string "streaming data"
+// @Router /backend/workload/pod/logs/{namespace}/{name}/ [get]
+// @Param namespace path string true  "namespace name"
+// @Param name path string true  "pod name"
+// @Param since-seconds query string false  "since-seconds"
+// @Security Bearer
+// @Param X-Context-Id header string true "X-Context-Id"
+func logsPod(c *gin.Context) {
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+
+	i, err := strconv.ParseInt(c.Query("since-seconds"), 10, 64)
+	if err != nil {
+		i = -1
+	}
+
+	req, err := kubernetes.StreamLog(namespace, name, i, services.GetGinContextId(c))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	stream, err := req.Stream(context.Background())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer stream.Close()
+
+	// set header
+	c.Writer.Header().Set("Content-Type", "text/event-stream")
+	c.Writer.Header().Set("Cache-Control", "no-cache")
+	c.Writer.Header().Set("Connection", "keep-alive")
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+
+	// get CloseNotify channel
+	closeChannel := c.Writer.CloseNotify()
+
+	go func() {
+		<-closeChannel
+		logger.Log.Debug("Client closed the connection!")
+	}()
+
+	logger.Log.Debug("Client opening the connection!")
+
+	buf := make([]byte, 1024)
+	c.Stream(func(w io.Writer) bool {
+		n, err := stream.Read(buf)
+		if err != nil {
+			c.SSEvent("error", err.Error())
+			return true
+		}
+		message := string(buf[:n])
+		c.SSEvent("message", message)
+		return true
+	})
+}
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/pod/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "pod name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func deletePod(c *gin.Context) {
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sPodBy(namespace, name, services.GetGinContextId(c))
+	if err != nil {
+		utils.MalformedMessage(c, err.Error())
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/pod [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchPod(c *gin.Context) {
 	var data v1.Pod
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sPod(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sPod(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/pod [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createPod(c *gin.Context) {
 	var data v1.Pod
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sPod(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sPod(data, services.GetGinContextId(c)))
+
 }
 
-// DEPLOYMENTS
+// ---------------------- DEPLOYMENTS ----------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/deployment/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allDeployments(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sDeployments(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sDeployments(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/deployment/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true  "namespace name"
+// @Param name path string true  "deployment name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeDeployment(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sDeployment(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sDeployment(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/deployment/{namespace}/{name} [delete]
+// @Param namespace path string true  "namespace name"
+// @Param name path string true  "deployment name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteDeployment(c *gin.Context) {
-	var data v1Apps.Deployment
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sDeploymentBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sDeployment(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/deployment [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchDeployment(c *gin.Context) {
 	var data v1Apps.Deployment
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sDeployment(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sDeployment(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/deployment [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createDeployment(c *gin.Context) {
 	var data v1Apps.Deployment
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sDeployment(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sDeployment(data, services.GetGinContextId(c)))
 }
 
-// SERVICES
+// ---------------------- SERVICES ----------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/service/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+// @Param namespace query string false  "namespace name"
 func allServices(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sServices(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sServices(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/service/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true  "namespace name"
+// @Param name path string true  "service name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeService(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sService(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sService(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/service/{namespace}/{name [delete]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+// @Param namespace path string true  "namespace name"
+// @Param name path string true  "service name"
 func deleteService(c *gin.Context) {
-	var data v1.Service
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sServiceBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sService(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/service [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchService(c *gin.Context) {
 	var data v1.Service
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sService(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sService(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/service [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createService(c *gin.Context) {
 	var data v1.Service
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sService(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sService(data, services.GetGinContextId(c)))
 }
 
-// INGRESSES
+// ---------------------- INGRESSES ----------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/ingress/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+// @Param namespace query string false  "namespace name"
 func allIngresses(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sIngresses(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sIngresses(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/ingress/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true  "namespace name"
+// @Param name path string true  "ingress name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeIngress(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sIngress(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sIngress(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/ingress/{namespace}/{name} [delete]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+// @Param namespace path string true  "namespace name"
+// @Param name path string true  "ingress name"
 func deleteIngress(c *gin.Context) {
-	var data v1Networking.Ingress
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sIngressBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sIngress(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/ingress [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchIngress(c *gin.Context) {
 	var data v1Networking.Ingress
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sIngress(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sIngress(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/ingress [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createIngress(c *gin.Context) {
 	var data v1Networking.Ingress
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sIngress(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sIngress(data, services.GetGinContextId(c)))
 }
 
-// CONFIGMAPS
+// ---------------------- CONFIGMAPS ----------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/configmap/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+// @Param namespace query string false  "namespace name"
 func allConfigmaps(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sConfigmaps(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sConfigmaps(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/configmap/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "configmap name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeConfigmap(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sConfigmap(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sConfigmap(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/configmap/{namespace}/{name} [delete]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+// @Param namespace path string true "namespace"
+// @Param name path string true "configmap name"
 func deleteConfigmap(c *gin.Context) {
-	var data v1.ConfigMap
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sConfigmapBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sConfigmap(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/configmap [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchConfigmap(c *gin.Context) {
 	var data v1.ConfigMap
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sConfigMap(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sConfigMap(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/configmap [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createConfigmap(c *gin.Context) {
 	var data v1.ConfigMap
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sConfigMap(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sConfigMap(data, services.GetGinContextId(c)))
 }
 
-// SECRETS
+// ---------------------- SECRETS ----------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/secret/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+// @Param namespace query string false  "namespace name"
 func allSecrets(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sSecrets(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sSecrets(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/secret/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true  "namespace name"
+// @Param name path string true  "secret name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeSecret(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sSecret(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sSecret(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/secret/{namespace}/{name} [delete]
+// @Param namespace path string true  "namespace name"
+// @Param name path string true  "secret name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteSecret(c *gin.Context) {
-	var data v1.Secret
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sSecretBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sSecret(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/secret [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchSecret(c *gin.Context) {
 	var data v1.Secret
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sSecret(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sSecret(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/secret [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createSecret(c *gin.Context) {
 	var data v1.Secret
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sSecret(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sSecret(data, services.GetGinContextId(c)))
 }
 
-// NODES
+// ---------------------- NODES ----------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/node/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allNodes(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.ListK8sNodes())
-}
-func describeNode(c *gin.Context) {
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sNode(name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.ListK8sNodes(services.GetGinContextId(c)))
 }
 
-// DAEMONSETS
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/node/describe/{name}/ [get]
+// @Param name path string true  "node name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func describeNode(c *gin.Context) {
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sNode(name, services.GetGinContextId(c)))
+}
+
+// ---------------------- DEAMONSETS ----------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/daemon-set/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allDaemonSets(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sDaemonsets(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sDaemonsets(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/daemon-set/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param namespace path string true "name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeDaemonSet(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sDaemonSet(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sDaemonSet(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/daemon-set/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace"
+// @Param namespace path string true "name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteDaemonSet(c *gin.Context) {
-	var data v1Apps.DaemonSet
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sDaemonSetBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sDaemonSet(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/daemon-set [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchDaemonSet(c *gin.Context) {
 	var data v1Apps.DaemonSet
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sDaemonSet(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sDaemonSet(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/daemon-set [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createDaemonSet(c *gin.Context) {
 	var data v1Apps.DaemonSet
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sDaemonSet(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sDaemonSet(data, services.GetGinContextId(c)))
 }
 
-// STATEFULSETS
+// ---------------------- STATEFULSETS ----------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/stateful-set/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allStatefulSets(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllStatefulSets(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllStatefulSets(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/stateful-set/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "stateful-set name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeStatefulSet(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sStatefulset(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sStatefulset(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/stateful-set/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace"
+// @Param name path string true "stateful-set name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteStatefulSet(c *gin.Context) {
-	var data v1Apps.StatefulSet
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sStatefulsetBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sStatefulset(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/stateful-set [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchStatefulSet(c *gin.Context) {
 	var data v1Apps.StatefulSet
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sStatefulset(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sStatefulset(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/stateful-set [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createStatefulSet(c *gin.Context) {
 	var data v1Apps.StatefulSet
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sStatefulset(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sStatefulset(data, services.GetGinContextId(c)))
 }
 
-// JOBS
+// ---------------------- JOBS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/job/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allJobs(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllJobs(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllJobs(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/job/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "job name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeJob(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sJob(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sJob(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/job/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace"
+// @Param name path string true "job name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteJob(c *gin.Context) {
-	var data v1Job.Job
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sJobBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sJob(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/job [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchJob(c *gin.Context) {
 	var data v1Job.Job
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sJob(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sJob(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/job [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createJob(c *gin.Context) {
 	var data v1Job.Job
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sJob(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sJob(data, services.GetGinContextId(c)))
 }
 
-// CRONJOBS
+// ---------------------- CRONJOBS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cron-job/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allCronJobs(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllCronjobs(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllCronjobs(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cron-job/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "cronjob name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeCronJob(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sCronJob(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sCronJob(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/cron-job/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace"
+// @Param name path string true "cronjob name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteCronJob(c *gin.Context) {
-	var data v1Job.CronJob
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sCronJobBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sCronJob(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cron-job [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchCronJob(c *gin.Context) {
 	var data v1Job.CronJob
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sCronJob(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sCronJob(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cron-job [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createCronJob(c *gin.Context) {
 	var data v1Job.CronJob
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sCronJob(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sCronJob(data, services.GetGinContextId(c)))
 }
 
-// REPLICASETS
+// ---------------------- REPLICASETS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/replica-set/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allReplicasets(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sReplicasets(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sReplicasets(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/replica-set/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "replica-set name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeReplicaset(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sReplicaset(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sReplicaset(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/replica-set/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace"
+// @Param name path string true "replica-set name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteReplicaset(c *gin.Context) {
-	var data v1Apps.ReplicaSet
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sReplicasetBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sReplicaset(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/replica-set [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchReplicaset(c *gin.Context) {
 	var data v1Apps.ReplicaSet
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sReplicaset(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sReplicaset(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/replica-set [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createReplicaset(c *gin.Context) {
 	var data v1Apps.ReplicaSet
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sReplicaSet(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sReplicaSet(data, services.GetGinContextId(c)))
 }
 
-// PERSISTENTVOLUMES
+// ---------------------- PERSISTENT VOLUMES ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/persistent-volume/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allPersistentVolumes(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllPersistentVolumes())
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllPersistentVolumes(services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/persistent-volume/describe/{name}/ [get]
+// @Param name path string true "persistent-volume name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describePersistentVolume(c *gin.Context) {
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sPersistentVolume(name))
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPersistentVolume(name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/persistent-volume/{name} [delete]
+// @Param name path string true "persistent-volume name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deletePersistentVolume(c *gin.Context) {
-	var data v1.PersistentVolume
-	err := c.MustBindWith(&data, binding.JSON)
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sPersistentVolumeBy(name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sPersistentVolume(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/persistent-volume [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchPersistentVolume(c *gin.Context) {
 	var data v1.PersistentVolume
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sPersistentVolume(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sPersistentVolume(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/persistent-volume [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createPersistentVolume(c *gin.Context) {
 	var data v1.PersistentVolume
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sPersistentVolume(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sPersistentVolume(data, services.GetGinContextId(c)))
 }
 
-// PERSISTENTVOLUMECLAIMS
+// ---------------------- PERSISTENT VOLUME CLAIMS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/persistent-volume-claim/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allPersistentVolumeClaims(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sPersistentVolumeClaims(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sPersistentVolumeClaims(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/persistent-volume-claim/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "persistent-volume-claim name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describePersistentVolumeClaim(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sPersistentVolumeClaim(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPersistentVolumeClaim(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/persistent-volume-claim/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace"
+// @Param name path string true "persistent-volume-claim name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deletePersistentVolumeClaim(c *gin.Context) {
-	var data v1.PersistentVolumeClaim
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sPersistentVolumeClaimBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sPersistentVolumeClaim(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/persistent-volume-claim [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchPersistentVolumeClaim(c *gin.Context) {
 	var data v1.PersistentVolumeClaim
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sPersistentVolumeClaim(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sPersistentVolumeClaim(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/persistent-volume-claim [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createPersistentVolumeClaim(c *gin.Context) {
 	var data v1.PersistentVolumeClaim
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sPersistentVolumeClaim(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sPersistentVolumeClaim(data, services.GetGinContextId(c)))
 }
 
-// HPA
+// ---------------------- HORIZONTAL POD AUTOSCALER ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/horizontal-pod-autoscaler/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allHpas(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllHpas(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllHpas(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/horizontal-pod-autoscaler/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "hpa name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeHpa(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sHpa(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sHpa(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/horizontal-pod-autoscaler/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace"
+// @Param name path string true "hpa name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteHpa(c *gin.Context) {
-	var data v2Scale.HorizontalPodAutoscaler
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sHpaBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sHpa(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/horizontal-pod-autoscaler [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchHpa(c *gin.Context) {
 	var data v2Scale.HorizontalPodAutoscaler
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sHpa(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sHpa(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/horizontal-pod-autoscaler [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createHpa(c *gin.Context) {
 	var data v2Scale.HorizontalPodAutoscaler
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sHpa(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sHpa(data, services.GetGinContextId(c)))
 }
 
-// EVENTS
+// ---------------------- EVENTS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/event/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allEvents(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllEvents(namespace))
-}
-func describeEvent(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sEvent(namespace, name))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllEvents(namespace, services.GetGinContextId(c)))
 }
 
-// CERTIFICATES
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/event/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "event name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func describeEvent(c *gin.Context) {
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sEvent(namespace, name, services.GetGinContextId(c)))
+}
+
+// ---------------------- CERTIFICATES ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/certificate/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allCertificates(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllK8sCertificates(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sCertificates(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/certificate/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "certificate name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeCertificate(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sCertificate(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sCertificate(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/certificate/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace"
+// @Param name path string true "certificate name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteCertificate(c *gin.Context) {
-	var data cmapi.Certificate
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sCertificateBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sCertificate(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/certificate [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchCertificate(c *gin.Context) {
 	var data cmapi.Certificate
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sCertificate(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sCertificate(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/certificate [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createCertificate(c *gin.Context) {
 	var data cmapi.Certificate
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sCertificate(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sCertificate(data, services.GetGinContextId(c)))
 }
 
-// CERTIFICATEREQUESTS
+// ---------------------- CERTIFICATE REQUESTS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/certificate-request/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allCertificateRequests(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllCertificateSigningRequests(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllCertificateSigningRequests(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/certificate-request/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "certificate request name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeCertificateRequest(c *gin.Context) {
-	name := c.Query("name")
-	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sCertificateSigningRequest(namespace, name))
+	name := c.Param("name")
+	namespace := c.Param("namespace")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sCertificateSigningRequest(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/certificate-request/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "certificate request name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteCertificateRequest(c *gin.Context) {
-	var data cmapi.CertificateRequest
-	err := c.MustBindWith(&data, binding.JSON)
+
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sCertificateSigningRequestBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sCertificateSigningRequest(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/certificate-request [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchCertificateRequest(c *gin.Context) {
 	var data cmapi.CertificateRequest
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sCertificateSigningRequest(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sCertificateSigningRequest(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/certificate-request [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createCertificateRequest(c *gin.Context) {
 	var data cmapi.CertificateRequest
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sCertificateSigningRequest(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sCertificateSigningRequest(data, services.GetGinContextId(c)))
 }
 
-// ORDERS
+// ---------------------- ORDERS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/orders/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allOrders(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllOrders(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllOrders(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/orders/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "order name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeOrder(c *gin.Context) {
-	name := c.Query("name")
-	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sOrder(namespace, name))
+	name := c.Param("name")
+	namespace := c.Param("namespace")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sOrder(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/orders/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "order name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteOrder(c *gin.Context) {
-	var data v1Cert.Order
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sOrderBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sOrder(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/orders [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchOrder(c *gin.Context) {
 	var data v1Cert.Order
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sOrder(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sOrder(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/orders [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createOrder(c *gin.Context) {
 	var data v1Cert.Order
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sOrder(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sOrder(data, services.GetGinContextId(c)))
 }
 
-// ISSUERS
+// ---------------------- ISSUERS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/issuer/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allIssuers(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllIssuer(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllIssuer(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/issuer/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "issuer name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeIssuer(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sIssuer(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sIssuer(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/issuer/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "issuer name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteIssuer(c *gin.Context) {
-	var data cmapi.Issuer
-	err := c.MustBindWith(&data, binding.JSON)
+
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sIssuerBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sIssuer(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/issuer [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchIssuer(c *gin.Context) {
 	var data cmapi.Issuer
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sIssuer(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sIssuer(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/issuer [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createIssuer(c *gin.Context) {
 	var data cmapi.Issuer
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sIssuer(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sIssuer(data, services.GetGinContextId(c)))
 }
 
-// CLUSTERISSUERS
+// ---------------------- CLUSTER ISSUERS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-issuer/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allClusterIssuers(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllClusterIssuers())
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllClusterIssuers(services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-issuer/describe/{name}/ [get]
+// @Param name path string true "cluster-issuer name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeClusterIssuer(c *gin.Context) {
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sClusterIssuer(name))
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sClusterIssuer(name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/cluster-issuer/{name} [delete]
+// @Param name path string true "cluster-issuer name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteClusterIssuer(c *gin.Context) {
-	var data cmapi.ClusterIssuer
-	err := c.MustBindWith(&data, binding.JSON)
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sClusterIssuerBy(name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sClusterIssuer(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-issuer [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchClusterIssuer(c *gin.Context) {
 	var data cmapi.ClusterIssuer
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sClusterIssuer(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sClusterIssuer(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-issuer [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createClusterIssuer(c *gin.Context) {
 	var data cmapi.ClusterIssuer
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sClusterIssuer(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sClusterIssuer(data, services.GetGinContextId(c)))
 }
 
-// SERVICEACCOUNTS
+// ---------------------- SERVICE ACCOUNTS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/service-account/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allServiceAccounts(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllServiceAccounts(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllServiceAccounts(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/service-account/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "service-account name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeServiceAccount(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sServiceAccount(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sServiceAccount(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/service-account/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "service-account name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteServiceAccount(c *gin.Context) {
-	var data v1.ServiceAccount
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sServiceAccountBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sServiceAccount(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/service-account [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchServiceAccount(c *gin.Context) {
 	var data v1.ServiceAccount
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sServiceAccount(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sServiceAccount(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/service-account [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createServiceAccount(c *gin.Context) {
 	var data v1.ServiceAccount
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sServiceAccount(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sServiceAccount(data, services.GetGinContextId(c)))
 }
 
-// ROLES
+// ---------------------- ROLES ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/role/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allRoles(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllRoles(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllRoles(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/role/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "role name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeRole(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sRole(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sRole(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/role/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "role name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteRole(c *gin.Context) {
-	var data v1Rbac.Role
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sRoleBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sRole(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/role [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchRole(c *gin.Context) {
 	var data v1Rbac.Role
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sRole(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sRole(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/role [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createRole(c *gin.Context) {
 	var data v1Rbac.Role
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sRole(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sRole(data, services.GetGinContextId(c)))
 }
 
-// ROLEBINDINGS
+// ---------------------- ROLE BINDINGS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/role-binding/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allRoleBindings(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllRoleBindings(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllRoleBindings(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/role-binding/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "role-binding name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeRoleBinding(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sRoleBinding(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sRoleBinding(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/role-binding/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "role-binding name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteRoleBinding(c *gin.Context) {
-	var data v1Rbac.RoleBinding
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sRoleBindingBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sRoleBinding(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/role-binding [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchRoleBinding(c *gin.Context) {
 	var data v1Rbac.RoleBinding
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sRoleBinding(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sRoleBinding(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/role-binding [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createRoleBinding(c *gin.Context) {
 	var data v1Rbac.RoleBinding
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sRoleBinding(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sRoleBinding(data, services.GetGinContextId(c)))
 }
 
-// CLUSTERROLES
+// ---------------------- CLUSTER ROLES ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-role/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allClusterRoles(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllClusterRoles())
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllClusterRoles(services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-role/describe/{name}/ [get]
+// @Param name path string true "cluster-role name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeClusterRole(c *gin.Context) {
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sClusterRole(name))
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sClusterRole(name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/cluster-role/{name} [delete]
+// @Param name path string true "cluster-role name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteClusterRole(c *gin.Context) {
-	var data v1Rbac.ClusterRole
-	err := c.MustBindWith(&data, binding.JSON)
+
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sClusterRoleBy(name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sClusterRole(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-role [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchClusterRole(c *gin.Context) {
 	var data v1Rbac.ClusterRole
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sClusterRole(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sClusterRole(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-role [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createClusterRole(c *gin.Context) {
 	var data v1Rbac.ClusterRole
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sClusterRole(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sClusterRole(data, services.GetGinContextId(c)))
 }
 
-// CLUSTERROLEBINDINGS
+// ---------------------- CLUSTER ROLE BINDINGS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-role-binding/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allClusterRoleBindings(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllClusterRoleBindings())
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllClusterRoleBindings(services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-role-binding/describe/{name}/ [get]
+// @Param name path string true "cluster-role-binding name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeClusterRoleBinding(c *gin.Context) {
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sClusterRoleBinding(name))
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sClusterRoleBinding(name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/cluster-role-binding/{name} [delete]
+// @Param name path string true "cluster-role-binding name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteClusterRoleBinding(c *gin.Context) {
-	var data v1Rbac.ClusterRoleBinding
-	err := c.MustBindWith(&data, binding.JSON)
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sClusterRoleBindingBy(name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sClusterRoleBinding(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-role-binding [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchClusterRoleBinding(c *gin.Context) {
 	var data v1Rbac.ClusterRoleBinding
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sClusterRoleBinding(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sClusterRoleBinding(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/cluster-role-binding [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createClusterRoleBinding(c *gin.Context) {
 	var data v1Rbac.ClusterRoleBinding
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sClusterRoleBinding(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sClusterRoleBinding(data, services.GetGinContextId(c)))
 }
 
-// VOLUMEATTACHMENTS
+// ---------------------- VOLUME ATTACHMENTS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/volume-attachment/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allVolumeAttachments(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllVolumeAttachments())
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllVolumeAttachments(services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/volume-attachment/describe/{name}/ [get]
+// @Param name path string true "volume-attachment name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeVolumeAttachment(c *gin.Context) {
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sVolumeAttachment(name))
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sVolumeAttachment(name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/volume-attachment/{name} [delete]
+// @Param name path string true "volume-attachment name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteVolumeAttachment(c *gin.Context) {
-	var data v1Storage.VolumeAttachment
-	err := c.MustBindWith(&data, binding.JSON)
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sVolumeAttachmentBy(name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sVolumeAttachment(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/volume-attachment [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchVolumeAttachment(c *gin.Context) {
 	var data v1Storage.VolumeAttachment
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sVolumeAttachment(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sVolumeAttachment(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/volume-attachment [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createVolumeAttachment(c *gin.Context) {
 	var data v1Storage.VolumeAttachment
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sVolumeAttachment(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sVolumeAttachment(data, services.GetGinContextId(c)))
 }
 
-// NETWORKPOLICIES
+// ---------------------- NETWORK POLICIES ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/network-policy/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allNetworkPolicies(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllNetworkPolicies(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllNetworkPolicies(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/network-policy/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "network-policy name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeNetworkPolicy(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sNetworkPolicy(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sNetworkPolicy(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/network-policy/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "network-policy name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteNetworkPolicy(c *gin.Context) {
-	var data v1Networking.NetworkPolicy
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sNetworkPolicyBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sNetworkPolicy(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/network-policy [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchNetworkPolicy(c *gin.Context) {
 	var data v1Networking.NetworkPolicy
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sNetworkPolicy(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sNetworkPolicy(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/network-policy [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createNetworkPolicy(c *gin.Context) {
 	var data v1Networking.NetworkPolicy
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sNetworkpolicy(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sNetworkpolicy(data, services.GetGinContextId(c)))
 }
 
-// STORAGECLASSES
+// ---------------------- STORAGECLASSES ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/storage-class/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allStorageClasses(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllStorageClasses())
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllStorageClasses(services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/storage-class/describe/{name}/ [get]
+// @Param name path string true "storage-class name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeStorageClass(c *gin.Context) {
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sStorageClass(name))
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sStorageClass(name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/storage-class/{namespace}/{name} [delete]
+// @Param name path string true "storage-class name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteStorageClass(c *gin.Context) {
-	var data v1Storage.StorageClass
-	err := c.MustBindWith(&data, binding.JSON)
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sStorageClassBy(name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sStorageClass(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/storage-class [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchStorageClass(c *gin.Context) {
 	var data v1Storage.StorageClass
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sStorageClass(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sStorageClass(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/storage-class [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createStorageClass(c *gin.Context) {
 	var data v1Storage.StorageClass
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sStorageClass(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sStorageClass(data, services.GetGinContextId(c)))
 }
 
-// CRDS
+// ---------------------- CUSTOM RESSOURCE DEFINITIONS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/crds/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allCrds(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllCustomResourceDefinitions())
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllCustomResourceDefinitions())
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/crds/describe/{name}/ [get]
+// @Param name path string true "crds name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeCrd(c *gin.Context) {
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sCustomResourceDefinition(name))
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sCustomResourceDefinition(name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/crds/{name} [delete]
+// @Param name path string true "crds name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteCrd(c *gin.Context) {
-	var data apiExt.CustomResourceDefinition
-	err := c.MustBindWith(&data, binding.JSON)
-	if err != nil {
-		MalformedMessage(c, err.Error())
-		return
-	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sCustomResourceDefinition(data))
+	// name := c.Param("name")
+	// TODO
+	// err := kubernetes.DeleteK8sCustomResourceDefinition(name)
+	// if err != nil {
+	// 	utils.MalformedMessage(c, err.Error())
+	// 	return
+	// }
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/crds [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchCrd(c *gin.Context) {
 	var data apiExt.CustomResourceDefinition
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sCustomResourceDefinition(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sCustomResourceDefinition(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/crds [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createCrd(c *gin.Context) {
 	var data apiExt.CustomResourceDefinition
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sCustomResourceDefinition(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sCustomResourceDefinition(data))
 }
 
-// ENDPOINTS
+// ---------------------- ENDPOINTS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/endpoints/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allEndpoints(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllEndpoints(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllEndpoints(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/endpoints/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "endpoint name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeEndpoint(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sEndpoint(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sEndpoint(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/endpoints/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "endpoints request name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteEndpoint(c *gin.Context) {
-	var data v1.Endpoints
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sEndpointBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sEndpoint(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/endpoints [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchEndpoint(c *gin.Context) {
 	var data v1.Endpoints
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sEndpoint(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sEndpoint(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/endpoints [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createEndpoint(c *gin.Context) {
 	var data v1.Endpoints
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sEndpoint(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sEndpoint(data, services.GetGinContextId(c)))
 }
 
-// LEASES
+// ---------------------- LEASES ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/leases/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allLeases(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllLeases(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllLeases(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/leases/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "lease name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeLease(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sLease(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sLease(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/leases/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "lease name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteLease(c *gin.Context) {
-	var data v1Coordination.Lease
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sLeaseBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sLease(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/leases [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchLease(c *gin.Context) {
 	var data v1Coordination.Lease
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sLease(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sLease(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/leases [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createLease(c *gin.Context) {
 	var data v1Coordination.Lease
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sLease(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sLease(data, services.GetGinContextId(c)))
 }
 
-// PRIORITYCLASSES
+// ---------------------- PRIORITY CLASSES ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/priority-classes/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allPriorityClasses(c *gin.Context) {
-	RespondForWorkloadResult(c, kubernetes.AllPriorityClasses())
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllPriorityClasses(services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/priority-classes/describe/{name}/ [get]
+// @Param name path string true "priority-classes name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describePriorityClass(c *gin.Context) {
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sPriorityClass(name))
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sPriorityClass(name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/priority-classes/{namespace}/{name} [delete]
+// @Param name path string true "priority-class name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deletePriorityClass(c *gin.Context) {
-	var data v1Scheduling.PriorityClass
-	err := c.MustBindWith(&data, binding.JSON)
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sPriorityClassBy(name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sPriorityClass(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/priority-classes [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchPriorityClass(c *gin.Context) {
 	var data v1Scheduling.PriorityClass
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sPriorityClass(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sPriorityClass(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/priority-classes [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createPriorityClass(c *gin.Context) {
 	var data v1Scheduling.PriorityClass
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sPriorityClass(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sPriorityClass(data, services.GetGinContextId(c)))
 }
 
-// VOLUMESNAPSHOTS
+// ---------------------- VOLUME SNAPSHOTS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/volume-snapshots/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allVolumeSnapshots(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllVolumeSnapshots(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllVolumeSnapshots(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/volume-snapshots/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "volume-snapshot name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeVolumeSnapshot(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sVolumeSnapshot(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sVolumeSnapshot(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/volume-snapshots/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "volume-snapshots name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteVolumeSnapshot(c *gin.Context) {
-	var data v6Snap.VolumeSnapshot
-	err := c.MustBindWith(&data, binding.JSON)
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sVolumeSnapshotBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sVolumeSnapshot(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/volume-snapshots [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchVolumeSnapshot(c *gin.Context) {
 	var data v6Snap.VolumeSnapshot
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sVolumeSnapshot(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sVolumeSnapshot(data))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/volume-snapshots [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createVolumeSnapshot(c *gin.Context) {
 	var data v6Snap.VolumeSnapshot
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sVolumeSnapshot(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sVolumeSnapshot(data, services.GetGinContextId(c)))
 }
 
-// RESOURCEQUOTAS
+// ---------------------- RESOURCE QUOTAS ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/resource-quota/ [get]
+// @Param namespace query string false "namespace name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func allResourceQuotas(c *gin.Context) {
 	namespace := c.Query("namespace")
-	RespondForWorkloadResult(c, kubernetes.AllResourceQuotas(namespace))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllResourceQuotas(namespace, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/resource-quota/describe/{namespace}/{name}/ [get]
+// @Param namespace path string true "namespace"
+// @Param name path string true "resource-quota name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func describeResourceQuota(c *gin.Context) {
-	namespace := c.Query("namespace")
-	name := c.Query("name")
-	RespondForWorkloadResult(c, kubernetes.DescribeK8sResourceQuota(namespace, name))
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sResourceQuota(namespace, name, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/resource-quota/{namespace}/{name} [delete]
+// @Param namespace path string true "namespace name"
+// @Param name path string true "resource-quota name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func deleteResourceQuota(c *gin.Context) {
-	var data v1.ResourceQuota
-	err := c.MustBindWith(&data, binding.JSON)
+
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sResourceQuotaBy(namespace, name, services.GetGinContextId(c))
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.DeleteK8sResourceQuota(data))
+	c.Status(http.StatusOK)
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/resource-quota [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func patchResourceQuota(c *gin.Context) {
 	var data v1.ResourceQuota
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.UpdateK8sResourceQuota(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sResourceQuota(data, services.GetGinContextId(c)))
 }
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/resource-quota [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
 func createResourceQuota(c *gin.Context) {
 	var data v1.ResourceQuota
 	err := c.MustBindWith(&data, binding.YAML)
 	if err != nil {
-		MalformedMessage(c, err.Error())
+		utils.MalformedMessage(c, err.Error())
 		return
 	}
-	RespondForWorkloadResult(c, kubernetes.CreateK8sResourceQuota(data))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sResourceQuota(data, services.GetGinContextId(c)))
 }

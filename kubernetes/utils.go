@@ -8,6 +8,8 @@ import (
 	"reflect"
 	"time"
 
+	version2 "k8s.io/apimachinery/pkg/version"
+
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/mogenius/punq/version"
 
@@ -24,6 +26,8 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 )
+
+var RunsInCluster bool = false
 
 const (
 	RES_NAMESPACE                   string = "namespace"
@@ -145,15 +149,10 @@ var (
 	SERVICEACCOUNTNAME     = fmt.Sprintf("%s-service-account-app", version.Name)
 	CLUSTERROLENAME        = fmt.Sprintf("%s--cluster-role-app", version.Name)
 	CLUSTERROLEBINDINGNAME = fmt.Sprintf("%s--cluster-role-binding-app", version.Name)
-	RBACRESOURCES          = []string{"pods", "services", "endpoints", "secrets"}
+	RBACRESOURCES          = []string{"*"}
 	SERVICENAME            = fmt.Sprintf("%s-service", version.Name)
 	INGRESSNAME            = fmt.Sprintf("%s-ingress", version.Name)
 )
-
-type K8sWorkloadResult struct {
-	Result interface{} `json:"result,omitempty"`
-	Error  interface{} `json:"error,omitempty"`
-}
 
 type K8sNewWorkload struct {
 	Name        string `json:"name"`
@@ -166,11 +165,8 @@ type MogeniusNfsInstallationStatus struct {
 	IsInstalled bool   `json:"isInstalled"`
 }
 
-func DEPLOYMENTNAME() string {
-	if utils.CONFIG.Misc.Stage != "prod" {
-		return fmt.Sprintf("ghcr.io/mogenius/%s-dev:dev%s", version.Name, version.Ver)
-	}
-	return fmt.Sprintf("ghcr.io/mogenius/%s:v%s", version.Name, version.Ver)
+func Init(runsInCluster bool) {
+	RunsInCluster = runsInCluster
 }
 
 func ListWorkloadsOnTerminal(access dtos.AccessLevel) {
@@ -200,19 +196,18 @@ func WorkloadsForAccesslevel(access dtos.AccessLevel) []string {
 	return resources
 }
 
-func WorkloadResult(result interface{}, err interface{}) K8sWorkloadResult {
-	fmt.Println(reflect.TypeOf(err))
+func WorkloadResult(result interface{}, err interface{}) utils.K8sWorkloadResult {
 	if fmt.Sprint(reflect.TypeOf(err)) == "*errors.errorString" {
 		err = err.(error).Error()
 	}
-	return K8sWorkloadResult{
+	return utils.K8sWorkloadResult{
 		Result: result,
 		Error:  err,
 	}
 }
 
-func WorkloadResultError(error string) K8sWorkloadResult {
-	return K8sWorkloadResult{
+func WorkloadResultError(error string) utils.K8sWorkloadResult {
+	return utils.K8sWorkloadResult{
 		Result: nil,
 		Error:  error,
 	}
@@ -227,10 +222,7 @@ func NewWorkload(name string, yaml string, description string) K8sNewWorkload {
 }
 
 func CurrentContextName() string {
-	var kubeconfig string = ""
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	}
+	var kubeconfig string = getKubeConfig()
 
 	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
@@ -245,19 +237,19 @@ func CurrentContextName() string {
 	return config.CurrentContext
 }
 
-func Hostname() string {
-	provider := NewKubeProvider()
+func Hostname(contextId *string) string {
+	provider := NewKubeProvider(contextId)
 	return provider.ClientConfig.Host
 }
 
-func ClusterStatus() dtos.ClusterStatusDto {
+func ClusterStatus(contextId *string) dtos.ClusterStatusDto {
 	var currentPods = make(map[string]v1.Pod)
-	pods := listAllPods()
+	pods := listAllPods(contextId)
 	for _, pod := range pods {
 		currentPods[pod.Name] = pod
 	}
 
-	result, err := podStats(currentPods)
+	result, err := podStats(currentPods, contextId)
 	if err != nil {
 		logger.Log.Error("podStats:", err)
 	}
@@ -275,6 +267,15 @@ func ClusterStatus() dtos.ClusterStatusDto {
 		ephemeralStorageLimit += pod.EphemeralStorageLimit
 	}
 
+	kubernetesVersion := ""
+	platform := ""
+
+	info := KubernetesVersion(contextId)
+	if info != nil {
+		kubernetesVersion = info.String()
+		platform = info.Platform
+	}
+
 	return dtos.ClusterStatusDto{
 		ClusterName:           utils.CONFIG.Kubernetes.ClusterName,
 		Pods:                  len(result),
@@ -283,13 +284,34 @@ func ClusterStatus() dtos.ClusterStatusDto {
 		Memory:                utils.BytesToHumanReadable(memory),
 		MemoryLimit:           utils.BytesToHumanReadable(memoryLimit),
 		EphemeralStorageLimit: utils.BytesToHumanReadable(ephemeralStorageLimit),
+		KubernetesVersion:     kubernetesVersion,
+		Platform:              platform,
 	}
 }
 
-func listAllPods() []v1.Pod {
+func KubernetesVersion(contextId *string) *version2.Info {
+
+	kubeProvider := NewKubeProvider(contextId)
+	info, err := kubeProvider.ClientSet.Discovery().ServerVersion()
+	if err != nil {
+		logger.Log.Error("Error KubernetesVersion:", err)
+		return nil
+	}
+	return info
+}
+
+func ClusterInfo(contextId *string) dtos.ClusterInfoDto {
+	result := dtos.ClusterInfoDto{
+		ClusterStatus: ClusterStatus(contextId),
+		NodeStats:     GetNodeStats(contextId),
+	}
+	return result
+}
+
+func listAllPods(contextId *string) []v1.Pod {
 	var result []v1.Pod
 
-	kubeProvider := NewKubeProvider()
+	kubeProvider := NewKubeProvider(contextId)
 	pods, err := kubeProvider.ClientSet.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system,metadata.namespace!=default"})
 
 	if err != nil {
@@ -299,8 +321,8 @@ func listAllPods() []v1.Pod {
 	return pods.Items
 }
 
-func ListNodes() []v1.Node {
-	var provider *KubeProvider = NewKubeProvider()
+func ListNodes(contextId *string) []v1.Node {
+	var provider *KubeProvider = NewKubeProvider(contextId)
 	if provider == nil {
 		logger.Log.Errorf("Failed to load kubeprovider.")
 		return []v1.Node{}
@@ -314,8 +336,8 @@ func ListNodes() []v1.Node {
 	return nodeMetricsList.Items
 }
 
-func podStats(pods map[string]v1.Pod) ([]structs.Stats, error) {
-	var provider *KubeProviderMetrics = NewKubeProviderMetrics()
+func podStats(pods map[string]v1.Pod, contextId *string) ([]structs.Stats, error) {
+	var provider *KubeProviderMetrics = NewKubeProviderMetrics(contextId)
 	if provider == nil {
 		err := fmt.Errorf("Failed to load kubeprovider.")
 		logger.Log.Errorf(err.Error())
@@ -355,11 +377,11 @@ func podStats(pods map[string]v1.Pod) ([]structs.Stats, error) {
 }
 
 func getKubeConfig() string {
-	var kubeconfig string
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	} else {
-		kubeconfig = ""
+	var kubeconfig string = os.Getenv("KUBECONFIG")
+	if kubeconfig == "" {
+		if home := homedir.HomeDir(); home != "" {
+			kubeconfig = filepath.Join(home, ".kube", "config")
+		}
 	}
 	return kubeconfig
 }

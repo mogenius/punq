@@ -2,9 +2,14 @@ tmp
 bin
 builds
 punq.rb
+.envrc
+.cluster
+
+__debug*
 
 build-push-ghcr.sh
 build-client.sh
+own-context.yaml
 
 .DS_Store
 
@@ -12,3 +17,4 @@ node_modules
 ui/package-lock.json
 punq
 ui/dist
+.idea/

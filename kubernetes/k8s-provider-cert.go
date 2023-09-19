@@ -1,16 +1,11 @@
 package kubernetes
 
 import (
-	"path/filepath"
-
-	"github.com/mogenius/punq/utils"
-
 	"github.com/mogenius/punq/logger"
 
 	cmclientset "github.com/cert-manager/cert-manager/pkg/client/clientset/versioned"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
 )
 
 type KubeProviderCertManager struct {
@@ -18,13 +13,17 @@ type KubeProviderCertManager struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProviderCertManager() *KubeProviderCertManager {
+func NewKubeProviderCertManager(contextId *string) *KubeProviderCertManager {
 	var kubeProvider *KubeProviderCertManager
 	var err error
-	if utils.CONFIG.Kubernetes.RunInCluster {
-		kubeProvider, err = newKubeProviderCertManagerInCluster()
+	if RunsInCluster {
+		kubeProvider, err = newKubeProviderCertManagerInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderCertManagerLocal()
+		if contextId == nil || *contextId == "" {
+			kubeProvider, err = newKubeProviderCertManagerLocal()
+		} else {
+			kubeProvider, err = newKubeProviderCertManagerInCluster(contextId)
+		}
 	}
 
 	if err != nil {
@@ -34,10 +33,7 @@ func NewKubeProviderCertManager() *KubeProviderCertManager {
 }
 
 func newKubeProviderCertManagerLocal() (*KubeProviderCertManager, error) {
-	var kubeconfig string = ""
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	}
+	var kubeconfig string = getKubeConfig()
 
 	restConfig, errConfig := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if errConfig != nil {
@@ -55,10 +51,18 @@ func newKubeProviderCertManagerLocal() (*KubeProviderCertManager, error) {
 	}, nil
 }
 
-func newKubeProviderCertManagerInCluster() (*KubeProviderCertManager, error) {
+func newKubeProviderCertManagerInCluster(contextId *string) (*KubeProviderCertManager, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())
+	}
+
+	// CONTEXT SWITCHER
+	if contextId != nil {
+		config, err = ContextConfigLoader(contextId)
+		if err != nil || config == nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := cmclientset.NewForConfig(config)

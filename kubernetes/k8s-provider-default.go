@@ -1,16 +1,13 @@
 package kubernetes
 
 import (
-	"path/filepath"
-
-	"github.com/mogenius/punq/utils"
+	"fmt"
 
 	"github.com/mogenius/punq/logger"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
 )
 
 type KubeProvider struct {
@@ -18,13 +15,17 @@ type KubeProvider struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProvider() *KubeProvider {
+func NewKubeProvider(contextId *string) *KubeProvider {
 	var kubeProvider *KubeProvider
 	var err error
-	if utils.CONFIG.Kubernetes.RunInCluster {
-		kubeProvider, err = newKubeProviderInCluster()
+	if RunsInCluster {
+		kubeProvider, err = newKubeProviderInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderLocal()
+		if contextId == nil || *contextId == "" {
+			kubeProvider, err = newKubeProviderLocal()
+		} else {
+			kubeProvider, err = newKubeProviderInCluster(contextId)
+		}
 	}
 
 	if err != nil {
@@ -34,10 +35,7 @@ func NewKubeProvider() *KubeProvider {
 }
 
 func newKubeProviderLocal() (*KubeProvider, error) {
-	var kubeconfig string = ""
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	}
+	var kubeconfig string = getKubeConfig()
 
 	restConfig, errConfig := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if errConfig != nil {
@@ -55,10 +53,18 @@ func newKubeProviderLocal() (*KubeProvider, error) {
 	}, nil
 }
 
-func newKubeProviderInCluster() (*KubeProvider, error) {
+func newKubeProviderInCluster(contextId *string) (*KubeProvider, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())
+	}
+
+	// CONTEXT SWITCHER
+	if contextId != nil {
+		config, err = ContextConfigLoader(contextId)
+		if err != nil || config == nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := kubernetes.NewForConfig(config)
@@ -70,4 +76,21 @@ func newKubeProviderInCluster() (*KubeProvider, error) {
 		ClientSet:    clientset,
 		ClientConfig: *config,
 	}, nil
+}
+
+func ContextConfigLoader(contextId *string) (*rest.Config, error) {
+	// get current context
+	ctx := ContextForId(*contextId)
+	if ctx == nil {
+		return nil, fmt.Errorf("Context not found for id: %s", *contextId)
+	}
+
+	configFromString, err := clientcmd.NewClientConfigFromBytes([]byte(ctx.Context))
+	if err != nil {
+		logger.Log.Errorf("Error creating client config from string:", err.Error())
+		return nil, err
+	}
+
+	config, err := configFromString.ClientConfig()
+	return config, err
 }

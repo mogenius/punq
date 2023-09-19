@@ -10,9 +10,14 @@ GOGET=$(GO) get
 VERSION=${shell git describe --tags $(git rev-list --tags --max-count=1)}
 COMMIT_HASH=$(shell git rev-parse --short HEAD)
 GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
+OPERATOR_IMAGE=$(shell echo "ghcr.io/mogenius/punq:$(VERSION)")
 BUILD_TIMESTAMP=$(shell date)
+ifeq ($(GIT_BRANCH),develop)
+	OPERATOR_IMAGE=$(shell echo "ghcr.io/mogenius/punq-dev:$(VERSION)")
+endif
 LDFLAGS=-s -w -extldflags= \
   -X 'github.com/mogenius/punq/version.GitCommitHash=$(COMMIT_HASH)' \
+  -X 'github.com/mogenius/punq/version.OperatorImage=${OPERATOR_IMAGE}' \
   -X 'github.com/mogenius/punq/version.Branch=$(GIT_BRANCH)' \
   -X 'github.com/mogenius/punq/version.BuildTimestamp=$(BUILD_TIMESTAMP)' \
   -X 'github.com/mogenius/punq/version.Ver=$(VERSION)'

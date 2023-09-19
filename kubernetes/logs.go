@@ -29,7 +29,7 @@ type ServiceGetLogResult struct {
 	Log             string    `json:"log"`
 }
 
-func GetLog(namespace string, podId string, timestamp *time.Time) ServiceGetLogResult {
+func GetLog(namespace string, podId string, timestamp *time.Time, contextId *string) ServiceGetLogResult {
 	result := ServiceGetLogResult{
 		Namespace:       namespace,
 		PodId:           podId,
@@ -37,7 +37,7 @@ func GetLog(namespace string, podId string, timestamp *time.Time) ServiceGetLogR
 		Log:             "",
 	}
 
-	kubeProvider := NewKubeProvider()
+	kubeProvider := NewKubeProvider(contextId)
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(namespace)
 
 	var kubernetesTime metav1.Time
@@ -77,7 +77,7 @@ func GetLog(namespace string, podId string, timestamp *time.Time) ServiceGetLogR
 	return result
 }
 
-func GetLogError(namespace string, podId string) ServiceGetLogErrorResult {
+func GetLogError(namespace string, podId string, contextId *string) ServiceGetLogErrorResult {
 	result := ServiceGetLogErrorResult{
 		Namespace: namespace,
 		PodId:     podId,
@@ -85,7 +85,7 @@ func GetLogError(namespace string, podId string) ServiceGetLogErrorResult {
 		Log:       "",
 	}
 
-	kubeProvider := NewKubeProvider()
+	kubeProvider := NewKubeProvider(contextId)
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(namespace)
 
 	pod, err := podClient.Get(context.TODO(), podId, metav1.GetOptions{})
@@ -123,8 +123,8 @@ func GetLogError(namespace string, podId string) ServiceGetLogErrorResult {
 	return result
 }
 
-func StreamLog(namespace string, podId string, sinceSeconds int64) (*rest.Request, error) {
-	kubeProvider := NewKubeProvider()
+func StreamLog(namespace string, podId string, sinceSeconds int64, contextId *string) (*rest.Request, error) {
+	kubeProvider := NewKubeProvider(contextId)
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(namespace)
 
 	opts := v1.PodLogOptions{
@@ -141,8 +141,8 @@ func StreamLog(namespace string, podId string, sinceSeconds int64) (*rest.Reques
 	return restReq, nil
 }
 
-func StreamPreviousLog(namespace string, podId string) (*rest.Request, error) {
-	kubeProvider := NewKubeProvider()
+func StreamPreviousLog(namespace string, podId string, contextId *string) (*rest.Request, error) {
+	kubeProvider := NewKubeProvider(contextId)
 	podClient := kubeProvider.ClientSet.CoreV1().Pods(namespace)
 
 	opts := v1.PodLogOptions{

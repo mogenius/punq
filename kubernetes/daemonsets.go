@@ -12,10 +12,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllDaemonsets(namespaceName string) []v1.DaemonSet {
+func AllDaemonsets(namespaceName string, contextId *string) []v1.DaemonSet {
 	result := []v1.DaemonSet{}
 
-	provider := NewKubeProvider()
+	provider := NewKubeProvider(contextId)
 	daemonsetList, err := provider.ClientSet.AppsV1().DaemonSets(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllDaemonsets ERROR: %s", err.Error())
@@ -30,10 +30,10 @@ func AllDaemonsets(namespaceName string) []v1.DaemonSet {
 	return result
 }
 
-func AllK8sDaemonsets(namespaceName string) K8sWorkloadResult {
+func AllK8sDaemonsets(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.DaemonSet{}
 
-	provider := NewKubeProvider()
+	provider := NewKubeProvider(contextId)
 	daemonsetList, err := provider.ClientSet.AppsV1().DaemonSets(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllDaemonsets ERROR: %s", err.Error())
@@ -48,18 +48,23 @@ func AllK8sDaemonsets(namespaceName string) K8sWorkloadResult {
 	return WorkloadResult(result, nil)
 }
 
-func UpdateK8sDaemonSet(data v1.DaemonSet) K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func GetK8sDaemonset(namespaceName string, name string, contextId *string) (*v1.DaemonSet, error) {
+	provider := NewKubeProvider(contextId)
+	return provider.ClientSet.AppsV1().DaemonSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func UpdateK8sDaemonSet(data v1.DaemonSet, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.AppsV1().DaemonSets(data.Namespace)
-	_, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
+	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
-func DeleteK8sDaemonSet(data v1.DaemonSet) K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func DeleteK8sDaemonSet(data v1.DaemonSet, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.AppsV1().DaemonSets(data.Namespace)
 	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
@@ -68,8 +73,14 @@ func DeleteK8sDaemonSet(data v1.DaemonSet) K8sWorkloadResult {
 	return WorkloadResult(nil, nil)
 }
 
-func DescribeK8sDaemonSet(namespace string, name string) K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "daemonset", name, "-n", namespace)
+func DeleteK8sDaemonSetBy(namespace string, name string, contextId *string) error {
+	kubeProvider := NewKubeProvider(contextId)
+	client := kubeProvider.ClientSet.AppsV1().DaemonSets(namespace)
+	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
+}
+
+func DescribeK8sDaemonSet(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "daemonset", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -80,14 +91,14 @@ func DescribeK8sDaemonSet(namespace string, name string) K8sWorkloadResult {
 	return WorkloadResult(string(output), nil)
 }
 
-func CreateK8sDaemonSet(data v1.DaemonSet) K8sWorkloadResult {
-	kubeProvider := NewKubeProvider()
+func CreateK8sDaemonSet(data v1.DaemonSet, contextId *string) utils.K8sWorkloadResult {
+	kubeProvider := NewKubeProvider(contextId)
 	client := kubeProvider.ClientSet.AppsV1().DaemonSets(data.Namespace)
-	_, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
+	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nil, nil)
+	return WorkloadResult(res, nil)
 }
 
 func NewK8sDaemonSet() K8sNewWorkload {

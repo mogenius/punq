@@ -12,12 +12,22 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "cluster context switch",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["cluster", "-c", "own-context"],
+            "asRoot": false,
+            "console": "integratedTerminal"
+        },
+        {
             "name": "install",
             "type": "go",
             "request": "launch",
             "mode": "debug",
             "program": "main.go",
-            "args": ["install"],
+            "args": ["install", "-i", "punq.mogenius.dev"],
             "asRoot": false,
             "console": "integratedTerminal"
         },
@@ -28,6 +38,16 @@
             "mode": "debug",
             "program": "main.go",
             "args": ["start"],
+            "asRoot": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "proxy",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["proxy"],
             "asRoot": false,
             "console": "integratedTerminal"
         },

@@ -4,19 +4,18 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mogenius/punq/structs"
 	punqVersion "github.com/mogenius/punq/version"
 )
 
 func InitGeneralRoutes(router *gin.Engine) {
-	router.GET("/version", version)
+	router.GET("/version", versionData)
 }
 
-func version(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"Name":           punqVersion.Name,
-		"Version":        punqVersion.Ver,
-		"Branch":         punqVersion.Branch,
-		"BuildTimestamp": punqVersion.BuildTimestamp,
-		"GitCommitHash":  punqVersion.GitCommitHash,
-	})
+// @Tags Misc
+// @Produce json
+// @Success 200 {object} structs.Version
+// @Router /backend/version [get]
+func versionData(c *gin.Context) {
+	c.JSON(http.StatusOK, structs.VersionFrom(punqVersion.Name, punqVersion.Ver, punqVersion.Branch, punqVersion.BuildTimestamp, punqVersion.GitCommitHash, punqVersion.OperatorImage))
 }
