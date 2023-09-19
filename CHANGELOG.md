@@ -1,4 +1,11 @@
 
+### [1.2.21](https://github.com/mogenius/punq/compare/v1.2.20...v1.2.21) (2023-09-19)
+
+
+### Bug Fixes
+
+* version fix. ([cd0e81b](https://github.com/mogenius/punq/commit/cd0e81b19a41859619b1c176e006359d5e4b2718))
+
 ### [1.2.20](https://github.com/mogenius/punq/compare/v1.2.19...v1.2.20) (2023-09-18)
 
 
