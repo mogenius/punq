@@ -34,6 +34,7 @@ jobs:
           git config --global user.email "punqs@mogenius.com"
           git config --global user.name "punq"
           git config --global credential.helper cache
+          npm install --global semantic-release @semantic-release/changelog
           npx semantic-release
 
   build-amd64:
