@@ -26,15 +26,15 @@ jobs:
           password: ${{ secrets.PUNQ_TOKEN }}
 
       - name: Create Sematic Release Version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # npm install -g standard-version
           export HOME=/root
           git config --system http.sslVerify false
           git config --global user.email "punqs@mogenius.com"
           git config --global user.name "punq"
           git config --global credential.helper cache
-          standard-version -t dev --header ""
-          git push --follow-tags origin develop
+          npx semantic-release
 
   build-amd64:
     needs: prepare
