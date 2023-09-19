@@ -39,6 +39,9 @@ func ContextUpdateLocalCache(ctxs []dtos.PunqContext) {
 	if len(ctxs) > 0 {
 		allContexts = ctxs
 	}
+	for _, ctx := range ctxs {
+		contextWrite(ctx.Id)
+	}
 }
 
 func ContextList() []dtos.PunqContext {
