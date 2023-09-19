@@ -13,6 +13,7 @@ spec:
     spec:
       backoffLimit: 6
       activeDeadlineSeconds: 600
+      ttlSecondsAfterFinished: 10
       template:
         metadata:
           labels:
@@ -28,4 +29,4 @@ spec:
               args:
                 - -c
                 - date; echo 'Hello World from mogenius'; sleep 10;
-          restartPolicy: Never
+          restartPolicy: OnFailure
