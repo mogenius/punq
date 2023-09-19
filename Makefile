@@ -8,10 +8,13 @@ GOGET=$(GO) get
 
 # Ensure linker embeds versioning information
 VERSION=${shell git describe --tags $(git rev-list --tags --max-count=1)}
-OPERATOR_IMAGE=$VERSION
 COMMIT_HASH=$(shell git rev-parse --short HEAD)
 GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
+OPERATOR_IMAGE=$(shell echo "ghcr.io/mogenius/punq:$(VERSION)")
 BUILD_TIMESTAMP=$(shell date)
+ifeq ($(GIT_BRANCH),develop)
+	OPERATOR_IMAGE=$(shell echo "ghcr.io/mogenius/punq-dev:$(VERSION)")
+endif
 LDFLAGS=-s -w -extldflags= \
   -X 'github.com/mogenius/punq/version.GitCommitHash=$(COMMIT_HASH)' \
   -X 'github.com/mogenius/punq/version.OperatorImage=${OPERATOR_IMAGE}' \
