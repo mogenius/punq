@@ -38,7 +38,7 @@ jobs:
           git config --global user.email "punqs@mogenius.com"
           git config --global user.name "punq"
           git config --global credential.helper cache
-          npx semantic release
+          npx semantic-release
 
       - name: download and inject punq-frontend
         run: |
