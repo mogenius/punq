@@ -69,7 +69,7 @@ jobs:
           echo "BUILD_TIMESTAMP"
           echo "GIT_BRANCH"
           echo "COMMIT_HASH"
-          gh release create refs/tags/"$VERSION" --title "Release $VERSION" --repo mogenius/punq
+          gh release create --verify-tag --title "Release $VERSION" --repo mogenius/punq
         env:
           GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
