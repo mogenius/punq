@@ -1,4 +1,12 @@
 
+### [1.3.69](https://github.com/mogenius/punq/compare/dev1.3.68...dev1.3.69) (2023-09-19)
+
+
+### Bug Fixes
+
+* rollback cronjob pod restartpolicy ([231b0c0](https://github.com/mogenius/punq/commit/231b0c0783eadd1b4aa09de2971fcc89e6ebecef))
+* ttl after finish for cronjobs ([cb1641f](https://github.com/mogenius/punq/commit/cb1641f3f14628d63144f3b16a381e296fa5c25a))
+
 ### [1.3.68](https://github.com/mogenius/punq/compare/dev1.3.67...dev1.3.68) (2023-09-19)
 
 
