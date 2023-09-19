@@ -1,4 +1,11 @@
 
+### [1.3.66](https://github.com/mogenius/punq/compare/dev1.3.65...dev1.3.66) (2023-09-19)
+
+
+### Bug Fixes
+
+* version fix. ([cd0e81b](https://github.com/mogenius/punq/commit/cd0e81b19a41859619b1c176e006359d5e4b2718))
+
 ### [1.3.65](https://github.com/mogenius/punq/compare/dev1.3.64...dev1.3.65) (2023-09-18)
 
 
