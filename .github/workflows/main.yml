@@ -58,7 +58,7 @@ jobs:
         run: gh auth login --with-token <<< "${{ secrets.PUNQ_TOKEN }}"
 
       - name: Execute make all
-        shell: /bin/bash
+        shell: bash -eo pipefail {0}
         run: |
           export HOME=/root
           make all
