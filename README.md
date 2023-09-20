@@ -57,7 +57,6 @@ scoop bucket add mogenius https://github.com/mogenius/punq
 scoop install punq
 ```
 
-
 ## Setting up punq
 
 Once you installed the punq CLI here's how to set it up.
