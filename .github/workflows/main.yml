@@ -33,7 +33,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # export HOME=/root
           git config --system http.sslVerify false
           git config --global user.email "punqs@mogenius.com"
           git config --global user.name "punq"
@@ -58,9 +57,8 @@ jobs:
         run: gh auth login --with-token <<< "${{ secrets.PUNQ_TOKEN }}"
 
       - name: Execute make all
-        shell: bash -eo pipefail {0}
+        shell: bash -ieo pipefail {0}
         run: |
-          export HOME=/root
           make all
 
       # - name: Create release
