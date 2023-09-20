@@ -22,14 +22,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.PUNQ_TOKEN }}
-
       - name: Create Sematic Release Version
+        shell: bash -ieo pipefail {0}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -37,7 +31,7 @@ jobs:
           git config --global user.email "punqs@mogenius.com"
           git config --global user.name "punq"
           git config --global credential.helper cache
-          npx semantic-release
+          semantic-release
           VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -60,24 +54,6 @@ jobs:
         shell: bash -ieo pipefail {0}
         run: |
           make all
-
-      # - name: Create release
-      #   run: |
-      #     VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
-      #     echo "VERSION=$VERSION" >> $GITHUB_ENV
-      #     COMMIT_HASH=$(git rev-parse --short HEAD)
-      #     echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
-      #     GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-      #     echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-      #     BUILD_TIMESTAMP=$(date)
-      #     echo "BUILD_TIMESTAMP=$BUILD_TIMESTAMP" >> $GITHUB_ENV
-      #     echo "$VERSION"
-      #     echo "BUILD_TIMESTAMP"
-      #     echo "GIT_BRANCH"
-      #     echo "COMMIT_HASH"
-      #     gh release create $VERSION --title "Release $VERSION" --repo mogenius/punq
-      #   env:
-      #     GH_TOKEN: ${{ secrets.PUNQ_TOKEN }}
 
       - name: Upload binaries
         run: |
