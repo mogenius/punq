@@ -39,6 +39,14 @@ jobs:
           git config --global user.name "punq"
           git config --global credential.helper cache
           npx semantic-release
+          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+          GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+          BUILD_TIMESTAMP=$(date)
+          echo "BUILD_TIMESTAMP=$BUILD_TIMESTAMP" >> $GITHUB_ENV
 
       - name: download and inject punq-frontend
         run: |
