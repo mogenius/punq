@@ -58,10 +58,12 @@ jobs:
         run: gh auth login --with-token <<< "${{ secrets.PUNQ_TOKEN }}"
 
       - name: Execute make all
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.21'
-      - run: make all
+        # uses: actions/setup-go@v4
+        # with:
+        #   go-version: '1.21'
+        run: |
+          export HOME=/root
+          make all
 
       # - name: Create release
       #   run: |
