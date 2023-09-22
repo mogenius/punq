@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/mogenius/punq/dtos"
-	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/structs"
 	"github.com/spf13/cobra"
@@ -30,13 +29,13 @@ var addUserCmd = &cobra.Command{
 	Long:  `The add command lets you add a user into punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if email == "" {
-			logger.Log.Fatal("-email cannot be empty.")
+			FatalError("-email cannot be empty.")
 		}
 		if displayName == "" {
-			logger.Log.Fatal("-displayname cannot be empty.")
+			FatalError("-displayname cannot be empty.")
 		}
 		if password == "" {
-			logger.Log.Fatal("-password cannot be empty.")
+			FatalError("-password cannot be empty.")
 		}
 		selectedAccess := dtos.READER // default level
 		if accessLevel != "" {
@@ -58,17 +57,17 @@ var updateUserCmd = &cobra.Command{
 	Long:  `The update command lets you update a user in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if userId == "" {
-			logger.Log.Fatal("Please selecte a userId to update a user.")
+			FatalError("Please selecte a userId to update a user.")
 		}
 		if email == "" && displayName == "" && password == "" && accessLevel == "" {
-			logger.Log.Fatal("One of the following options must be used to update a user: -email -displayname -password -accesslevel")
+			FatalError("One of the following options must be used to update a user: -email -displayname -password -accesslevel")
 		}
 
 		user := dtos.PunqUserUpdateInput{
 			Id: userId,
 		}
 		// if user == nil {
-		// 	logger.Log.Fatalf("Selected userId '%s' not found.", userId)
+		// 	FatalError("Selected userId '%s' not found.", userId)
 		// }
 		if displayName != "" {
 			user.DisplayName = displayName
@@ -85,7 +84,7 @@ var updateUserCmd = &cobra.Command{
 
 		_, err := services.UpdateUser(user)
 		if err != nil {
-			logger.Log.Fatalf(err.Error())
+			FatalError(err.Error())
 		}
 	},
 }
@@ -96,7 +95,7 @@ var deleteUserCmd = &cobra.Command{
 	Long:  `The delete command lets you delete a specific user in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if userId == "" {
-			logger.Log.Fatal("-userid cannot be empty.")
+			FatalError("-userid cannot be empty.")
 		}
 
 		result := services.DeleteUser(userId)
@@ -110,12 +109,12 @@ var getUserCmd = &cobra.Command{
 	Long:  `The get command lets you get a specific user of punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if userId == "" {
-			logger.Log.Fatal("-userid cannot be empty.")
+			FatalError("-userid cannot be empty.")
 		}
 
 		user, err := services.GetUser(userId)
 		if err != nil {
-			logger.Log.Fatal(err)
+			FatalError(err.Error())
 		}
 		structs.PrettyPrint(user)
 	},

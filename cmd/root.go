@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/fatih/color"
 	cc "github.com/ivanpirog/coloredcobra"
 	mokubernetes "github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/utils"
@@ -61,4 +63,20 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug information")
 	rootCmd.PersistentFlags().BoolVarP(&resetConfig, "reset-config", "k", false, "Delete the current config and replace it with the default one")
 	rootCmd.PersistentFlags().StringVarP(&customConfig, "config", "y", "", "Use config from custom location")
+}
+
+func FatalError(message string) {
+	red := color.New(color.FgRed).SprintFunc()
+	fmt.Printf(red("Error: %s\n"), message)
+	os.Exit(0)
+}
+
+func PrintError(message string) {
+	red := color.New(color.FgRed).SprintFunc()
+	fmt.Println(red(message))
+}
+
+func PrintInfo(message string) {
+	yellow := color.New(color.FgYellow).SprintFunc()
+	fmt.Println(yellow(message))
 }

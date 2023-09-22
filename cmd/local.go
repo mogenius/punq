@@ -6,7 +6,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/operator"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/utils"
@@ -24,7 +23,7 @@ var localCmd = &cobra.Command{
 		utils.PrintSettings()
 
 		contexts := services.ListContexts()
-		logger.Log.Noticef("Initialized operator with %d contexts.", len(contexts))
+		PrintInfo(fmt.Sprintf("Initialized operator with %d contexts.", len(contexts)))
 
 		go operator.InitFrontend()
 		utils.OpenBrowser(fmt.Sprintf("http://%s:%d", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port))

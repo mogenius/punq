@@ -6,7 +6,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/structs"
 	"github.com/spf13/cobra"
@@ -20,7 +19,7 @@ var clusterCmd = &cobra.Command{
 	Long:  `Print information and exit.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if contextId == "" {
-			logger.Log.Fatal("contextId cannot be empty.")
+			FatalError("contextId cannot be empty.")
 		}
 
 		// init contexts

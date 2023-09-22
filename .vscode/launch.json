@@ -2,6 +2,16 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "context delete",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["context", "delete", "-c", "3W6i31U5jzpk2mRLLkRMq"],
+            "asRoot": false,
+            "console": "integratedTerminal"
+        },
+        {
             "name": "operator",
             "type": "go",
             "request": "launch",

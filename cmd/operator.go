@@ -1,8 +1,9 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/mogenius/punq/kubernetes"
-	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/operator"
 	"github.com/mogenius/punq/services"
 
@@ -23,7 +24,7 @@ var operatorCmd = &cobra.Command{
 		utils.PrintSettings()
 
 		contexts := services.ListContexts()
-		logger.Log.Noticef("Initialized operator with %d contexts.", len(contexts))
+		PrintInfo(fmt.Sprintf("Initialized operator with %d contexts.", len(contexts)))
 		kubernetes.ContextUpdateLocalCache(contexts)
 
 		go operator.InitBackend()

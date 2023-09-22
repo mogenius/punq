@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/mogenius/punq/kubernetes"
-	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/version"
 
 	"github.com/mogenius/punq/utils"
@@ -26,8 +25,7 @@ var updateOperatorImageCmd = &cobra.Command{
 	Upgrade container image of the punq operator within your currently selected kubernetes context..`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if utils.CONFIG.Misc.Stage == "prod" {
-			logger.Log.Errorf("You are running in production mode. Please switch to a development mode first.")
-			os.Exit(0)
+			FatalError("You are running in production mode. Please switch to a development mode first.")
 		}
 
 		currentVersionCmd := exec.Command("sh", "-c", "git describe --tags $(git rev-list --tags --max-count=1)")
@@ -35,8 +33,8 @@ var updateOperatorImageCmd = &cobra.Command{
 		output, err := currentVersionCmd.CombinedOutput()
 		vers := strings.TrimSpace(string(output))
 		if err != nil {
-			logger.Log.Errorf("Failed to execute command (%s): %v", vers, err)
-			logger.Log.Errorf("Error: %s", string(output))
+			PrintError(fmt.Sprintf("Failed to execute command (%s): %v", vers, err))
+			PrintError(string(output))
 			return
 		}
 
