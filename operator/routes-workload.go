@@ -455,6 +455,7 @@ func describeNamespaces(c *gin.Context) {
 // @Router /backend/workload/namespace [post]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
+// @Body {"type": "object"}
 func createNamespace(c *gin.Context) {
 	var data v1.Namespace
 	err := c.MustBindWith(&data, binding.YAML)
@@ -1024,6 +1025,7 @@ func patchSecret(c *gin.Context) {
 // @Router /backend/workload/secret [post]
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
+// @Body {"type": "object"}
 func createSecret(c *gin.Context) {
 	var data v1.Secret
 	err := c.MustBindWith(&data, binding.YAML)
