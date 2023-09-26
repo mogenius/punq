@@ -208,7 +208,7 @@ func HashString(data string) string {
 func SelectIndexInteractive(question string, noOfElements int) int {
 	for {
 		// Prompt the user for an index
-		fmt.Printf("\nSelect a number between (1-%d) (or type 'exit' or 'all'):", noOfElements)
+		fmt.Printf("\nSelect a number between (1-%d) (or type 'exit' or 'all'): ", noOfElements)
 		var input string
 		fmt.Scanln(&input)
 

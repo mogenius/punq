@@ -13,34 +13,12 @@ import (
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
-	"gopkg.in/yaml.v2"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 )
 
 func ListContexts() []dtos.PunqContext {
-	contexts := []dtos.PunqContext{}
-
-	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET, nil)
-	if secret == nil {
-		logger.Log.Errorf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
-		return contexts
-	}
-
-	for ctxId, contextRaw := range secret.Data {
-		ctx := dtos.PunqContext{}
-		err := json.Unmarshal(contextRaw, &ctx)
-		if err != nil {
-			logger.Log.Error("Failed to Unmarshal context '%s'.", ctxId)
-		}
-		contexts = append(contexts, ctx)
-	}
-
-	sort.Slice(contexts, func(i, j int) bool {
-		return contexts[i].Name < contexts[j].Name
-	})
-
-	return contexts
+	return kubernetes.ListAllContexts()
 }
 
 func ExtractSingleConfigFromContext(config *api.Config, contextName string) (*api.Config, error) {
@@ -57,30 +35,15 @@ func ExtractSingleConfigFromContext(config *api.Config, contextName string) (*ap
 		return nil, fmt.Errorf("User %s for context %s not found in source kubeconfig\n", context.AuthInfo, contextName)
 	}
 
-	newConfig := &api.Config{
-		APIVersion:     config.APIVersion,
-		Kind:           config.Kind,
-		CurrentContext: contextName,
-		Contexts:       map[string]*api.Context{contextName: context},
-		Clusters:       map[string]*api.Cluster{context.Cluster: cluster},
-		AuthInfos:      map[string]*api.AuthInfo{context.AuthInfo: authInfo},
-	}
+	singleConfig := api.NewConfig()
+	singleConfig.APIVersion = config.APIVersion
+	singleConfig.Kind = config.Kind
+	singleConfig.CurrentContext = contextName
+	singleConfig.Contexts = map[string]*api.Context{contextName: context}
+	singleConfig.Clusters = map[string]*api.Cluster{context.Cluster: cluster}
+	singleConfig.AuthInfos = map[string]*api.AuthInfo{context.AuthInfo: authInfo}
 
-	return newConfig, nil
-}
-
-func YamlStringFromContext(config *api.Config, contextName string) (string, error) {
-	config, err := ExtractSingleConfigFromContext(config, contextName)
-	if err != nil {
-		return "", err
-	}
-
-	yamlData, err := yaml.Marshal(&config)
-	if err != nil {
-		return "", err
-	}
-
-	return string(yamlData), nil
+	return singleConfig, nil
 }
 
 func WriteSingleConfigFileFromContext(config *api.Config, contextName string) error {
@@ -108,11 +71,15 @@ func ParseConfigToPunqContexts(data []byte) ([]dtos.PunqContext, error) {
 		return result, err
 	}
 	for contextName := range config.Contexts {
-		configString, err := YamlStringFromContext(config, contextName)
+		aConfig, err := ExtractSingleConfigFromContext(config, contextName)
 		if err != nil {
 			return result, err
 		}
-		result = append(result, dtos.CreateContext("", contextName, configString, []dtos.PunqAccess{}))
+		configBytes, err := clientcmd.Write(*aConfig)
+		if err != nil {
+			return result, err
+		}
+		result = append(result, dtos.CreateContext("", contextName, string(configBytes), []dtos.PunqAccess{}))
 	}
 	sort.Slice(result, func(i, j int) bool {
 		return result[i].Name < result[j].Name

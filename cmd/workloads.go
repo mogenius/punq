@@ -93,6 +93,7 @@ func init() {
 
 	workloadCmd.AddCommand(podsCmd)
 	podsCmd.AddCommand(podsListCmd)
+	podsListCmd.Flags().StringVarP(&contextId, "contextId", "c", "", "Define a contextId")
 	podsListCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
 	podsListCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
 	podsCmd.AddCommand(podsDescrineCmd)

@@ -5,7 +5,6 @@ import (
 
 	cmclientset "github.com/cert-manager/cert-manager/pkg/client/clientset/versioned"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 type KubeProviderCertManager struct {
@@ -19,35 +18,26 @@ func NewKubeProviderCertManager(contextId *string) *KubeProviderCertManager {
 	if RunsInCluster {
 		kubeProvider, err = newKubeProviderCertManagerInCluster(contextId)
 	} else {
-		if contextId == nil || *contextId == "" {
-			kubeProvider, err = newKubeProviderCertManagerLocal()
-		} else {
-			kubeProvider, err = newKubeProviderCertManagerInCluster(contextId)
-		}
+		kubeProvider, err = newKubeProviderCertManagerLocal(contextId)
 	}
 
 	if err != nil {
-		logger.Log.Errorf("ERROR: %s", err.Error())
+		logger.Log.Fatalf("ERROR: %s", err.Error())
 	}
 	return kubeProvider
 }
 
-func newKubeProviderCertManagerLocal() (*KubeProviderCertManager, error) {
-	var kubeconfig string = getKubeConfig()
+func newKubeProviderCertManagerLocal(contextId *string) (*KubeProviderCertManager, error) {
+	config := ContextSwitcher(contextId)
 
-	restConfig, errConfig := clientcmd.BuildConfigFromFlags("", kubeconfig)
-	if errConfig != nil {
-		panic(errConfig.Error())
-	}
-
-	cmClientset, err := cmclientset.NewForConfig(restConfig)
+	cmClientset, err := cmclientset.NewForConfig(config)
 	if err != nil {
 		logger.Log.Panicf("Failed to create cert-manager clientset: %v\n", err)
 	}
 
 	return &KubeProviderCertManager{
 		ClientSet:    cmClientset,
-		ClientConfig: *restConfig,
+		ClientConfig: *config,
 	}, nil
 }
 
@@ -57,13 +47,7 @@ func newKubeProviderCertManagerInCluster(contextId *string) (*KubeProviderCertMa
 		panic(err.Error())
 	}
 
-	// CONTEXT SWITCHER
-	if contextId != nil {
-		config, err = ContextConfigLoader(contextId)
-		if err != nil || config == nil {
-			return nil, err
-		}
-	}
+	config = ContextSwitcher(contextId)
 
 	clientset, err := cmclientset.NewForConfig(config)
 	if err != nil {

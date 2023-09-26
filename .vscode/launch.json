@@ -2,12 +2,32 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "context delete",
+            "name": "context list",
             "type": "go",
             "request": "launch",
             "mode": "debug",
             "program": "main.go",
-            "args": ["context", "delete", "-c", "3W6i31U5jzpk2mRLLkRMq"],
+            "args": ["context", "list"],
+            "asRoot": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "context add",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["context", "add", "-f", "/Users/bene/.kube/config"],
+            "asRoot": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "workloads list",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["workloads", "pods", "list"],
             "asRoot": false,
             "console": "integratedTerminal"
         },

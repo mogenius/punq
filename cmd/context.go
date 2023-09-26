@@ -42,9 +42,6 @@ var addContextCmd = &cobra.Command{
 			FatalError(fmt.Sprintf("Error reading file '%s': %s", filePath, err.Error()))
 		}
 
-		// newCtx := dtos.CreateContext("", contextId, string(dataBytes), []dtos.PunqAccess{})
-		// structs.PrettyPrint(newCtx)
-
 		contexts, err := services.ParseConfigToPunqContexts(dataBytes)
 		if err != nil {
 			FatalError(err.Error())
@@ -67,9 +64,9 @@ var addContextCmd = &cobra.Command{
 		if index == -2 {
 			dtos.ListContextsToTerminal(contexts)
 			for _, ctx := range contexts {
-				services.AddContext(ctx)
+				_, err := services.AddContext(ctx)
 				if err != nil {
-					FatalError(err.Error())
+					PrintError(err.Error())
 				} else {
 					fmt.Printf("Context '%s' added ✅.\n", ctx.Name)
 				}

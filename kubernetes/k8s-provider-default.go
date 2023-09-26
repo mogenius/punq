@@ -21,35 +21,26 @@ func NewKubeProvider(contextId *string) *KubeProvider {
 	if RunsInCluster {
 		kubeProvider, err = newKubeProviderInCluster(contextId)
 	} else {
-		if contextId == nil || *contextId == "" {
-			kubeProvider, err = newKubeProviderLocal()
-		} else {
-			kubeProvider, err = newKubeProviderInCluster(contextId)
-		}
+		kubeProvider, err = newKubeProviderLocal(contextId)
 	}
 
 	if err != nil {
-		logger.Log.Errorf("ERROR: %s", err.Error())
+		logger.Log.Fatalf("ERROR: %s", err.Error())
 	}
 	return kubeProvider
 }
 
-func newKubeProviderLocal() (*KubeProvider, error) {
-	var kubeconfig string = getKubeConfig()
+func newKubeProviderLocal(contextId *string) (*KubeProvider, error) {
+	config := ContextSwitcher(contextId)
 
-	restConfig, errConfig := clientcmd.BuildConfigFromFlags("", kubeconfig)
-	if errConfig != nil {
-		panic(errConfig.Error())
-	}
-
-	clientSet, errClientSet := kubernetes.NewForConfig(restConfig)
+	clientSet, errClientSet := kubernetes.NewForConfig(config)
 	if errClientSet != nil {
 		panic(errClientSet.Error())
 	}
 
 	return &KubeProvider{
 		ClientSet:    clientSet,
-		ClientConfig: *restConfig,
+		ClientConfig: *config,
 	}, nil
 }
 
@@ -59,13 +50,7 @@ func newKubeProviderInCluster(contextId *string) (*KubeProvider, error) {
 		panic(err.Error())
 	}
 
-	// CONTEXT SWITCHER
-	if contextId != nil {
-		config, err = ContextConfigLoader(contextId)
-		if err != nil || config == nil {
-			return nil, err
-		}
-	}
+	config = ContextSwitcher(contextId)
 
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
@@ -93,4 +78,23 @@ func ContextConfigLoader(contextId *string) (*rest.Config, error) {
 
 	config, err := configFromString.ClientConfig()
 	return config, err
+}
+
+func ContextSwitcher(contextId *string) (restConfig *rest.Config) {
+	var kubeconfig string = getKubeConfig()
+
+	// CONTEXT SWITCHER
+	if contextId != nil && *contextId != "" {
+		restConfig, err := ContextConfigLoader(contextId)
+		if err != nil || restConfig == nil {
+			logger.Log.Fatal(err.Error())
+		}
+		return restConfig
+	} else {
+		restConfig, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+		if err != nil || restConfig == nil {
+			logger.Log.Fatal(err.Error())
+		}
+		return restConfig
+	}
 }

@@ -38,6 +38,11 @@ var rootCmd = &cobra.Command{
 		}
 		utils.InitConfigYaml(debug, customConfig, stage)
 		mokubernetes.Init(utils.CONFIG.Kubernetes.RunInCluster)
+
+		if contextId != "" {
+			ctxs := mokubernetes.ListAllContexts()
+			mokubernetes.ContextUpdateLocalCache(ctxs)
+		}
 	},
 }
 

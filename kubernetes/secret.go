@@ -2,8 +2,11 @@ package kubernetes
 
 import (
 	"context"
+	"encoding/json"
 	"os/exec"
+	"sort"
 
+	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
 
@@ -43,6 +46,30 @@ func GetSecret(namespace string, name string, contextId *string) (*v1.Secret, er
 	kubeProvider := NewKubeProvider(contextId)
 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(namespace)
 	return secretClient.Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func ListAllContexts() []dtos.PunqContext {
+	contexts := []dtos.PunqContext{}
+
+	secret := SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET, nil)
+	if secret == nil {
+		logger.Log.Errorf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
+		return contexts
+	}
+
+	for ctxId, contextRaw := range secret.Data {
+		ctx := dtos.PunqContext{}
+		err := json.Unmarshal(contextRaw, &ctx)
+		if err != nil {
+			logger.Log.Error("Failed to Unmarshal context '%s'.", ctxId)
+		}
+		contexts = append(contexts, ctx)
+	}
+
+	sort.Slice(contexts, func(i, j int) bool {
+		return contexts[i].Name < contexts[j].Name
+	})
+	return contexts
 }
 
 func AllK8sSecrets(namespaceName string, contextId *string) utils.K8sWorkloadResult {
