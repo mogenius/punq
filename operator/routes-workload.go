@@ -179,7 +179,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		// persistent-volume-claim
 		persistentVolumeClaimWorkloadRoutes := workloadRoutes.Group("/persistent-volume-claim", RequireContextId())
 		{
-			persistentVolumeClaimWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allPersistentVolumeClaims)                                      // PARAM: namespace
+			persistentVolumeClaimWorkloadRoutes.GET("/", Auth(dtos.USER), allPersistentVolumeClaims)                                                                  // PARAM: namespace
 			persistentVolumeClaimWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describePersistentVolumeClaim) // PARAM: namespace, name
 			persistentVolumeClaimWorkloadRoutes.DELETE("/:namespace/:name", Auth(dtos.ADMIN), validateParam("namespace", "name"), deletePersistentVolumeClaim)        // PARAM: namespace, name
 			persistentVolumeClaimWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchPersistentVolumeClaim)                                                              // BODY: json-object
@@ -189,7 +189,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		// horizontal-pod-autoscaler
 		horizontalPodAutoscalerWorkloadRoutes := workloadRoutes.Group("/horizontal-pod-autoscaler", RequireContextId())
 		{
-			horizontalPodAutoscalerWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allHpas)                                      // PARAM: namespace
+			horizontalPodAutoscalerWorkloadRoutes.GET("/", Auth(dtos.USER), allHpas)                                                                  // PARAM: namespace
 			horizontalPodAutoscalerWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeHpa) // PARAM: namespace, name
 			horizontalPodAutoscalerWorkloadRoutes.DELETE("/:namespace/:name", Auth(dtos.ADMIN), validateParam("namespace", "name"), deleteHpa)        // PARAM: namespace, name
 			horizontalPodAutoscalerWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchHpa)                                                              // BODY: json-object
@@ -216,7 +216,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		// certificate-request
 		certificateRequestWorkloadRoutes := workloadRoutes.Group("/certificate-request", Auth(dtos.USER), RequireContextId())
 		{
-			certificateRequestWorkloadRoutes.GET("/", validateParam("name"), allCertificateRequests)                                           // PARAM: namespace
+			certificateRequestWorkloadRoutes.GET("/", allCertificateRequests)                                                                  // PARAM: namespace
 			certificateRequestWorkloadRoutes.GET("/describe/:namespace/:name", validateParam("namespace", "name"), describeCertificateRequest) // PARAM: namespace, name
 			certificateRequestWorkloadRoutes.DELETE("/:namespace/:name", validateParam("namespace", "name"), deleteCertificateRequest)         // PARAM: namespace, name
 			certificateRequestWorkloadRoutes.PATCH("/", patchCertificateRequest)                                                               // BODY: json-object
@@ -266,7 +266,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		// role
 		roleWorkloadRoutes := workloadRoutes.Group("/role", RequireContextId())
 		{
-			roleWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allRoles)                                      // PARAM: namespace
+			roleWorkloadRoutes.GET("/", Auth(dtos.USER), allRoles)                                                                  // PARAM: namespace
 			roleWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeRole) // PARAM: namespace, name
 			roleWorkloadRoutes.DELETE("/:namespace/:name", Auth(dtos.ADMIN), validateParam("namespace", "name"), deleteRole)        // PARAM: namespace, name
 			roleWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchRole)                                                              // BODY: json-object
@@ -276,7 +276,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		// role-binding
 		roleBindingWorkloadRoutes := workloadRoutes.Group("/role-binding", RequireContextId())
 		{
-			roleBindingWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allRoleBindings)                                      // PARAM: namespace
+			roleBindingWorkloadRoutes.GET("/", Auth(dtos.USER), allRoleBindings)                                                                  // PARAM: namespace
 			roleBindingWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeRoleBinding) // PARAM: namespace, name
 			roleBindingWorkloadRoutes.DELETE("/:namespace/:name", Auth(dtos.ADMIN), validateParam("namespace", "name"), deleteRoleBinding)        // PARAM: namespace, name
 			roleBindingWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchRoleBinding)                                                              // BODY: json-object
@@ -316,7 +316,7 @@ func InitWorkloadRoutes(router *gin.Engine) {
 		// network-policy
 		networkPolicyWorkloadRoutes := workloadRoutes.Group("/network-policy", RequireContextId())
 		{
-			networkPolicyWorkloadRoutes.GET("/", Auth(dtos.USER), validateParam("namespace"), allNetworkPolicies)                                     // PARAM: namespace
+			networkPolicyWorkloadRoutes.GET("/", Auth(dtos.USER), allNetworkPolicies)                                                                 // PARAM: namespace
 			networkPolicyWorkloadRoutes.GET("/describe/:namespace/:name", Auth(dtos.USER), validateParam("namespace", "name"), describeNetworkPolicy) // PARAM: namespace, name
 			networkPolicyWorkloadRoutes.DELETE("/:namespace/:name", Auth(dtos.ADMIN), validateParam("namespace", "name"), deleteNetworkPolicy)        // PARAM: namespace, name
 			networkPolicyWorkloadRoutes.PATCH("/", Auth(dtos.ADMIN), patchNetworkPolicy)                                                              // BODY: json-object
