@@ -16,7 +16,7 @@ func AllCustomResourceDefinitions() utils.K8sWorkloadResult {
 
 	// 	result := []apiExt.CustomResourceDefinition{}
 
-	// 	provider := NewKubeProvider()
+	// 	provider,err := NewKubeProvider()
 	// 	certificatesList, err := provider.ClientSet.ApiextensionsV1()
 	// 	if err != nil {
 	// 		logger.Log.Errorf("AllCertificateSigningRequests ERROR: %s", err.Error())
@@ -34,8 +34,8 @@ func AllCustomResourceDefinitions() utils.K8sWorkloadResult {
 func UpdateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) utils.K8sWorkloadResult {
 	// TODO
 
-	// kubeProvider := NewKubeProvider()
-	// certificateClient := kubeProvider.ClientSet.Ex.CertificateRequests(data.Namespace)
+	// providererr := NewKubeProvider()
+	// certificateClient := provider.ClientSet.Ex.CertificateRequests(data.Namespace)
 	// _, err := certificateClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	// if err != nil {
 	// 	return WorkloadResult(nil, err)
@@ -46,8 +46,8 @@ func UpdateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) uti
 func DeleteK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) utils.K8sWorkloadResult {
 	// TODO
 
-	// kubeProvider := NewKubeProvider()
-	// certificateClient := kubeProvider.ClientSet.
+	// providererr := NewKubeProvider()
+	// certificateClient := provider.ClientSet.
 	// err := certificateClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	// if err != nil {
 	// 	return WorkloadResult(nil, err)
@@ -70,8 +70,8 @@ func DescribeK8sCustomResourceDefinition(name string, contextId *string) utils.K
 func CreateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) utils.K8sWorkloadResult {
 	// TODO
 
-	// kubeProvider := NewKubeProvider()
-	// client := kubeProvider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
+	// providererr := NewKubeProvider()
+	// client := provider.ClientSet.CoreV1().ConfigMaps(data.Namespace)
 	// _, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	// if err != nil {
 	// 	return WorkloadResult(nil, err)

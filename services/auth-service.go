@@ -128,9 +128,9 @@ func InitAuthService() {
 }
 
 func CreateKeyPair() (*KeyPair, error) {
-	provider := kubernetes.NewKubeProvider(nil)
+	provider, err := kubernetes.NewKubeProvider(nil)
 	if provider == nil {
-		msg := fmt.Sprintf("Failed to load kubeprovider.")
+		msg := fmt.Sprintf("Failed to load provider.")
 		logger.Log.Error(msg)
 		return nil, errors.New(msg)
 	}
@@ -174,16 +174,16 @@ func CreateKeyPair() (*KeyPair, error) {
 }
 
 func RemoveKeyPair() {
-	provider := kubernetes.NewKubeProvider(nil)
+	provider, err := kubernetes.NewKubeProvider(nil)
 	if provider == nil {
-		logger.Log.Fatal("Failed to load kubeprovider.")
+		logger.Log.Fatal(err.Error())
 	}
 
 	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
 
 	fmt.Printf("Deleting %s/%s secret ...\n", utils.CONFIG.Kubernetes.OwnNamespace, utils.JWTSECRET)
 	deletePolicy := metav1.DeletePropagationForeground
-	err := secretClient.Delete(context.TODO(), utils.JWTSECRET, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
+	err = secretClient.Delete(context.TODO(), utils.JWTSECRET, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
 		logger.Log.Error(err)
 		return

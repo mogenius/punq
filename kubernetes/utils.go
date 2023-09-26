@@ -238,7 +238,11 @@ func CurrentContextName() string {
 }
 
 func Hostname(contextId *string) string {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		logger.Log.Error("Hostname:", err)
+		return ""
+	}
 	return provider.ClientConfig.Host
 }
 
@@ -290,9 +294,11 @@ func ClusterStatus(contextId *string) dtos.ClusterStatusDto {
 }
 
 func KubernetesVersion(contextId *string) *version2.Info {
-
-	kubeProvider := NewKubeProvider(contextId)
-	info, err := kubeProvider.ClientSet.Discovery().ServerVersion()
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil
+	}
+	info, err := provider.ClientSet.Discovery().ServerVersion()
 	if err != nil {
 		logger.Log.Error("Error KubernetesVersion:", err)
 		return nil
@@ -311,8 +317,11 @@ func ClusterInfo(contextId *string) dtos.ClusterInfoDto {
 func listAllPods(contextId *string) []v1.Pod {
 	var result []v1.Pod
 
-	kubeProvider := NewKubeProvider(contextId)
-	pods, err := kubeProvider.ClientSet.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system,metadata.namespace!=default"})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	pods, err := provider.ClientSet.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system,metadata.namespace!=default"})
 
 	if err != nil {
 		logger.Log.Error("Error listAllPods:", err)
@@ -322,9 +331,9 @@ func listAllPods(contextId *string) []v1.Pod {
 }
 
 func ListNodes(contextId *string) []v1.Node {
-	var provider *KubeProvider = NewKubeProvider(contextId)
-	if provider == nil {
-		logger.Log.Errorf("Failed to load kubeprovider.")
+	provider, err := NewKubeProvider(contextId)
+	if provider == nil || err != nil {
+		logger.Log.Errorf("ListNodes ERROR: %s", err.Error())
 		return []v1.Node{}
 	}
 
@@ -337,9 +346,8 @@ func ListNodes(contextId *string) []v1.Node {
 }
 
 func podStats(pods map[string]v1.Pod, contextId *string) ([]structs.Stats, error) {
-	var provider *KubeProviderMetrics = NewKubeProviderMetrics(contextId)
-	if provider == nil {
-		err := fmt.Errorf("Failed to load kubeprovider.")
+	provider, err := NewKubeProviderMetrics(contextId)
+	if provider == nil || err != nil {
 		logger.Log.Errorf(err.Error())
 		return []structs.Stats{}, err
 	}

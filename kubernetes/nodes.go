@@ -43,9 +43,9 @@ func GetNodeStats(contextId *string) []dtos.NodeStat {
 }
 
 func ListK8sNodes(contextId *string) utils.K8sWorkloadResult {
-	var provider *KubeProvider = NewKubeProvider(contextId)
-	if provider == nil {
-		err := fmt.Errorf("Failed to load kubeprovider.")
+	provider, err := NewKubeProvider(contextId)
+	if provider == nil || err != nil {
+		err := fmt.Errorf("failed to load provider")
 		logger.Log.Errorf(err.Error())
 		return WorkloadResult(nil, err)
 	}
@@ -59,12 +59,18 @@ func ListK8sNodes(contextId *string) utils.K8sWorkloadResult {
 }
 
 func GetK8sNode(name string, contextId *string) (*v1.Node, error) {
-	var provider *KubeProvider = NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.CoreV1().Nodes().Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func DeleteK8sNode(name string, contextId *string) error {
-	var provider *KubeProvider = NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
 	return provider.ClientSet.CoreV1().Nodes().Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 

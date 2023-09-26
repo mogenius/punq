@@ -12,27 +12,30 @@ type KubeProviderCertManager struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProviderCertManager(contextId *string) *KubeProviderCertManager {
-	var kubeProvider *KubeProviderCertManager
+func NewKubeProviderCertManager(contextId *string) (*KubeProviderCertManager, error) {
+	var provider *KubeProviderCertManager
 	var err error
 	if RunsInCluster {
-		kubeProvider, err = newKubeProviderCertManagerInCluster(contextId)
+		provider, err = newKubeProviderCertManagerInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderCertManagerLocal(contextId)
+		provider, err = newKubeProviderCertManagerLocal(contextId)
 	}
 
 	if err != nil {
-		logger.Log.Fatalf("ERROR: %s", err.Error())
+		logger.Log.Errorf("ERROR: %s", err.Error())
 	}
-	return kubeProvider
+	return provider, err
 }
 
 func newKubeProviderCertManagerLocal(contextId *string) (*KubeProviderCertManager, error) {
-	config := ContextSwitcher(contextId)
+	config, err := ContextSwitcher(contextId)
+	if err != nil {
+		return nil, err
+	}
 
 	cmClientset, err := cmclientset.NewForConfig(config)
 	if err != nil {
-		logger.Log.Panicf("Failed to create cert-manager clientset: %v\n", err)
+		return nil, err
 	}
 
 	return &KubeProviderCertManager{
@@ -44,16 +47,19 @@ func newKubeProviderCertManagerLocal(contextId *string) (*KubeProviderCertManage
 func newKubeProviderCertManagerInCluster(contextId *string) (*KubeProviderCertManager, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	if contextId != nil {
-		config = ContextSwitcher(contextId)
+		config, err = ContextSwitcher(contextId)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := cmclientset.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	return &KubeProviderCertManager{

@@ -15,7 +15,10 @@ import (
 func AllOrders(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.Order{}
 
-	provider := NewKubeProviderCertManager(contextId)
+	provider, err := NewKubeProviderCertManager(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	orderList, err := provider.ClientSet.AcmeV1().Orders(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllCertificateSigningRequests ERROR: %s", err.Error())
@@ -31,13 +34,19 @@ func AllOrders(namespaceName string, contextId *string) utils.K8sWorkloadResult 
 }
 
 func GetOrder(namespaceName string, name string, contextId *string) (*v1.Order, error) {
-	provider := NewKubeProviderCertManager(contextId)
+	provider, err := NewKubeProviderCertManager(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.AcmeV1().Orders(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func UpdateK8sOrder(data v1.Order, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProviderCertManager(contextId)
-	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
+	provider, err := NewKubeProviderCertManager(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.AcmeV1().Orders(data.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -46,9 +55,12 @@ func UpdateK8sOrder(data v1.Order, contextId *string) utils.K8sWorkloadResult {
 }
 
 func DeleteK8sOrder(data v1.Order, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProviderCertManager(contextId)
-	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProviderCertManager(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.AcmeV1().Orders(data.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -56,8 +68,11 @@ func DeleteK8sOrder(data v1.Order, contextId *string) utils.K8sWorkloadResult {
 }
 
 func DeleteK8sOrderBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProviderCertManager(contextId)
-	client := kubeProvider.ClientSet.AcmeV1().Orders(namespace)
+	provider, err := NewKubeProviderCertManager(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.AcmeV1().Orders(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -74,8 +89,11 @@ func DescribeK8sOrder(namespace string, name string, contextId *string) utils.K8
 }
 
 func CreateK8sOrder(data v1.Order, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProviderCertManager(contextId)
-	client := kubeProvider.ClientSet.AcmeV1().Orders(data.Namespace)
+	provider, err := NewKubeProviderCertManager(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.AcmeV1().Orders(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

@@ -11,27 +11,30 @@ type KubeProviderSnapshot struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProviderSnapshot(contextId *string) *KubeProviderSnapshot {
-	var kubeProvider *KubeProviderSnapshot
+func NewKubeProviderSnapshot(contextId *string) (*KubeProviderSnapshot, error) {
+	var provider *KubeProviderSnapshot
 	var err error
 	if RunsInCluster {
-		kubeProvider, err = newKubeProviderCsiInCluster(contextId)
+		provider, err = newKubeProviderCsiInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderCsiLocal(contextId)
+		provider, err = newKubeProviderCsiLocal(contextId)
 	}
 
 	if err != nil {
-		logger.Log.Fatalf("ERROR: %s", err.Error())
+		logger.Log.Errorf("ERROR: %s", err.Error())
 	}
-	return kubeProvider
+	return provider, err
 }
 
 func newKubeProviderCsiLocal(contextId *string) (*KubeProviderSnapshot, error) {
-	config := ContextSwitcher(contextId)
+	config, err := ContextSwitcher(contextId)
+	if err != nil {
+		return nil, err
+	}
 
 	clientSet, errClientSet := snapClientset.NewForConfig(config)
 	if errClientSet != nil {
-		panic(errClientSet.Error())
+		return nil, errClientSet
 	}
 
 	return &KubeProviderSnapshot{
@@ -43,16 +46,19 @@ func newKubeProviderCsiLocal(contextId *string) (*KubeProviderSnapshot, error) {
 func newKubeProviderCsiInCluster(contextId *string) (*KubeProviderSnapshot, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	if contextId != nil {
-		config = ContextSwitcher(contextId)
+		config, err = ContextSwitcher(contextId)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := snapClientset.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	return &KubeProviderSnapshot{

@@ -45,7 +45,7 @@ package kubernetes
 // func AllHelmCharts(namespaceName string) []cmapi.CertificateRequest {
 // 	result := []cmapi.CertificateRequest{}
 
-// 	provider := NewKubeProvider()
+// 	provider,err := NewKubeProvider()
 // 	resources, err := provider.ClientSet.Discovery().ServerPreferredResources()
 // 	if err != nil {
 // 		logger.Log.Errorf("ServerPreferredResources Error: %s", err.Error())
@@ -61,8 +61,8 @@ package kubernetes
 // }
 
 // func UpdateHelmChart(data cmapi.CertificateRequest) K8sWorkloadResult {
-// 	kubeProvider := NewKubeProviderCertManager()
-// 	certificateClient := kubeProvider.ClientSet.CertmanagerV1().CertificateRequests(data.Namespace)
+// 	providererr := NewKubeProviderCertManager()
+// 	certificateClient := provider.ClientSet.CertmanagerV1().CertificateRequests(data.Namespace)
 // 	_, err := certificateClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
 // 	if err != nil {
 // 		return WorkloadResult(nil, err)
@@ -71,8 +71,8 @@ package kubernetes
 // }
 
 // func DeleteK8sHelmChart(data cmapi.CertificateRequest) K8sWorkloadResult {
-// 	kubeProvider := NewKubeProviderCertManager()
-// 	certificateClient := kubeProvider.ClientSet.CertmanagerV1().CertificateRequests(data.Namespace)
+// 	providererr := NewKubeProviderCertManager()
+// 	certificateClient := provider.ClientSet.CertmanagerV1().CertificateRequests(data.Namespace)
 // 	err := certificateClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 // 	if err != nil {
 // 		return WorkloadResult(nil, err)

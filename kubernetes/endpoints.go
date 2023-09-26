@@ -14,7 +14,10 @@ import (
 func AllEndpoints(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []corev1.Endpoints{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	hpaList, err := provider.ClientSet.CoreV1().Endpoints(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllHpas ERROR: %s", err.Error())
@@ -30,13 +33,19 @@ func AllEndpoints(namespaceName string, contextId *string) utils.K8sWorkloadResu
 }
 
 func GetEndpoint(namespaceName string, name string, contextId *string) (*corev1.Endpoints, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.CoreV1().Endpoints(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func UpdateK8sEndpoint(data corev1.Endpoints, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().Endpoints(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().Endpoints(data.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -45,9 +54,12 @@ func UpdateK8sEndpoint(data corev1.Endpoints, contextId *string) utils.K8sWorklo
 }
 
 func DeleteK8sEndpoint(data corev1.Endpoints, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().Endpoints(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().Endpoints(data.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -55,8 +67,11 @@ func DeleteK8sEndpoint(data corev1.Endpoints, contextId *string) utils.K8sWorklo
 }
 
 func DeleteK8sEndpointBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().Endpoints(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.CoreV1().Endpoints(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -73,8 +88,11 @@ func DescribeK8sEndpoint(namespace string, name string, contextId *string) utils
 }
 
 func CreateK8sEndpoint(data corev1.Endpoints, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().Endpoints(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().Endpoints(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

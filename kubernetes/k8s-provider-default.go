@@ -15,27 +15,30 @@ type KubeProvider struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProvider(contextId *string) *KubeProvider {
-	var kubeProvider *KubeProvider
+func NewKubeProvider(contextId *string) (*KubeProvider, error) {
+	var provider *KubeProvider
 	var err error
 	if RunsInCluster {
-		kubeProvider, err = newKubeProviderInCluster(contextId)
+		provider, err = newKubeProviderInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderLocal(contextId)
+		provider, err = newKubeProviderLocal(contextId)
 	}
 
 	if err != nil {
-		logger.Log.Fatalf("ERROR: %s", err.Error())
+		logger.Log.Errorf("ERROR: %s", err.Error())
 	}
-	return kubeProvider
+	return provider, err
 }
 
 func newKubeProviderLocal(contextId *string) (*KubeProvider, error) {
-	config := ContextSwitcher(contextId)
+	config, err := ContextSwitcher(contextId)
+	if err != nil {
+		return nil, err
+	}
 
 	clientSet, errClientSet := kubernetes.NewForConfig(config)
 	if errClientSet != nil {
-		panic(errClientSet.Error())
+		return nil, errClientSet
 	}
 
 	return &KubeProvider{
@@ -47,16 +50,19 @@ func newKubeProviderLocal(contextId *string) (*KubeProvider, error) {
 func newKubeProviderInCluster(contextId *string) (*KubeProvider, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	if contextId != nil {
-		config = ContextSwitcher(contextId)
+		config, err = ContextSwitcher(contextId)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	return &KubeProvider{
@@ -69,7 +75,7 @@ func ContextConfigLoader(contextId *string) (*rest.Config, error) {
 	// get current context
 	ctx := ContextForId(*contextId)
 	if ctx == nil {
-		return nil, fmt.Errorf("Context not found for id: %s", *contextId)
+		return nil, fmt.Errorf("context not found for id: %s", *contextId)
 	}
 
 	configFromString, err := clientcmd.NewClientConfigFromBytes([]byte(ctx.Context))
@@ -82,21 +88,13 @@ func ContextConfigLoader(contextId *string) (*rest.Config, error) {
 	return config, err
 }
 
-func ContextSwitcher(contextId *string) (restConfig *rest.Config) {
+func ContextSwitcher(contextId *string) (*rest.Config, error) {
 	var kubeconfig string = getKubeConfig()
 
 	// CONTEXT SWITCHER
 	if contextId != nil && *contextId != "" {
-		restConfig, err := ContextConfigLoader(contextId)
-		if err != nil || restConfig == nil {
-			logger.Log.Fatal(err.Error())
-		}
-		return restConfig
+		return ContextConfigLoader(contextId)
 	} else {
-		restConfig, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
-		if err != nil || restConfig == nil {
-			logger.Log.Fatal(err.Error())
-		}
-		return restConfig
+		return clientcmd.BuildConfigFromFlags("", kubeconfig)
 	}
 }

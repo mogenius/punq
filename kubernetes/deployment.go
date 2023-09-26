@@ -14,7 +14,10 @@ import (
 func AllDeployments(namespaceName string, contextId *string) []v1.Deployment {
 	result := []v1.Deployment{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
 	deploymentList, err := provider.ClientSet.AppsV1().Deployments(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllDeployments ERROR: %s", err.Error())
@@ -32,7 +35,10 @@ func AllDeployments(namespaceName string, contextId *string) []v1.Deployment {
 func AllK8sDeployments(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.Deployment{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	deploymentList, err := provider.ClientSet.AppsV1().Deployments(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllDeployments ERROR: %s", err.Error())
@@ -48,13 +54,19 @@ func AllK8sDeployments(namespaceName string, contextId *string) utils.K8sWorkloa
 }
 
 func GetK8sDeployment(namespaceName string, name string, contextId *string) (*v1.Deployment, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.AppsV1().Deployments(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func UpdateK8sDeployment(data v1.Deployment, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.AppsV1().Deployments(data.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -63,9 +75,12 @@ func UpdateK8sDeployment(data v1.Deployment, contextId *string) utils.K8sWorkloa
 }
 
 func DeleteK8sDeployment(data v1.Deployment, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.AppsV1().Deployments(data.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -73,8 +88,11 @@ func DeleteK8sDeployment(data v1.Deployment, contextId *string) utils.K8sWorkloa
 }
 
 func DeleteK8sDeploymentBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.AppsV1().Deployments(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.AppsV1().Deployments(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -91,8 +109,11 @@ func DescribeK8sDeployment(namespace string, name string, contextId *string) uti
 }
 
 func CreateK8sDeployment(data v1.Deployment, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.AppsV1().Deployments(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.AppsV1().Deployments(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -108,7 +129,10 @@ func NewK8sDeployment() K8sNewWorkload {
 }
 
 func UpdateDeploymentImage(namespace string, name string, image string, contextId *string) error {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
 	deploymentClient := provider.ClientSet.AppsV1().Deployments(namespace)
 	deployment, err := deploymentClient.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

@@ -15,7 +15,10 @@ import (
 func AllNetworkPolicies(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.NetworkPolicy{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	netPolist, err := provider.ClientSet.NetworkingV1().NetworkPolicies(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllNetworkPolicies ERROR: %s", err.Error())
@@ -31,13 +34,19 @@ func AllNetworkPolicies(namespaceName string, contextId *string) utils.K8sWorklo
 }
 
 func GetNetworkPolicy(namespaceName string, name string, contextId *string) (*v1.NetworkPolicy, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.NetworkingV1().NetworkPolicies(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func UpdateK8sNetworkPolicy(data v1.NetworkPolicy, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.NetworkingV1().NetworkPolicies(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.NetworkingV1().NetworkPolicies(data.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -46,9 +55,12 @@ func UpdateK8sNetworkPolicy(data v1.NetworkPolicy, contextId *string) utils.K8sW
 }
 
 func DeleteK8sNetworkPolicy(data v1.NetworkPolicy, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.NetworkingV1().NetworkPolicies(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.NetworkingV1().NetworkPolicies(data.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -56,8 +68,11 @@ func DeleteK8sNetworkPolicy(data v1.NetworkPolicy, contextId *string) utils.K8sW
 }
 
 func DeleteK8sNetworkPolicyBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.NetworkingV1().NetworkPolicies(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.NetworkingV1().NetworkPolicies(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -74,8 +89,11 @@ func DescribeK8sNetworkPolicy(namespace string, name string, contextId *string) 
 }
 
 func CreateK8sNetworkpolicy(data v1.NetworkPolicy, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.NetworkingV1().NetworkPolicies(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.NetworkingV1().NetworkPolicies(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

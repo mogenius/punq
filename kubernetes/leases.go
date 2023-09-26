@@ -16,7 +16,10 @@ import (
 func AllLeases(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.Lease{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	rolesList, err := provider.ClientSet.CoordinationV1().Leases(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllLeases ERROR: %s", err.Error())
@@ -32,13 +35,19 @@ func AllLeases(namespaceName string, contextId *string) utils.K8sWorkloadResult 
 }
 
 func GetLeas(namespaceName string, name string, contextId *string) (*v1.Lease, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.CoordinationV1().Leases(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func UpdateK8sLease(data v1.Lease, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoordinationV1().Leases(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoordinationV1().Leases(data.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -47,9 +56,12 @@ func UpdateK8sLease(data v1.Lease, contextId *string) utils.K8sWorkloadResult {
 }
 
 func DeleteK8sLease(data v1.Lease, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoordinationV1().Leases(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoordinationV1().Leases(data.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -57,8 +69,11 @@ func DeleteK8sLease(data v1.Lease, contextId *string) utils.K8sWorkloadResult {
 }
 
 func DeleteK8sLeaseBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoordinationV1().Leases(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.CoordinationV1().Leases(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -75,8 +90,11 @@ func DescribeK8sLease(namespace string, name string, contextId *string) utils.K8
 }
 
 func CreateK8sLease(data v1.Lease, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoordinationV1().Leases(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoordinationV1().Leases(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

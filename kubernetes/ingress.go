@@ -18,7 +18,10 @@ const (
 func AllIngresses(namespaceName string, contextId *string) []v1.Ingress {
 	result := []v1.Ingress{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
 	ingressList, err := provider.ClientSet.NetworkingV1().Ingresses(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllIngresses ERROR: %s", err.Error())
@@ -36,7 +39,10 @@ func AllIngresses(namespaceName string, contextId *string) []v1.Ingress {
 func AllK8sIngresses(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.Ingress{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	ingressList, err := provider.ClientSet.NetworkingV1().Ingresses(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllIngresses ERROR: %s", err.Error())
@@ -52,13 +58,19 @@ func AllK8sIngresses(namespaceName string, contextId *string) utils.K8sWorkloadR
 }
 
 func GetK8sIngress(namespaceName string, name string, contextId *string) (*v1.Ingress, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.NetworkingV1().Ingresses(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func UpdateK8sIngress(data v1.Ingress, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.NetworkingV1().Ingresses(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.NetworkingV1().Ingresses(data.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -67,9 +79,12 @@ func UpdateK8sIngress(data v1.Ingress, contextId *string) utils.K8sWorkloadResul
 }
 
 func DeleteK8sIngress(data v1.Ingress, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.NetworkingV1().Ingresses(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.NetworkingV1().Ingresses(data.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -77,8 +92,11 @@ func DeleteK8sIngress(data v1.Ingress, contextId *string) utils.K8sWorkloadResul
 }
 
 func DeleteK8sIngressBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.NetworkingV1().Ingresses(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.NetworkingV1().Ingresses(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -95,8 +113,11 @@ func DescribeK8sIngress(namespace string, name string, contextId *string) utils.
 }
 
 func CreateK8sIngress(data v1.Ingress, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.NetworkingV1().Ingresses(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.NetworkingV1().Ingresses(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

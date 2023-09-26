@@ -16,7 +16,10 @@ import (
 func AllClusterRoles(contextId *string) utils.K8sWorkloadResult {
 	result := []v1.ClusterRole{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	rolesList, err := provider.ClientSet.RbacV1().ClusterRoles().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllClusterRoles ERROR: %s", err.Error())
@@ -32,13 +35,19 @@ func AllClusterRoles(contextId *string) utils.K8sWorkloadResult {
 }
 
 func GetClusterRole(name string, contextId *string) (*v1.ClusterRole, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.RbacV1().ClusterRoles().Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func UpdateK8sClusterRole(data v1.ClusterRole, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.RbacV1().ClusterRoles()
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.RbacV1().ClusterRoles()
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -47,9 +56,12 @@ func UpdateK8sClusterRole(data v1.ClusterRole, contextId *string) utils.K8sWorkl
 }
 
 func DeleteK8sClusterRole(data v1.ClusterRole, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.RbacV1().ClusterRoles()
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.RbacV1().ClusterRoles()
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -57,8 +69,11 @@ func DeleteK8sClusterRole(data v1.ClusterRole, contextId *string) utils.K8sWorkl
 }
 
 func DeleteK8sClusterRoleBy(name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.RbacV1().ClusterRoles()
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.RbacV1().ClusterRoles()
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -75,8 +90,11 @@ func DescribeK8sClusterRole(name string, contextId *string) utils.K8sWorkloadRes
 }
 
 func CreateK8sClusterRole(data v1.ClusterRole, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.RbacV1().ClusterRoles()
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.RbacV1().ClusterRoles()
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

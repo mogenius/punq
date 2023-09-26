@@ -27,9 +27,9 @@ func InitUserService() {
 }
 
 func CreateUserSecret() {
-	provider := kubernetes.NewKubeProvider(nil)
-	if provider == nil {
-		logger.Log.Fatal("Failed to load kubeprovider.")
+	provider, err := kubernetes.NewKubeProvider(nil)
+	if provider == nil || err != nil {
+		logger.Log.Fatal(err.Error())
 	}
 
 	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)

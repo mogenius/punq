@@ -16,7 +16,10 @@ import (
 func AllResourceQuotas(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []core.ResourceQuota{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	rqList, err := provider.ClientSet.CoreV1().ResourceQuotas(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllResourceQuotas ERROR: %s", err.Error())
@@ -32,13 +35,19 @@ func AllResourceQuotas(namespaceName string, contextId *string) utils.K8sWorkloa
 }
 
 func GetResourceQuota(namespaceName string, name string, contextId *string) (*core.ResourceQuota, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.CoreV1().ResourceQuotas(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func UpdateK8sResourceQuota(data core.ResourceQuota, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -47,9 +56,12 @@ func UpdateK8sResourceQuota(data core.ResourceQuota, contextId *string) utils.K8
 }
 
 func DeleteK8sResourceQuota(data core.ResourceQuota, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -57,8 +69,11 @@ func DeleteK8sResourceQuota(data core.ResourceQuota, contextId *string) utils.K8
 }
 
 func DeleteK8sResourceQuotaBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.CoreV1().ResourceQuotas(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -75,8 +90,11 @@ func DescribeK8sResourceQuota(namespace string, name string, contextId *string) 
 }
 
 func CreateK8sResourceQuota(data core.ResourceQuota, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().ResourceQuotas(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

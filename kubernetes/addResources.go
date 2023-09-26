@@ -25,16 +25,16 @@ import (
 )
 
 func Deploy(clusterName string, ingressHostname string) {
-	provider := NewKubeProvider(nil)
-	if provider == nil {
-		logger.Log.Fatal("Failed to load kubeprovider.")
+	provider, err := NewKubeProvider(nil)
+	if provider == nil || err != nil {
+		logger.Log.Fatal("Failed to load provider.")
 	}
 
 	applyNamespace(provider)
 	addRbac(provider)
 	addDeployment(provider)
 
-	_, err := CreateClusterSecretIfNotExist(provider)
+	_, err = CreateClusterSecretIfNotExist(provider)
 	if err != nil {
 		logger.Log.Fatalf("Error creating cluster secret. Aborting: %s.", err.Error())
 	}
@@ -109,7 +109,7 @@ func addIngress(provider *KubeProvider, ingressHostname string) {
 	fmt.Printf("Created punq ingress (%s). ✅\n", ingressHostname)
 }
 
-func addRbac(kubeProvider *KubeProvider) error {
+func addRbac(provider *KubeProvider) error {
 	serviceAccount := &core.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: SERVICEACCOUNTNAME,
@@ -147,15 +147,15 @@ func addRbac(kubeProvider *KubeProvider) error {
 
 	// CREATE RBAC
 	fmt.Println("Creating punq RBAC ...")
-	_, err := kubeProvider.ClientSet.CoreV1().ServiceAccounts(utils.CONFIG.Kubernetes.OwnNamespace).Create(context.TODO(), serviceAccount, MoCreateOptions())
+	_, err := provider.ClientSet.CoreV1().ServiceAccounts(utils.CONFIG.Kubernetes.OwnNamespace).Create(context.TODO(), serviceAccount, MoCreateOptions())
 	if err != nil && !k8serrors.IsAlreadyExists(err) {
 		return err
 	}
-	_, err = kubeProvider.ClientSet.RbacV1().ClusterRoles().Create(context.TODO(), clusterRole, MoCreateOptions())
+	_, err = provider.ClientSet.RbacV1().ClusterRoles().Create(context.TODO(), clusterRole, MoCreateOptions())
 	if err != nil && !k8serrors.IsAlreadyExists(err) {
 		return err
 	}
-	_, err = kubeProvider.ClientSet.RbacV1().ClusterRoleBindings().Create(context.TODO(), clusterRoleBinding, MoCreateOptions())
+	_, err = provider.ClientSet.RbacV1().ClusterRoleBindings().Create(context.TODO(), clusterRoleBinding, MoCreateOptions())
 	if err != nil && !k8serrors.IsAlreadyExists(err) {
 		return err
 	}
@@ -163,8 +163,8 @@ func addRbac(kubeProvider *KubeProvider) error {
 	return nil
 }
 
-func applyNamespace(kubeProvider *KubeProvider) {
-	serviceClient := kubeProvider.ClientSet.CoreV1().Namespaces()
+func applyNamespace(provider *KubeProvider) {
+	serviceClient := provider.ClientSet.CoreV1().Namespaces()
 
 	namespace := applyconfcore.Namespace(utils.CONFIG.Kubernetes.OwnNamespace)
 
@@ -181,8 +181,8 @@ func applyNamespace(kubeProvider *KubeProvider) {
 	fmt.Println("Created punq namespace. ✅")
 }
 
-func CreateClusterSecretIfNotExist(kubeProvider *KubeProvider) (utils.ClusterSecret, error) {
-	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+func CreateClusterSecretIfNotExist(provider *KubeProvider) (utils.ClusterSecret, error) {
+	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
 
 	existingSecret, getErr := secretClient.Get(context.TODO(), utils.CONFIG.Kubernetes.OwnNamespace, metav1.GetOptions{})
 	return writePunqSecret(secretClient, existingSecret, getErr)
@@ -236,7 +236,7 @@ func writePunqSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 }
 
 // func CreateUserSecretIfNotExist(kubeProvider *KubeProvider) (*dtos.PunqUser, error) {
-// 	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+// 	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
 //
 // 	existingSecret, getErr := secretClient.Get(context.TODO(), utils.USERSSECRET, metav1.GetOptions{})
 // 	return writeUserSecret(secretClient, existingSecret, getErr)
@@ -283,8 +283,8 @@ func writePunqSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 // 	return nil, nil
 // }
 
-func CreateContextSecretIfNotExist(kubeProvider *KubeProvider) (*dtos.PunqContext, error) {
-	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+func CreateContextSecretIfNotExist(provider *KubeProvider) (*dtos.PunqContext, error) {
+	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
 
 	existingSecret, getErr := secretClient.Get(context.TODO(), utils.CONTEXTSSECRET, metav1.GetOptions{})
 	return writeContextSecret(secretClient, existingSecret, getErr)
@@ -332,8 +332,8 @@ func writeContextSecret(secretClient v1.SecretInterface, existingSecret *core.Se
 	return nil, nil
 }
 
-func addDeployment(kubeProvider *KubeProvider) {
-	deploymentClient := kubeProvider.ClientSet.AppsV1().Deployments(utils.CONFIG.Kubernetes.OwnNamespace)
+func addDeployment(provider *KubeProvider) {
+	deploymentClient := provider.ClientSet.AppsV1().Deployments(utils.CONFIG.Kubernetes.OwnNamespace)
 
 	deploymentContainer := applyconfcore.Container()
 	deploymentContainer.WithImagePullPolicy(core.PullAlways)

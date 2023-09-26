@@ -11,27 +11,30 @@ type KubeProviderMetrics struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProviderMetrics(contextId *string) *KubeProviderMetrics {
-	var kubeProvider *KubeProviderMetrics
+func NewKubeProviderMetrics(contextId *string) (*KubeProviderMetrics, error) {
+	var provider *KubeProviderMetrics
 	var err error
 	if RunsInCluster {
-		kubeProvider, err = newKubeProviderMetricsInCluster(contextId)
+		provider, err = newKubeProviderMetricsInCluster(contextId)
 	} else {
-		kubeProvider, err = newKubeProviderMetricsLocal(contextId)
+		provider, err = newKubeProviderMetricsLocal(contextId)
 	}
 
 	if err != nil {
-		logger.Log.Fatalf("ERROR: %s", err.Error())
+		logger.Log.Errorf("ERROR: %s", err.Error())
 	}
-	return kubeProvider
+	return provider, err
 }
 
 func newKubeProviderMetricsLocal(contextId *string) (*KubeProviderMetrics, error) {
-	config := ContextSwitcher(contextId)
+	config, err := ContextSwitcher(contextId)
+	if err != nil {
+		return nil, err
+	}
 
 	clientSet, errClientSet := metricsv.NewForConfig(config)
 	if errClientSet != nil {
-		panic(errClientSet.Error())
+		return nil, errClientSet
 	}
 
 	return &KubeProviderMetrics{
@@ -43,16 +46,19 @@ func newKubeProviderMetricsLocal(contextId *string) (*KubeProviderMetrics, error
 func newKubeProviderMetricsInCluster(contextId *string) (*KubeProviderMetrics, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	if contextId != nil {
-		config = ContextSwitcher(contextId)
+		config, err = ContextSwitcher(contextId)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	clientset, err := metricsv.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	return &KubeProviderMetrics{
