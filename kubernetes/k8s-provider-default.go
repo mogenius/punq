@@ -50,7 +50,9 @@ func newKubeProviderInCluster(contextId *string) (*KubeProvider, error) {
 		panic(err.Error())
 	}
 
-	config = ContextSwitcher(contextId)
+	if contextId != nil {
+		config = ContextSwitcher(contextId)
+	}
 
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {

@@ -46,7 +46,9 @@ func newKubeProviderCsiInCluster(contextId *string) (*KubeProviderSnapshot, erro
 		panic(err.Error())
 	}
 
-	config = ContextSwitcher(contextId)
+	if contextId != nil {
+		config = ContextSwitcher(contextId)
+	}
 
 	clientset, err := snapClientset.NewForConfig(config)
 	if err != nil {

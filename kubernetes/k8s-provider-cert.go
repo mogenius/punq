@@ -47,7 +47,9 @@ func newKubeProviderCertManagerInCluster(contextId *string) (*KubeProviderCertMa
 		panic(err.Error())
 	}
 
-	config = ContextSwitcher(contextId)
+	if contextId != nil {
+		config = ContextSwitcher(contextId)
+	}
 
 	clientset, err := cmclientset.NewForConfig(config)
 	if err != nil {

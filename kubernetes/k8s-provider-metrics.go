@@ -46,7 +46,9 @@ func newKubeProviderMetricsInCluster(contextId *string) (*KubeProviderMetrics, e
 		panic(err.Error())
 	}
 
-	config = ContextSwitcher(contextId)
+	if contextId != nil {
+		config = ContextSwitcher(contextId)
+	}
 
 	clientset, err := metricsv.NewForConfig(config)
 	if err != nil {
