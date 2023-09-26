@@ -22,7 +22,8 @@ func InitContextRoutes(router *gin.Engine) {
 		contextRoutes.GET("/info", Auth(dtos.ADMIN), RequireContextId(), getInfoContexts)
 		contextRoutes.GET("", Auth(dtos.ADMIN), RequireContextId(), getContext)
 		contextRoutes.DELETE("", Auth(dtos.ADMIN), RequireContextId(), deleteContext)
-		contextRoutes.POST("", Auth(dtos.ADMIN), RequireContextId(), uploadContext)
+		contextRoutes.POST("/validate-config", Auth(dtos.ADMIN), validateConfig)
+		contextRoutes.POST("", Auth(dtos.ADMIN), addContext)
 	}
 }
 
@@ -93,9 +94,9 @@ func deleteContext(c *gin.Context) {
 // @Tags Context
 // @Produce json
 // @Success 200 {array} dtos.PunqContext
-// @Router /backend/context [post]
+// @Router /backend/context/validate-config [post]
 // @Security Bearer
-func uploadContext(c *gin.Context) {
+func validateConfig(c *gin.Context) {
 	tempFilename := fmt.Sprintf("%s.yaml", utils.NanoId())
 
 	// SAVE temp file
@@ -126,4 +127,31 @@ func uploadContext(c *gin.Context) {
 	}
 
 	c.JSON(200, contexts)
+}
+
+// @Tags Context
+// @Produce json
+// @Success 200 {array} dtos.PunqContext
+// @Router /backend/context [post]
+// @Param body body dtos.PunqContext false "PunqContext"
+// @Security Bearer
+func addContext(c *gin.Context) {
+	contexts := services.GetGinContextContexts(c)
+	if contexts == nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": "Invalid data received. Expected array of PunqContexts in contexts.",
+		})
+		return
+	}
+
+	addedContexts := []dtos.PunqContext{}
+	for _, ctx := range *contexts {
+		_, err := services.AddContext(ctx)
+		if err == nil {
+			fmt.Printf("Context '%s' added ✅.\n", ctx.Name)
+			addedContexts = append(addedContexts, ctx)
+		}
+	}
+
+	c.JSON(200, addedContexts)
 }
