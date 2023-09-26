@@ -277,15 +277,15 @@ func ClusterStatus(contextId *string) dtos.ClusterStatusDto {
 	}
 
 	return dtos.ClusterStatusDto{
-		ClusterName:           utils.CONFIG.Kubernetes.ClusterName,
-		Pods:                  len(result),
-		CpuInMilliCores:       int(cpu),
-		CpuLimitInMilliCores:  int(cpuLimit),
-		Memory:                utils.BytesToHumanReadable(memory),
-		MemoryLimit:           utils.BytesToHumanReadable(memoryLimit),
-		EphemeralStorageLimit: utils.BytesToHumanReadable(ephemeralStorageLimit),
-		KubernetesVersion:     kubernetesVersion,
-		Platform:              platform,
+		ClusterName:                  utils.CONFIG.Kubernetes.ClusterName,
+		Pods:                         len(result),
+		CpuInMilliCores:              int(cpu),
+		CpuLimitInMilliCores:         int(cpuLimit),
+		MemoryInBytes:                memory,
+		MemoryLimitInBytes:           memoryLimit,
+		EphemeralStorageLimitInBytes: ephemeralStorageLimit,
+		KubernetesVersion:            kubernetesVersion,
+		Platform:                     platform,
 	}
 }
 

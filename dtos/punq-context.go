@@ -14,10 +14,11 @@ type PunqContext struct {
 	Name        string       `json:"name" validate:"required"`
 	ContextHash string       `json:"contextHash" validate:"required"`
 	Context     string       `json:"context" validate:"required"`
+	Provider    string       `json:"provider" validate:"required"`
 	Access      []PunqAccess `json:"access" validate:"required"`
 }
 
-func CreateContext(id string, name string, context string, access []PunqAccess) PunqContext {
+func CreateContext(id string, name string, context string, provider string, access []PunqAccess) PunqContext {
 	ctx := PunqContext{}
 
 	ctx.Name = name
@@ -30,6 +31,12 @@ func CreateContext(id string, name string, context string, access []PunqAccess) 
 
 	ctx.Context = context
 	ctx.ContextHash = utils.HashString(context)
+
+	if provider == "" {
+		ctx.Provider = "UNKNOWN"
+	} else {
+		ctx.Provider = provider
+	}
 
 	if len(access) > 0 {
 		ctx.Access = access

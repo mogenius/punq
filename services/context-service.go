@@ -79,7 +79,7 @@ func ParseConfigToPunqContexts(data []byte) ([]dtos.PunqContext, error) {
 		if err != nil {
 			return result, err
 		}
-		result = append(result, dtos.CreateContext("", contextName, string(configBytes), []dtos.PunqAccess{}))
+		result = append(result, dtos.CreateContext("", contextName, string(configBytes), "", []dtos.PunqAccess{}))
 	}
 	sort.Slice(result, func(i, j int) bool {
 		return result[i].Name < result[j].Name
@@ -98,7 +98,7 @@ func PrintAllContextFromConfig(config *api.Config) {
 		table.Row{"ALL CONTEXTS", "*", "*", "*"},
 	)
 	for contextName, context := range config.Contexts {
-		dtos.CreateContext("", contextName, "", []dtos.PunqAccess{})
+		dtos.CreateContext("", contextName, "", "", []dtos.PunqAccess{})
 		t.AppendRow(
 			table.Row{contextName, context.Cluster, context.AuthInfo, config.Clusters[context.Cluster].Server},
 		)
