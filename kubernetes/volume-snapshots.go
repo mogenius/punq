@@ -75,7 +75,7 @@ func CreateK8sVolumeSnapshot(data snap.VolumeSnapshot, contextId *string) utils.
 
 func NewK8sVolumeSnapshots() K8sNewWorkload {
 	return NewWorkload(
-		RES_VOLUMESNAPSHOTS,
+		RES_VOLUME_SNAPSHOT,
 		utils.InitVolumeSnapshotYaml(),
 		"A VolumeSnapshot in Kubernetes is a representation of a storage volume at a particular point in time. It's part of the Kubernetes storage system and is used for creating backups of data.	This YAML file will create a VolumeSnapshot named 'snapshot-test' from the PersistentVolumeClaim named 'pvc-test'. The snapshot will be taken using the VolumeSnapshotClass named 'snapshot-class'. The VolumeSnapshotClass would typically be defined by your storage provider and would specify the underlying snapshotting technology to use.")
 }

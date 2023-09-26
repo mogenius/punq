@@ -115,7 +115,7 @@ func CreateK8sConfigMap(data v1.ConfigMap, contextId *string) utils.K8sWorkloadR
 
 func NewK8sConfigmap() K8sNewWorkload {
 	return NewWorkload(
-		RES_CONFIGMAP,
+		RES_CONFIG_MAP,
 		utils.InitConfigMapYaml(),
 		"ConfigMaps allow you to decouple configuration artifacts from image content to keep containerized applications portable. In this example, a ConfigMap named 'my-configmap' is created with two key-value pairs: my-key and my-value, another-key and another-value. ConfigMap data can be referenced in many ways depending on where you need the data to be used. For example, you could use a ConfigMap to set environment variables for a Pod, or mount a ConfigMap as a volume in a Pod.")
 }

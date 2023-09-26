@@ -86,7 +86,7 @@ func CreateK8sLease(data v1.Lease, contextId *string) utils.K8sWorkloadResult {
 
 func NewK8sLease() K8sNewWorkload {
 	return NewWorkload(
-		RES_LEASES,
+		RES_LEASE,
 		utils.InitLeaseYaml(),
 		"A Lease is a simple object that allows coordination between different components or processes running in a cluster. In this example, a Lease named 'my-lease' is created in the 'my-namespace' namespace. The Lease is associated with the identity 'my-identity'. It has a duration of 60 seconds and should be renewed at the specified time. Leases are typically used for coordination and to ensure that only one instance of a component or process is active at a given time.")
 }

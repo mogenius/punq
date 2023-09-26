@@ -81,7 +81,7 @@ func CreateK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) uti
 
 func NewK8sCustomResourceDefinition() K8sNewWorkload {
 	return NewWorkload(
-		RES_CUSTOM_RESOURCE_DEFINITIONS,
+		RES_CUSTOM_RESOURCE_DEFINITION,
 		utils.InitCustomResourceDefinitionYaml(),
 		"A CustomResourceDefinition (CRD) in Kubernetes is a mechanism for defining and using custom resources. It extends the Kubernetes API to create new types of resources that can be managed just like the built-in resources. This CRD defines a new resource type CronTab in the group stable.example.com. The version is v1 which is being served and used for storage. The CronTab resource type has a specification that requires three fields: cronSpec, replicas, and image. The cronSpec field is a string that specifies the cron syntax for schedule, replicas is an integer that specifies the number of replicas, and image is the string that specifies the container image to run.")
 }

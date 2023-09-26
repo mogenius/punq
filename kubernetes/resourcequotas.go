@@ -86,7 +86,7 @@ func CreateK8sResourceQuota(data core.ResourceQuota, contextId *string) utils.K8
 
 func NewK8sResourceQuota() K8sNewWorkload {
 	return NewWorkload(
-		RES_RESOURCEQUOTAS,
+		RES_RESOURCE_QUOTA,
 		utils.InitResourceQuotaYaml(),
 		"A ResourceQuota is a Kubernetes object that provides constraints that limit aggregate resource consumption per namespace. It can limit the quantity of objects that can be created in a namespace by type, as well as the total amount of compute resources that may be consumed by resources in that namespace. In this example, the quota named 'compute-resources' restricts the namespace to a maximum of 10 pods, request up to 1 CPU, request up to 1Gi of memory, limit up to 2 CPUs, and limit up to 2Gi of memory.")
 }

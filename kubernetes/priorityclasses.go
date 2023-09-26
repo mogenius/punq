@@ -86,7 +86,7 @@ func CreateK8sPriorityClass(data v1.PriorityClass, contextId *string) utils.K8sW
 
 func NewK8sPriorityClass() K8sNewWorkload {
 	return NewWorkload(
-		RES_PRIORITYCLASSES,
+		RES_PRIORITY_CLASS,
 		utils.InitPriorityClassYaml(),
 		"PriorityClass is used to assign priority to Pods and allows the Kubernetes scheduler to make scheduling decisions based on the relative priorities of the Pods. In this example, a PriorityClass named 'high-priority' is created. It has a value of 1000000, indicating high priority. The globalDefault field is set to false, meaning it is not the default priority class for all Pods. The description field provides a brief description of the PriorityClass.")
 }

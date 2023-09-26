@@ -30,42 +30,42 @@ import (
 var RunsInCluster bool = false
 
 const (
-	RES_NAMESPACE                   string = "namespace"
-	RES_POD                         string = "pod"
-	RES_DEPLOYMENT                  string = "deployment"
-	RES_SERVICE                     string = "service"
-	RES_INGRESS                     string = "ingress"
-	RES_CONFIGMAP                   string = "configmap"
-	RES_SECRET                      string = "secret"
-	RES_NODE                        string = "node"
-	RES_DAEMON_SET                  string = "daemon_set"
-	RES_STATEFUL_SET                string = "stateful_set"
-	RES_JOB                         string = "job"
-	RES_CRON_JOB                    string = "cron_job"
-	RES_REPLICA_SET                 string = "replica_set"
-	RES_PERSISTENT_VOLUME           string = "persistent_volume"
-	RES_PERSISTENT_VOLUME_CLAIM     string = "persistent_volume_claim"
-	RES_HORIZONTAL_POD_AUTOSCALER   string = "horizontal_pod_autoscaler"
-	RES_EVENT                       string = "event"
-	RES_CERTIFICATE                 string = "certificate"
-	RES_CERTIFICATE_REQUEST         string = "certificaterequest"
-	RES_ORDER                       string = "orders"
-	RES_ISSUER                      string = "issuer"
-	RES_CLUSTER_ISSUER              string = "clusterissuer"
-	RES_SERVICE_ACCOUNT             string = "service_account"
-	RES_ROLE                        string = "role"
-	RES_ROLE_BINDING                string = "role_binding"
-	RES_CLUSTER_ROLE                string = "cluster_role"
-	RES_CLUSTER_ROLE_BINDING        string = "cluster_role_binding"
-	RES_VOLUME_ATTACHMENT           string = "volume_attachment"
-	RES_NETWORK_POLICY              string = "network_policy"
-	RES_STORAGECLASS                string = "storageclass"
-	RES_CUSTOM_RESOURCE_DEFINITIONS string = "crds"
-	RES_ENDPOINTS                   string = "endpoints"
-	RES_LEASES                      string = "leases"
-	RES_PRIORITYCLASSES             string = "priorityclasses"
-	RES_VOLUMESNAPSHOTS             string = "volumesnapshots"
-	RES_RESOURCEQUOTAS              string = "resourcequotas"
+	RES_NAMESPACE                  string = "Namespace"
+	RES_POD                        string = "Pod"
+	RES_DEPLOYMENT                 string = "Deployment"
+	RES_SERVICE                    string = "Service"
+	RES_INGRESS                    string = "Ingress"
+	RES_CONFIG_MAP                 string = "ConfigMap"
+	RES_SECRET                     string = "Secret"
+	RES_NODE                       string = "Node"
+	RES_DAEMON_SET                 string = "DaemonSet"
+	RES_STATEFUL_SET               string = "StatefulSet"
+	RES_JOB                        string = "Job"
+	RES_CRON_JOB                   string = "CronJob"
+	RES_REPLICA_SET                string = "ReplicaSet"
+	RES_PERSISTENT_VOLUME          string = "PersistentVolume"
+	RES_PERSISTENT_VOLUME_CLAIM    string = "PersistentVolumeClaim"
+	RES_HORIZONTAL_POD_AUTOSCALER  string = "HorizontalPodAutoscaler"
+	RES_EVENT                      string = "Event"
+	RES_CERTIFICATE                string = "Certificate"
+	RES_CERTIFICATE_REQUEST        string = "CertificateRequest"
+	RES_ORDER                      string = "Order"
+	RES_ISSUER                     string = "Issuer"
+	RES_CLUSTER_ISSUER             string = "ClusterIssuer"
+	RES_SERVICE_ACCOUNT            string = "ServiceAccount"
+	RES_ROLE                       string = "Role"
+	RES_ROLE_BINDING               string = "RoleBinding"
+	RES_CLUSTER_ROLE               string = "ClusterRole"
+	RES_CLUSTER_ROLE_BINDING       string = "ClusterRoleBinding"
+	RES_VOLUME_ATTACHMENT          string = "VolumeAttachment"
+	RES_NETWORK_POLICY             string = "NetworkPolicy"
+	RES_STORAGE_CLASS              string = "StorageClass"
+	RES_CUSTOM_RESOURCE_DEFINITION string = "CustomResourceDefinition"
+	RES_ENDPOINT                   string = "Endpoint"
+	RES_LEASE                      string = "Lease"
+	RES_PRIORITY_CLASS             string = "PriorityClass"
+	RES_VOLUME_SNAPSHOT            string = "VolumeSnapshot"
+	RES_RESOURCE_QUOTA             string = "ResourceQuota"
 )
 
 var ALL_RESOURCES []string = []string{
@@ -74,7 +74,7 @@ var ALL_RESOURCES []string = []string{
 	RES_DEPLOYMENT,
 	RES_SERVICE,
 	RES_INGRESS,
-	RES_CONFIGMAP,
+	RES_CONFIG_MAP,
 	RES_SECRET,
 	RES_NODE,
 	RES_DAEMON_SET,
@@ -98,13 +98,13 @@ var ALL_RESOURCES []string = []string{
 	RES_CLUSTER_ROLE_BINDING,
 	RES_VOLUME_ATTACHMENT,
 	RES_NETWORK_POLICY,
-	RES_STORAGECLASS,
-	RES_CUSTOM_RESOURCE_DEFINITIONS,
-	RES_ENDPOINTS,
-	RES_LEASES,
-	RES_PRIORITYCLASSES,
-	RES_VOLUMESNAPSHOTS,
-	RES_RESOURCEQUOTAS,
+	RES_STORAGE_CLASS,
+	RES_CUSTOM_RESOURCE_DEFINITION,
+	RES_ENDPOINT,
+	RES_LEASE,
+	RES_PRIORITY_CLASS,
+	RES_VOLUME_SNAPSHOT,
+	RES_RESOURCE_QUOTA,
 }
 
 var ALL_RESOURCES_USER []string = []string{
@@ -113,7 +113,7 @@ var ALL_RESOURCES_USER []string = []string{
 	RES_DEPLOYMENT,
 	RES_SERVICE,
 	RES_INGRESS,
-	RES_CONFIGMAP,
+	RES_CONFIG_MAP,
 	RES_NODE,
 	RES_DAEMON_SET,
 	RES_STATEFUL_SET,
@@ -123,7 +123,7 @@ var ALL_RESOURCES_USER []string = []string{
 	RES_PERSISTENT_VOLUME_CLAIM,
 	RES_EVENT,
 	RES_NETWORK_POLICY,
-	RES_ENDPOINTS,
+	RES_ENDPOINT,
 }
 
 var ALL_RESOURCES_READER []string = []string{
@@ -132,7 +132,7 @@ var ALL_RESOURCES_READER []string = []string{
 	RES_DEPLOYMENT,
 	RES_SERVICE,
 	RES_INGRESS,
-	RES_CONFIGMAP,
+	RES_CONFIG_MAP,
 	RES_NODE,
 	RES_DAEMON_SET,
 	RES_STATEFUL_SET,
@@ -142,7 +142,7 @@ var ALL_RESOURCES_READER []string = []string{
 	RES_PERSISTENT_VOLUME_CLAIM,
 	RES_EVENT,
 	RES_NETWORK_POLICY,
-	RES_ENDPOINTS,
+	RES_ENDPOINT,
 }
 
 var (

@@ -84,7 +84,7 @@ func CreateK8sEndpoint(data corev1.Endpoints, contextId *string) utils.K8sWorklo
 
 func NewK8sEndpoint() K8sNewWorkload {
 	return NewWorkload(
-		RES_ENDPOINTS,
+		RES_ENDPOINT,
 		utils.InitEndPointYaml(),
 		"The Endpoints resource represents a set of network addresses for a service and allows the service to be accessed internally by other resources in the cluster. In this example, an Endpoints resource named 'my-service' is created. It specifies two IP addresses, '10.0.0.1' and '10.0.0.2', as the network endpoints for the service. The service is accessible on port 8080. Endpoints are typically managed automatically by Kubernetes controllers based on the availability and readiness of the corresponding Pods.")
 }
