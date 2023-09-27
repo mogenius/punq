@@ -222,7 +222,7 @@ func NewWorkload(name string, yaml string, description string) K8sNewWorkload {
 }
 
 func CurrentContextName() string {
-	var kubeconfig string = getKubeConfig()
+	var kubeconfig string = getDefaultKubeConfig()
 
 	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
@@ -384,7 +384,7 @@ func podStats(pods map[string]v1.Pod, contextId *string) ([]structs.Stats, error
 	return result, nil
 }
 
-func getKubeConfig() string {
+func getDefaultKubeConfig() string {
 	var kubeconfig string = os.Getenv("KUBECONFIG")
 	if kubeconfig == "" {
 		if home := homedir.HomeDir(); home != "" {
