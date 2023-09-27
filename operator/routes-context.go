@@ -100,7 +100,13 @@ func validateConfig(c *gin.Context) {
 	tempFilename := fmt.Sprintf("%s.yaml", utils.NanoId())
 
 	// SAVE temp file
-	file, _ := c.FormFile("file")
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": "Unable to get the file",
+		})
+		return
+	}
 	if err := c.SaveUploadedFile(file, tempFilename); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "Unable to save the file",
