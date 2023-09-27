@@ -15,7 +15,10 @@ import (
 func AllRoleBindings(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.RoleBinding{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	rolesList, err := provider.ClientSet.RbacV1().RoleBindings(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllBindings ERROR: %s", err.Error())
@@ -31,13 +34,19 @@ func AllRoleBindings(namespaceName string, contextId *string) utils.K8sWorkloadR
 }
 
 func GetRoleBinding(namespaceName string, name string, contextId *string) (*v1.RoleBinding, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.RbacV1().RoleBindings(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func UpdateK8sRoleBinding(data v1.RoleBinding, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.RbacV1().RoleBindings(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.RbacV1().RoleBindings(data.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -46,9 +55,12 @@ func UpdateK8sRoleBinding(data v1.RoleBinding, contextId *string) utils.K8sWorkl
 }
 
 func DeleteK8sRoleBinding(data v1.RoleBinding, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.RbacV1().RoleBindings(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.RbacV1().RoleBindings(data.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -56,8 +68,11 @@ func DeleteK8sRoleBinding(data v1.RoleBinding, contextId *string) utils.K8sWorkl
 }
 
 func DeleteK8sRoleBindingBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.RbacV1().RoleBindings(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.RbacV1().RoleBindings(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -74,8 +89,11 @@ func DescribeK8sRoleBinding(namespace string, name string, contextId *string) ut
 }
 
 func CreateK8sRoleBinding(data v1.RoleBinding, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.RbacV1().RoleBindings(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.RbacV1().RoleBindings(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

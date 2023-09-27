@@ -15,7 +15,10 @@ import (
 func AllPersistentVolumeClaims(namespaceName string, contextId *string) []core.PersistentVolumeClaim {
 	result := []core.PersistentVolumeClaim{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
 	pvList, err := provider.ClientSet.CoreV1().PersistentVolumeClaims(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllPersistentVolumeClaims ERROR: %s", err.Error())
@@ -27,29 +30,36 @@ func AllPersistentVolumeClaims(namespaceName string, contextId *string) []core.P
 }
 
 func GetPersistentVolumeClaim(namespaceName string, name string, contextId *string) (*core.PersistentVolumeClaim, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.CoreV1().PersistentVolumeClaims(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func AllK8sPersistentVolumeClaims(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []core.PersistentVolumeClaim{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	pvList, err := provider.ClientSet.CoreV1().PersistentVolumeClaims(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllPersistentVolumeClaims ERROR: %s", err.Error())
 		return WorkloadResult(nil, err)
 	}
 
-	for _, pv := range pvList.Items {
-		result = append(result, pv)
-	}
+	result = append(result, pvList.Items...)
 	return WorkloadResult(result, nil)
 }
 
 func UpdateK8sPersistentVolumeClaim(data core.PersistentVolumeClaim, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -58,9 +68,12 @@ func UpdateK8sPersistentVolumeClaim(data core.PersistentVolumeClaim, contextId *
 }
 
 func DeleteK8sPersistentVolumeClaim(data core.PersistentVolumeClaim, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -68,8 +81,11 @@ func DeleteK8sPersistentVolumeClaim(data core.PersistentVolumeClaim, contextId *
 }
 
 func DeleteK8sPersistentVolumeClaimBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.CoreV1().PersistentVolumeClaims(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -86,8 +102,11 @@ func DescribeK8sPersistentVolumeClaim(namespace string, name string, contextId *
 }
 
 func CreateK8sPersistentVolumeClaim(data core.PersistentVolumeClaim, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().PersistentVolumeClaims(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

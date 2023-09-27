@@ -15,7 +15,10 @@ import (
 func AllReplicasets(namespaceName string, contextId *string) []v1.ReplicaSet {
 	result := []v1.ReplicaSet{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
 	replicaSetList, err := provider.ClientSet.AppsV1().ReplicaSets(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllReplicasets ERROR: %s", err.Error())
@@ -31,14 +34,20 @@ func AllReplicasets(namespaceName string, contextId *string) []v1.ReplicaSet {
 }
 
 func GetReplicaset(namespaceName string, name string, contextId *string) (*v1.ReplicaSet, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.AppsV1().ReplicaSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func AllK8sReplicasets(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.ReplicaSet{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	replicaSetList, err := provider.ClientSet.AppsV1().ReplicaSets(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllReplicasets ERROR: %s", err.Error())
@@ -54,8 +63,11 @@ func AllK8sReplicasets(namespaceName string, contextId *string) utils.K8sWorkloa
 }
 
 func UpdateK8sReplicaset(data v1.ReplicaSet, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -64,9 +76,12 @@ func UpdateK8sReplicaset(data v1.ReplicaSet, contextId *string) utils.K8sWorkloa
 }
 
 func DeleteK8sReplicaset(data v1.ReplicaSet, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -74,8 +89,11 @@ func DeleteK8sReplicaset(data v1.ReplicaSet, contextId *string) utils.K8sWorkloa
 }
 
 func DeleteK8sReplicasetBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.AppsV1().ReplicaSets(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.AppsV1().ReplicaSets(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -92,8 +110,11 @@ func DescribeK8sReplicaset(namespace string, name string, contextId *string) uti
 }
 
 func CreateK8sReplicaSet(data v1.ReplicaSet, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.AppsV1().ReplicaSets(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

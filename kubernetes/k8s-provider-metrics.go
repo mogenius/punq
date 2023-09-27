@@ -3,7 +3,6 @@ package kubernetes
 import (
 	"github.com/mogenius/punq/logger"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 	metricsv "k8s.io/metrics/pkg/client/clientset/versioned"
 )
 
@@ -12,61 +11,54 @@ type KubeProviderMetrics struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProviderMetrics(contextId *string) *KubeProviderMetrics {
-	var kubeProvider *KubeProviderMetrics
+func NewKubeProviderMetrics(contextId *string) (*KubeProviderMetrics, error) {
+	var provider *KubeProviderMetrics
 	var err error
 	if RunsInCluster {
-		kubeProvider, err = newKubeProviderMetricsInCluster(contextId)
+		provider, err = newKubeProviderMetricsInCluster(contextId)
 	} else {
-		if contextId == nil || *contextId == "" {
-			kubeProvider, err = newKubeProviderMetricsLocal()
-		} else {
-			kubeProvider, err = newKubeProviderMetricsInCluster(contextId)
-		}
+		provider, err = newKubeProviderMetricsLocal(contextId)
 	}
 
 	if err != nil {
 		logger.Log.Errorf("ERROR: %s", err.Error())
 	}
-	return kubeProvider
+	return provider, err
 }
 
-func newKubeProviderMetricsLocal() (*KubeProviderMetrics, error) {
-	kubeconfig := getKubeConfig()
-
-	restConfig, errConfig := clientcmd.BuildConfigFromFlags("", kubeconfig)
-	if errConfig != nil {
-		panic(errConfig.Error())
+func newKubeProviderMetricsLocal(contextId *string) (*KubeProviderMetrics, error) {
+	config, err := ContextSwitcher(contextId)
+	if err != nil {
+		return nil, err
 	}
 
-	clientSet, errClientSet := metricsv.NewForConfig(restConfig)
+	clientSet, errClientSet := metricsv.NewForConfig(config)
 	if errClientSet != nil {
-		panic(errClientSet.Error())
+		return nil, errClientSet
 	}
 
 	return &KubeProviderMetrics{
 		ClientSet:    clientSet,
-		ClientConfig: *restConfig,
+		ClientConfig: *config,
 	}, nil
 }
 
 func newKubeProviderMetricsInCluster(contextId *string) (*KubeProviderMetrics, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
-	// CONTEXT SWITCHER
 	if contextId != nil {
-		config, err = ContextConfigLoader(contextId)
-		if err != nil || config == nil {
+		config, err = ContextSwitcher(contextId)
+		if err != nil {
 			return nil, err
 		}
 	}
 
 	clientset, err := metricsv.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	return &KubeProviderMetrics{

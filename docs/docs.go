@@ -67,6 +67,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/backend/context": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Context"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PunqContext"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Context"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PunqContext"
+                        }
+                    }
+                }
+            }
+        },
         "/backend/context/all": {
             "get": {
                 "security": [
@@ -106,71 +168,20 @@ const docTemplate = `{
                 "tags": [
                     "Context"
                 ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "X-Context-Id",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dtos.ClusterInfoDto"
-                        }
-                    }
-                }
-            }
-        },
-        "/backend/context/{ctxId}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Context"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ctxId of the context-id",
-                        "name": "ctxId",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dtos.PunqContext"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Context"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the context",
-                        "name": "ctxId",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dtos.PunqContext"
                         }
                     }
                 }
@@ -7030,6 +7041,7 @@ const docTemplate = `{
             "required": [
                 "access",
                 "context",
+                "contextHash",
                 "id",
                 "name"
             ],
@@ -7041,6 +7053,9 @@ const docTemplate = `{
                     }
                 },
                 "context": {
+                    "type": "string"
+                },
+                "contextHash": {
                     "type": "string"
                 },
                 "id": {

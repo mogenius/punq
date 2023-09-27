@@ -14,7 +14,10 @@ import (
 func AllVolumeAttachments(contextId *string) utils.K8sWorkloadResult {
 	result := []storage.VolumeAttachment{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	volAttachList, err := provider.ClientSet.StorageV1().VolumeAttachments().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllCertificateSigningRequests ERROR: %s", err.Error())
@@ -26,13 +29,19 @@ func AllVolumeAttachments(contextId *string) utils.K8sWorkloadResult {
 }
 
 func GetVolumeAttachment(name string, contextId *string) (*storage.VolumeAttachment, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.StorageV1().VolumeAttachments().Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func UpdateK8sVolumeAttachment(data storage.VolumeAttachment, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.StorageV1().VolumeAttachments()
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -41,9 +50,12 @@ func UpdateK8sVolumeAttachment(data storage.VolumeAttachment, contextId *string)
 }
 
 func DeleteK8sVolumeAttachment(data storage.VolumeAttachment, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.StorageV1().VolumeAttachments()
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -51,8 +63,11 @@ func DeleteK8sVolumeAttachment(data storage.VolumeAttachment, contextId *string)
 }
 
 func DeleteK8sVolumeAttachmentBy(name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.StorageV1().VolumeAttachments()
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -69,8 +84,11 @@ func DescribeK8sVolumeAttachment(name string, contextId *string) utils.K8sWorklo
 }
 
 func CreateK8sVolumeAttachment(data storage.VolumeAttachment, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.StorageV1().VolumeAttachments()
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.StorageV1().VolumeAttachments()
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

@@ -45,7 +45,7 @@ func ExecTest() error {
 // This method is the equivalent of:
 // kubectl exec -n benegeilomat-dev-8umm0v --container nginx nginx-6b64bff7c9-p6vpp -- ls
 // func ExecTest() error {
-// 	provider := NewKubeProvider()
+// 	provider,err := NewKubeProvider()
 
 // 	namespace := "benegeilomat-dev-8umm0v"
 // 	podName := "nginx-6b64bff7c9-p6vpp"

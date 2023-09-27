@@ -2,6 +2,10 @@ package utils
 
 import (
 	"bufio"
+	"bytes"
+	"crypto/sha256"
+	"encoding/gob"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,6 +15,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/mogenius/punq/version"
@@ -182,6 +187,46 @@ func ConfirmTask(s string, tries int) bool {
 	}
 
 	return false
+}
+
+func HashString(data string) string {
+	var buf bytes.Buffer
+
+	// Serialize the object
+	enc := gob.NewEncoder(&buf)
+	if err := enc.Encode(data); err != nil {
+		fmt.Println(err)
+	}
+
+	// Compute the SHA-256 hash
+	hash := sha256.Sum256(buf.Bytes())
+
+	// Convert the hash to a hexadecimal string
+	return hex.EncodeToString(hash[:])
+}
+
+func SelectIndexInteractive(question string, noOfElements int) int {
+	for {
+		// Prompt the user for an index
+		fmt.Printf("\nSelect a number between (1-%d) (or type 'exit' or 'all'): ", noOfElements)
+		var input string
+		fmt.Scanln(&input)
+
+		if input == "exit" {
+			return -1
+		}
+		if input == "all" {
+			return -2
+		}
+
+		// Try to convert the user input into an integer index
+		index, err := strconv.Atoi(input)
+		if err != nil || index <= 0 || index > noOfElements {
+			fmt.Println("Invalid index. Please try again.")
+			continue
+		}
+		return index
+	}
 }
 
 func FillWith(s string, targetLength int, chars string) string {

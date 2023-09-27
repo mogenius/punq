@@ -16,7 +16,10 @@ import (
 func AllServiceAccounts(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.ServiceAccount{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	rolesList, err := provider.ClientSet.CoreV1().ServiceAccounts(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllServiceAccounts ERROR: %s", err.Error())
@@ -32,13 +35,19 @@ func AllServiceAccounts(namespaceName string, contextId *string) utils.K8sWorklo
 }
 
 func GetServiceAccount(namespaceName string, name string, contextId *string) (*v1.ServiceAccount, error) {
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
 	return provider.ClientSet.CoreV1().ServiceAccounts(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 func UpdateK8sServiceAccount(data v1.ServiceAccount, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -47,9 +56,12 @@ func UpdateK8sServiceAccount(data v1.ServiceAccount, contextId *string) utils.K8
 }
 
 func DeleteK8sServiceAccount(data v1.ServiceAccount, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -57,8 +69,11 @@ func DeleteK8sServiceAccount(data v1.ServiceAccount, contextId *string) utils.K8
 }
 
 func DeleteK8sServiceAccountBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.CoreV1().ServiceAccounts(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -75,8 +90,11 @@ func DescribeK8sServiceAccount(namespace string, name string, contextId *string)
 }
 
 func CreateK8sServiceAccount(data v1.ServiceAccount, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().ServiceAccounts(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

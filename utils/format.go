@@ -11,7 +11,7 @@ import (
 )
 
 func NanoId() string {
-	id, err := nanoid.Standard(21)
+	id, err := nanoid.Custom("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 21)
 	if err != nil {
 		logger.Log.Error(err)
 	}
@@ -19,7 +19,7 @@ func NanoId() string {
 }
 
 func NanoIdExtraLong() string {
-	id, err := nanoid.Standard(40)
+	id, err := nanoid.Custom("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 21)
 	if err != nil {
 		logger.Log.Error(err)
 	}

@@ -2,8 +2,11 @@ package kubernetes
 
 import (
 	"context"
+	"encoding/json"
 	"os/exec"
+	"sort"
 
+	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
 
@@ -14,7 +17,10 @@ import (
 func AllSecrets(namespaceName string, contextId *string) []v1.Secret {
 	result := []v1.Secret{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
 	secretList, err := provider.ClientSet.CoreV1().Secrets(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllSecrets ERROR: %s", err.Error())
@@ -30,8 +36,11 @@ func AllSecrets(namespaceName string, contextId *string) []v1.Secret {
 }
 
 func SecretFor(namespace string, name string, contextId *string) *v1.Secret {
-	kubeProvider := NewKubeProvider(contextId)
-	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil
+	}
+	secretClient := provider.ClientSet.CoreV1().Secrets(namespace)
 	secret, err := secretClient.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		logger.Log.Errorf("SecretFor ERROR: %s", err.Error())
@@ -40,15 +49,45 @@ func SecretFor(namespace string, name string, contextId *string) *v1.Secret {
 	return secret
 }
 func GetSecret(namespace string, name string, contextId *string) (*v1.Secret, error) {
-	kubeProvider := NewKubeProvider(contextId)
-	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
+	secretClient := provider.ClientSet.CoreV1().Secrets(namespace)
 	return secretClient.Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func ListAllContexts() []dtos.PunqContext {
+	contexts := []dtos.PunqContext{}
+
+	secret := SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET, nil)
+	if secret == nil {
+		logger.Log.Errorf("Failed to get '%s/%s' secret.", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
+		return contexts
+	}
+
+	for ctxId, contextRaw := range secret.Data {
+		ctx := dtos.PunqContext{}
+		err := json.Unmarshal(contextRaw, &ctx)
+		if err != nil {
+			logger.Log.Error("Failed to Unmarshal context '%s'.", ctxId)
+		}
+		contexts = append(contexts, ctx)
+	}
+
+	sort.Slice(contexts, func(i, j int) bool {
+		return contexts[i].Name < contexts[j].Name
+	})
+	return contexts
 }
 
 func AllK8sSecrets(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.Secret{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
 	secretList, err := provider.ClientSet.CoreV1().Secrets(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllSecrets ERROR: %s", err.Error())
@@ -64,8 +103,11 @@ func AllK8sSecrets(namespaceName string, contextId *string) utils.K8sWorkloadRes
 }
 
 func UpdateK8sSecret(data v1.Secret, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	secretClient := provider.ClientSet.CoreV1().Secrets(data.Namespace)
 	res, err := secretClient.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -74,9 +116,12 @@ func UpdateK8sSecret(data v1.Secret, contextId *string) utils.K8sWorkloadResult 
 }
 
 func DeleteK8sSecret(data v1.Secret, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(data.Namespace)
-	err := secretClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	secretClient := provider.ClientSet.CoreV1().Secrets(data.Namespace)
+	err = secretClient.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -84,8 +129,11 @@ func DeleteK8sSecret(data v1.Secret, contextId *string) utils.K8sWorkloadResult 
 }
 
 func DeleteK8sSecretBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	secretClient := kubeProvider.ClientSet.CoreV1().Secrets(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	secretClient := provider.ClientSet.CoreV1().Secrets(namespace)
 	return secretClient.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -102,8 +150,11 @@ func DescribeK8sSecret(namespace string, name string, contextId *string) utils.K
 }
 
 func CreateK8sSecret(data v1.Secret, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().Secrets(data.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().Secrets(data.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

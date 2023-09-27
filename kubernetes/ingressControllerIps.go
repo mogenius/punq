@@ -16,15 +16,15 @@ import (
 
 func GetIngressControllerIps(useLocalKubeConfig bool, contextId *string) []net.IP {
 	var result []net.IP
-	var kubeProvider *KubeProvider = NewKubeProvider(contextId)
-	if kubeProvider == nil {
-		logger.Log.Errorf("Failed to load kubeprovider.")
+	provider, err := NewKubeProvider(contextId)
+	if provider == nil || err != nil {
+		logger.Log.Error(err.Error())
 		return []net.IP{}
 	}
 
-	labelSelector := fmt.Sprintf("app.kubernetes.io/component=controller,app.kubernetes.io/instance=nginx-ingress,app.kubernetes.io/name=ingress-nginx")
+	labelSelector := "app.kubernetes.io/component=controller,app.kubernetes.io/instance=nginx-ingress,app.kubernetes.io/name=ingress-nginx"
 
-	pods, err := kubeProvider.ClientSet.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{LabelSelector: labelSelector})
+	pods, err := provider.ClientSet.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{LabelSelector: labelSelector})
 
 	for _, pod := range pods.Items {
 		ip := net.ParseIP(pod.Status.PodIP)
@@ -43,9 +43,12 @@ func GetIngressControllerIps(useLocalKubeConfig bool, contextId *string) []net.I
 
 func GetClusterExternalIps(contextId *string) []string {
 	var result []string = []string{}
-	kubeProvider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
 	labelSelector := "app.kubernetes.io/component=controller,app.kubernetes.io/name=ingress-nginx"
-	services, err := kubeProvider.ClientSet.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{LabelSelector: labelSelector})
+	services, err := provider.ClientSet.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{LabelSelector: labelSelector})
 
 	for _, service := range services.Items {
 		for _, ingress := range service.Status.LoadBalancer.Ingress {
@@ -62,7 +65,7 @@ func GetClusterExternalIps(contextId *string) []string {
 	// check if traefik is used
 	if len(result) <= 0 {
 		traefikSelector := "app.kubernetes.io/name=traefik"
-		services, err := kubeProvider.ClientSet.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{LabelSelector: traefikSelector})
+		services, err := provider.ClientSet.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{LabelSelector: traefikSelector})
 
 		for _, service := range services.Items {
 			for _, ingress := range service.Status.LoadBalancer.Ingress {

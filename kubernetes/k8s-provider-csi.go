@@ -4,7 +4,6 @@ import (
 	snapClientset "github.com/kubernetes-csi/external-snapshotter/client/v6/clientset/versioned"
 	"github.com/mogenius/punq/logger"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 type KubeProviderSnapshot struct {
@@ -12,61 +11,54 @@ type KubeProviderSnapshot struct {
 	ClientConfig rest.Config
 }
 
-func NewKubeProviderSnapshot(contextId *string) *KubeProviderSnapshot {
-	var kubeProvider *KubeProviderSnapshot
+func NewKubeProviderSnapshot(contextId *string) (*KubeProviderSnapshot, error) {
+	var provider *KubeProviderSnapshot
 	var err error
 	if RunsInCluster {
-		kubeProvider, err = newKubeProviderCsiInCluster(contextId)
+		provider, err = newKubeProviderCsiInCluster(contextId)
 	} else {
-		if contextId == nil || *contextId == "" {
-			kubeProvider, err = newKubeProviderCsiLocal()
-		} else {
-			kubeProvider, err = newKubeProviderCsiInCluster(contextId)
-		}
+		provider, err = newKubeProviderCsiLocal(contextId)
 	}
 
 	if err != nil {
 		logger.Log.Errorf("ERROR: %s", err.Error())
 	}
-	return kubeProvider
+	return provider, err
 }
 
-func newKubeProviderCsiLocal() (*KubeProviderSnapshot, error) {
-	kubeconfig := getKubeConfig()
-
-	restConfig, errConfig := clientcmd.BuildConfigFromFlags("", kubeconfig)
-	if errConfig != nil {
-		panic(errConfig.Error())
+func newKubeProviderCsiLocal(contextId *string) (*KubeProviderSnapshot, error) {
+	config, err := ContextSwitcher(contextId)
+	if err != nil {
+		return nil, err
 	}
 
-	clientSet, errClientSet := snapClientset.NewForConfig(restConfig)
+	clientSet, errClientSet := snapClientset.NewForConfig(config)
 	if errClientSet != nil {
-		panic(errClientSet.Error())
+		return nil, errClientSet
 	}
 
 	return &KubeProviderSnapshot{
 		ClientSet:    clientSet,
-		ClientConfig: *restConfig,
+		ClientConfig: *config,
 	}, nil
 }
 
 func newKubeProviderCsiInCluster(contextId *string) (*KubeProviderSnapshot, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
-	// CONTEXT SWITCHER
 	if contextId != nil {
-		config, err = ContextConfigLoader(contextId)
-		if err != nil || config == nil {
+		config, err = ContextSwitcher(contextId)
+		if err != nil {
 			return nil, err
 		}
 	}
 
 	clientset, err := snapClientset.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	return &KubeProviderSnapshot{

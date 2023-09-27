@@ -13,17 +13,23 @@ import (
 )
 
 func UpdateServiceWith(service *v1.Service, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	serviceClient := kubeProvider.ClientSet.CoreV1().Services("")
-	_, err := serviceClient.Update(context.TODO(), service, metav1.UpdateOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	serviceClient := provider.ClientSet.CoreV1().Services("")
+	_, err = serviceClient.Update(context.TODO(), service, metav1.UpdateOptions{})
 	if err != nil {
 		return err
 	}
 	return nil
 }
 func ServiceFor(namespace string, serviceName string, contextId *string) *v1.Service {
-	kubeProvider := NewKubeProvider(contextId)
-	serviceClient := kubeProvider.ClientSet.CoreV1().Services(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil
+	}
+	serviceClient := provider.ClientSet.CoreV1().Services(namespace)
 	service, err := serviceClient.Get(context.TODO(), serviceName, metav1.GetOptions{})
 	if err != nil {
 		logger.Log.Errorf("ServiceFor ERROR: %s", err.Error())
@@ -33,15 +39,21 @@ func ServiceFor(namespace string, serviceName string, contextId *string) *v1.Ser
 }
 
 func GetService(namespace string, serviceName string, contextId *string) (*v1.Service, error) {
-	kubeProvider := NewKubeProvider(contextId)
-	serviceClient := kubeProvider.ClientSet.CoreV1().Services(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return nil, err
+	}
+	serviceClient := provider.ClientSet.CoreV1().Services(namespace)
 	return serviceClient.Get(context.TODO(), serviceName, metav1.GetOptions{})
 }
 
 func AllServices(namespaceName string, contextId *string) []v1.Service {
 	result := []v1.Service{}
 
-	provider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
 	serviceList, err := provider.ClientSet.CoreV1().Services(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
 		logger.Log.Errorf("AllServices ERROR: %s", err.Error())
@@ -62,8 +74,11 @@ func AllK8sServices(namespaceName string, contextId *string) utils.K8sWorkloadRe
 }
 
 func UpdateK8sService(data v1.Service, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().Services(data.ObjectMeta.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().Services(data.ObjectMeta.Namespace)
 	res, err := client.Update(context.TODO(), &data, metav1.UpdateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -72,9 +87,12 @@ func UpdateK8sService(data v1.Service, contextId *string) utils.K8sWorkloadResul
 }
 
 func DeleteK8sService(data v1.Service, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().Services(data.ObjectMeta.Namespace)
-	err := client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().Services(data.ObjectMeta.Namespace)
+	err = client.Delete(context.TODO(), data.Name, metav1.DeleteOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
@@ -82,8 +100,11 @@ func DeleteK8sService(data v1.Service, contextId *string) utils.K8sWorkloadResul
 }
 
 func DeleteK8sServiceBy(namespace string, name string, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().Services(namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
+	client := provider.ClientSet.CoreV1().Services(namespace)
 	return client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
@@ -100,8 +121,11 @@ func DescribeK8sService(namespace string, name string, contextId *string) utils.
 }
 
 func CreateK8sService(data v1.Service, contextId *string) utils.K8sWorkloadResult {
-	kubeProvider := NewKubeProvider(contextId)
-	client := kubeProvider.ClientSet.CoreV1().Services(data.ObjectMeta.Namespace)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	client := provider.ClientSet.CoreV1().Services(data.ObjectMeta.Namespace)
 	res, err := client.Create(context.TODO(), &data, metav1.CreateOptions{})
 	if err != nil {
 		return WorkloadResult(nil, err)

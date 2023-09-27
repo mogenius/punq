@@ -90,12 +90,15 @@ func StartPortForward(localPort int, podPort int, readyChannel chan struct{}, st
 }
 
 func portForwardAPod(req PortForwardAPodRequest, contextId *string) error {
-	kubeProvider := NewKubeProvider(contextId)
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return err
+	}
 
 	path := fmt.Sprintf("/api/v1/namespaces/%s/pods/%s/portforward", req.Pod.Namespace, req.Pod.Name)
-	hostIP := strings.TrimLeft(kubeProvider.ClientConfig.Host, "htps:/")
+	hostIP := strings.TrimLeft(provider.ClientConfig.Host, "htps:/")
 
-	transport, upgrader, err := spdy.RoundTripperFor(&kubeProvider.ClientConfig)
+	transport, upgrader, err := spdy.RoundTripperFor(&provider.ClientConfig)
 	if err != nil {
 		logger.Log.Error(err)
 		return err
