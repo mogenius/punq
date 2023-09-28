@@ -72,7 +72,7 @@ func getContext(c *gin.Context) {
 // @Produce json
 // @Success 200 {object} dtos.PunqContext
 // @Router /backend/context [delete]
-// @Param string header string true "X-Context-Id"
+// @Param X-Context-Id header string true "X-Context-Id"
 // @Security Bearer
 func deleteContext(c *gin.Context) {
 	ctxId := services.GetGinContextId(c)
