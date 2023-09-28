@@ -22,8 +22,7 @@ var listContextCmd = &cobra.Command{
 	Short: "List punq contexts.",
 	Long:  `The list command lets you list all contexts managed by punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		contexts := services.ListContexts()
-		dtos.ListContextsToTerminal(contexts)
+		dtos.ListContextsToTerminal(services.ListContexts())
 	},
 }
 

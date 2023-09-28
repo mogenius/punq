@@ -136,7 +136,7 @@ func AddContext(ctx dtos.PunqContext) (interface{}, error) {
 	}
 
 	// Update LocalContextArray
-	ListContexts()
+	kubernetes.ContextUpdateLocalCache(ListContexts())
 
 	return nil, errors.New(fmt.Sprintf("%v", workloadResult.Error))
 }
@@ -163,7 +163,7 @@ func UpdateContext(ctx dtos.PunqContext) (interface{}, error) {
 	}
 
 	// Update LocalContextArray
-	ListContexts()
+	kubernetes.ContextUpdateLocalCache(ListContexts())
 
 	return nil, errors.New(fmt.Sprintf("%v", workloadResult.Error))
 }
@@ -192,8 +192,7 @@ func DeleteContext(id string) (interface{}, error) {
 		// success
 		workloadResult.Result = fmt.Sprintf("Context %s successfuly deleted.", id)
 
-		// Update LocalContextArray
-		ListContexts()
+		kubernetes.ContextUpdateLocalCache(ListContexts())
 
 		return workloadResult.Result, nil
 	}
@@ -253,14 +252,14 @@ func GetGinContextId(c *gin.Context) *string {
 	return nil
 }
 
-func GetGinContextContexts(c *gin.Context) *[]dtos.PunqContext {
-	if contextArray, exists := c.Get("contexts"); exists {
-		contexts, ok := contextArray.([]dtos.PunqContext)
-		if !ok {
-			utils.MalformedMessage(c, "Type Assertion failed. Expected Array of PunqContext but received something different.")
-			return nil
-		}
-		return &contexts
-	}
-	return nil
-}
+// func GetGinContextContexts(c *gin.Context) *[]dtos.PunqContext {
+// 	if contextArray, exists := c.Get("contexts"); exists {
+// 		contexts, ok := contextArray.([]dtos.PunqContext)
+// 		if !ok {
+// 			utils.MalformedMessage(c, "Type Assertion failed. Expected Array of PunqContext but received something different.")
+// 			return nil
+// 		}
+// 		return &contexts
+// 	}
+// 	return nil
+// }
