@@ -288,7 +288,7 @@ func DeleteK8sPodBy(namespace string, name string, contextId *string) error {
 }
 
 func DescribeK8sPod(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), ContextFlag(contextId), "describe", "pod", name, "-n", namespace)
+	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "pod", name, "-n", namespace)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

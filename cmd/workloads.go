@@ -59,7 +59,8 @@ var podsDescrineCmd = &cobra.Command{
 		if contextId == "" {
 			FatalError("contextId cannot be empty.")
 		}
-		kubernetes.DescribeK8sPod(namespace, resource, &contextId)
+		wl := kubernetes.DescribeK8sPod(namespace, resource, &contextId)
+		fmt.Println(wl.Result)
 	},
 }
 

@@ -106,7 +106,7 @@ func PrintAllContextFromConfig(config *api.Config) {
 	t.Render()
 }
 
-func AddContext(ctx dtos.PunqContext) (interface{}, error) {
+func AddContext(ctx dtos.PunqContext) (*dtos.PunqContext, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET, nil)
 	if secret == nil {
 		msg := fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
@@ -132,13 +132,13 @@ func AddContext(ctx dtos.PunqContext) (interface{}, error) {
 
 	workloadResult := kubernetes.UpdateK8sSecret(*secret, nil)
 	if workloadResult.Result != nil {
-		return workloadResult.Result, nil
+		return workloadResult.Result.(*dtos.PunqContext), nil
 	}
 
 	// Update LocalContextArray
 	kubernetes.ContextUpdateLocalCache(ListContexts())
 
-	return nil, errors.New(fmt.Sprintf("%v", workloadResult.Error))
+	return &ctx, nil
 }
 
 func UpdateContext(ctx dtos.PunqContext) (interface{}, error) {

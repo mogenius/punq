@@ -142,14 +142,6 @@ func validateConfig(c *gin.Context) {
 // @Param body body dtos.PunqContext false "PunqContext"
 // @Security Bearer
 func addContext(c *gin.Context) {
-	// contexts := services.GetGinContextContexts(c)
-	// if contexts == nil {
-	// 	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-	// 		"message": "Invalid data received. Expected array of PunqContexts in contexts.",
-	// 	})
-	// 	return
-	// }
-
 	receivedContexts := []dtos.PunqContext{}
 	if err := c.BindJSON(&receivedContexts); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -158,10 +150,14 @@ func addContext(c *gin.Context) {
 
 	addedContexts := []dtos.PunqContext{}
 	for _, ctx := range receivedContexts {
-		_, err := services.AddContext(ctx)
-		if err == nil {
-			fmt.Printf("Context '%s' added ✅.\n", ctx.Name)
-			addedContexts = append(addedContexts, ctx)
+		addedCtx, err := services.AddContext(ctx)
+		if err != nil {
+			fmt.Println(err.Error())
+			c.JSON(http.StatusInternalServerError, err)
+		}
+		fmt.Printf("Context '%s' added ✅.\n", addedCtx.Name)
+		if addedCtx != nil {
+			addedContexts = append(addedContexts, *addedCtx)
 		}
 	}
 

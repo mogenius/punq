@@ -1,7 +1,9 @@
 package kubernetes
 
 import (
+	"errors"
 	"fmt"
+	"os"
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
@@ -24,7 +26,7 @@ func ContextAddOne(ctx dtos.PunqContext) {
 		return
 	}
 	allContexts = append(allContexts, ctx)
-	// contextWrite(ctx.Id)
+	contextWrite(ctx.Id)
 }
 
 func ContextAddMany(ctxs []dtos.PunqContext) {
@@ -37,9 +39,9 @@ func ContextUpdateLocalCache(ctxs []dtos.PunqContext) {
 	if len(ctxs) > 0 {
 		allContexts = ctxs
 	}
-	// for _, ctx := range ctxs {
-	// 	// contextWrite(ctx.Id)
-	// }
+	for _, ctx := range ctxs {
+		contextWrite(ctx.Id)
+	}
 }
 
 func ContextList() []dtos.PunqContext {
@@ -50,20 +52,24 @@ func ContextFlag(id *string) string {
 	if id == nil {
 		return ""
 	}
+	err := contextWrite(*id)
+	if err != nil {
+		fmt.Printf("Err ContextWrite: %s\n", err.Error())
+	}
 	return fmt.Sprintf("--kubeconfig=%s.yaml", *id)
 }
 
-// func contextWrite(id string) error {
-// 	ctx := ContextForId(id)
-// 	if ctx == nil {
-// 		return errors.New("context not found")
-// 	}
+func contextWrite(id string) error {
+	ctx := ContextForId(id)
+	if ctx == nil {
+		return errors.New("context not found")
+	}
 
-// 	// write ctx.context into file
-// 	err := os.WriteFile(fmt.Sprintf("%s.yaml", ctx.Id), []byte(ctx.Context), 0644)
-// 	if err != nil {
-// 		_ = os.Remove(ctx.Id)
-// 		return err
-// 	}
-// 	return nil
-// }
+	// write ctx.context into file
+	err := os.WriteFile(fmt.Sprintf("%s.yaml", ctx.Id), []byte(ctx.Context), 0644)
+	if err != nil {
+		_ = os.Remove(ctx.Id)
+		return err
+	}
+	return nil
+}
