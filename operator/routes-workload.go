@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mogenius/punq/logger"
-
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/utils"
 
@@ -572,10 +570,7 @@ func logsPod(c *gin.Context) {
 
 	go func() {
 		<-closeChannel
-		logger.Log.Debug("Client closed the connection!")
 	}()
-
-	logger.Log.Debug("Client opening the connection!")
 
 	buf := make([]byte, 1024)
 	c.Stream(func(w io.Writer) bool {

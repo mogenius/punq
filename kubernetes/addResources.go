@@ -25,6 +25,8 @@ import (
 )
 
 func Deploy(clusterName string, ingressHostname string) {
+	_ = utils.GetDefaultKubeConfig()
+
 	provider, err := NewKubeProvider(nil)
 	if provider == nil || err != nil {
 		logger.Log.Fatal("Failed to load provider.")
@@ -291,43 +293,39 @@ func CreateContextSecretIfNotExist(provider *KubeProvider) (*dtos.PunqContext, e
 }
 
 func writeContextSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (*dtos.PunqContext, error) {
-	kubeconfigEnvVar := os.Getenv("KUBECONFIG")
-	if kubeconfigEnvVar != "" {
-		kubeconfigData, err := os.ReadFile(kubeconfigEnvVar)
+	kubeconfigEnvVar := utils.GetDefaultKubeConfig()
+
+	kubeconfigData, err := os.ReadFile(kubeconfigEnvVar)
+	if err != nil {
+		logger.Log.Fatalf("error reading kubeconfig: %s", err.Error())
+	}
+
+	ownContext := dtos.PunqContext{
+		Id:      utils.CONTEXTOWN,
+		Name:    utils.CONTEXTOWN,
+		Context: string(kubeconfigData),
+	}
+
+	rawAdmin, err := json.Marshal(ownContext)
+	if err != nil {
+		logger.Log.Errorf("Error marshaling %s", err)
+	}
+
+	secret := utils.InitSecret()
+	secret.ObjectMeta.Name = utils.CONTEXTSSECRET
+	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
+	delete(secret.StringData, "exampleData") // delete example data
+	secret.StringData[utils.CONTEXTOWN] = string(rawAdmin)
+
+	if existingSecret == nil || getErr != nil {
+		fmt.Println("Creating new punq-context secret ...")
+		_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
 		if err != nil {
-			logger.Log.Fatalf("error reading kubeconfig: %s", err.Error())
+			logger.Log.Error(err)
+			return nil, err
 		}
-
-		ownContext := dtos.PunqContext{
-			Id:      utils.CONTEXTOWN,
-			Name:    utils.CONTEXTOWN,
-			Context: string(kubeconfigData),
-		}
-
-		rawAdmin, err := json.Marshal(ownContext)
-		if err != nil {
-			logger.Log.Errorf("Error marshaling %s", err)
-		}
-
-		secret := utils.InitSecret()
-		secret.ObjectMeta.Name = utils.CONTEXTSSECRET
-		secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
-		delete(secret.StringData, "exampleData") // delete example data
-		secret.StringData[utils.CONTEXTOWN] = string(rawAdmin)
-
-		if existingSecret == nil || getErr != nil {
-			fmt.Println("Creating new punq-context secret ...")
-			_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
-			if err != nil {
-				logger.Log.Error(err)
-				return nil, err
-			}
-			fmt.Println("Created new punq-context secret. ✅")
-			return &ownContext, nil
-		}
-		return nil, nil
-	} else {
-		logger.Log.Fatal("$KUBECONFIG is empty. Cannot locate your context. Please use the -c flag to define the location of your kube-config.")
+		fmt.Println("Created new punq-context secret. ✅")
+		return &ownContext, nil
 	}
 	return nil, nil
 }
