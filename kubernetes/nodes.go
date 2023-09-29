@@ -37,7 +37,7 @@ func GetNodeStats(contextId *string) []dtos.NodeStat {
 			Architecture:     node.Status.NodeInfo.Architecture,
 		}
 		result = append(result, nodeStat)
-		nodeStat.PrintPretty()
+		//nodeStat.PrintPretty()
 	}
 	return result
 }

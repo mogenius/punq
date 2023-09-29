@@ -19,7 +19,7 @@ var listUserCmd = &cobra.Command{
 	Long:  `The list command lets you list all users of punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		users := services.ListUsers()
-		dtos.ListUsers(users, showPasswords)
+		dtos.ListUsers(users)
 	},
 }
 
@@ -122,7 +122,6 @@ var getUserCmd = &cobra.Command{
 
 func init() {
 	userCmd.AddCommand(listUserCmd)
-	listUserCmd.Flags().BoolVarP(&showPasswords, "show-passwords", "", false, "Display current passwords")
 
 	userCmd.AddCommand(updateUserCmd)
 	updateUserCmd.Flags().StringVarP(&userId, "userid", "u", "", "UserId of the user")
