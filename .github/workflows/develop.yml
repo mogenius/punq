@@ -8,7 +8,7 @@ on:
     types: [build-from-punq-frontend]
 
 env:
-  IMAGE_NAME: ghcr.io/mogenius/punq
+  IMAGE_NAME: ghcr.io/mogenius/punq-dev
   DOCKERFILE: Dockerfile-Operator
   VERSION:
   HOME: /root

@@ -34,7 +34,7 @@ func Deploy(clusterName string, ingressHostname string) {
 
 	applyNamespace(provider)
 	addRbac(provider)
-	addDeployment(provider, ingressHostname)
+	addDeployment(provider)
 
 	_, err = CreateClusterSecretIfNotExist(provider)
 	if err != nil {
@@ -330,7 +330,7 @@ func writeContextSecret(secretClient v1.SecretInterface, existingSecret *core.Se
 	return nil, nil
 }
 
-func addDeployment(provider *KubeProvider, ingressHostname string) {
+func addDeployment(provider *KubeProvider) {
 	deploymentClient := provider.ClientSet.AppsV1().Deployments(utils.CONFIG.Kubernetes.OwnNamespace)
 
 	deploymentContainer := applyconfcore.Container()
@@ -341,10 +341,6 @@ func addDeployment(provider *KubeProvider, ingressHostname string) {
 	deploymentContainer.WithPorts(applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Backend.Port)).WithContainerPort(int32(utils.CONFIG.Frontend.Port)))
 
 	envVars := []applyconfcore.EnvVarApplyConfiguration{}
-	envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
-		Name:  utils.Pointer("ingress_host"),
-		Value: utils.Pointer(ingressHostname),
-	})
 	envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
 		Name:  utils.Pointer("stage"),
 		Value: utils.Pointer("operator"),
