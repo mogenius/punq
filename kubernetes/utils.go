@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"reflect"
 	"time"
 
@@ -24,7 +23,6 @@ import (
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
 )
 
 var RunsInCluster bool = false
@@ -222,7 +220,7 @@ func NewWorkload(name string, yaml string, description string) K8sNewWorkload {
 }
 
 func CurrentContextName() string {
-	var kubeconfig string = getDefaultKubeConfig()
+	var kubeconfig string = utils.GetDefaultKubeConfig()
 
 	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
@@ -382,16 +380,6 @@ func podStats(pods map[string]v1.Pod, contextId *string) ([]structs.Stats, error
 	}
 
 	return result, nil
-}
-
-func getDefaultKubeConfig() string {
-	var kubeconfig string = os.Getenv("KUBECONFIG")
-	if kubeconfig == "" {
-		if home := homedir.HomeDir(); home != "" {
-			kubeconfig = filepath.Join(home, ".kube", "config")
-		}
-	}
-	return kubeconfig
 }
 
 // TAKEN FROM Kubernetes apimachineryv0.25.1

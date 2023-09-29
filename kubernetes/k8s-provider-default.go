@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mogenius/punq/logger"
+	"github.com/mogenius/punq/utils"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -89,12 +90,10 @@ func ContextConfigLoader(contextId *string) (*rest.Config, error) {
 }
 
 func ContextSwitcher(contextId *string) (*rest.Config, error) {
-	var kubeconfig string = getDefaultKubeConfig()
-
-	// CONTEXT SWITCHER
 	if contextId != nil && *contextId != "" {
 		return ContextConfigLoader(contextId)
 	} else {
+		var kubeconfig string = utils.GetDefaultKubeConfig()
 		return clientcmd.BuildConfigFromFlags("", kubeconfig)
 	}
 }

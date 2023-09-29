@@ -8,6 +8,7 @@ import (
 
 	"github.com/charmbracelet/glamour"
 	"golang.org/x/term"
+	"k8s.io/client-go/util/homedir"
 
 	"github.com/mogenius/punq/version"
 
@@ -227,4 +228,18 @@ func WriteDefaultConfig(stage string) {
 		logger.Log.Error("Error writing " + configPath + " file")
 		logger.Log.Fatal(err.Error())
 	}
+}
+
+func GetDefaultKubeConfig() string {
+	var kubeconfig string = os.Getenv("KUBECONFIG")
+	if kubeconfig == "" {
+		if home := homedir.HomeDir(); home != "" {
+			kubeconfig = filepath.Join(home, ".kube", "config")
+		}
+	}
+	// check if file exists in kubeconfig
+	if _, err := os.Stat(kubeconfig); os.IsNotExist(err) {
+		logger.Log.Fatalf("$KUBECONFIG is empty and default context cannot be loaded. Please set $KUBECONFIG or use --context flag to proceed.")
+	}
+	return kubeconfig
 }
