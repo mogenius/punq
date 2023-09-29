@@ -136,7 +136,7 @@ func AddContext(ctx dtos.PunqContext) (*dtos.PunqContext, error) {
 	}
 
 	// Update LocalContextArray
-	kubernetes.ContextAddMany(ListContexts())
+	kubernetes.ContextAddOne(ctx)
 
 	return &ctx, nil
 }

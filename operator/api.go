@@ -119,6 +119,5 @@ func getAllFilenames(fs *embed.FS, dir string) (out []string, err error) {
 
 		out = append(out, fp)
 	}
-
 	return
 }

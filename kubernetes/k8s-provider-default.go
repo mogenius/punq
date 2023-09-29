@@ -90,12 +90,10 @@ func ContextConfigLoader(contextId *string) (*rest.Config, error) {
 }
 
 func ContextSwitcher(contextId *string) (*rest.Config, error) {
-	var kubeconfig string = utils.GetDefaultKubeConfig()
-
-	// CONTEXT SWITCHER
 	if contextId != nil && *contextId != "" {
 		return ContextConfigLoader(contextId)
 	} else {
+		var kubeconfig string = utils.GetDefaultKubeConfig()
 		return clientcmd.BuildConfigFromFlags("", kubeconfig)
 	}
 }
