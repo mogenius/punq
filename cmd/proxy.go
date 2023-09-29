@@ -43,7 +43,6 @@ var proxyCmd = &cobra.Command{
 		select {
 		case <-readyBackendCh:
 			fmt.Printf("Backend %s is ready! 🚀🚀🚀\n", backendUrl)
-			utils.OpenBrowser(backendUrl)
 			break
 		case <-stopBackendCh:
 			break
