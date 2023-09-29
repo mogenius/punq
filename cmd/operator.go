@@ -25,7 +25,7 @@ var operatorCmd = &cobra.Command{
 
 		contexts := services.ListContexts()
 		PrintInfo(fmt.Sprintf("Initialized operator with %d contexts.", len(contexts)))
-		kubernetes.ContextUpdateLocalCache(contexts)
+		kubernetes.ContextAddMany(contexts)
 
 		go operator.InitBackend()
 		operator.InitFrontend()

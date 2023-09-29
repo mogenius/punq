@@ -23,7 +23,7 @@ var clusterCmd = &cobra.Command{
 		}
 
 		// init contexts
-		kubernetes.ContextUpdateLocalCache(services.ListContexts())
+		kubernetes.ContextAddMany(services.ListContexts())
 
 		fmt.Println("Cluster information for context: " + contextId)
 		structs.PrettyPrint(kubernetes.ContextForId(contextId))
@@ -36,7 +36,7 @@ var clusterInfoCmd = &cobra.Command{
 	Long:  `Print information and exit.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// init contexts
-		kubernetes.ContextUpdateLocalCache(services.ListContexts())
+		kubernetes.ContextAddMany(services.ListContexts())
 
 		fmt.Println("Cluster information for context: " + contextId)
 		structs.PrettyPrint(kubernetes.ClusterInfo(&contextId))

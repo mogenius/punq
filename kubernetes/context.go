@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/mogenius/punq/dtos"
-	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
 )
 
@@ -23,7 +22,6 @@ func ContextForId(id string) *dtos.PunqContext {
 
 func ContextAddOne(ctx dtos.PunqContext) {
 	if ContextForId(ctx.Id) != nil {
-		logger.Log.Error("context already exists")
 		return
 	}
 	allContexts = append(allContexts, ctx)
@@ -36,15 +34,6 @@ func ContextAddMany(ctxs []dtos.PunqContext) {
 	}
 }
 
-func ContextUpdateLocalCache(ctxs []dtos.PunqContext) {
-	if len(ctxs) > 0 {
-		allContexts = ctxs
-	}
-	for _, ctx := range ctxs {
-		contextWrite(ctx.Id)
-	}
-}
-
 func ContextList() []dtos.PunqContext {
 	return allContexts
 }
@@ -52,10 +41,6 @@ func ContextList() []dtos.PunqContext {
 func ContextFlag(id *string) string {
 	if id == nil {
 		return ""
-	}
-	err := contextWrite(*id)
-	if err != nil {
-		fmt.Printf("Err ContextWrite: %s\n", err.Error())
 	}
 	return fmt.Sprintf("--kubeconfig=%s.yaml", *id)
 }

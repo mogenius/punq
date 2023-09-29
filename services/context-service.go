@@ -136,7 +136,7 @@ func AddContext(ctx dtos.PunqContext) (*dtos.PunqContext, error) {
 	}
 
 	// Update LocalContextArray
-	kubernetes.ContextUpdateLocalCache(ListContexts())
+	kubernetes.ContextAddMany(ListContexts())
 
 	return &ctx, nil
 }
@@ -163,7 +163,7 @@ func UpdateContext(ctx dtos.PunqContext) (interface{}, error) {
 	}
 
 	// Update LocalContextArray
-	kubernetes.ContextUpdateLocalCache(ListContexts())
+	kubernetes.ContextAddMany(ListContexts())
 
 	return nil, errors.New(fmt.Sprintf("%v", workloadResult.Error))
 }
@@ -176,8 +176,7 @@ func DeleteContext(id string) (interface{}, error) {
 	}
 
 	if id == utils.CONTEXTOWN {
-		msg := fmt.Sprintf("own context cannot be deleted")
-		return nil, errors.New(msg)
+		return nil, errors.New("own-context cannot be deleted")
 	}
 
 	if secret.Data[id] != nil {
@@ -192,7 +191,8 @@ func DeleteContext(id string) (interface{}, error) {
 		// success
 		workloadResult.Result = fmt.Sprintf("Context %s successfuly deleted.", id)
 
-		kubernetes.ContextUpdateLocalCache(ListContexts())
+		// Update LocalContextArray
+		kubernetes.ContextAddMany(ListContexts())
 
 		return workloadResult.Result, nil
 	}

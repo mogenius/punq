@@ -41,7 +41,7 @@ var rootCmd = &cobra.Command{
 
 		if contextId != "" {
 			ctxs := mokubernetes.ListAllContexts()
-			mokubernetes.ContextUpdateLocalCache(ctxs)
+			mokubernetes.ContextAddMany(ctxs)
 		}
 	},
 }
