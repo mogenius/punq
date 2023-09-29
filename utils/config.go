@@ -39,7 +39,6 @@ type Config struct {
 		Port int    `yaml:"port" env:"backend_port" env-description:"Port of the backend server."`
 	} `yaml:"backend"`
 	Kubernetes struct {
-		IngresHost   string `yaml:"ingress_host" env:"ingress_host" env-description:"The Name of the host for the ingress" env-default:"localhost"`
 		ClusterName  string `yaml:"cluster_name" env:"cluster_name" env-description:"The Name of the Kubernetes Cluster"`
 		OwnNamespace string `yaml:"own_namespace" env:"OWN_NAMESPACE" env-description:"The Namespace of mogenius platform"`
 		RunInCluster bool   `yaml:"run_in_cluster" env:"run_in_cluster" env-description:"If set to true, the application will run in the cluster (using the service account token). Otherwise it will try to load your local default context." env-default:"false"`
@@ -123,7 +122,6 @@ func PrintSettings() {
 	fmt.Printf("Port:                     %d\n", CONFIG.Backend.Port)
 
 	fmt.Printf("\nKUBERNETES\n")
-	fmt.Printf("IngressHost:              %s\n", CONFIG.Kubernetes.IngresHost)
 	fmt.Printf("ClusterName:              %s\n", CONFIG.Kubernetes.ClusterName)
 	fmt.Printf("OwnNamespace:             %s\n", CONFIG.Kubernetes.OwnNamespace)
 	fmt.Printf("RunInCluster:             %t\n", CONFIG.Kubernetes.RunInCluster)

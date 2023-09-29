@@ -7,7 +7,6 @@ frontend:
   port: 8081
 
 kubernetes:
-  ingress_host: localhost
   cluster_name: your-cluster-name
   own_namespace: punq
   run_in_cluster: true
