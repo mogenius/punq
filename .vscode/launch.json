@@ -107,7 +107,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "main.go",
-            "args": ["-y", "lalala", "-x", "info"],
+            "args": ["info"],
             "asRoot": false,
             "console": "integratedTerminal"
         }

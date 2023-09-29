@@ -5,6 +5,7 @@ import (
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
+	"github.com/mogenius/punq/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -51,13 +52,13 @@ var podsDescrineCmd = &cobra.Command{
 	Long:  `Similar to kubectl, punq can describe workloads in an orderly fashion.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if namespace == "" {
-			FatalError("-namespace cannot be empty.")
+			utils.FatalError("-namespace cannot be empty.")
 		}
 		if resource == "" {
-			FatalError("-resource cannot be empty.")
+			utils.FatalError("-resource cannot be empty.")
 		}
 		if contextId == "" {
-			FatalError("contextId cannot be empty.")
+			utils.FatalError("contextId cannot be empty.")
 		}
 		wl := kubernetes.DescribeK8sPod(namespace, resource, &contextId)
 		fmt.Println(wl.Result)
@@ -70,13 +71,13 @@ var podDeleteCmd = &cobra.Command{
 	Long:  `Similar to kubectl, punq can delete workloads in an orderly fashion.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if namespace == "" {
-			FatalError("-namespace cannot be empty.")
+			utils.FatalError("-namespace cannot be empty.")
 		}
 		if resource == "" {
-			FatalError("-resource cannot be empty.")
+			utils.FatalError("-resource cannot be empty.")
 		}
 		if contextId == "" {
-			FatalError("contextId cannot be empty.")
+			utils.FatalError("contextId cannot be empty.")
 		}
 
 		pod := kubernetes.GetPod(namespace, resource, &contextId)

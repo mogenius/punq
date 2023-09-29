@@ -73,7 +73,6 @@ func newKubeProviderInCluster(contextId *string) (*KubeProvider, error) {
 }
 
 func ContextConfigLoader(contextId *string) (*rest.Config, error) {
-	// get current context
 	ctx := ContextForId(*contextId)
 	if ctx == nil {
 		return nil, fmt.Errorf("context not found for id: %s", *contextId)

@@ -8,6 +8,7 @@ import (
 
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/structs"
+	"github.com/mogenius/punq/utils"
 	"github.com/spf13/cobra"
 
 	"github.com/mogenius/punq/kubernetes"
@@ -19,7 +20,7 @@ var clusterCmd = &cobra.Command{
 	Long:  `Print information and exit.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if contextId == "" {
-			FatalError("contextId cannot be empty.")
+			utils.FatalError("contextId cannot be empty.")
 		}
 
 		// init contexts

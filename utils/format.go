@@ -4,11 +4,29 @@ import (
 	"fmt"
 	"hash/fnv"
 	"math"
+	"os"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/jaevor/go-nanoid"
 	"github.com/mogenius/punq/logger"
 )
+
+func FatalError(message string) {
+	red := color.New(color.FgRed).SprintFunc()
+	fmt.Printf(red("Error: %s\n"), message)
+	os.Exit(0)
+}
+
+func PrintError(message string) {
+	red := color.New(color.FgRed).SprintFunc()
+	fmt.Println(red(message))
+}
+
+func PrintInfo(message string) {
+	yellow := color.New(color.FgYellow).SprintFunc()
+	fmt.Println(yellow(message))
+}
 
 func NanoId() string {
 	id, err := nanoid.Custom("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 21)

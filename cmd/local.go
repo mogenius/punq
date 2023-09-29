@@ -23,7 +23,7 @@ var localCmd = &cobra.Command{
 		utils.PrintSettings()
 
 		contexts := services.ListContexts()
-		PrintInfo(fmt.Sprintf("Initialized operator with %d contexts.", len(contexts)))
+		utils.PrintInfo(fmt.Sprintf("Initialized operator with %d contexts.", len(contexts)))
 
 		go operator.InitFrontend()
 		utils.OpenBrowser(fmt.Sprintf("http://%s:%d", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port))

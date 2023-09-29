@@ -345,6 +345,10 @@ func addDeployment(provider *KubeProvider, ingressHostname string) {
 		Name:  utils.Pointer("ingress_host"),
 		Value: utils.Pointer(ingressHostname),
 	})
+	envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
+		Name:  utils.Pointer("stage"),
+		Value: utils.Pointer("operator"),
+	})
 	deploymentContainer.Env = envVars
 	// agentResourceLimits := core.ResourceList{
 	// 	"cpu":               resource.MustParse("300m"),

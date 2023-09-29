@@ -1,3 +1,6 @@
+config:
+  version: 1
+
 backend:
   host: 127.0.0.1
   port: 8080
@@ -12,7 +15,7 @@ kubernetes:
   run_in_cluster: true
 
 misc:
-  stage: dev
+  stage: operator
   debug: false
   check_for_updates: 86400
   ignore_namespaces: ["kube-system"]

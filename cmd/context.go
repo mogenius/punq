@@ -32,18 +32,18 @@ var addContextCmd = &cobra.Command{
 	Long:  `The add command lets you add a context into punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if filePath == "" {
-			FatalError("-f cannot be empty. Please select a context yaml to load.")
+			utils.FatalError("-f cannot be empty. Please select a context yaml to load.")
 		}
 
 		// load file
 		dataBytes, err := os.ReadFile(filePath)
 		if err != nil {
-			FatalError(fmt.Sprintf("Error reading file '%s': %s", filePath, err.Error()))
+			utils.FatalError(fmt.Sprintf("Error reading file '%s': %s", filePath, err.Error()))
 		}
 
 		contexts, err := services.ParseConfigToPunqContexts(dataBytes)
 		if err != nil {
-			FatalError(err.Error())
+			utils.FatalError(err.Error())
 		}
 		dtos.ListContextsToTerminal(contexts)
 
@@ -54,7 +54,7 @@ var addContextCmd = &cobra.Command{
 			//selectedContext.PrintToTerminal()
 			_, err := services.AddContext(selectedContext)
 			if err != nil {
-				FatalError(err.Error())
+				utils.FatalError(err.Error())
 			} else {
 				fmt.Printf("Context '%s' added ✅.\n", selectedContext.Name)
 			}
@@ -65,7 +65,7 @@ var addContextCmd = &cobra.Command{
 			for _, ctx := range contexts {
 				_, err := services.AddContext(ctx)
 				if err != nil {
-					PrintError(err.Error())
+					utils.PrintError(err.Error())
 				} else {
 					fmt.Printf("Context '%s' added ✅.\n", ctx.Name)
 				}
@@ -80,20 +80,20 @@ var addContextAccessCmd = &cobra.Command{
 	Long:  `The add-access command lets you add a user + access level to a context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if contextId == "" {
-			FatalError("-context-id cannot be empty.")
+			utils.FatalError("-context-id cannot be empty.")
 		}
 
 		if accessLevel == "" {
-			FatalError("-access-level cannot be empty.")
+			utils.FatalError("-access-level cannot be empty.")
 		}
 
 		if userId == "" {
-			FatalError("-user-id cannot be empty.")
+			utils.FatalError("-user-id cannot be empty.")
 		}
 
 		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
-			FatalError(fmt.Sprintf("context '%s' not found.", contextId))
+			utils.FatalError(fmt.Sprintf("context '%s' not found.", contextId))
 		}
 
 		ctx.AddAccess(userId, dtos.AccessLevelFromString(accessLevel))
@@ -107,16 +107,16 @@ var removeContextAccessCmd = &cobra.Command{
 	Long:  `The remove-access command lets you remove a users access level from a context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if contextId == "" {
-			FatalError("-context-id cannot be empty.")
+			utils.FatalError("-context-id cannot be empty.")
 		}
 
 		if userId == "" {
-			FatalError("-user-id cannot be empty.")
+			utils.FatalError("-user-id cannot be empty.")
 		}
 
 		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
-			FatalError(fmt.Sprintf("context '%s' not found.", contextId))
+			utils.FatalError(fmt.Sprintf("context '%s' not found.", contextId))
 		}
 
 		ctx.RemoveAccess(userId)
@@ -130,12 +130,12 @@ var deleteContextCmd = &cobra.Command{
 	Long:  `The delete command lets you delete a specific context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if contextId == "" {
-			PrintError("-contextid cannot be empty.")
+			utils.PrintError("-contextid cannot be empty.")
 		}
 
 		result, err := services.DeleteContext(contextId)
 		if err != nil {
-			PrintError(err.Error())
+			utils.PrintError(err.Error())
 		}
 		if result != nil {
 			structs.PrettyPrint(result)
@@ -149,7 +149,7 @@ var getContextCmd = &cobra.Command{
 	Long:  `The get command lets you get a specific context from punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if contextId == "" {
-			FatalError("-contextid cannot be empty.")
+			utils.FatalError("-contextid cannot be empty.")
 		}
 
 		ctx, _ := services.GetContext(contextId)

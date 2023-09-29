@@ -17,6 +17,7 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
+const CONFIGVERSION = 1
 const USERSSECRET = "punq-users"
 const JWTSECRET = "punq-jwt"
 const USERADMIN = "admin"
@@ -31,6 +32,9 @@ type ClusterSecret struct {
 }
 
 type Config struct {
+	Config struct {
+		Version int `yaml:"version" env-description:"Version of the configuration yaml."`
+	} `yaml:"config"`
 	Frontend struct {
 		Host string `yaml:"host" env:"frontend_host" env-description:"Host of the frontend server."`
 		Port int    `yaml:"port" env:"frontend_port" env-description:"Port of the frontend server."`
@@ -53,7 +57,7 @@ type Config struct {
 }
 
 var DefaultConfigLocalFile string
-var DefaultConfigFileDev string
+var DefaultConfigFileOperator string
 var DefaultConfigFileProd string
 var ChangeLog string
 var CONFIG Config
@@ -90,6 +94,10 @@ func InitConfigYaml(showDebug bool, customConfigName string, stage string) {
 		PrintSettings()
 	}
 
+	if CONFIGVERSION > CONFIG.Config.Version {
+		FatalError(fmt.Sprintf("Config version is outdated. Please delete your config file 'punq system reset-config' and restart the application. (Your Config version: %d, Needed: %d)", CONFIG.Config.Version, CONFIGVERSION))
+	}
+
 	// if CONFIG.Misc.Debug {
 	// 	logger.Log.Notice("Starting serice for pprof in localhost:6060")
 	// 	go func() {
@@ -114,7 +122,10 @@ func InitConfigYaml(showDebug bool, customConfigName string, stage string) {
 }
 
 func PrintSettings() {
-	fmt.Printf("Frontend\n")
+	fmt.Printf("Config\n")
+	fmt.Printf("Version:                  %d\n", CONFIG.Config.Version)
+
+	fmt.Printf("\nFrontend\n")
 	fmt.Printf("Host:                     %s\n", CONFIG.Frontend.Host)
 	fmt.Printf("Port:                     %d\n", CONFIG.Frontend.Port)
 
@@ -187,9 +198,10 @@ func DeleteCurrentConfig() {
 	_, configPath := GetDirectories("")
 	err := os.Remove(configPath)
 	if err != nil {
-		fmt.Printf("Error removing config file. '%s'.", err.Error())
+		PrintError(fmt.Sprintf("Error removing config file. '%s'.", err.Error()))
 	} else {
-		fmt.Printf("%s succesfuly deleted.", configPath)
+		PrintInfo(fmt.Sprintf("%s succesfuly deleted.", configPath))
+		os.Exit(0)
 	}
 }
 
@@ -214,8 +226,8 @@ func WriteDefaultConfig(stage string) {
 		}
 	}
 
-	if stage == "dev" {
-		err = os.WriteFile(configPath, []byte(DefaultConfigFileDev), 0755)
+	if stage == "operator" {
+		err = os.WriteFile(configPath, []byte(DefaultConfigFileOperator), 0755)
 	} else if stage == "prod" {
 		err = os.WriteFile(configPath, []byte(DefaultConfigFileProd), 0755)
 	} else if stage == "local" {
