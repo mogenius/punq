@@ -7,6 +7,7 @@ import (
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/logger"
+	"github.com/mogenius/punq/utils"
 )
 
 var allContexts []dtos.PunqContext = []dtos.PunqContext{}
@@ -60,6 +61,10 @@ func ContextFlag(id *string) string {
 }
 
 func contextWrite(id string) error {
+	if !utils.CONFIG.Kubernetes.RunInCluster {
+		return nil
+	}
+
 	ctx := ContextForId(id)
 	if ctx == nil {
 		return errors.New("context not found")

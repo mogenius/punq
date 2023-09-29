@@ -132,7 +132,7 @@ func AddContext(ctx dtos.PunqContext) (*dtos.PunqContext, error) {
 
 	workloadResult := kubernetes.UpdateK8sSecret(*secret, nil)
 	if workloadResult.Result != nil {
-		return workloadResult.Result.(*dtos.PunqContext), nil
+		return &ctx, nil
 	}
 
 	// Update LocalContextArray
