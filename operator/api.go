@@ -21,28 +21,34 @@ import (
 var HtmlDirFs embed.FS
 
 func InitFrontend() {
-	//gin.SetMode(gin.ReleaseMode)
-	router := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "authorization"}
 
 	router.Use(cors.New(config))
+	router.Use(CreateLogger("FRONTEND"))
 
 	router.StaticFS("/", embedFs())
+
+	router.NoRoute(func(c *gin.Context) {
+		c.Data(http.StatusOK, "text/html; charset=utf-8", getIndexHtml())
+	})
 
 	err := router.Run(fmt.Sprintf(":%d", utils.CONFIG.Frontend.Port))
 	logger.Log.Errorf("Frontend (gin) stopped with error: %s", err.Error())
 }
 
 func InitBackend() {
-	// gin.SetMode(gin.ReleaseMode)
-	router := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "authorization"}
 
 	router.Use(cors.New(config))
+	router.Use(CreateLogger("BACKEND"))
 
 	docs.SwaggerInfo.BasePath = "/"
 	docs.SwaggerInfo.Title = "punq API documentation"
@@ -77,6 +83,15 @@ func embedFs() http.FileSystem {
 		logger.Log.Noticef("Loaded %d static files from embed.", len(dirContent))
 	}
 	return http.FS(sub)
+}
+
+func getIndexHtml() []byte {
+	data, err := HtmlDirFs.ReadFile("ui/dist/index.html")
+	if err != nil {
+		logger.Log.Fatal("Cannot load index.html from filesystem.")
+		return []byte{}
+	}
+	return data
 }
 
 func getAllFilenames(fs *embed.FS, dir string) (out []string, err error) {
