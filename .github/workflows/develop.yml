@@ -53,7 +53,7 @@ jobs:
       - name: Execute make all
         shell: bash -ieo pipefail {0}
         run: |
-          make all
+          make -f Makefile-dev all
 
       - name: Create release in another repo
         run: |
