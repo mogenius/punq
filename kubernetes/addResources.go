@@ -32,7 +32,7 @@ func Deploy(clusterName string, ingressHostname string) {
 
 	applyNamespace(provider)
 	addRbac(provider)
-	addDeployment(provider)
+	addDeployment(provider, ingressHostname)
 
 	_, err = CreateClusterSecretIfNotExist(provider)
 	if err != nil {
@@ -332,7 +332,7 @@ func writeContextSecret(secretClient v1.SecretInterface, existingSecret *core.Se
 	return nil, nil
 }
 
-func addDeployment(provider *KubeProvider) {
+func addDeployment(provider *KubeProvider, ingressHostname string) {
 	deploymentClient := provider.ClientSet.AppsV1().Deployments(utils.CONFIG.Kubernetes.OwnNamespace)
 
 	deploymentContainer := applyconfcore.Container()
@@ -342,16 +342,12 @@ func addDeployment(provider *KubeProvider) {
 
 	deploymentContainer.WithPorts(applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Backend.Port)).WithContainerPort(int32(utils.CONFIG.Frontend.Port)))
 
-	// envVars := []applyconfcore.EnvVarApplyConfiguration{}
-	// envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
-	// 	Name:  utils.Pointer("cluster_name"),
-	// 	Value: utils.Pointer("TestClusterFromCode"),
-	// })
-	// envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
-	// 	Name:  utils.Pointer("api_key"),
-	// 	Value: utils.Pointer("94E23575-A689-4F88-8D67-215A274F4E6E"), // dont worry. this is a test key
-	// })
-	// deploymentContainer.Env = envVars
+	envVars := []applyconfcore.EnvVarApplyConfiguration{}
+	envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{
+		Name:  utils.Pointer("ingress_host"),
+		Value: utils.Pointer(ingressHostname),
+	})
+	deploymentContainer.Env = envVars
 	// agentResourceLimits := core.ResourceList{
 	// 	"cpu":               resource.MustParse("300m"),
 	// 	"memory":            resource.MustParse("256Mi"),

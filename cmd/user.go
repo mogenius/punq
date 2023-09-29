@@ -122,7 +122,7 @@ var getUserCmd = &cobra.Command{
 
 func init() {
 	userCmd.AddCommand(listUserCmd)
-	listUserCmd.Flags().BoolVarP(&showPasswords, "show-passwords", "s", false, "Display current passwords")
+	listUserCmd.Flags().BoolVarP(&showPasswords, "show-passwords", "", false, "Display current passwords")
 
 	userCmd.AddCommand(updateUserCmd)
 	updateUserCmd.Flags().StringVarP(&userId, "userid", "u", "", "UserId of the user")
