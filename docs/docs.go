@@ -98,6 +98,40 @@ const docTemplate = `{
                     }
                 }
             },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Context"
+                ],
+                "parameters": [
+                    {
+                        "description": "PunqContext",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PunqContext"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dtos.PunqContext"
+                            }
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -114,7 +148,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "X-Context-Id",
-                        "name": "string",
+                        "name": "X-Context-Id",
                         "in": "header",
                         "required": true
                     }
@@ -182,6 +216,32 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dtos.ClusterInfoDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/backend/context/validate-config": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Context"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dtos.PunqContext"
+                            }
                         }
                     }
                 }
@@ -6954,17 +7014,17 @@ const docTemplate = `{
                 "currentTime": {
                     "type": "string"
                 },
-                "ephemeralStorageLimit": {
-                    "type": "string"
+                "ephemeralStorageLimitInBytes": {
+                    "type": "integer"
                 },
                 "kubernetesVersion": {
                     "type": "string"
                 },
-                "memory": {
-                    "type": "string"
+                "memoryInBytes": {
+                    "type": "integer"
                 },
-                "memoryLimit": {
-                    "type": "string"
+                "memoryLimitInBytes": {
+                    "type": "integer"
                 },
                 "platform": {
                     "type": "string"
@@ -7043,7 +7103,8 @@ const docTemplate = `{
                 "context",
                 "contextHash",
                 "id",
-                "name"
+                "name",
+                "provider"
             ],
             "properties": {
                 "access": {
@@ -7062,6 +7123,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "provider": {
                     "type": "string"
                 }
             }

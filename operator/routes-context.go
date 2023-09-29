@@ -72,7 +72,7 @@ func getContext(c *gin.Context) {
 // @Produce json
 // @Success 200 {object} dtos.PunqContext
 // @Router /backend/context [delete]
-// @Param string header string true "X-Context-Id"
+// @Param X-Context-Id header string true "X-Context-Id"
 // @Security Bearer
 func deleteContext(c *gin.Context) {
 	ctxId := services.GetGinContextId(c)
@@ -100,7 +100,13 @@ func validateConfig(c *gin.Context) {
 	tempFilename := fmt.Sprintf("%s.yaml", utils.NanoId())
 
 	// SAVE temp file
-	file, _ := c.FormFile("file")
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": "Unable to get the file",
+		})
+		return
+	}
 	if err := c.SaveUploadedFile(file, tempFilename); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "Unable to save the file",
@@ -136,20 +142,22 @@ func validateConfig(c *gin.Context) {
 // @Param body body dtos.PunqContext false "PunqContext"
 // @Security Bearer
 func addContext(c *gin.Context) {
-	contexts := services.GetGinContextContexts(c)
-	if contexts == nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"message": "Invalid data received. Expected array of PunqContexts in contexts.",
-		})
+	receivedContexts := []dtos.PunqContext{}
+	if err := c.BindJSON(&receivedContexts); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	addedContexts := []dtos.PunqContext{}
-	for _, ctx := range *contexts {
-		_, err := services.AddContext(ctx)
-		if err == nil {
-			fmt.Printf("Context '%s' added ✅.\n", ctx.Name)
-			addedContexts = append(addedContexts, ctx)
+	for _, ctx := range receivedContexts {
+		addedCtx, err := services.AddContext(ctx)
+		if err != nil {
+			fmt.Println(err.Error())
+			c.JSON(http.StatusInternalServerError, err)
+		}
+		fmt.Printf("Context '%s' added ✅.\n", addedCtx.Name)
+		if addedCtx != nil {
+			addedContexts = append(addedContexts, *addedCtx)
 		}
 	}
 

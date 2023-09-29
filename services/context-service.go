@@ -106,7 +106,7 @@ func PrintAllContextFromConfig(config *api.Config) {
 	t.Render()
 }
 
-func AddContext(ctx dtos.PunqContext) (interface{}, error) {
+func AddContext(ctx dtos.PunqContext) (*dtos.PunqContext, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET, nil)
 	if secret == nil {
 		msg := fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
@@ -132,13 +132,13 @@ func AddContext(ctx dtos.PunqContext) (interface{}, error) {
 
 	workloadResult := kubernetes.UpdateK8sSecret(*secret, nil)
 	if workloadResult.Result != nil {
-		return workloadResult.Result, nil
+		return &ctx, nil
 	}
 
 	// Update LocalContextArray
-	ListContexts()
+	kubernetes.ContextAddMany(ListContexts())
 
-	return nil, errors.New(fmt.Sprintf("%v", workloadResult.Error))
+	return &ctx, nil
 }
 
 func UpdateContext(ctx dtos.PunqContext) (interface{}, error) {
@@ -163,7 +163,7 @@ func UpdateContext(ctx dtos.PunqContext) (interface{}, error) {
 	}
 
 	// Update LocalContextArray
-	ListContexts()
+	kubernetes.ContextAddMany(ListContexts())
 
 	return nil, errors.New(fmt.Sprintf("%v", workloadResult.Error))
 }
@@ -176,8 +176,7 @@ func DeleteContext(id string) (interface{}, error) {
 	}
 
 	if id == utils.CONTEXTOWN {
-		msg := fmt.Sprintf("own context cannot be deleted")
-		return nil, errors.New(msg)
+		return nil, errors.New("own-context cannot be deleted")
 	}
 
 	if secret.Data[id] != nil {
@@ -193,7 +192,7 @@ func DeleteContext(id string) (interface{}, error) {
 		workloadResult.Result = fmt.Sprintf("Context %s successfuly deleted.", id)
 
 		// Update LocalContextArray
-		ListContexts()
+		kubernetes.ContextAddMany(ListContexts())
 
 		return workloadResult.Result, nil
 	}
@@ -253,14 +252,14 @@ func GetGinContextId(c *gin.Context) *string {
 	return nil
 }
 
-func GetGinContextContexts(c *gin.Context) *[]dtos.PunqContext {
-	if contextArray, exists := c.Get("contexts"); exists {
-		contexts, ok := contextArray.([]dtos.PunqContext)
-		if !ok {
-			utils.MalformedMessage(c, "Type Assertion failed. Expected Array of PunqContext but received something different.")
-			return nil
-		}
-		return &contexts
-	}
-	return nil
-}
+// func GetGinContextContexts(c *gin.Context) *[]dtos.PunqContext {
+// 	if contextArray, exists := c.Get("contexts"); exists {
+// 		contexts, ok := contextArray.([]dtos.PunqContext)
+// 		if !ok {
+// 			utils.MalformedMessage(c, "Type Assertion failed. Expected Array of PunqContext but received something different.")
+// 			return nil
+// 		}
+// 		return &contexts
+// 	}
+// 	return nil
+// }

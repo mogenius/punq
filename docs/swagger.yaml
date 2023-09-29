@@ -28,14 +28,14 @@ definitions:
         type: integer
       currentTime:
         type: string
-      ephemeralStorageLimit:
-        type: string
+      ephemeralStorageLimitInBytes:
+        type: integer
       kubernetesVersion:
         type: string
-      memory:
-        type: string
-      memoryLimit:
-        type: string
+      memoryInBytes:
+        type: integer
+      memoryLimitInBytes:
+        type: integer
       platform:
         type: string
       pods:
@@ -99,12 +99,15 @@ definitions:
         type: string
       name:
         type: string
+      provider:
+        type: string
     required:
     - access
     - context
     - contextHash
     - id
     - name
+    - provider
     type: object
   dtos.PunqToken:
     properties:
@@ -659,7 +662,7 @@ paths:
       parameters:
       - description: X-Context-Id
         in: header
-        name: string
+        name: X-Context-Id
         required: true
         type: string
       produces:
@@ -687,6 +690,26 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dtos.PunqContext'
+      security:
+      - Bearer: []
+      tags:
+      - Context
+    post:
+      parameters:
+      - description: PunqContext
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/dtos.PunqContext'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dtos.PunqContext'
+            type: array
       security:
       - Bearer: []
       tags:
@@ -721,6 +744,21 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dtos.ClusterInfoDto'
+      security:
+      - Bearer: []
+      tags:
+      - Context
+  /backend/context/validate-config:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dtos.PunqContext'
+            type: array
       security:
       - Bearer: []
       tags:

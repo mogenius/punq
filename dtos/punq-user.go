@@ -2,8 +2,9 @@ package dtos
 
 import (
 	"errors"
-	"golang.org/x/crypto/bcrypt"
 	"os"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/mogenius/punq/utils"
@@ -33,23 +34,14 @@ type PunqUserUpdateInput struct {
 	AccessLevel AccessLevel `json:"accessLevel" validate:"required"`
 }
 
-func ListUsers(users []PunqUser, showPasswords bool) {
+func ListUsers(users []PunqUser) {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	if showPasswords {
-		t.AppendHeader(table.Row{"#", "ID", "DisplayName", "Email", "AccessLevel", "Created", "Password"})
-		for index, user := range users {
-			t.AppendRow(
-				table.Row{index + 1, user.Id, user.DisplayName, user.Email, user.AccessLevel, utils.JsonStringToHumanDuration(user.Created), user.Password},
-			)
-		}
-	} else {
-		t.AppendHeader(table.Row{"#", "ID", "DisplayName", "Email", "AccessLevel", "Created"})
-		for index, user := range users {
-			t.AppendRow(
-				table.Row{index + 1, user.Id, user.DisplayName, user.Email, user.AccessLevel, utils.JsonStringToHumanDuration(user.Created)},
-			)
-		}
+	t.AppendHeader(table.Row{"#", "ID", "DisplayName", "Email", "AccessLevel", "Created"})
+	for index, user := range users {
+		t.AppendRow(
+			table.Row{index + 1, user.Id, user.DisplayName, user.Email, user.AccessLevel, utils.JsonStringToHumanDuration(user.Created)},
+		)
 	}
 	t.Render()
 }

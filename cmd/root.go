@@ -22,7 +22,6 @@ var email string
 var password string
 var displayName string
 var userId string
-var showPasswords bool
 var ingressHostname string
 var filePath string
 var contextId string
@@ -41,7 +40,7 @@ var rootCmd = &cobra.Command{
 
 		if contextId != "" {
 			ctxs := mokubernetes.ListAllContexts()
-			mokubernetes.ContextUpdateLocalCache(ctxs)
+			mokubernetes.ContextAddMany(ctxs)
 		}
 	},
 }
