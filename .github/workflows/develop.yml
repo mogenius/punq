@@ -33,7 +33,7 @@ jobs:
           git config --global credential.helper cache
           semantic-release
           VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))-dev
-          echo "VERSION=${{ env.VERSION }}" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           COMMIT_HASH=$(git rev-parse --short HEAD)
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
           GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
