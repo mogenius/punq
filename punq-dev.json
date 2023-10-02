@@ -1,14 +1,14 @@
 {
-    "version": "1.3.0-develop.6-dev",
+    "version": "1.3.0-develop.7-dev",
     "license": "MIT",
     "homepage": "https://punq.dev",
     "bin": "punq-dev.exe",
-    "pre_install": "Rename-Item \"$dir\\punq-dev-v1.3.0-develop.6-dev-windows-amd64\" punq-dev.exe",
+    "pre_install": "Rename-Item \"$dir\\punq-dev-v1.3.0-develop.7-dev-windows-amd64\" punq-dev.exe",
     "description": "View your kubernetes workloads relatively neat!",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/mogenius/punq/releases/download/v1.3.0-develop.6-dev/punq-v1.3.0-develop.6-dev-windows-amd64",
-            "hash": "aec7ce9e30b38f3c5f420d6f18e50c344c7b72daf01b34e58f6dfd1e2a381429"
+            "url": "https://github.com/mogenius/punq/releases/download/v1.3.0-develop.7-dev/punq-v1.3.0-develop.7-dev-windows-amd64",
+            "hash": "131f743206f8d0e508987b9c2a9059ef1756142de9a09205dd0dcfce1f6c03d3"
         }
     }
 }
