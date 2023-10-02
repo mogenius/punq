@@ -121,6 +121,8 @@ jobs:
 
       - name: Build and push AMD64 image
         run: |
+          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           GIT_BRANCH=$(git branch | grep \* | cut -d ' ' -f2 | tr '[:upper:]' '[:lower:]')
           COMMIT_HASH=$(git rev-parse --short HEAD)
           GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -153,6 +155,8 @@ jobs:
 
       - name: Build and push ARM64-linux image
         run: |
+          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           GIT_BRANCH=$(git branch | grep \* | cut -d ' ' -f2 | tr '[:upper:]' '[:lower:]')
           COMMIT_HASH=$(git rev-parse --short HEAD)
           GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -179,6 +183,8 @@ jobs:
 
       - name: Merge images into a multi-arch manifest
         run: |
+          VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           docker manifest create ${{ env.IMAGE_NAME }}:${{ env.VERSION }} \
               --amend ${{ env.IMAGE_NAME }}:${{ env.VERSION }}-amd64 \
               --amend ${{ env.IMAGE_NAME }}:${{ env.VERSION }}-arm64-linux
