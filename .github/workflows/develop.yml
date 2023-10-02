@@ -149,7 +149,7 @@ jobs:
 
       - name: download and inject punq-frontend
         run: |
-          curl https://github.com/mogenius/punq-frontend/releases/download/latest/latest.tar.gz -L -o ui.tar.gz
+          curl https://github.com/mogenius/punq-frontend/releases/download/latest/latest-dev.tar.gz -L -o ui.tar.gz
           mkdir -p ui/dist
           tar -xzf ui.tar.gz -C ui/dist
 
