@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	cc "github.com/ivanpirog/coloredcobra"
 	mokubernetes "github.com/mogenius/punq/kubernetes"
@@ -33,9 +34,9 @@ var rootCmd = &cobra.Command{
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if cmd.CommandPath() != "punq system reset-config" {
 			utils.InitConfigYaml(debug, customConfig, stage)
-			mokubernetes.Init(utils.CONFIG.Kubernetes.RunInCluster)
+			mokubernetes.InitKubernetes(utils.CONFIG.Kubernetes.RunInCluster)
 
-			if contextId != "" {
+			if !strings.HasPrefix(cmd.CommandPath(), "punq install") && contextId != "" {
 				ctxs := mokubernetes.ListAllContexts()
 				mokubernetes.ContextAddMany(ctxs)
 			}

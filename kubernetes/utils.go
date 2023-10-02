@@ -163,7 +163,7 @@ type MogeniusNfsInstallationStatus struct {
 	IsInstalled bool   `json:"isInstalled"`
 }
 
-func Init(runsInCluster bool) {
+func InitKubernetes(runsInCluster bool) {
 	RunsInCluster = runsInCluster
 }
 

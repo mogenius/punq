@@ -28,7 +28,7 @@ func InitFrontend() {
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "authorization"}
 
 	router.Use(cors.New(config))
-	router.Use(CreateLogger("FRONTEND"))
+	router.Use(CreateLogger("ANGULAR"))
 
 	router.StaticFS("/", embedFs())
 
