@@ -5,7 +5,7 @@ on:
     branches:
       - develop
   repository_dispatch:
-    types: [build-from-punq-frontend]
+    types: [build-from-punq-frontend-dev]
 
 env:
   IMAGE_NAME: ghcr.io/mogenius/punq-dev
