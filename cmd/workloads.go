@@ -95,13 +95,11 @@ func init() {
 
 	workloadCmd.AddCommand(podsCmd)
 	podsCmd.AddCommand(podsListCmd)
-	podsListCmd.Flags().StringVarP(&contextId, "contextId", "c", "", "Define a contextId")
 	podsListCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
 	podsListCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
 	podsCmd.AddCommand(podsDescrineCmd)
 	podsDescrineCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
 	podsDescrineCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
-	podsDescrineCmd.Flags().StringVarP(&contextId, "context", "c", "", "Define a context name")
 
 	podsCmd.AddCommand(podDeleteCmd)
 	podDeleteCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")

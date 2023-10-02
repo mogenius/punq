@@ -18,10 +18,10 @@ import (
 
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
-	Short: "Remove all components from your cluster.",
+	Short: "Remove all punq components from your cluster.",
 	Long: `
 	This cmd removes all remaining parts of the daemonset, configs, etc. from your cluster. 
-	This can be used if something went wrong during automatic cleanup.`,
+	This can be used if something went wrong during automatic setup/cleanup.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		yellow := color.New(color.FgYellow).SprintFunc()
 		if !utils.ConfirmTask(fmt.Sprintf("Do you realy want to remove punq from '%s' context?", yellow(kubernetes.CurrentContextName())), 1) {

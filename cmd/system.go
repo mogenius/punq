@@ -32,7 +32,17 @@ var resetConfig = &cobra.Command{
 	},
 }
 
+var infoCmd = &cobra.Command{
+	Use:   "info",
+	Short: "Print information and exit.",
+	Long:  `Print information and exit.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		utils.PrintSettings()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(systemCmd)
 	systemCmd.AddCommand(resetConfig)
+	systemCmd.AddCommand(infoCmd)
 }

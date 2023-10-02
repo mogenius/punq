@@ -4,11 +4,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/structs"
-	"github.com/mogenius/punq/utils"
 	"github.com/spf13/cobra"
 
 	"github.com/mogenius/punq/kubernetes"
@@ -16,17 +13,18 @@ import (
 
 var clusterCmd = &cobra.Command{
 	Use:   "cluster",
-	Short: "Print information and exit.",
-	Long:  `Print information and exit.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if contextId == "" {
-			utils.FatalError("contextId cannot be empty.")
-		}
+	Short: "Cluster related tasks.",
+	Long:  `Cluster related tasks.`,
+}
 
+var clusterContextCmd = &cobra.Command{
+	Use:   "context",
+	Short: "Print context information and exit.",
+	Long:  `Print context information and exit.`,
+	Run: func(cmd *cobra.Command, args []string) {
 		// init contexts
 		kubernetes.ContextAddMany(services.ListContexts())
 
-		fmt.Println("Cluster information for context: " + contextId)
 		structs.PrettyPrint(kubernetes.ContextForId(contextId))
 	},
 }
@@ -39,14 +37,12 @@ var clusterInfoCmd = &cobra.Command{
 		// init contexts
 		kubernetes.ContextAddMany(services.ListContexts())
 
-		fmt.Println("Cluster information for context: " + contextId)
 		structs.PrettyPrint(kubernetes.ClusterInfo(&contextId))
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(clusterCmd)
-	clusterCmd.Flags().StringVarP(&contextId, "context", "c", "", "Define a context")
-
+	clusterCmd.AddCommand(clusterContextCmd)
 	clusterCmd.AddCommand(clusterInfoCmd)
 }

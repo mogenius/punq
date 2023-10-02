@@ -65,5 +65,6 @@ var proxyCmd = &cobra.Command{
 }
 
 func init() {
+	proxyCmd.Hidden = true
 	rootCmd.AddCommand(proxyCmd)
 }

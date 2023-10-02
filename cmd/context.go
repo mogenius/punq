@@ -165,23 +165,18 @@ func init() {
 	contextCmd.AddCommand(listContextCmd)
 
 	contextCmd.AddCommand(addContextAccessCmd)
-	addContextAccessCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
 	addContextAccessCmd.Flags().StringVarP(&userId, "user-id", "u", "", "Id of the user you want to add")
 	addContextAccessCmd.Flags().StringVarP(&accessLevel, "access-level", "l", string(dtos.ADMIN), "Access level of the user you want to add (READER, USER, ADMIN)")
 
 	contextCmd.AddCommand(removeContextAccessCmd)
-	removeContextAccessCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
 	removeContextAccessCmd.Flags().StringVarP(&userId, "user-id", "u", "", "Id of the user you want to add")
 
 	contextCmd.AddCommand(addContextCmd)
-	addContextCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
 	addContextCmd.Flags().StringVarP(&filePath, "filepath", "f", "", "FilePath to the context you want to add")
 
 	contextCmd.AddCommand(deleteContextCmd)
-	deleteContextCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
 
 	contextCmd.AddCommand(getContextCmd)
-	getContextCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
 
 	rootCmd.AddCommand(contextCmd)
 }

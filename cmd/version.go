@@ -19,24 +19,28 @@ var versionCmd = &cobra.Command{
 	Short: "Print version information and exit.",
 	Long:  `Print version information and exit.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.PrintLogo()
-		yellow := color.New(color.FgYellow).SprintFunc()
-		fmt.Printf("        CLI:            %s\n", yellow(version.Ver))
-		fmt.Printf("        OperatorImage:  %s\n", yellow(version.OperatorImage))
-		fmt.Printf("        Branch:         %s\n", yellow(version.Branch))
-		fmt.Printf("        Commit:         %s\n", yellow(version.GitCommitHash))
-		fmt.Printf("        Timestamp:      %s\n", yellow(version.BuildTimestamp))
-		fmt.Printf("        Arch:           %s/%s\n", yellow(runtime.GOOS), yellow(runtime.GOARCH))
-		fmt.Println("")
-
-		if checkForUpdates {
-			utils.IsNewReleaseAvailable()
-			fmt.Println("")
-		}
+		PrintVersion()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
 	versionCmd.Flags().BoolVarP(&checkForUpdates, "checkUpdates", "u", false, "Check for punq updates.")
+}
+
+func PrintVersion() {
+	utils.PrintLogo()
+	yellow := color.New(color.FgYellow).SprintFunc()
+	fmt.Printf("        CLI:            %s\n", yellow(version.Ver))
+	fmt.Printf("        OperatorImage:  %s\n", yellow(version.OperatorImage))
+	fmt.Printf("        Branch:         %s\n", yellow(version.Branch))
+	fmt.Printf("        Commit:         %s\n", yellow(version.GitCommitHash))
+	fmt.Printf("        Timestamp:      %s\n", yellow(version.BuildTimestamp))
+	fmt.Printf("        Arch:           %s/%s\n", yellow(runtime.GOOS), yellow(runtime.GOARCH))
+	fmt.Println("")
+
+	if checkForUpdates {
+		utils.IsNewReleaseAvailable()
+		fmt.Println("")
+	}
 }

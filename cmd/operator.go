@@ -33,5 +33,6 @@ var operatorCmd = &cobra.Command{
 }
 
 func init() {
+	operatorCmd.Hidden = true
 	rootCmd.AddCommand(operatorCmd)
 }
