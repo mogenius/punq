@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BINARY_NAME=punq-dev
-VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))-dev
+VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
 VERSIONWITHOUTV=$(echo $VERSION | cut -c 2-)
 SHA256_DARWIN_ARM64=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-darwin-arm64.tar.gz | awk '{print $1}')
 SHA256_DARWIN_AMD64=$(shasum -a 256 builds/$BINARY_NAME-$VERSION-darwin-amd64.tar.gz | awk '{print $1}')
