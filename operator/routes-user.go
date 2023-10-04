@@ -85,7 +85,7 @@ func userGet(c *gin.Context) {
 // @Param body body dtos.PunqUserUpdateInput false "PunqUserUpdateInput"
 // @Security Bearer
 func userUpdate(c *gin.Context) {
-	var data dtos.PunqUserUpdateInput
+	var data dtos.PunqUser
 	err := c.MustBindWith(&data, binding.JSON)
 	if err != nil {
 		utils.MalformedMessage(c, err.Error())

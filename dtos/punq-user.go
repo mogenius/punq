@@ -26,14 +26,6 @@ type PunqUserCreateInput struct {
 	AccessLevel AccessLevel `json:"accessLevel" validate:"required"`
 }
 
-type PunqUserUpdateInput struct {
-	Id          string      `json:"id" validate:"required"`
-	Email       string      `json:"email" validate:"required"`
-	Password    string      `json:"password" validate:"required"`
-	DisplayName string      `json:"displayName" validate:"required"`
-	AccessLevel AccessLevel `json:"accessLevel" validate:"required"`
-}
-
 func ListUsers(users []PunqUser) {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)

@@ -31,9 +31,7 @@ var addContextCmd = &cobra.Command{
 	Short: "Add punq context.",
 	Long:  `The add command lets you add a context into punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if filePath == "" {
-			utils.FatalError("-f cannot be empty. Please select a context yaml to load.")
-		}
+		RequireStringFlag(filePath, "filepath")
 
 		// load file
 		dataBytes, err := os.ReadFile(filePath)
@@ -79,17 +77,9 @@ var addContextAccessCmd = &cobra.Command{
 	Short: "Add access to punq context.",
 	Long:  `The add-access command lets you add a user + access level to a context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if contextId == "" {
-			utils.FatalError("-context-id cannot be empty.")
-		}
-
-		if accessLevel == "" {
-			utils.FatalError("-access-level cannot be empty.")
-		}
-
-		if userId == "" {
-			utils.FatalError("-user-id cannot be empty.")
-		}
+		RequireStringFlag(contextId, "context-id")
+		RequireStringFlag(accessLevel, "access-level")
+		RequireStringFlag(userId, "user-id")
 
 		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
@@ -106,13 +96,8 @@ var removeContextAccessCmd = &cobra.Command{
 	Short: "Remove access from punq context.",
 	Long:  `The remove-access command lets you remove a users access level from a context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if contextId == "" {
-			utils.FatalError("-context-id cannot be empty.")
-		}
-
-		if userId == "" {
-			utils.FatalError("-user-id cannot be empty.")
-		}
+		RequireStringFlag(contextId, "context-id")
+		RequireStringFlag(userId, "user-id")
 
 		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
@@ -129,9 +114,7 @@ var deleteContextCmd = &cobra.Command{
 	Short: "Delete punq context.",
 	Long:  `The delete command lets you delete a specific context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if contextId == "" {
-			utils.PrintError("-contextid cannot be empty.")
-		}
+		RequireStringFlag(contextId, "context-id")
 
 		result, err := services.DeleteContext(contextId)
 		if err != nil {
@@ -148,9 +131,7 @@ var getContextCmd = &cobra.Command{
 	Short: "Get specific punq context.",
 	Long:  `The get command lets you get a specific context from punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if contextId == "" {
-			utils.FatalError("-contextid cannot be empty.")
-		}
+		RequireStringFlag(contextId, "context-id")
 
 		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
