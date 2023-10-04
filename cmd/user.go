@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/structs"
+	"github.com/mogenius/punq/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -28,26 +31,26 @@ var addUserCmd = &cobra.Command{
 	Short: "Add punq user.",
 	Long:  `The add command lets you add a user into punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if email == "" {
-			FatalError("-email cannot be empty.")
-		}
-		if displayName == "" {
-			FatalError("-displayname cannot be empty.")
-		}
-		if password == "" {
-			FatalError("-password cannot be empty.")
-		}
+		RequireStringFlag(email, "email")
+		RequireStringFlag(displayName, "displayname")
+		RequireStringFlag(password, "password")
+
 		selectedAccess := dtos.READER // default level
 		if accessLevel != "" {
 			selectedAccess = dtos.AccessLevelFromString(accessLevel)
 		}
 
-		services.AddUser(dtos.PunqUserCreateInput{
+		_, err := services.AddUser(dtos.PunqUserCreateInput{
 			Email:       email,
 			Password:    password,
 			DisplayName: displayName,
 			AccessLevel: selectedAccess,
 		})
+		if err != nil {
+			utils.FatalError(err.Error())
+		} else {
+			utils.PrintInfo("User added succesfuly ✅.")
+		}
 	},
 }
 
@@ -56,19 +59,17 @@ var updateUserCmd = &cobra.Command{
 	Short: "Update punq user.",
 	Long:  `The update command lets you update a user in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if userId == "" {
-			FatalError("Please selecte a userId to update a user.")
-		}
+		RequireStringFlag(userId, "user-id")
+
 		if email == "" && displayName == "" && password == "" && accessLevel == "" {
-			FatalError("One of the following options must be used to update a user: -email -displayname -password -accesslevel")
+			utils.FatalError("One of the following options must be used to update a user: -email -displayname -password -accesslevel")
 		}
 
-		user := dtos.PunqUserUpdateInput{
-			Id: userId,
+		user, err := services.GetUser(userId)
+		if err != nil || user == nil {
+			utils.FatalError(fmt.Sprintf("Selected userId '%s' not found.", userId))
 		}
-		// if user == nil {
-		// 	FatalError("Selected userId '%s' not found.", userId)
-		// }
+
 		if displayName != "" {
 			user.DisplayName = displayName
 		}
@@ -82,9 +83,11 @@ var updateUserCmd = &cobra.Command{
 			user.AccessLevel = dtos.AccessLevelFromString(accessLevel)
 		}
 
-		_, err := services.UpdateUser(user)
+		_, err = services.UpdateUser(*user)
 		if err != nil {
-			FatalError(err.Error())
+			utils.FatalError(err.Error())
+		} else {
+			utils.PrintInfo("User updated succesfuly ✅.")
 		}
 	},
 }
@@ -94,12 +97,13 @@ var deleteUserCmd = &cobra.Command{
 	Short: "Delete punq user.",
 	Long:  `The delete command lets you delete a specific user in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if userId == "" {
-			FatalError("-userid cannot be empty.")
-		}
+		RequireStringFlag(userId, "user-id")
 
-		result := services.DeleteUser(userId)
-		structs.PrettyPrint(result)
+		err := services.DeleteUser(userId)
+		if err != nil {
+			utils.FatalError(err.Error())
+		}
+		utils.PrintInfo(fmt.Sprintf("User %s successfuly deleted.", userId))
 	},
 }
 
@@ -108,13 +112,11 @@ var getUserCmd = &cobra.Command{
 	Short: "Get specific punq user.",
 	Long:  `The get command lets you get a specific user of punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if userId == "" {
-			FatalError("-userid cannot be empty.")
-		}
+		RequireStringFlag(userId, "user-id")
 
 		user, err := services.GetUser(userId)
 		if err != nil {
-			FatalError(err.Error())
+			utils.FatalError(err.Error())
 		}
 		structs.PrettyPrint(user)
 	},
@@ -124,7 +126,7 @@ func init() {
 	userCmd.AddCommand(listUserCmd)
 
 	userCmd.AddCommand(updateUserCmd)
-	updateUserCmd.Flags().StringVarP(&userId, "userid", "u", "", "UserId of the user")
+	updateUserCmd.Flags().StringVarP(&userId, "user-id", "u", "", "UserId of the user")
 	updateUserCmd.Flags().StringVarP(&email, "email", "e", "", "E-Mail address of the user")
 	updateUserCmd.Flags().StringVarP(&displayName, "displayname", "j", "", "Display name of the user")
 	updateUserCmd.Flags().StringVarP(&password, "password", "p", "", "Password of the user")

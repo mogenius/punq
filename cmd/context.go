@@ -31,19 +31,17 @@ var addContextCmd = &cobra.Command{
 	Short: "Add punq context.",
 	Long:  `The add command lets you add a context into punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if filePath == "" {
-			FatalError("-f cannot be empty. Please select a context yaml to load.")
-		}
+		RequireStringFlag(filePath, "filepath")
 
 		// load file
 		dataBytes, err := os.ReadFile(filePath)
 		if err != nil {
-			FatalError(fmt.Sprintf("Error reading file '%s': %s", filePath, err.Error()))
+			utils.FatalError(fmt.Sprintf("Error reading file '%s': %s", filePath, err.Error()))
 		}
 
 		contexts, err := services.ParseConfigToPunqContexts(dataBytes)
 		if err != nil {
-			FatalError(err.Error())
+			utils.FatalError(err.Error())
 		}
 		dtos.ListContextsToTerminal(contexts)
 
@@ -54,7 +52,7 @@ var addContextCmd = &cobra.Command{
 			//selectedContext.PrintToTerminal()
 			_, err := services.AddContext(selectedContext)
 			if err != nil {
-				FatalError(err.Error())
+				utils.FatalError(err.Error())
 			} else {
 				fmt.Printf("Context '%s' added ✅.\n", selectedContext.Name)
 			}
@@ -65,7 +63,7 @@ var addContextCmd = &cobra.Command{
 			for _, ctx := range contexts {
 				_, err := services.AddContext(ctx)
 				if err != nil {
-					PrintError(err.Error())
+					utils.PrintError(err.Error())
 				} else {
 					fmt.Printf("Context '%s' added ✅.\n", ctx.Name)
 				}
@@ -79,21 +77,13 @@ var addContextAccessCmd = &cobra.Command{
 	Short: "Add access to punq context.",
 	Long:  `The add-access command lets you add a user + access level to a context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if contextId == "" {
-			FatalError("-context-id cannot be empty.")
-		}
-
-		if accessLevel == "" {
-			FatalError("-access-level cannot be empty.")
-		}
-
-		if userId == "" {
-			FatalError("-user-id cannot be empty.")
-		}
+		RequireStringFlag(contextId, "context-id")
+		RequireStringFlag(accessLevel, "access-level")
+		RequireStringFlag(userId, "user-id")
 
 		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
-			FatalError(fmt.Sprintf("context '%s' not found.", contextId))
+			utils.FatalError(fmt.Sprintf("context '%s' not found.", contextId))
 		}
 
 		ctx.AddAccess(userId, dtos.AccessLevelFromString(accessLevel))
@@ -106,17 +96,12 @@ var removeContextAccessCmd = &cobra.Command{
 	Short: "Remove access from punq context.",
 	Long:  `The remove-access command lets you remove a users access level from a context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if contextId == "" {
-			FatalError("-context-id cannot be empty.")
-		}
-
-		if userId == "" {
-			FatalError("-user-id cannot be empty.")
-		}
+		RequireStringFlag(contextId, "context-id")
+		RequireStringFlag(userId, "user-id")
 
 		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
-			FatalError(fmt.Sprintf("context '%s' not found.", contextId))
+			utils.FatalError(fmt.Sprintf("context '%s' not found.", contextId))
 		}
 
 		ctx.RemoveAccess(userId)
@@ -129,13 +114,11 @@ var deleteContextCmd = &cobra.Command{
 	Short: "Delete punq context.",
 	Long:  `The delete command lets you delete a specific context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if contextId == "" {
-			PrintError("-contextid cannot be empty.")
-		}
+		RequireStringFlag(contextId, "context-id")
 
 		result, err := services.DeleteContext(contextId)
 		if err != nil {
-			PrintError(err.Error())
+			utils.PrintError(err.Error())
 		}
 		if result != nil {
 			structs.PrettyPrint(result)
@@ -148,9 +131,7 @@ var getContextCmd = &cobra.Command{
 	Short: "Get specific punq context.",
 	Long:  `The get command lets you get a specific context from punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if contextId == "" {
-			FatalError("-contextid cannot be empty.")
-		}
+		RequireStringFlag(contextId, "context-id")
 
 		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
@@ -165,23 +146,18 @@ func init() {
 	contextCmd.AddCommand(listContextCmd)
 
 	contextCmd.AddCommand(addContextAccessCmd)
-	addContextAccessCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
 	addContextAccessCmd.Flags().StringVarP(&userId, "user-id", "u", "", "Id of the user you want to add")
 	addContextAccessCmd.Flags().StringVarP(&accessLevel, "access-level", "l", string(dtos.ADMIN), "Access level of the user you want to add (READER, USER, ADMIN)")
 
 	contextCmd.AddCommand(removeContextAccessCmd)
-	removeContextAccessCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
 	removeContextAccessCmd.Flags().StringVarP(&userId, "user-id", "u", "", "Id of the user you want to add")
 
 	contextCmd.AddCommand(addContextCmd)
-	addContextCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
 	addContextCmd.Flags().StringVarP(&filePath, "filepath", "f", "", "FilePath to the context you want to add")
 
 	contextCmd.AddCommand(deleteContextCmd)
-	deleteContextCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
 
 	contextCmd.AddCommand(getContextCmd)
-	getContextCmd.Flags().StringVarP(&contextId, "contextid", "c", "", "ContextId of the context")
 
 	rootCmd.AddCommand(contextCmd)
 }

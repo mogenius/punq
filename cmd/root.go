@@ -3,15 +3,15 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
-	"github.com/fatih/color"
 	cc "github.com/ivanpirog/coloredcobra"
 	mokubernetes "github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/utils"
 	"github.com/spf13/cobra"
 )
 
-var resetConfig bool
+var cliVersion bool
 var stage string
 var debug bool
 var customConfig string
@@ -32,21 +32,20 @@ var rootCmd = &cobra.Command{
 	Short: "Collect traffic data using pcap from a machine.",
 	Long:  `Use punq to manage the workloads of your kubernetes clusters relatively neat. 🚀`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if resetConfig {
-			utils.DeleteCurrentConfig()
-		}
-		utils.InitConfigYaml(debug, customConfig, stage)
-		mokubernetes.Init(utils.CONFIG.Kubernetes.RunInCluster)
+		if cmd.CommandPath() != "punq system reset-config" {
+			utils.InitConfigYaml(debug, customConfig, stage)
+			mokubernetes.InitKubernetes(utils.CONFIG.Kubernetes.RunInCluster)
 
-		if contextId != "" {
-			ctxs := mokubernetes.ListAllContexts()
-			mokubernetes.ContextAddMany(ctxs)
+			if !strings.HasPrefix(cmd.CommandPath(), "punq install") && contextId != "" {
+				ctxs := mokubernetes.ListAllContexts()
+				mokubernetes.ContextAddMany(ctxs)
+			}
+			utils.PrintInfo((fmt.Sprintf("Current context: '%s'", contextId)))
 		}
 	},
 }
 
 func Execute() {
-
 	cc.Init(&cc.Config{
 		RootCmd:  rootCmd,
 		Headings: cc.HiCyan + cc.Bold + cc.Underline,
@@ -56,6 +55,11 @@ func Execute() {
 		Flags:    cc.Bold,
 	})
 
+	if cliVersion {
+		PrintVersion()
+		os.Exit(0)
+	}
+
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
@@ -63,24 +67,15 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.PersistentFlags().BoolVarP(&cliVersion, "version", "v", false, "Print version info")
 	rootCmd.PersistentFlags().StringVarP(&stage, "stage", "s", "", "Use different stage environment")
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug information")
-	rootCmd.PersistentFlags().BoolVarP(&resetConfig, "reset-config", "k", false, "Delete the current config and replace it with the default one")
 	rootCmd.PersistentFlags().StringVarP(&customConfig, "config", "y", "", "Use config from custom location")
+	rootCmd.PersistentFlags().StringVarP(&contextId, "context-id", "c", "own-context", "Define a context-id")
 }
 
-func FatalError(message string) {
-	red := color.New(color.FgRed).SprintFunc()
-	fmt.Printf(red("Error: %s\n"), message)
-	os.Exit(0)
-}
-
-func PrintError(message string) {
-	red := color.New(color.FgRed).SprintFunc()
-	fmt.Println(red(message))
-}
-
-func PrintInfo(message string) {
-	yellow := color.New(color.FgYellow).SprintFunc()
-	fmt.Println(yellow(message))
+func RequireStringFlag(str string, name string) {
+	if str == "" {
+		utils.FatalError(fmt.Sprintf("--%s flag is required for this command.", name))
+	}
 }

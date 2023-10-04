@@ -24,6 +24,7 @@ func InitContextRoutes(router *gin.Engine) {
 		contextRoutes.DELETE("", Auth(dtos.ADMIN), RequireContextId(), deleteContext)
 		contextRoutes.POST("/validate-config", Auth(dtos.ADMIN), validateConfig)
 		contextRoutes.POST("", Auth(dtos.ADMIN), addContext)
+		contextRoutes.PATCH("", Auth(dtos.ADMIN), updateContext)
 	}
 }
 
@@ -162,4 +163,27 @@ func addContext(c *gin.Context) {
 	}
 
 	c.JSON(200, addedContexts)
+}
+
+// @Tags Context
+// @Produce json
+// @Success 200 {array} dtos.PunqContext
+// @Router /backend/context [patch]
+// @Param body body dtos.PunqContext false "PunqContext"
+// @Security Bearer
+func updateContext(c *gin.Context) {
+	receivedContext := dtos.PunqContext{}
+	if err := c.BindJSON(&receivedContext); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	updateContext, err := services.UpdateContext(receivedContext)
+	if err != nil {
+		fmt.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, err)
+	}
+	fmt.Printf("Context '%s' updated ✅.\n", receivedContext.Name)
+
+	c.JSON(200, updateContext)
 }

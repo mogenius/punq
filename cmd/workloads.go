@@ -50,15 +50,10 @@ var podsDescrineCmd = &cobra.Command{
 	Short: "Describe pod.",
 	Long:  `Similar to kubectl, punq can describe workloads in an orderly fashion.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if namespace == "" {
-			FatalError("-namespace cannot be empty.")
-		}
-		if resource == "" {
-			FatalError("-resource cannot be empty.")
-		}
-		if contextId == "" {
-			FatalError("contextId cannot be empty.")
-		}
+		RequireStringFlag(namespace, "namespace")
+		RequireStringFlag(resource, "resource")
+		RequireStringFlag(contextId, "context-id")
+
 		wl := kubernetes.DescribeK8sPod(namespace, resource, &contextId)
 		fmt.Println(wl.Result)
 	},
@@ -69,15 +64,9 @@ var podDeleteCmd = &cobra.Command{
 	Short: "Delete pod.",
 	Long:  `Similar to kubectl, punq can delete workloads in an orderly fashion.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if namespace == "" {
-			FatalError("-namespace cannot be empty.")
-		}
-		if resource == "" {
-			FatalError("-resource cannot be empty.")
-		}
-		if contextId == "" {
-			FatalError("contextId cannot be empty.")
-		}
+		RequireStringFlag(namespace, "namespace")
+		RequireStringFlag(resource, "resource")
+		RequireStringFlag(contextId, "context-id")
 
 		pod := kubernetes.GetPod(namespace, resource, &contextId)
 		if pod != nil {
@@ -94,13 +83,11 @@ func init() {
 
 	workloadCmd.AddCommand(podsCmd)
 	podsCmd.AddCommand(podsListCmd)
-	podsListCmd.Flags().StringVarP(&contextId, "contextId", "c", "", "Define a contextId")
 	podsListCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
 	podsListCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
 	podsCmd.AddCommand(podsDescrineCmd)
 	podsDescrineCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
 	podsDescrineCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
-	podsDescrineCmd.Flags().StringVarP(&contextId, "context", "c", "", "Define a context name")
 
 	podsCmd.AddCommand(podDeleteCmd)
 	podDeleteCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")

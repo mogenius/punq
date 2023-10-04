@@ -22,8 +22,8 @@ var htmlDirFs embed.FS
 //go:embed config/local.yaml
 var localConfig string
 
-//go:embed config/dev.yaml
-var devConfig string
+//go:embed config/operator.yaml
+var operatorConfig string
 
 //go:embed config/prod.yaml
 var prodConfig string
@@ -33,7 +33,7 @@ var changelog string
 
 func main() {
 	utils.DefaultConfigLocalFile = localConfig
-	utils.DefaultConfigFileDev = devConfig
+	utils.DefaultConfigFileOperator = operatorConfig
 	utils.DefaultConfigFileProd = prodConfig
 
 	operator.HtmlDirFs = htmlDirFs

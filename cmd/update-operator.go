@@ -25,7 +25,7 @@ var updateOperatorImageCmd = &cobra.Command{
 	Upgrade container image of the punq operator within your currently selected kubernetes context..`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if utils.CONFIG.Misc.Stage == "prod" {
-			FatalError("You are running in production mode. Please switch to a development mode first.")
+			utils.FatalError("You are running in production mode. Please switch to a development mode first.")
 		}
 
 		currentVersionCmd := exec.Command("sh", "-c", "git describe --tags $(git rev-list --tags --max-count=1)")
@@ -33,8 +33,8 @@ var updateOperatorImageCmd = &cobra.Command{
 		output, err := currentVersionCmd.CombinedOutput()
 		vers := strings.TrimSpace(string(output))
 		if err != nil {
-			PrintError(fmt.Sprintf("Failed to execute command (%s): %v", vers, err))
-			PrintError(string(output))
+			utils.PrintError(fmt.Sprintf("Failed to execute command (%s): %v", vers, err))
+			utils.PrintError(string(output))
 			return
 		}
 

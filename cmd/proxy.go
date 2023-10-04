@@ -43,7 +43,6 @@ var proxyCmd = &cobra.Command{
 		select {
 		case <-readyBackendCh:
 			fmt.Printf("Backend %s is ready! 🚀🚀🚀\n", backendUrl)
-			utils.OpenBrowser(backendUrl)
 			break
 		case <-stopBackendCh:
 			break
@@ -66,5 +65,6 @@ var proxyCmd = &cobra.Command{
 }
 
 func init() {
+	proxyCmd.Hidden = true
 	rootCmd.AddCommand(proxyCmd)
 }

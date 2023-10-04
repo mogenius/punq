@@ -170,7 +170,7 @@ func AddUser(userCreateInput dtos.PunqUserCreateInput) (*dtos.PunqUser, error) {
 	return &user, nil
 }
 
-func UpdateUser(userUpdateInput dtos.PunqUserUpdateInput) (*dtos.PunqUser, error) {
+func UpdateUser(userUpdateInput dtos.PunqUser) (*dtos.PunqUser, error) {
 	secret := kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET, nil)
 	if secret == nil {
 		return nil, errors.New(fmt.Sprintf("failed to get '%s/%s' secret", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET))

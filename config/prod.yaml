@@ -1,3 +1,6 @@
+config:
+  version: 1
+
 backend:
   host: 127.0.0.1
   port: 8080
@@ -9,7 +12,7 @@ frontend:
 kubernetes:
   cluster_name: your-cluster-name
   own_namespace: punq
-  run_in_cluster: true
+  run_in_cluster: false
 
 misc:
   stage: prod

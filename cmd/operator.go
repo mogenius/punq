@@ -24,7 +24,7 @@ var operatorCmd = &cobra.Command{
 		utils.PrintSettings()
 
 		contexts := services.ListContexts()
-		PrintInfo(fmt.Sprintf("Initialized operator with %d contexts.", len(contexts)))
+		utils.PrintInfo(fmt.Sprintf("Initialized operator with %d contexts.", len(contexts)))
 		kubernetes.ContextAddMany(contexts)
 
 		go operator.InitBackend()
@@ -33,5 +33,6 @@ var operatorCmd = &cobra.Command{
 }
 
 func init() {
+	operatorCmd.Hidden = true
 	rootCmd.AddCommand(operatorCmd)
 }
