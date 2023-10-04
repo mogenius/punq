@@ -29,8 +29,8 @@ var accessLevel string
 
 var rootCmd = &cobra.Command{
 	Use:   "punq",
-	Short: "Collect traffic data using pcap from a machine.",
-	Long:  `Use punq to manage the workloads of your kubernetes clusters relatively neat. 🚀`,
+	Short: "A slim open-source workload manager for Kubernetes with team collaboration, WebApp, and CLI. 🚀",
+	Long:  `A slim open-source workload manager for Kubernetes with team collaboration, WebApp, and CLI. 🚀`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if cmd.CommandPath() != "punq system reset-config" {
 			utils.InitConfigYaml(debug, customConfig, stage)

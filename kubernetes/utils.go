@@ -350,7 +350,7 @@ func podStats(pods map[string]v1.Pod, contextId *string) ([]structs.Stats, error
 		return []structs.Stats{}, err
 	}
 
-	podMetricsList, err := provider.ClientSet.MetricsV1beta1().PodMetricses("").List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system,metadata.namespace!=default"})
+	podMetricsList, err := provider.ClientSet.MetricsV1beta1().PodMetricses("").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -365,7 +365,9 @@ func podStats(pods map[string]v1.Pod, contextId *string) ([]structs.Stats, error
 		entry.Cluster = utils.CONFIG.Kubernetes.ClusterName
 		entry.Namespace = podMetrics.Namespace
 		entry.PodName = podMetrics.Name
-		entry.StartTime = pod.Status.StartTime.Format(time.RFC3339)
+		if pod.Status.StartTime != nil {
+			entry.StartTime = pod.Status.StartTime.Format(time.RFC3339)
+		}
 		for _, container := range pod.Spec.Containers {
 			entry.CpuLimit += container.Resources.Limits.Cpu().MilliValue()
 			entry.MemoryLimit += container.Resources.Limits.Memory().Value()

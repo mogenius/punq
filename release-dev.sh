@@ -15,7 +15,7 @@ WIN_AMD64="$BINARY_NAME-$VERSION-windows-amd64"
 # Generate formula from template with replacements
 cat <<EOF > punq-dev.rb
 class PunqDev < Formula
-  desc "View your kubernetes workloads relatively neat! [dev]"
+  desc "A slim open-source workload manager for Kubernetes with team collaboration, WebApp, and CLI. [dev]"
   homepage "https://punq.dev"
   
   on_macos do
@@ -90,7 +90,7 @@ cat <<EOF > punq-dev.json
     "homepage": "https://punq.dev",
     "bin": "punq-dev.exe",
     "pre_install": "Rename-Item \"\$dir\\\\$WIN_AMD64\" punq-dev.exe",
-    "description": "View your kubernetes workloads relatively neat!",
+    "description": "A slim open-source workload manager for Kubernetes with team collaboration, WebApp, and CLI.",
     "architecture": {
         "64bit": {
             "url": "https://github.com/mogenius/punq/releases/download/$VERSION/punq-$VERSION-windows-amd64",

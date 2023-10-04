@@ -27,7 +27,7 @@ func Remove(clusterName string) {
 	removeService(provider)
 	removeIngress(provider)
 
-	fmt.Printf("\n🚀🚀🚀 Successfuly uninstalled punq from '%s'.\n\n", clusterName)
+	fmt.Printf("\n🚀🚀🚀 Successfully uninstalled punq from '%s'.\n\n", clusterName)
 }
 
 func removeDeployment(provider *KubeProvider) {

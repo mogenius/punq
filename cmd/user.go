@@ -49,7 +49,7 @@ var addUserCmd = &cobra.Command{
 		if err != nil {
 			utils.FatalError(err.Error())
 		} else {
-			utils.PrintInfo("User added succesfuly ✅.")
+			utils.PrintInfo("User added succesfully ✅.")
 		}
 	},
 }
@@ -87,7 +87,7 @@ var updateUserCmd = &cobra.Command{
 		if err != nil {
 			utils.FatalError(err.Error())
 		} else {
-			utils.PrintInfo("User updated succesfuly ✅.")
+			utils.PrintInfo("User updated succesfully ✅.")
 		}
 	},
 }
@@ -103,7 +103,7 @@ var deleteUserCmd = &cobra.Command{
 		if err != nil {
 			utils.FatalError(err.Error())
 		}
-		utils.PrintInfo(fmt.Sprintf("User %s successfuly deleted.", userId))
+		utils.PrintInfo(fmt.Sprintf("User %s successfully deleted.", userId))
 	},
 }
 

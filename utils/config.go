@@ -200,7 +200,7 @@ func DeleteCurrentConfig() {
 	if err != nil {
 		PrintError(fmt.Sprintf("Error removing config file. '%s'.", err.Error()))
 	} else {
-		PrintInfo(fmt.Sprintf("%s succesfuly deleted.", configPath))
+		PrintInfo(fmt.Sprintf("%s succesfully deleted.", configPath))
 		os.Exit(0)
 	}
 }

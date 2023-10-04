@@ -39,7 +39,7 @@ var updateOperatorImageCmd = &cobra.Command{
 		}
 
 		yellow := color.New(color.FgYellow).SprintFunc()
-		if !utils.ConfirmTask(fmt.Sprintf("Do you realy want to upgrade to image '%s' in context '%s'?", yellow(vers), yellow(kubernetes.CurrentContextName())), 1) {
+		if !utils.ConfirmTask(fmt.Sprintf("Do you really want to upgrade to image '%s' in context '%s'?", yellow(vers), yellow(kubernetes.CurrentContextName())), 1) {
 			os.Exit(0)
 		}
 
@@ -54,5 +54,6 @@ var updateOperatorImageCmd = &cobra.Command{
 }
 
 func init() {
+	updateOperatorImageCmd.Hidden = true
 	rootCmd.AddCommand(updateOperatorImageCmd)
 }

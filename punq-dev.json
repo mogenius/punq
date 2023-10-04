@@ -4,7 +4,7 @@
     "homepage": "https://punq.dev",
     "bin": "punq-dev.exe",
     "pre_install": "Rename-Item \"$dir\\punq-dev-v1.3.0-develop.18-windows-amd64\" punq-dev.exe",
-    "description": "View your kubernetes workloads relatively neat!",
+    "description": "A slim open-source workload manager for Kubernetes with team collaboration, WebApp, and CLI.",
     "architecture": {
         "64bit": {
             "url": "https://github.com/mogenius/punq/releases/download/v1.3.0-develop.18/punq-v1.3.0-develop.18-windows-amd64",
