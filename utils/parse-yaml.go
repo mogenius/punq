@@ -450,6 +450,14 @@ func InitIngresYaml() string {
 	return string(yaml)
 }
 
+func InitIngresClassYaml() string {
+	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/ingress-class-example.yaml")
+	if err != nil {
+		return err.Error()
+	}
+	return string(yaml)
+}
+
 func InitHpaYaml() string {
 	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/hpa-example.yaml")
 	if err != nil {

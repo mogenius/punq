@@ -64,6 +64,7 @@ const (
 	RES_PRIORITY_CLASS             string = "PriorityClass"
 	RES_VOLUME_SNAPSHOT            string = "VolumeSnapshot"
 	RES_RESOURCE_QUOTA             string = "ResourceQuota"
+	RES_INGRESS_CLASS              string = "IngressClass"
 )
 
 var ALL_RESOURCES []string = []string{
@@ -103,6 +104,7 @@ var ALL_RESOURCES []string = []string{
 	RES_PRIORITY_CLASS,
 	RES_VOLUME_SNAPSHOT,
 	RES_RESOURCE_QUOTA,
+	RES_INGRESS_CLASS,
 }
 
 var ALL_RESOURCES_USER []string = []string{

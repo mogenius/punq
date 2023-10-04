@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: example-ingress-class
+spec:
+  controller: example.com/ingress-controller
+  parameters:
+    apiGroup: example.com/v1
+    kind: ExampleIngressParameters
+    name: example-ingress-parameters
+---
+apiVersion: example.com/v1
+kind: ExampleIngressParameters
+metadata:
+  name: example-ingress-parameters
+spec:
+  # Your custom ingress class parameter specs go here

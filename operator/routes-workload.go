@@ -392,6 +392,16 @@ func InitWorkloadRoutes(router *gin.Engine) {
 			resourceQuotaWorkloadRoutes.PATCH("/", patchResourceQuota)                                                               // BODY: json-object
 			resourceQuotaWorkloadRoutes.POST("/", createResourceQuota)                                                               // BODY: yaml-object
 		}
+
+		// ingress-classes
+		ingressClassesWorkloadRoutes := workloadRoutes.Group(fmt.Sprintf("/%s", strings.ToLower(kubernetes.RES_INGRESS_CLASS)), Auth(dtos.ADMIN), RequireContextId())
+		{
+			ingressClassesWorkloadRoutes.GET("/", allIngressClasses)                                         // PARAM: -
+			ingressClassesWorkloadRoutes.GET("/describe/:name", validateParam("name"), describeIngressClass) // PARAM: name
+			ingressClassesWorkloadRoutes.DELETE("/:name", validateParam("name"), deleteIngressClass)         // PARAM: name
+			ingressClassesWorkloadRoutes.PATCH("/", patchIngressClass)                                       // BODY: json-object
+			ingressClassesWorkloadRoutes.POST("/", createIngressClass)                                       // BODY: yaml-object
+		}
 	}
 }
 
@@ -3173,4 +3183,77 @@ func createResourceQuota(c *gin.Context) {
 		return
 	}
 	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sResourceQuota(data, services.GetGinContextId(c)))
+}
+
+// ---------------------- INGRESS CLASSES ----------------------------
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/ingress-class/ [get]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func allIngressClasses(c *gin.Context) {
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sIngressClasses(services.GetGinContextId(c)))
+}
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/ingress-classes/describe/{name}/ [get]
+// @Param name path string true "ingress-class name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func describeIngressClass(c *gin.Context) {
+	name := c.Param("name")
+	utils.HttpRespondForWorkloadResult(c, kubernetes.DescribeK8sIngressClass(name, services.GetGinContextId(c)))
+}
+
+// @Tags Workloads
+// @Produce json
+// @Success 200
+// @Router /backend/workload/ingress-class/{name} [delete]
+// @Param name path string true "ingress-class name"
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func deleteIngressClass(c *gin.Context) {
+	name := c.Param("name")
+	err := kubernetes.DeleteK8sIngressClassBy(name, services.GetGinContextId(c))
+	if err != nil {
+		utils.MalformedMessage(c, err.Error())
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/ingress-class [patch]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func patchIngressClass(c *gin.Context) {
+	var data v1Networking.IngressClass
+	err := c.MustBindWith(&data, binding.JSON)
+	if err != nil {
+		utils.MalformedMessage(c, err.Error())
+		return
+	}
+	utils.HttpRespondForWorkloadResult(c, kubernetes.UpdateK8sIngressClass(data, services.GetGinContextId(c)))
+}
+
+// @Tags Workloads
+// @Produce json
+// @Success 200 {object} utils.K8sWorkloadResult
+// @Router /backend/workload/ingress-class [post]
+// @Security Bearer
+// @Param string header string true "X-Context-Id"
+func createIngressClass(c *gin.Context) {
+	var data v1Networking.IngressClass
+	err := c.MustBindWith(&data, binding.YAML)
+	if err != nil {
+		utils.MalformedMessage(c, err.Error())
+		return
+	}
+	utils.HttpRespondForWorkloadResult(c, kubernetes.CreateK8sIngressClass(data, services.GetGinContextId(c)))
 }
