@@ -47,7 +47,7 @@ var rootCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		if !utils.Contains(cmdsWithoutContext, cmd.CommandPath()) {
+		if !utils.ContainsEqual(cmdsWithoutContext, cmd.CommandPath()) {
 			utils.InitConfigYaml(debug, customConfig, stage)
 			mokubernetes.InitKubernetes(utils.CONFIG.Kubernetes.RunInCluster)
 
