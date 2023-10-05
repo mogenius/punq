@@ -122,7 +122,7 @@ func validateConfig(c *gin.Context) {
 	}
 
 	// PARSE
-	contexts, err := services.ParseConfigToPunqContexts(dataBytes)
+	contexts, err := dtos.ParseConfigToPunqContexts(dataBytes)
 	if err != nil {
 		logger.Log.Error(err.Error())
 	}

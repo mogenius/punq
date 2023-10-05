@@ -285,54 +285,6 @@ func writePunqSecret(secretClient v1.SecretInterface, existingSecret *core.Secre
 	return clusterSecret, nil
 }
 
-// func CreateUserSecretIfNotExist(kubeProvider *KubeProvider) (*dtos.PunqUser, error) {
-// 	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
-//
-// 	existingSecret, getErr := secretClient.Get(context.TODO(), utils.USERSSECRET, metav1.GetOptions{})
-// 	return writeUserSecret(secretClient, existingSecret, getErr)
-// }
-
-// func writeUserSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (*dtos.PunqUser, error) {
-// 	password := utils.NanoId()
-// 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-//
-// 	adminUser := dtos.PunqUser{
-// 		Id:          utils.NanoId(),
-// 		Email:       "your-email@mogenius.com",
-// 		Password:    string(hashedPassword),
-// 		DisplayName: "Admin User",
-// 		AccessLevel: dtos.ADMIN,
-// 		Created:     time.Now().Format(time.RFC3339),
-// 	}
-//
-// 	rawAdmin, err := json.Marshal(adminUser)
-// 	if err != nil {
-// 		logger.Log.Errorf("Error marshaling %s", err)
-// 	}
-//
-// 	secret := utils.InitSecret()
-// 	secret.ObjectMeta.Name = utils.USERSSECRET
-// 	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
-// 	delete(secret.StringData, "exampleData") // delete example data
-// 	secret.StringData[adminUser.Id] = string(rawAdmin)
-//
-// 	if existingSecret == nil || getErr != nil {
-// 		fmt.Println("Creating new punq-user secret ...")
-// 		_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
-// 		if err != nil {
-// 			logger.Log.Error(err)
-// 			return nil, err
-// 		}
-// 		fmt.Println("Created new punq-user secret. ✅")
-// 		adminUser.Password = password
-// 		return &adminUser, nil
-// 	}
-// 	return nil, nil
-// }
-
 func CreateContextSecretIfNotExist(provider *KubeProvider) (*dtos.PunqContext, error) {
 	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
 
@@ -348,11 +300,13 @@ func writeContextSecret(secretClient v1.SecretInterface, existingSecret *core.Se
 		logger.Log.Fatalf("error reading kubeconfig: %s", err.Error())
 	}
 
-	ownContext := dtos.PunqContext{
-		Id:      utils.CONTEXTOWN,
-		Name:    utils.CONTEXTOWN,
-		Context: string(kubeconfigData),
+	ownContext, err := dtos.ParseCurrentContextConfigToPunqContext(kubeconfigData)
+	if err != nil {
+		utils.FatalError(err.Error())
 	}
+
+	ownContext.Id = utils.CONTEXTOWN
+	ownContext.Name = utils.CONTEXTOWN
 
 	rawAdmin, err := json.Marshal(ownContext)
 	if err != nil {
