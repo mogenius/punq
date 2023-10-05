@@ -31,6 +31,9 @@ var prodConfig string
 //go:embed CHANGELOG.md
 var changelog string
 
+//go:embed welcome.md
+var welcomeMessage string
+
 func main() {
 	utils.DefaultConfigLocalFile = localConfig
 	utils.DefaultConfigFileOperator = operatorConfig
@@ -39,6 +42,7 @@ func main() {
 	operator.HtmlDirFs = htmlDirFs
 
 	utils.ChangeLog = changelog
+	utils.WelcomeMessage = welcomeMessage
 
 	logger.Init()
 	cmd.Execute()

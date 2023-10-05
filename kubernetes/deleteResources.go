@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"context"
 	"fmt"
+	"os/exec"
 
 	"github.com/mogenius/punq/utils"
 	"github.com/mogenius/punq/version"
@@ -72,6 +73,23 @@ func removeIngress(provider *KubeProvider) {
 		}
 	}
 	fmt.Printf("Deleted %s ingress. ✅\n", INGRESSNAME)
+
+	ingressControllerType, err := DetermineIngressControllerType(nil)
+	if err != nil {
+		utils.FatalError(err.Error())
+	}
+	if ingressControllerType == TRAEFIK {
+		fmt.Printf("Deleting TRAEFIK middleware ...\n")
+		cmd := exec.Command("kubectl", "delete", "middleware", "mw-backend", "-n", utils.CONFIG.Kubernetes.OwnNamespace)
+
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			utils.FatalError(fmt.Sprintf("failed to execute command (%s): %s\n%s", cmd.String(), err.Error(), string(output)))
+
+		}
+		fmt.Printf("Created TRAEFIK middleware. ✅\n")
+	}
+
 }
 
 func removeRbac(provider *KubeProvider) {

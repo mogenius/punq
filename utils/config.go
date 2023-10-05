@@ -60,6 +60,7 @@ var DefaultConfigLocalFile string
 var DefaultConfigFileOperator string
 var DefaultConfigFileProd string
 var ChangeLog string
+var WelcomeMessage string
 var CONFIG Config
 var ConfigPath string
 
@@ -162,6 +163,15 @@ func PrintChangeLog() {
 		glamour.WithWordWrap(getTermialSize()),
 	)
 	out, _ := r.Render(ChangeLog)
+	fmt.Println(out)
+}
+
+func PrintWelcomeMessage() {
+	r, _ := glamour.NewTermRenderer(
+		glamour.WithAutoStyle(),
+		glamour.WithWordWrap(getTermialSize()),
+	)
+	out, _ := r.Render(WelcomeMessage)
 	fmt.Println(out)
 }
 

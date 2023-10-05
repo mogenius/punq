@@ -145,6 +145,20 @@ var ALL_RESOURCES_READER []string = []string{
 	RES_ENDPOINT,
 }
 
+type IngressType int
+
+const (
+	NGINX IngressType = iota
+	TRAEFIK
+	MULTIPLE
+	NONE
+	UNKNOWN
+)
+
+func (i IngressType) String() string {
+	return [...]string{"NGINX", "TRAEFIK", "MULTIPLE", "NONE", "UNKNOWN"}[i]
+}
+
 var (
 	SERVICEACCOUNTNAME     = fmt.Sprintf("%s-service-account-app", version.Name)
 	CLUSTERROLENAME        = fmt.Sprintf("%s--cluster-role-app", version.Name)
@@ -486,4 +500,29 @@ func ListTemplatesTerminal() {
 	for _, template := range ListCreateTemplates() {
 		structs.PrettyPrint(template)
 	}
+}
+
+func DetermineIngressControllerType(contextId *string) (IngressType, error) {
+	ingressClasses := AllIngressClasses(contextId)
+
+	if len(ingressClasses) > 1 {
+		return MULTIPLE, fmt.Errorf("multiple ingress controllers found")
+	}
+
+	if len(ingressClasses) == 0 {
+		return NONE, fmt.Errorf("no ingress controller found")
+	}
+
+	unknownController := ""
+	for _, ingressClass := range ingressClasses {
+		if ingressClass.Spec.Controller == "k8s.io/ingress-nginx" {
+			return NGINX, nil
+		} else if ingressClass.Spec.Controller == "traefik.io/ingress-controller" {
+			return TRAEFIK, nil
+		} else {
+			unknownController = ingressClass.Spec.Controller
+		}
+	}
+
+	return UNKNOWN, fmt.Errorf("unknown ingress controller: %s", unknownController)
 }

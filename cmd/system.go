@@ -4,8 +4,10 @@ Copyright © 2022 mogenius, Benedikt Iltisberger
 package cmd
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/utils"
 
 	"github.com/fatih/color"
@@ -41,8 +43,22 @@ var infoCmd = &cobra.Command{
 	},
 }
 
+var ingressControllerCmd = &cobra.Command{
+	Use:   "ingress-controller-type",
+	Short: "Print ingress-controller-type and exit.",
+	Long:  `Print ingress-controller-type and exit.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		ingressType, err := kubernetes.DetermineIngressControllerType(nil)
+		if err != nil {
+			utils.PrintError(err.Error())
+		}
+		utils.PrintInfo(fmt.Sprintf("Ingress Controller Type: %s", ingressType.String()))
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(systemCmd)
 	systemCmd.AddCommand(resetConfig)
 	systemCmd.AddCommand(infoCmd)
+	systemCmd.AddCommand(ingressControllerCmd)
 }

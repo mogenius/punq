@@ -110,6 +110,26 @@
             "args": ["info"],
             "asRoot": false,
             "console": "integratedTerminal"
+        },
+        {
+            "name": "ingress-controller-type",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["system", "ingress-controller-type"],
+            "asRoot": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "test",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["system", "test"],
+            "asRoot": false,
+            "console": "integratedTerminal"
         }
     ]
 }

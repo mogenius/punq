@@ -27,12 +27,27 @@ var filePath string
 var contextId string
 var accessLevel string
 
+var cmdsWithoutContext = []string{
+	"punq",
+	"punq system reset-config",
+	"punq changelog",
+}
+
 var rootCmd = &cobra.Command{
 	Use:   "punq",
 	Short: "A slim open-source workload manager for Kubernetes with team collaboration, WebApp, and CLI. 🚀",
 	Long:  `A slim open-source workload manager for Kubernetes with team collaboration, WebApp, and CLI. 🚀`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if cmd.CommandPath() != "punq system reset-config" {
+		versionFlag, err := cmd.Flags().GetBool("version")
+		if err != nil {
+			os.Exit(0)
+		}
+		if versionFlag {
+			PrintVersion()
+			os.Exit(0)
+		}
+
+		if !utils.Contains(cmdsWithoutContext, cmd.CommandPath()) {
 			utils.InitConfigYaml(debug, customConfig, stage)
 			mokubernetes.InitKubernetes(utils.CONFIG.Kubernetes.RunInCluster)
 
@@ -42,6 +57,9 @@ var rootCmd = &cobra.Command{
 			}
 			utils.PrintInfo((fmt.Sprintf("Current context: '%s'", contextId)))
 		}
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		utils.PrintWelcomeMessage()
 	},
 }
 
@@ -54,11 +72,6 @@ func Execute() {
 		ExecName: cc.Bold,
 		Flags:    cc.Bold,
 	})
-
-	if cliVersion {
-		PrintVersion()
-		os.Exit(0)
-	}
 
 	err := rootCmd.Execute()
 	if err != nil {

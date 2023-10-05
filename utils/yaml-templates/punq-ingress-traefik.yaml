@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations: 
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    traefik.ingress.kubernetes.io/router.middlewares: punq-mw-backend@kubernetescrd
+  name: punq-ingress
+  namespace: punq
+spec:
+  rules:
+  - host: punq.mogenius.dev
+    http:
+      paths:
+      - path: /backend/
+        pathType: Prefix
+        backend:
+          service:
+            name: punq-service
+            port:
+              number: 8080
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: punq-service
+            port:
+              number: 8081
+  # tls:
+  # - hosts:
+  #   - punq.mogenius.dev
+  #   secretName: punq.mogenius.dev-tls
