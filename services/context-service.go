@@ -189,7 +189,7 @@ func DeleteContext(id string) (interface{}, error) {
 	workloadResult := kubernetes.UpdateK8sSecret(*secret, nil)
 	if workloadResult.Error == nil && workloadResult.Result != nil {
 		// success
-		workloadResult.Result = fmt.Sprintf("Context %s successfuly deleted.", id)
+		workloadResult.Result = fmt.Sprintf("Context %s successfully deleted.", id)
 
 		// Update LocalContextArray
 		kubernetes.ContextAddMany(ListContexts())

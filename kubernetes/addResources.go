@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/version"
@@ -62,7 +63,7 @@ func Deploy(clusterName string, ingressHostname string) {
 		addIngress(provider, ingressHostname)
 	}
 
-	fmt.Printf("\n🚀🚀🚀 Successfuly installed punq in '%s'.\n\n", clusterName)
+	fmt.Printf("\n🚀🚀🚀 Successfully installed punq in '%s'.\n\n", clusterName)
 }
 
 func addService(provider *KubeProvider) {
@@ -91,8 +92,56 @@ func addService(provider *KubeProvider) {
 }
 
 func addIngress(provider *KubeProvider, ingressHostname string) {
-	fmt.Printf("Creating punq ingress (%s) ...\n", ingressHostname)
+	// 1. Determine IngressType
+	controllerType, err := DetermineIngressControllerType(nil)
+	if err != nil {
+		utils.FatalError(fmt.Sprintf("Error determining ingress controller type: %s", err.Error()))
+	}
 
+	switch controllerType {
+	case NGINX:
+		addNginxIngress(provider, ingressHostname)
+	case TRAEFIK:
+		addTraefikIngress(provider, ingressHostname)
+		addTraefikMiddleware(provider, ingressHostname)
+	}
+}
+
+func addTraefikIngress(provider *KubeProvider, ingressHostname string) {
+	fmt.Printf("Creating TRAEFIK punq ingress (%s) ...\n", ingressHostname)
+	punqIngress := utils.InitPunqIngressTraefik()
+	punqIngress.ObjectMeta.Name = INGRESSNAME
+	punqIngress.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
+	punqIngress.Spec.Rules[0].Host = ingressHostname
+	punqIngress.Spec.Rules[0].HTTP.Paths[0].Backend.Service.Name = SERVICENAME
+	punqIngress.Spec.Rules[0].HTTP.Paths[0].Backend.Service.Port.Number = int32(utils.CONFIG.Backend.Port)
+	punqIngress.Spec.Rules[0].HTTP.Paths[1].Backend.Service.Name = SERVICENAME
+	punqIngress.Spec.Rules[0].HTTP.Paths[1].Backend.Service.Port.Number = int32(utils.CONFIG.Frontend.Port)
+
+	ingressClient := provider.ClientSet.NetworkingV1().Ingresses(utils.CONFIG.Kubernetes.OwnNamespace)
+	_, err := ingressClient.Create(context.TODO(), &punqIngress, metav1.CreateOptions{})
+	if err != nil {
+		logger.Log.Fatalf("Ingress TRAEFIK Creation Err: %s", err.Error())
+	}
+	fmt.Printf("Created TRAEFIK punq ingress (%s). ✅\n", ingressHostname)
+}
+
+func addTraefikMiddleware(provider *KubeProvider, ingressHostname string) {
+	fmt.Printf("Creating TRAEFIK middleware (%s) ...\n", ingressHostname)
+	mwYaml := utils.InitPunqIngressTraefikMiddlewareYaml()
+
+	cmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | kubectl %s apply -f -", mwYaml, ContextFlag(nil)))
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		utils.FatalError(fmt.Sprintf("failed to execute command (%s): %s\n%s", cmd.String(), err.Error(), string(output)))
+
+	}
+	fmt.Printf("Created TRAEFIK middleware (%s). ✅\n", ingressHostname)
+}
+
+func addNginxIngress(provider *KubeProvider, ingressHostname string) {
+	fmt.Printf("Creating NGINX punq ingress (%s) ...\n", ingressHostname)
 	punqIngress := utils.InitPunqIngress()
 	punqIngress.ObjectMeta.Name = INGRESSNAME
 	punqIngress.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
@@ -107,8 +156,7 @@ func addIngress(provider *KubeProvider, ingressHostname string) {
 	if err != nil {
 		logger.Log.Fatalf("Ingress Creation Err: %s", err.Error())
 	}
-
-	fmt.Printf("Created punq ingress (%s). ✅\n", ingressHostname)
+	fmt.Printf("Created NGINX punq ingress (%s). ✅\n", ingressHostname)
 }
 
 func addRbac(provider *KubeProvider) error {

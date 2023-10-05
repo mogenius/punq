@@ -243,7 +243,7 @@ func DeleteUser(id string) error {
 	result := kubernetes.UpdateK8sSecret(*secret, nil)
 	if result.Error == nil && result.Result == nil {
 		// success
-		result.Result = fmt.Sprintf("User %s successfuly deleted.", id)
+		result.Result = fmt.Sprintf("User %s successfully deleted.", id)
 	}
 	return nil
 }

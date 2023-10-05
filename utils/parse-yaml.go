@@ -191,6 +191,30 @@ func InitPunqIngress() netv1.Ingress {
 	return app
 }
 
+func InitPunqIngressTraefik() netv1.Ingress {
+	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/punq-ingress-traefik.yaml")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	s := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
+
+	var app netv1.Ingress
+	_, _, err = s.Decode(yaml, nil, &app)
+	if err != nil {
+		panic(err)
+	}
+	return app
+}
+
+func InitPunqIngressTraefikMiddlewareYaml() string {
+	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/punq-ingress-traefik-middleware.yaml")
+	if err != nil {
+		return err.Error()
+	}
+	return string(yaml)
+}
+
 func InitNetPolNamespaceYaml() string {
 	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/network-policy-namespace.yaml")
 	if err != nil {
@@ -444,6 +468,14 @@ func InitIssuerYaml() string {
 
 func InitIngresYaml() string {
 	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/ingress-example.yaml")
+	if err != nil {
+		return err.Error()
+	}
+	return string(yaml)
+}
+
+func InitIngresClassYaml() string {
+	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/ingress-class-example.yaml")
 	if err != nil {
 		return err.Error()
 	}

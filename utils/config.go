@@ -60,6 +60,7 @@ var DefaultConfigLocalFile string
 var DefaultConfigFileOperator string
 var DefaultConfigFileProd string
 var ChangeLog string
+var WelcomeMessage string
 var CONFIG Config
 var ConfigPath string
 
@@ -165,6 +166,15 @@ func PrintChangeLog() {
 	fmt.Println(out)
 }
 
+func PrintWelcomeMessage() {
+	r, _ := glamour.NewTermRenderer(
+		glamour.WithAutoStyle(),
+		glamour.WithWordWrap(getTermialSize()),
+	)
+	out, _ := r.Render(WelcomeMessage)
+	fmt.Println(out)
+}
+
 func getTermialSize() int {
 	width, _, err := term.GetSize(0)
 	if err != nil {
@@ -200,7 +210,7 @@ func DeleteCurrentConfig() {
 	if err != nil {
 		PrintError(fmt.Sprintf("Error removing config file. '%s'.", err.Error()))
 	} else {
-		PrintInfo(fmt.Sprintf("%s succesfuly deleted.", configPath))
+		PrintInfo(fmt.Sprintf("%s succesfully deleted.", configPath))
 		os.Exit(0)
 	}
 }

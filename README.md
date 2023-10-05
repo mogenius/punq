@@ -57,26 +57,34 @@ scoop bucket add mogenius https://github.com/mogenius/punq
 scoop install punq
 ```
 
-## Setting up punq
+## Getting started
 
-Once you installed the punq CLI here's how to set it up.
+Once you installed the punq CLI here's how to get started.
 
+```
+# Install punq on your cluster in your current context. This will also set up the ingress to deliver punq on your own domain. You'll be asked to confirm with "Y". 
+punq install -i punq.yourdomain.com
+```
+- In your domain's DNS settings, add a record for the punq domain, e.g. punq.yourdomain.com.
+- Open punq in your browser.
+- Log in with the admin credentials. They are prompted to your terminal once punq is installed. Make sure to store the admin credentials in a safe place, they will only be displayed once after installation.
+- The cluster where punq was installed is set up per default in your punq instance. To add more clusters, use the dropdown in the top left corner and follow the instructions. Upload your kubeconfig to add more clusters. 
+
+**🤘 You're ready to go, have fun with punq 🤘**
+
+## Managing punq via CLI
 ```
 # List all available CLI features
 punq help
 # Install the punq operator in your current kubecontext
 punq install
-# start punq on the cluster
-punq
 # Set up the ingress with your domain to serve the punq web application
 punq -i yourdomain.com
 # Manage users and permissions
 punq user
+# Delete punq from your current kubecontext
+punq clean
 ```
-
-The admin credentials for your punq instance are prompted to your terminal when punq is started. Use them to log in to the punq web application and start adding clusters.
-
-Have fun with punq! 🤘
 
 ## Development
 
