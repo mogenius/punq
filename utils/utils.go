@@ -79,9 +79,6 @@ func IsNewReleaseAvailable() bool {
 		return false
 	}
 
-	fmt.Printf("Your version:      %s\n", version.Ver)
-	fmt.Printf("Available version: %s        (published: %s ago)\n", release.TagName, JsonStringToHumanDuration(release.Published))
-
 	if strings.Contains(release.TagName, version.Ver) {
 		fmt.Println("You are up-to-date 🥰.")
 		return false
@@ -89,6 +86,30 @@ func IsNewReleaseAvailable() bool {
 		fmt.Println("Your version is outdated 😭!\n❗️Please update punq: https://punq.dev\n")
 		return true
 	}
+}
+
+func CurrentReleaseVersion() (string, error) {
+	latestRelease := "https://api.github.com/repos/mogenius/punq/releases/latest"
+	resp, err := http.Get(latestRelease)
+	if err != nil {
+		logger.Log.Errorf("Error getting release: %s", err.Error())
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		logger.Log.Errorf("failed to fetch latest release: %s", string(bodyBytes))
+		return "", err
+	}
+
+	var release Release
+	err = json.NewDecoder(resp.Body).Decode(&release)
+	if err != nil {
+		logger.Log.Errorf("Error decoding release: %s", err.Error())
+		return "", err
+	}
+	return release.TagName, nil
 }
 
 func CreateError(err error) ResponseError {

@@ -39,7 +39,7 @@ var addContextCmd = &cobra.Command{
 			utils.FatalError(fmt.Sprintf("Error reading file '%s': %s", filePath, err.Error()))
 		}
 
-		contexts, err := services.ParseConfigToPunqContexts(dataBytes)
+		contexts, err := dtos.ParseConfigToPunqContexts(dataBytes)
 		if err != nil {
 			utils.FatalError(err.Error())
 		}

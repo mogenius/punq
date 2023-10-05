@@ -28,7 +28,7 @@ var installCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		kubernetes.Deploy(yellow(kubernetes.CurrentContextName()), ingressHostname)
+		kubernetes.Deploy(kubernetes.CurrentContextName(), ingressHostname)
 		services.InitUserService()
 		services.InitAuthService()
 	},

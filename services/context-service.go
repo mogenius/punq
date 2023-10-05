@@ -4,106 +4,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
-	"sort"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jedib0t/go-pretty/table"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
-	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/tools/clientcmd/api"
 )
 
 func ListContexts() []dtos.PunqContext {
 	return kubernetes.ListAllContexts()
-}
-
-func ExtractSingleConfigFromContext(config *api.Config, contextName string) (*api.Config, error) {
-	context, contextExists := config.Contexts[contextName]
-	if !contextExists {
-		return nil, fmt.Errorf("Context %s not found in source kubeconfig\n", contextName)
-	}
-	cluster, clusterExists := config.Clusters[context.Cluster]
-	if !clusterExists {
-		return nil, fmt.Errorf("Cluster %s for context %s not found in source kubeconfig\n", context.Cluster, contextName)
-	}
-	authInfo, userExists := config.AuthInfos[context.AuthInfo]
-	if !userExists {
-		return nil, fmt.Errorf("User %s for context %s not found in source kubeconfig\n", context.AuthInfo, contextName)
-	}
-
-	singleConfig := api.NewConfig()
-	singleConfig.APIVersion = config.APIVersion
-	singleConfig.Kind = config.Kind
-	singleConfig.CurrentContext = contextName
-	singleConfig.Contexts = map[string]*api.Context{contextName: context}
-	singleConfig.Clusters = map[string]*api.Cluster{context.Cluster: cluster}
-	singleConfig.AuthInfos = map[string]*api.AuthInfo{context.AuthInfo: authInfo}
-
-	return singleConfig, nil
-}
-
-func WriteSingleConfigFileFromContext(config *api.Config, contextName string) error {
-	fileName := fmt.Sprintf("%s.yaml", contextName)
-
-	newConfig, err := ExtractSingleConfigFromContext(config, contextName)
-	if err != nil {
-		return err
-	}
-
-	err = clientcmd.WriteToFile(*newConfig, fileName)
-	if err != nil {
-		return fmt.Errorf("Failed to write kubeconfig: %s - %s\n", fileName, err.Error())
-	}
-
-	fmt.Printf("Successfully extracted kubeconfig: %s\n", fileName)
-	return nil
-}
-
-func ParseConfigToPunqContexts(data []byte) ([]dtos.PunqContext, error) {
-	result := []dtos.PunqContext{}
-	config, err := clientcmd.Load(data)
-	if err != nil {
-		fmt.Printf("Failed to load kubeconfig: %v\n", err)
-		return result, err
-	}
-	for contextName := range config.Contexts {
-		aConfig, err := ExtractSingleConfigFromContext(config, contextName)
-		if err != nil {
-			return result, err
-		}
-		configBytes, err := clientcmd.Write(*aConfig)
-		if err != nil {
-			return result, err
-		}
-		result = append(result, dtos.CreateContext("", contextName, string(configBytes), "", []dtos.PunqAccess{}))
-	}
-	sort.Slice(result, func(i, j int) bool {
-		return result[i].Name < result[j].Name
-	})
-
-	return result, nil
-}
-
-func PrintAllContextFromConfig(config *api.Config) {
-	t := table.NewWriter()
-	t.SetOutputMirror(os.Stdout)
-	t.SetAutoIndex(true)
-	t.SetAllowedColumnLengths([]int{30, 30, 30, 50})
-	t.AppendHeader(table.Row{"Context", "Cluster", "User", "Server"})
-	t.AppendRow(
-		table.Row{"ALL CONTEXTS", "*", "*", "*"},
-	)
-	for contextName, context := range config.Contexts {
-		dtos.CreateContext("", contextName, "", "", []dtos.PunqAccess{})
-		t.AppendRow(
-			table.Row{contextName, context.Cluster, context.AuthInfo, config.Clusters[context.Cluster].Server},
-		)
-	}
-	t.Render()
 }
 
 func AddContext(ctx dtos.PunqContext) (*dtos.PunqContext, error) {
