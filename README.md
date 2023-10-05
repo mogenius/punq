@@ -40,7 +40,7 @@ punq is self-hosted on a Kubernetes cluster to run an instance for you and your 
 
 With punq you can then manage multiple Kubernetes clusters by adding them from your local kubeconfig. The configurations are stored as secrets on your cluster and based on them punq displays all workloads and resources in the application. This way, every user of your punq instance can monitor and manage clusters without requiring access to the kubeconfig.
 
-![punq fpr k8s](images/punq.png
+![punq fpr k8s](images/punq.png)
 
 ## Installation
 
