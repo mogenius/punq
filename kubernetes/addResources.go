@@ -42,21 +42,10 @@ func Deploy(clusterName string, ingressHostname string) {
 		logger.Log.Fatalf("Error creating cluster secret. Aborting: %s.", err.Error())
 	}
 
-	// adminUser, err := CreateUserSecretIfNotExist(provider)
-	// if err != nil {
-	// 	logger.Log.Fatalf("Error creating user secret. Aborting: %s.", err.Error())
-	// }
-	// if adminUser != nil {
-	// 	structs.PrettyPrint(adminUser)
-	// }
-
 	_, err = CreateContextSecretIfNotExist(provider)
 	if err != nil {
 		logger.Log.Fatalf("Error creating context secret. Aborting: %s.", err.Error())
 	}
-	// if adminUser != nil {
-	// 	fmt.Printf("Contexts saved (%d bytes).\n", len(ownContext.Context))
-	// }
 
 	if ingressHostname != "" {
 		addService(provider)
@@ -94,16 +83,16 @@ func addService(provider *KubeProvider) {
 func addIngress(provider *KubeProvider, ingressHostname string) {
 	// 1. Determine IngressType
 	controllerType, err := DetermineIngressControllerType(nil)
-	if err != nil {
-		utils.FatalError(fmt.Sprintf("Error determining ingress controller type: %s", err.Error()))
-	}
-
 	switch controllerType {
 	case NGINX:
 		addNginxIngress(provider, ingressHostname)
 	case TRAEFIK:
 		addTraefikIngress(provider, ingressHostname)
 		addTraefikMiddleware(provider, ingressHostname)
+	case NONE:
+		utils.FatalError("No ingress controller found.\nWe recomend installing TRAEFIK:\n  helm repo add traefik https://traefik.github.io/charts\n  helm install traefik traefik/traefik\nAfter installing TRAEFIK, you can retry installing punq.")
+	case MULTIPLE:
+		utils.FatalError(err.Error())
 	}
 }
 

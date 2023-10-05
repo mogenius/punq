@@ -31,6 +31,7 @@ var cmdsWithoutContext = []string{
 	"punq",
 	"punq system reset-config",
 	"punq changelog",
+	"punq system ingress-controller-type",
 }
 
 var rootCmd = &cobra.Command{

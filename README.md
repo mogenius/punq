@@ -27,8 +27,6 @@
 
 # punq
 
-![punq fpr k8s](images/punq_two.png)
-
 punq provides a WebApp and CLI to easily manage multiple Kubernetes clusters. It comes with integrated team collaboration, logs, and workload editor for clusters across different infrastructures. The goal of this project is to make DevOps' lifes easier by improving Kubernetes operations especially in teams.
 
 ## How it works
@@ -61,7 +59,6 @@ scoop bucket add mogenius https://github.com/mogenius/punq
 scoop install punq
 ```
 
-![punq fpr k8s](images/punq_three.png)
 
 ## Getting started
 
@@ -77,8 +74,6 @@ punq install -i punq.yourdomain.com
 - The cluster where punq was installed is set up per default in your punq instance. To add more clusters, use the dropdown in the top left corner and follow the instructions. Upload your kubeconfig to add more clusters. 
 
 **🤘 You're ready to go, have fun with punq 🤘**
-
-![punq fpr k8s](images/punq_four.png)
 
 ## Managing punq via CLI
 ```
@@ -107,8 +102,6 @@ swag init --parseDependency --parseInternal
 
 punq is still still early stage and we're inviting you to contribute. Feel free to pick up open issues and create PRs.
 
----
+![punq for k8s](images/punq_four.png)
 
 Made with 💜 by the folks from [mogenius](https://mogenius.com)
-
-#
