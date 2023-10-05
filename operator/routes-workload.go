@@ -34,7 +34,6 @@ func InitWorkloadRoutes(router *gin.Engine) {
 
 	workloadRoutes := router.Group("/workload")
 	{
-		workloadRoutes.GET("/providers", Auth(dtos.READER), allProviders)
 		workloadRoutes.GET("/templates", Auth(dtos.READER), allWorkloadTemplates)
 		workloadRoutes.GET("/available-resources", Auth(dtos.READER), allKubernetesResources)
 
@@ -404,16 +403,6 @@ func InitWorkloadRoutes(router *gin.Engine) {
 			ingressClassesWorkloadRoutes.POST("/", createIngressClass)                                       // BODY: yaml-object
 		}
 	}
-}
-
-// GENERAL
-// @Tags General
-// @Produce json
-// @Success 200 {array} string
-// @Router /backend/workload/providers [get]
-// @Security Bearer
-func allProviders(c *gin.Context) {
-	c.JSON(http.StatusOK, dtos.ALL_PROVIDER)
 }
 
 // @Tags General
