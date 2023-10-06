@@ -11,12 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/mogenius/punq/dtos"
-	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/utils"
 )
 
 func InitWebsocketRoutes(router *gin.Engine) {
-	router.GET("/exec-sh", Auth(dtos.ADMIN), RequireNamespace(), RequirePodName(), RequireContainerName(), connectWs)
+	router.GET("/exec-sh", AuthByParameter(dtos.ADMIN), connectWs)
 }
 
 var upgrader = websocket.Upgrader{
@@ -28,11 +27,25 @@ var upgrader = websocket.Upgrader{
 }
 
 func connectWs(c *gin.Context) {
-	namespace := services.GetGinNamespace(c)
-	container := services.GetGinContainername(c)
-	podName := services.GetGinPodname(c)
+	namespace, namespaceOk := c.GetQuery("namespace")
+	if !namespaceOk || namespace == "" {
+		utils.MissingQueryParameter(c, "namespace")
+		return
+	}
 
-	log.Printf("exec-sh: %s %s %s\n", *namespace, *container, *podName)
+	container, containerOk := c.GetQuery("container")
+	if !containerOk || container == "" {
+		utils.MissingQueryParameter(c, "container")
+		return
+	}
+
+	podName, podNameOk := c.GetQuery("podname")
+	if !podNameOk || podName == "" {
+		utils.MissingQueryParameter(c, "podname")
+		return
+	}
+
+	log.Printf("exec-sh: %s %s %s\n", namespace, container, podName)
 
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -43,7 +56,7 @@ func connectWs(c *gin.Context) {
 		ws.Close()
 	}()
 
-	cmd := exec.Command("sh", "-c", fmt.Sprintf("kubectl exec -i --tty -c %s -n %s %s -- /bin/sh", *container, *namespace, *podName))
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("kubectl exec -i --tty -c %s -n %s %s -- /bin/sh", container, namespace, podName))
 	cmd.Env = os.Environ()
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
@@ -77,7 +90,7 @@ func connectWs(c *gin.Context) {
 			msg = append(msg, '\n')
 			if err != nil {
 				log.Printf("Error reading from ws: %+v", err)
-				log.Printf("CLOSE: exec-sh: %s %s %s\n", *namespace, *container, *podName)
+				log.Printf("CLOSE: exec-sh: %s %s %s\n", namespace, container, podName)
 				break
 			}
 			_, err = stdin.Write(msg)

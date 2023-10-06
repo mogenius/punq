@@ -24,7 +24,7 @@ func parseAuthHeader(headerStr string) (*AuthHeader, error) {
 	re := regexp.MustCompile(`(\S+)\s+(\S+)`)
 
 	if headerStr == "" {
-		return nil, errors.New("headerStr value ist empty")
+		return nil, errors.New("headerStr value is empty")
 	}
 
 	matches := re.FindStringSubmatch(headerStr)
@@ -41,6 +41,21 @@ func parseAuthHeader(headerStr string) (*AuthHeader, error) {
 func Auth(requiredAccessLevel dtos.AccessLevel) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		isAuthorized, err := HasSufficientAccess(c, requiredAccessLevel)
+		if err != nil {
+			utils.Unauthorized(c, err.Error())
+			c.Abort()
+			return
+		}
+
+		if isAuthorized {
+			c.Next()
+		}
+	}
+}
+
+func AuthByParameter(requiredAccessLevel dtos.AccessLevel) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		isAuthorized, err := HasSufficientAccessByParameter(c, requiredAccessLevel)
 		if err != nil {
 			utils.Unauthorized(c, err.Error())
 			c.Abort()
@@ -92,6 +107,30 @@ func CheckUserAuthorization(c *gin.Context) (*dtos.PunqUser, error) {
 	return user, nil
 }
 
+func CheckUserAuthorizationByParameter(c *gin.Context) (*dtos.PunqUser, error) {
+	token, tokenOk := c.GetQuery("token")
+	if !tokenOk || token == "" {
+		return nil, fmt.Errorf("missing header 'authorization'")
+	}
+
+	claims, err := services.ValidationToken(token)
+	if err != nil {
+		return nil, err
+	}
+	userId := claims.UserID
+
+	getGinContextUser := services.GetGinContextUser(c)
+	if getGinContextUser != nil && getGinContextUser.Id == userId {
+		return getGinContextUser, nil
+	}
+
+	user, err := services.GetUser(userId)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 func HasSufficientAccess(c *gin.Context, requiredAccessLevel dtos.AccessLevel) (bool, error) {
 	user, err := CheckUserAuthorization(c)
 	if err != nil {
@@ -104,8 +143,20 @@ func HasSufficientAccess(c *gin.Context, requiredAccessLevel dtos.AccessLevel) (
 		}
 	}
 	errStr := fmt.Sprintf("AccessLevel is insufficient (Current:%d - Required:%d).", user.AccessLevel, requiredAccessLevel)
-	// c.JSON(http.StatusNotFound, gin.H{
-	// 	"err": errStr,
-	// })
+	return false, fmt.Errorf(errStr)
+}
+
+func HasSufficientAccessByParameter(c *gin.Context, requiredAccessLevel dtos.AccessLevel) (bool, error) {
+	user, err := CheckUserAuthorizationByParameter(c)
+	if err != nil {
+		return false, err
+	}
+	if user != nil {
+		if user.AccessLevel >= requiredAccessLevel {
+			c.Set("user", *user)
+			return true, err
+		}
+	}
+	errStr := fmt.Sprintf("AccessLevel is insufficient (Current:%d - Required:%d).", user.AccessLevel, requiredAccessLevel)
 	return false, fmt.Errorf(errStr)
 }

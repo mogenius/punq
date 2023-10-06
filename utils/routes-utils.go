@@ -55,6 +55,13 @@ func MissingHeader(c *gin.Context, header string) {
 	c.AbortWithError(http.StatusBadRequest, fmt.Errorf("%s header is required", header))
 }
 
+func MissingQueryParameter(c *gin.Context, query string) {
+	c.JSON(http.StatusBadRequest, gin.H{
+		"err": fmt.Sprintf("Missing query parameter '%s'.", query),
+	})
+	c.AbortWithError(http.StatusBadRequest, fmt.Errorf("%s query parameter is required", query))
+}
+
 func MalformedMessage(c *gin.Context, msg string) {
 	c.JSON(http.StatusBadRequest, gin.H{
 		"err": msg,
