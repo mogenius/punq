@@ -26,7 +26,13 @@ var updateOperatorImageCmd = &cobra.Command{
 			return
 		}
 
-		utils.PrintInfo(fmt.Sprintf("\nYour version:    %s", version.Ver))
+		operatorVer, err := kubernetes.GetCurrentOperatorVersion()
+		if err != nil {
+			utils.PrintError(err.Error())
+			return
+		}
+
+		utils.PrintInfo(fmt.Sprintf("\nYour version:    %s", operatorVer))
 		utils.PrintInfo(fmt.Sprintf("Current version: %s", vers))
 
 		if vers == version.Ver && !forceUpgrade {
