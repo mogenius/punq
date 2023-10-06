@@ -25,6 +25,7 @@ var ingressHostname string
 var filePath string
 var contextId string
 var accessLevel string
+var forceUpgrade bool
 
 var cmdsWithoutContext = []string{
 	"punq",
@@ -51,13 +52,10 @@ var rootCmd = &cobra.Command{
 
 		utils.InitConfigYaml(debug, customConfig, stage)
 
-		if !utils.ContainsEqualPrefix(cmdsWithoutContext, cmd.CommandPath()) {
+		if !utils.ContainsEqual(cmdsWithoutContext, cmd.CommandPath()) {
 			mokubernetes.InitKubernetes(utils.CONFIG.Kubernetes.RunInCluster)
-
-			if contextId != "" {
-				ctxs := mokubernetes.ListAllContexts()
-				mokubernetes.ContextAddMany(ctxs)
-			}
+			ctxs := mokubernetes.ListAllContexts()
+			mokubernetes.ContextAddMany(ctxs)
 			utils.PrintInfo((fmt.Sprintf("Current context: '%s'", contextId)))
 		}
 	},

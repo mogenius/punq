@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strings"
 	"time"
 
 	version2 "k8s.io/apimachinery/pkg/version"
@@ -398,6 +399,16 @@ func podStats(pods map[string]v1.Pod, contextId *string) ([]structs.Stats, error
 	}
 
 	return result, nil
+}
+
+func GetCurrentOperatorVersion() (string, error) {
+	ownDeployment, err := GetK8sDeployment(utils.CONFIG.Kubernetes.OwnNamespace, version.Name, nil)
+	if err != nil {
+		logger.Log.Error("GetCurrentOperatorVersion:", err)
+		return "", err
+	}
+
+	return strings.Split(ownDeployment.Spec.Template.Spec.Containers[0].Image, ":")[1], nil
 }
 
 // TAKEN FROM Kubernetes apimachineryv0.25.1

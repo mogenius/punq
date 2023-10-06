@@ -26,10 +26,16 @@ var updateOperatorImageCmd = &cobra.Command{
 			return
 		}
 
-		utils.PrintInfo(fmt.Sprintf("\nYour version:    %s", version.Ver))
+		operatorVer, err := kubernetes.GetCurrentOperatorVersion()
+		if err != nil {
+			utils.PrintError(err.Error())
+			return
+		}
+
+		utils.PrintInfo(fmt.Sprintf("\nYour version:    %s", operatorVer))
 		utils.PrintInfo(fmt.Sprintf("Current version: %s", vers))
 
-		if vers == version.Ver {
+		if vers == version.Ver && !forceUpgrade {
 			utils.PrintInfo("You are already on the latest version.")
 			return
 		} else {
@@ -49,5 +55,6 @@ var updateOperatorImageCmd = &cobra.Command{
 }
 
 func init() {
+	updateOperatorImageCmd.PersistentFlags().BoolVarP(&forceUpgrade, "force", "f", false, "Force upgrade of deployment image.")
 	rootCmd.AddCommand(updateOperatorImageCmd)
 }
