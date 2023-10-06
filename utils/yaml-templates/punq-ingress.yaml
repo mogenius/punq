@@ -1,7 +1,7 @@
 metadata:
   annotations:
-    nginx.ingress.kubernetes.io/cors-allow-headers: DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization,Authentication,X-Context-Id
-    nginx.ingress.kubernetes.io/cors-allow-origin: '*'
+    nginx.ingress.kubernetes.io/cors-allow-headers: DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization,Authentication,X-Context-Id,X-Namespace,X-Podname,X-Container
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
   name: punq-ingress
@@ -9,27 +9,27 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: punq.mogenius.dev
-    http:
-      paths:
-      - backend:
-          service:
-            name: punq-service
-            port:
-              number: 8080
-        path: /backend/(.*)
-        pathType: Prefix
-      - backend:
-          service:
-            name: punq-service
-            port:
-              number: 8082
-        path: /websocket/(.*)
-        pathType: Prefix
-      - backend:
-          service:
-            name: punq-service
-            port:
-              number: 8081
-        path: /(.*)
-        pathType: Prefix
+    - host: punq.mogenius.dev
+      http:
+        paths:
+          - backend:
+              service:
+                name: punq-service
+                port:
+                  number: 8080
+            path: /backend/(.*)
+            pathType: Prefix
+          - backend:
+              service:
+                name: punq-service
+                port:
+                  number: 8082
+            path: /websocket/(.*)
+            pathType: Prefix
+          - backend:
+              service:
+                name: punq-service
+                port:
+                  number: 8081
+            path: /(.*)
+            pathType: Prefix
