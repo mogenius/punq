@@ -1,7 +1,7 @@
 package version
 
 var (
-	Ver            = "1.2.0"
+	Ver            = "v1.3.6"
 	Name           = "punq"
 	OperatorImage  = "ghcr.io/mogenius/punq:latest"
 	Branch         = "develop"

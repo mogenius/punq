@@ -29,7 +29,7 @@ var updateOperatorImageCmd = &cobra.Command{
 		utils.PrintInfo(fmt.Sprintf("\nYour version:    %s", version.Ver))
 		utils.PrintInfo(fmt.Sprintf("Current version: %s", vers))
 
-		if vers == version.Ver {
+		if vers == version.Ver && !forceUpgrade {
 			utils.PrintInfo("You are already on the latest version.")
 			return
 		} else {
@@ -49,5 +49,6 @@ var updateOperatorImageCmd = &cobra.Command{
 }
 
 func init() {
+	updateOperatorImageCmd.PersistentFlags().BoolVarP(&forceUpgrade, "force", "f", false, "Force upgrade of deployment image.")
 	rootCmd.AddCommand(updateOperatorImageCmd)
 }
