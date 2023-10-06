@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	cc "github.com/ivanpirog/coloredcobra"
 	mokubernetes "github.com/mogenius/punq/kubernetes"
@@ -31,6 +30,9 @@ var cmdsWithoutContext = []string{
 	"punq",
 	"punq system reset-config",
 	"punq changelog",
+	"punq system ingress-controller-type",
+	"punq install",
+	"punq clean",
 }
 
 var rootCmd = &cobra.Command{
@@ -47,11 +49,12 @@ var rootCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		if !utils.ContainsEqual(cmdsWithoutContext, cmd.CommandPath()) {
-			utils.InitConfigYaml(debug, customConfig, stage)
+		utils.InitConfigYaml(debug, customConfig, stage)
+
+		if !utils.ContainsEqualPrefix(cmdsWithoutContext, cmd.CommandPath()) {
 			mokubernetes.InitKubernetes(utils.CONFIG.Kubernetes.RunInCluster)
 
-			if !strings.HasPrefix(cmd.CommandPath(), "punq install") && contextId != "" {
+			if contextId != "" {
 				ctxs := mokubernetes.ListAllContexts()
 				mokubernetes.ContextAddMany(ctxs)
 			}

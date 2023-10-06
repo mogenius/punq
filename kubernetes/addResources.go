@@ -37,30 +37,19 @@ func Deploy(clusterName string, ingressHostname string) {
 	addRbac(provider)
 	addDeployment(provider)
 
-	_, err = CreateClusterSecretIfNotExist(provider)
-	if err != nil {
-		logger.Log.Fatalf("Error creating cluster secret. Aborting: %s.", err.Error())
-	}
-
-	// adminUser, err := CreateUserSecretIfNotExist(provider)
+	// _, err = CreateClusterSecretIfNotExist(provider)
 	// if err != nil {
-	// 	logger.Log.Fatalf("Error creating user secret. Aborting: %s.", err.Error())
-	// }
-	// if adminUser != nil {
-	// 	structs.PrettyPrint(adminUser)
+	// 	logger.Log.Fatalf("Error creating cluster secret. Aborting: %s.", err.Error())
 	// }
 
 	_, err = CreateContextSecretIfNotExist(provider)
 	if err != nil {
 		logger.Log.Fatalf("Error creating context secret. Aborting: %s.", err.Error())
 	}
-	// if adminUser != nil {
-	// 	fmt.Printf("Contexts saved (%d bytes).\n", len(ownContext.Context))
-	// }
 
 	if ingressHostname != "" {
 		addService(provider)
-		addIngress(provider, ingressHostname)
+		addIngress(provider, clusterName, ingressHostname)
 	}
 
 	fmt.Printf("\n🚀🚀🚀 Successfully installed punq in '%s'.\n\n", clusterName)
@@ -91,19 +80,21 @@ func addService(provider *KubeProvider) {
 	fmt.Println("Created punq service. ✅")
 }
 
-func addIngress(provider *KubeProvider, ingressHostname string) {
+func addIngress(provider *KubeProvider, clusterName string, ingressHostname string) {
 	// 1. Determine IngressType
 	controllerType, err := DetermineIngressControllerType(nil)
-	if err != nil {
-		utils.FatalError(fmt.Sprintf("Error determining ingress controller type: %s", err.Error()))
-	}
-
 	switch controllerType {
 	case NGINX:
 		addNginxIngress(provider, ingressHostname)
 	case TRAEFIK:
 		addTraefikIngress(provider, ingressHostname)
 		addTraefikMiddleware(provider, ingressHostname)
+	case NONE:
+		// clean everything
+		Remove(clusterName)
+		utils.FatalError("No ingress controller found.\nWe recomend installing TRAEFIK:\n  helm repo add traefik https://traefik.github.io/charts\n  helm install traefik traefik/traefik\nAfter installing TRAEFIK, you can retry installing punq.")
+	case MULTIPLE:
+		utils.FatalError(err.Error())
 	}
 }
 
@@ -231,59 +222,59 @@ func applyNamespace(provider *KubeProvider) {
 	fmt.Println("Created punq namespace. ✅")
 }
 
-func CreateClusterSecretIfNotExist(provider *KubeProvider) (utils.ClusterSecret, error) {
-	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
+// func CreateClusterSecretIfNotExist(provider *KubeProvider) (utils.ClusterSecret, error) {
+// 	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
 
-	existingSecret, getErr := secretClient.Get(context.TODO(), utils.CONFIG.Kubernetes.OwnNamespace, metav1.GetOptions{})
-	return writePunqSecret(secretClient, existingSecret, getErr)
-}
+// 	existingSecret, getErr := secretClient.Get(context.TODO(), utils.CONFIG.Kubernetes.OwnNamespace, metav1.GetOptions{})
+// 	return writePunqSecret(secretClient, existingSecret, getErr)
+// }
 
-func writePunqSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (utils.ClusterSecret, error) {
-	clusterSecret := utils.ClusterSecret{
-		ApiKey:       utils.NanoIdExtraLong(),
-		ClusterMfaId: utils.NanoIdExtraLong(),
-		ClusterName:  utils.CONFIG.Kubernetes.ClusterName,
-	}
+// func writePunqSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (utils.ClusterSecret, error) {
+// 	clusterSecret := utils.ClusterSecret{
+// 		ApiKey:       utils.NanoIdExtraLong(),
+// 		ClusterMfaId: utils.NanoIdExtraLong(),
+// 		ClusterName:  utils.CONFIG.Kubernetes.ClusterName,
+// 	}
 
-	secret := utils.InitSecret()
-	secret.ObjectMeta.Name = utils.CONFIG.Kubernetes.OwnNamespace
-	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
-	delete(secret.StringData, "exampleData") // delete example data
-	secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
-	secret.StringData["api-key"] = clusterSecret.ApiKey
-	secret.StringData["cluster-name"] = clusterSecret.ClusterName
+// 	secret := utils.InitSecret()
+// 	secret.ObjectMeta.Name = utils.CONFIG.Kubernetes.OwnNamespace
+// 	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
+// 	delete(secret.StringData, "exampleData") // delete example data
+// 	secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
+// 	secret.StringData["api-key"] = clusterSecret.ApiKey
+// 	secret.StringData["cluster-name"] = clusterSecret.ClusterName
 
-	if existingSecret == nil || getErr != nil {
-		logger.Log.Info("Creating new punq secret ...")
-		_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
-		if err != nil {
-			logger.Log.Error(err)
-			return clusterSecret, err
-		}
-		fmt.Println("Created new punq secret. ✅")
-	} else {
-		if string(existingSecret.Data["api-key"]) != clusterSecret.ApiKey ||
-			string(existingSecret.Data["cluster-name"]) != clusterSecret.ClusterName {
-			fmt.Println("Updating existing punq secret ...")
-			// keep existing mfa-id if possible
-			if string(existingSecret.Data["cluster-mfa-id"]) != "" {
-				clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
-				secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
-			}
-			_, err := secretClient.Update(context.TODO(), &secret, MoUpdateOptions())
-			if err != nil {
-				logger.Log.Error(err)
-				return clusterSecret, err
-			}
-			fmt.Println("Updated punq secret. ✅")
-		} else {
-			clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
-			fmt.Println("Using existing punq secret. ✅")
-		}
-	}
+// 	if existingSecret == nil || getErr != nil {
+// 		logger.Log.Info("Creating new punq secret ...")
+// 		_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
+// 		if err != nil {
+// 			logger.Log.Error(err)
+// 			return clusterSecret, err
+// 		}
+// 		fmt.Println("Created new punq secret. ✅")
+// 	} else {
+// 		if string(existingSecret.Data["api-key"]) != clusterSecret.ApiKey ||
+// 			string(existingSecret.Data["cluster-name"]) != clusterSecret.ClusterName {
+// 			fmt.Println("Updating existing punq secret ...")
+// 			// keep existing mfa-id if possible
+// 			if string(existingSecret.Data["cluster-mfa-id"]) != "" {
+// 				clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
+// 				secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
+// 			}
+// 			_, err := secretClient.Update(context.TODO(), &secret, MoUpdateOptions())
+// 			if err != nil {
+// 				logger.Log.Error(err)
+// 				return clusterSecret, err
+// 			}
+// 			fmt.Println("Updated punq secret. ✅")
+// 		} else {
+// 			clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
+// 			fmt.Println("Using existing punq secret. ✅")
+// 		}
+// 	}
 
-	return clusterSecret, nil
-}
+// 	return clusterSecret, nil
+// }
 
 func CreateContextSecretIfNotExist(provider *KubeProvider) (*dtos.PunqContext, error) {
 	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)

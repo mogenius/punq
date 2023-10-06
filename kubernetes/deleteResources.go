@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/mogenius/punq/utils"
 	"github.com/mogenius/punq/version"
@@ -39,8 +40,10 @@ func removeDeployment(provider *KubeProvider) {
 	deletePolicy := metav1.DeletePropagationForeground
 	err := deploymentClient.Delete(context.TODO(), version.Name, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
-		logger.Log.Error(err)
-		return
+		if !apierrors.IsNotFound(err) {
+			logger.Log.Error(err)
+			return
+		}
 	}
 	fmt.Printf("Deleted %s deployment. ✅\n", version.Name)
 }
@@ -76,7 +79,9 @@ func removeIngress(provider *KubeProvider) {
 
 	ingressControllerType, err := DetermineIngressControllerType(nil)
 	if err != nil {
-		utils.FatalError(err.Error())
+		if ingressControllerType != NONE && ingressControllerType != UNKNOWN {
+			utils.FatalError(err.Error())
+		}
 	}
 	if ingressControllerType == TRAEFIK {
 		fmt.Printf("Deleting TRAEFIK middleware ...\n")
@@ -84,10 +89,11 @@ func removeIngress(provider *KubeProvider) {
 
 		output, err := cmd.CombinedOutput()
 		if err != nil {
-			utils.FatalError(fmt.Sprintf("failed to execute command (%s): %s\n%s", cmd.String(), err.Error(), string(output)))
-
+			if !strings.HasPrefix(string(output), "Error from server (NotFound): ") {
+				utils.FatalError(fmt.Sprintf("failed to execute command (%s): %s\n%s", cmd.String(), err.Error(), string(output)))
+			}
 		}
-		fmt.Printf("Created TRAEFIK middleware. ✅\n")
+		fmt.Printf("Deleted TRAEFIK middleware. ✅\n")
 	}
 
 }
@@ -97,18 +103,24 @@ func removeRbac(provider *KubeProvider) {
 	fmt.Printf("Deleting %s RBAC ...\n", version.Name)
 	err := provider.ClientSet.CoreV1().ServiceAccounts(utils.CONFIG.Kubernetes.OwnNamespace).Delete(context.TODO(), SERVICEACCOUNTNAME, metav1.DeleteOptions{})
 	if err != nil {
-		logger.Log.Error(err)
-		return
+		if !apierrors.IsNotFound(err) {
+			logger.Log.Error(err)
+			return
+		}
 	}
 	err = provider.ClientSet.RbacV1().ClusterRoles().Delete(context.TODO(), CLUSTERROLENAME, metav1.DeleteOptions{})
 	if err != nil {
-		logger.Log.Error(err)
-		return
+		if !apierrors.IsNotFound(err) {
+			logger.Log.Error(err)
+			return
+		}
 	}
 	err = provider.ClientSet.RbacV1().ClusterRoleBindings().Delete(context.TODO(), CLUSTERROLEBINDINGNAME, metav1.DeleteOptions{})
 	if err != nil {
-		logger.Log.Error(err)
-		return
+		if !apierrors.IsNotFound(err) {
+			logger.Log.Error(err)
+			return
+		}
 	}
 	fmt.Printf("Deleted %s RBAC. ✅\n", version.Name)
 }
@@ -120,8 +132,10 @@ func removeUsersSecret(provider *KubeProvider) {
 	deletePolicy := metav1.DeletePropagationForeground
 	err := secretClient.Delete(context.TODO(), utils.USERSSECRET, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
-		logger.Log.Error(err)
-		return
+		if !apierrors.IsNotFound(err) {
+			logger.Log.Error(err)
+			return
+		}
 	}
 	fmt.Printf("Deleted %s/%s secret. ✅\n", utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET)
 }
@@ -133,8 +147,10 @@ func removeContextsSecret(provider *KubeProvider) {
 	deletePolicy := metav1.DeletePropagationForeground
 	err := secretClient.Delete(context.TODO(), utils.CONTEXTSSECRET, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
-		logger.Log.Error(err)
-		return
+		if !apierrors.IsNotFound(err) {
+			logger.Log.Error(err)
+			return
+		}
 	}
 	fmt.Printf("Deleted %s/%s secret. ✅\n", utils.CONFIG.Kubernetes.OwnNamespace, utils.CONTEXTSSECRET)
 }

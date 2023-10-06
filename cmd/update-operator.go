@@ -26,7 +26,7 @@ var updateOperatorImageCmd = &cobra.Command{
 			return
 		}
 
-		utils.PrintInfo(fmt.Sprintf("\nYour version:    v%s", version.Ver))
+		utils.PrintInfo(fmt.Sprintf("\nYour version:    %s", version.Ver))
 		utils.PrintInfo(fmt.Sprintf("Current version: %s", vers))
 
 		if vers == version.Ver {
