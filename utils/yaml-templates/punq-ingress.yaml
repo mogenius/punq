@@ -23,6 +23,13 @@ spec:
           service:
             name: punq-service
             port:
+              number: 8082
+        path: /websocket/(.*)
+        pathType: Prefix
+      - backend:
+          service:
+            name: punq-service
+            port:
               number: 8081
         path: /(.*)
         pathType: Prefix
