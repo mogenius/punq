@@ -81,10 +81,10 @@ punq install -i punq.yourdomain.com
 punq help
 # Install the punq operator in your current kubecontext
 punq install
-# Set up the ingress with your domain to serve the punq web application
-punq -i yourdomain.com
 # Manage users and permissions
 punq user
+# Upgrade your punq instance to the recent version
+punq upgrade
 # Delete punq from your current kubecontext
 punq clean
 ```
