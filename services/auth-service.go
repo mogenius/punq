@@ -40,7 +40,7 @@ type keyPairAlias KeyPair
 
 type PunqClaims struct {
 	UserID string `json:"userId"`
-	jwt.Claims
+	jwt.RegisteredClaims
 }
 
 func (keyPair *KeyPair) UnmarshalJSON(data []byte) error {
