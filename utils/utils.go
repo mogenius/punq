@@ -127,9 +127,9 @@ func Contains(s []string, str string) bool {
 	return false
 }
 
-func ContainsEqual(s []string, str string) bool {
+func ContainsEqualPrefix(s []string, str string) bool {
 	for _, v := range s {
-		if str == v {
+		if strings.HasPrefix(str, v) {
 			return true
 		}
 	}

@@ -17,6 +17,7 @@ import (
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -129,10 +130,10 @@ func InitAuthService() {
 
 func CreateKeyPair() (*KeyPair, error) {
 	provider, err := kubernetes.NewKubeProvider(nil)
-	if provider == nil {
-		msg := fmt.Sprintf("Failed to load provider.")
+	if provider == nil || err != nil {
+		msg := "Failed to load provider."
 		logger.Log.Error(msg)
-		return nil, errors.New(msg)
+		return nil, err
 	}
 
 	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
@@ -185,8 +186,10 @@ func RemoveKeyPair() {
 	deletePolicy := metav1.DeletePropagationForeground
 	err = secretClient.Delete(context.TODO(), utils.JWTSECRET, metav1.DeleteOptions{PropagationPolicy: &deletePolicy})
 	if err != nil {
-		logger.Log.Error(err)
-		return
+		if !apierrors.IsNotFound(err) {
+			logger.Log.Error(err)
+			return
+		}
 	}
 	fmt.Printf("Deleted %s/%s secret. ✅\n", utils.CONFIG.Kubernetes.OwnNamespace, utils.JWTSECRET)
 }
