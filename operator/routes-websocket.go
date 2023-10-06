@@ -66,9 +66,26 @@ func connectWs(c *gin.Context) {
 	if err != nil {
 		log.Fatal("Error creating stdout pipe:", err)
 	}
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		log.Fatal("Error creating stderr pipe:", err)
+	}
 
 	go func() {
 		scanner := bufio.NewScanner(stdout)
+		for scanner.Scan() {
+			data := scanner.Bytes()
+			if utils.CONFIG.Misc.Debug {
+				fmt.Printf("Response-Line: '%s'\n", string(data))
+			}
+			err = ws.WriteMessage(websocket.TextMessage, data)
+			if err != nil {
+				log.Printf("Error writing to ws: %+v", err)
+			}
+		}
+	}()
+	go func() {
+		scanner := bufio.NewScanner(stderr)
 		for scanner.Scan() {
 			data := scanner.Bytes()
 			if utils.CONFIG.Misc.Debug {
