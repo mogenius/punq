@@ -18,3 +18,5 @@ ui/package-lock.json
 punq
 ui/dist
 .idea/
+
+kubeconfig.yaml
