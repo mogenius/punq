@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/logger"
@@ -40,7 +40,7 @@ type keyPairAlias KeyPair
 
 type PunqClaims struct {
 	UserID string `json:"userId"`
-	jwt.StandardClaims
+	jwt.Claims
 }
 
 func (keyPair *KeyPair) UnmarshalJSON(data []byte) error {
@@ -269,7 +269,7 @@ func ValidationToken(tokenString string) (*PunqClaims, error) {
 
 	claims, ok := token.Claims.(*PunqClaims)
 	if !ok {
-		msg := fmt.Sprintf("Type Assertion failed. Expected PunqClaims but received something different.")
+		msg := "Type Assertion failed. Expected PunqClaims but received something different."
 		logger.Log.Error(msg)
 		return nil, errors.New(msg)
 	}
