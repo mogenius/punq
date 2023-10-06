@@ -136,9 +136,9 @@ jobs:
           COMMIT_HASH=$(git rev-parse --short HEAD)
           GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
           BUILD_TIMESTAMP=$(date -Iseconds)
-          OPERATOR_IMAGE="${{ env.IMAGE_NAME }}:${{ env.VERSION }}"
-          docker build -f ${{ env.DOCKERFILE }} --build-arg GOOS=linux --build-arg GOARCH=amd64 --build-arg VERSION="${{ env.VERSION }}" --build-arg OPERATOR_IMAGE="$OPERATOR_IMAGE" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" --build-arg GIT_BRANCH="$GIT_BRANCH" --build-arg COMMIT_HASH="$COMMIT_HASH" -t ${{ env.IMAGE_NAME }}:${{ env.VERSION }}-amd64 -t ${{ env.IMAGE_NAME }}:latest-amd64 .
-          docker push ${{ env.IMAGE_NAME }}:${{ env.VERSION }}-amd64
+          OPERATOR_IMAGE="${{ env.IMAGE_NAME }}:$VERSION"
+          docker build -f ${{ env.DOCKERFILE }} --build-arg GOOS=linux --build-arg GOARCH=amd64 --build-arg VERSION="$VERSION" --build-arg OPERATOR_IMAGE="$OPERATOR_IMAGE" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" --build-arg GIT_BRANCH="$GIT_BRANCH" --build-arg COMMIT_HASH="$COMMIT_HASH" -t ${{ env.IMAGE_NAME }}:$VERSION-amd64 -t ${{ env.IMAGE_NAME }}:latest-amd64 .
+          docker push ${{ env.IMAGE_NAME }}:$VERSION-amd64
 
   build-arm64-linux:
     needs: prepare
@@ -170,9 +170,9 @@ jobs:
           COMMIT_HASH=$(git rev-parse --short HEAD)
           GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
           BUILD_TIMESTAMP=$(date -Iseconds)
-          OPERATOR_IMAGE="${{ env.IMAGE_NAME }}:${{ env.VERSION }}"
-          docker build --platform=linux/arm64 -f ${{ env.DOCKERFILE }} --build-arg GOOS=linux --build-arg GOARCH=arm64 --build-arg VERSION="${{ env.VERSION }}" --build-arg OPERATOR_IMAGE="$OPERATOR_IMAGE" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" --build-arg GIT_BRANCH="$GIT_BRANCH" --build-arg COMMIT_HASH="$COMMIT_HASH" -t ${{ env.IMAGE_NAME }}:${{ env.VERSION }}-arm64-linux -t ${{ env.IMAGE_NAME }}:latest-arm64-linux .
-          docker push ${{ env.IMAGE_NAME }}:${{ env.VERSION }}-arm64-linux
+          OPERATOR_IMAGE="${{ env.IMAGE_NAME }}:$VERSION"
+          docker build --platform=linux/arm64 -f ${{ env.DOCKERFILE }} --build-arg GOOS=linux --build-arg GOARCH=arm64 --build-arg VERSION="$VERSION" --build-arg OPERATOR_IMAGE="$OPERATOR_IMAGE" --build-arg BUILD_TIMESTAMP="$BUILD_TIMESTAMP" --build-arg GIT_BRANCH="$GIT_BRANCH" --build-arg COMMIT_HASH="$COMMIT_HASH" -t ${{ env.IMAGE_NAME }}:$VERSION-arm64-linux -t ${{ env.IMAGE_NAME }}:latest-arm64-linux .
+          docker push ${{ env.IMAGE_NAME }}:$VERSION-arm64-linux
 
   merge-images:
     needs: [build-amd64, build-arm64-linux, prepare]
@@ -194,11 +194,11 @@ jobs:
         run: |
           VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          docker manifest create ${{ env.IMAGE_NAME }}:${{ env.VERSION }} \
-              --amend ${{ env.IMAGE_NAME }}:${{ env.VERSION }}-amd64 \
-              --amend ${{ env.IMAGE_NAME }}:${{ env.VERSION }}-arm64-linux
-          docker manifest push ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          docker manifest create ${{ env.IMAGE_NAME }}:$VERSION \
+              --amend ${{ env.IMAGE_NAME }}:$VERSION-amd64 \
+              --amend ${{ env.IMAGE_NAME }}:$VERSION-arm64-linux
+          docker manifest push ${{ env.IMAGE_NAME }}:$VERSION
           docker manifest create ${{ env.IMAGE_NAME }}:latest \
-              --amend ${{ env.IMAGE_NAME }}:${{ env.VERSION }}-amd64 \
-              --amend ${{ env.IMAGE_NAME }}:${{ env.VERSION }}-arm64-linux
+              --amend ${{ env.IMAGE_NAME }}:$VERSION-amd64 \
+              --amend ${{ env.IMAGE_NAME }}:$VERSION-arm64-linux
           docker manifest push ${{ env.IMAGE_NAME }}:latest
