@@ -4,10 +4,10 @@ go 1.21
 
 require (
 	github.com/cert-manager/cert-manager v1.12.3
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.15.0
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/gookit/color v1.5.4
 	github.com/gorilla/websocket v1.5.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
