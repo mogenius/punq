@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"math"
+	"math/rand"
 	"os"
 	"time"
 
@@ -11,6 +12,85 @@ import (
 	"github.com/jaevor/go-nanoid"
 	"github.com/mogenius/punq/logger"
 )
+
+var FirstNameList = []string{
+	"Liam", "Emma", "Noah", "Olivia", "Ava",
+	"Sophia", "Jackson", "Aiden", "Lucas", "Muhammad",
+	"Amelia", "Mateo", "Ethan", "Harper", "Evelyn",
+	"Mia", "Ella", "Riley", "Aria", "Logan",
+	"Zoe", "Benjamin", "Oliver", "Lily", "Leo",
+	"Charlotte", "Mason", "Isabella", "Layla", "Isaac",
+	"Mila", "Sophie", "Elijah", "Emily", "Daniel",
+	"James", "Aiden", "Abigail", "Levi", "Chloe",
+	"Henry", "Alexander", "Sebastian", "Jack", "Hannah",
+	"Jayden", "Gabriel", "Matthew", "Alice", "Oscar",
+	"Josiah", "Evie", "Theo", "Isla", "Jaxon",
+	"Grace", "Eva", "Samuel", "Owen", "Victoria",
+	"Joseph", "Zachary", "Violet", "John", "William",
+	"Ezra", "Ellie", "Freya", "Dylan", "Penelope",
+	"Michael", "Scarlett", "Luna", "Max", "Alyssa",
+	"Isabelle", "Eliza", "Luca", "Thomas", "Poppy",
+	"David", "Ruby", "Christopher", "Jade", "Rose",
+	"Sienna", "George", "Harvey", "Kaylee", "Annie",
+	"Nathan", "Madison", "Jacob", "Noelle", "Parker",
+	"Sarah", "Evelina", "Leo", "Ruby", "Abigail",
+}
+
+var MiddleNamesList = []string{
+	"Bumblebee", "Rainbow", "Whiz", "Jolly", "Bubbles",
+	"Sparkle", "Noodle", "Waffle", "Pickle", "Jiggle",
+	"Twinkle", "Giggle", "Fizzle", "Muffin", "Pumpkin",
+	"Squiggle", "Tofu", "Jazz", "Fizz", "Sunny",
+	"Fluffy", "Peanut", "Jellybean", "Snicker", "Ripple",
+	"Glimmer", "Cupcake", "Pudding", "Tinker", "Pebble",
+	"Cuddle", "Bumpkin", "Dizzy", "Lolly", "Nugget",
+	"Twirl", "Fizzypop", "Wiggles", "Snuggles", "Squishy",
+	"Blinky", "Bubblegum", "Frodo", "Sizzle", "Taco",
+	"Smiley", "Snickerdoodle", "Wobble", "Popsicle", "Zigzag",
+	"Sprinkles", "Doodle", "Pizzazz", "Quicksilver", "Razzmatazz",
+	"Duckling", "Hiccup", "Pumpernickel", "Zoodle", "Quizzical",
+	"Flitter", "Whisper", "Mustard", "Wacky", "Scooter",
+	"Moose", "Tizzy", "Bamboo", "Zephyr", "Rolo",
+	"Sniffle", "Gobble", "Beep", "Cobweb", "Twizzle",
+	"Bizz", "Fuddle", "Puzzle", "Rumble", "Rover",
+	"Squabble", "Tumbleweed", "Vroom", "Whizzle", "YoYo",
+}
+
+var LastNamesList = []string{
+	"Smith", "Kim", "Johnson", "Lee", "Brown",
+	"Patel", "Garcia", "Rodriguez", "Martinez", "Chen",
+	"Jones", "Nguyen", "Williams", "Lopez", "Gonzalez",
+	"Perez", "Hernandez", "Tanaka", "Silva", "Santos",
+	"Cohen", "Kumar", "Wang", "Meyer", "Schneider",
+	"Taylor", "Anderson", "White", "Young", "Harris",
+	"Clark", "Lewis", "Turner", "Walker", "Hall",
+	"Allen", "Roberts", "Wright", "King", "Hill",
+	"Scott", "Green", "Baker", "Adams", "Nelson",
+	"Campbell", "Mitchell", "Robinson", "Carter", "Thomas",
+	"Mueller", "Fernandez", "Oliveira", "Sharma", "Singh",
+	"Liu", "Lin", "Ali", "Khan", "Jackson",
+	"Parker", "Phillips", "Davis", "Murphy", "Price",
+	"Suzuki", "Ross", "Reyes", "Jenkins", "Morris",
+	"Sanchez", "Perry", "Powell", "Russell", "Moore",
+	"Ramirez", "Gray", "James", "Watson", "Brooks",
+	"Kelly", "Sanders", "Foster", "Evans", "Barnes",
+}
+
+func RandomFirstName() string {
+	return FirstNameList[RandomInt(0, len(FirstNameList))]
+}
+
+func RandomMiddleName() string {
+	return MiddleNamesList[RandomInt(0, len(MiddleNamesList))]
+}
+
+func RandomLastName() string {
+	return LastNamesList[RandomInt(0, len(LastNamesList))]
+}
+
+func RandomInt(min int, max int) int {
+	return min + rand.Intn(max-min)
+}
 
 func FatalError(message string) {
 	red := color.New(color.FgRed).SprintFunc()

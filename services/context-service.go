@@ -162,6 +162,27 @@ func GetGinContextId(c *gin.Context) *string {
 	return nil
 }
 
+func GetGinNamespace(c *gin.Context) *string {
+	if namespace := c.GetHeader("X-Namespace"); namespace != "" {
+		return &namespace
+	}
+	return nil
+}
+
+func GetGinPodname(c *gin.Context) *string {
+	if podname := c.GetHeader("X-Podname"); podname != "" {
+		return &podname
+	}
+	return nil
+}
+
+func GetGinContainername(c *gin.Context) *string {
+	if container := c.GetHeader("X-Container"); container != "" {
+		return &container
+	}
+	return nil
+}
+
 // func GetGinContextContexts(c *gin.Context) *[]dtos.PunqContext {
 // 	if contextArray, exists := c.Get("contexts"); exists {
 // 		contexts, ok := contextArray.([]dtos.PunqContext)

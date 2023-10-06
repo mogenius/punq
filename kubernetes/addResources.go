@@ -37,11 +37,6 @@ func Deploy(clusterName string, ingressHostname string) {
 	addRbac(provider)
 	addDeployment(provider)
 
-	// _, err = CreateClusterSecretIfNotExist(provider)
-	// if err != nil {
-	// 	logger.Log.Fatalf("Error creating cluster secret. Aborting: %s.", err.Error())
-	// }
-
 	_, err = CreateContextSecretIfNotExist(provider)
 	if err != nil {
 		logger.Log.Fatalf("Error creating context secret. Aborting: %s.", err.Error())
@@ -69,6 +64,10 @@ func addService(provider *KubeProvider) {
 	punqService.Spec.Ports[1].Protocol = core.ProtocolTCP
 	punqService.Spec.Ports[1].Port = int32(utils.CONFIG.Frontend.Port)
 	punqService.Spec.Ports[1].TargetPort = intstr.Parse(fmt.Sprint(utils.CONFIG.Frontend.Port))
+	punqService.Spec.Ports[2].Name = fmt.Sprintf("%d-%s-websocket", utils.CONFIG.Websocket.Port, SERVICENAME)
+	punqService.Spec.Ports[2].Protocol = core.ProtocolTCP
+	punqService.Spec.Ports[2].Port = int32(utils.CONFIG.Websocket.Port)
+	punqService.Spec.Ports[2].TargetPort = intstr.Parse(fmt.Sprint(utils.CONFIG.Websocket.Port))
 	punqService.Spec.Selector["app"] = version.Name
 
 	serviceClient := provider.ClientSet.CoreV1().Services(utils.CONFIG.Kubernetes.OwnNamespace)
@@ -331,7 +330,7 @@ func addDeployment(provider *KubeProvider) {
 	deploymentContainer.WithName(version.Name)
 	deploymentContainer.WithImage(version.OperatorImage)
 
-	deploymentContainer.WithPorts(applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Backend.Port)).WithContainerPort(int32(utils.CONFIG.Frontend.Port)))
+	deploymentContainer.WithPorts(applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Backend.Port)).WithContainerPort(int32(utils.CONFIG.Frontend.Port)).WithContainerPort(int32(utils.CONFIG.Websocket.Port)))
 
 	envVars := []applyconfcore.EnvVarApplyConfiguration{}
 	envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{

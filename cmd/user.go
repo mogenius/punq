@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/services"
@@ -31,25 +32,42 @@ var addUserCmd = &cobra.Command{
 	Short: "Add punq user.",
 	Long:  `The add command lets you add a user into punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		RequireStringFlag(email, "email")
-		RequireStringFlag(displayName, "displayname")
-		RequireStringFlag(password, "password")
-
 		selectedAccess := dtos.READER // default level
 		if accessLevel != "" {
 			selectedAccess = dtos.AccessLevelFromString(accessLevel)
+		} else {
+			selectedAccess = dtos.ADMIN
 		}
 
-		_, err := services.AddUser(dtos.PunqUserCreateInput{
+		firstname := utils.RandomFirstName()
+		middlename := utils.RandomMiddleName()
+		lastname := utils.RandomLastName()
+
+		if email == "" {
+			email = fmt.Sprintf("%s-%s@punq.dev", strings.ToLower(firstname), strings.ToLower(lastname))
+		}
+
+		if password == "" {
+			password = utils.NanoId()
+		}
+
+		if displayName == "" {
+			displayName = fmt.Sprintf("%s %s %s", firstname, middlename, lastname)
+		}
+
+		newUser := dtos.PunqUserCreateInput{
 			Email:       email,
 			Password:    password,
 			DisplayName: displayName,
 			AccessLevel: selectedAccess,
-		})
+		}
+
+		_, err := services.AddUser(newUser)
 		if err != nil {
 			utils.FatalError(err.Error())
 		} else {
 			utils.PrintInfo("User added succesfully ✅.")
+			structs.PrettyPrint(newUser)
 		}
 	},
 }

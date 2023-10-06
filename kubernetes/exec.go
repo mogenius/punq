@@ -30,7 +30,7 @@ func ExecTest() error {
 	// cmd.Stdout = os.Stdout
 	// cmd.Stderr = os.Stderr
 
-	go sendData(cmdStdin, cmdStdout)
+	go SendData(cmdStdin, cmdStdout)
 
 	// Run the command
 	err := cmd.Run()
@@ -84,7 +84,7 @@ func ExecTest() error {
 // 	return err
 // }
 
-func sendData(cmdStdin io.WriteCloser, cmdStdout io.ReadCloser) {
+func SendData(cmdStdin io.WriteCloser, cmdStdout io.ReadCloser) {
 	// Create a dialer
 	dialer := websocket.DefaultDialer
 

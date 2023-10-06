@@ -50,7 +50,9 @@ var rootCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		utils.InitConfigYaml(debug, customConfig, stage)
+		if cmd.CommandPath() != "punq system reset-config" {
+			utils.InitConfigYaml(debug, customConfig, stage)
+		}
 
 		if !utils.ContainsEqual(cmdsWithoutContext, cmd.CommandPath()) {
 			mokubernetes.InitKubernetes(utils.CONFIG.Kubernetes.RunInCluster)

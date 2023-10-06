@@ -28,6 +28,7 @@ var operatorCmd = &cobra.Command{
 		kubernetes.ContextAddMany(contexts)
 
 		go operator.InitBackend()
+		go operator.InitWebsocket()
 		operator.InitFrontend()
 	},
 }

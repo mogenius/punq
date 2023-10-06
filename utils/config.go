@@ -17,7 +17,7 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-const CONFIGVERSION = 1
+const CONFIGVERSION = 2
 const USERSSECRET = "punq-users"
 const JWTSECRET = "punq-jwt"
 const USERADMIN = "admin"
@@ -43,6 +43,10 @@ type Config struct {
 		Host string `yaml:"host" env:"backend_host" env-description:"Host of the backend server."`
 		Port int    `yaml:"port" env:"backend_port" env-description:"Port of the backend server."`
 	} `yaml:"backend"`
+	Websocket struct {
+		Host string `yaml:"host" env:"websocket_host" env-description:"Host of the websocket server."`
+		Port int    `yaml:"port" env:"websocket_port" env-description:"Port of the websocket server."`
+	} `yaml:"websocket"`
 	Kubernetes struct {
 		ClusterName  string `yaml:"cluster_name" env:"cluster_name" env-description:"The Name of the Kubernetes Cluster"`
 		OwnNamespace string `yaml:"own_namespace" env:"OWN_NAMESPACE" env-description:"The Namespace of mogenius platform"`

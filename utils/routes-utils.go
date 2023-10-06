@@ -52,6 +52,7 @@ func MissingHeader(c *gin.Context, header string) {
 	c.JSON(http.StatusBadRequest, gin.H{
 		"err": fmt.Sprintf("Missing header '%s'.", header),
 	})
+	c.AbortWithError(http.StatusBadRequest, fmt.Errorf("%s header is required", header))
 }
 
 func MalformedMessage(c *gin.Context, msg string) {

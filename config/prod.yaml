@@ -1,5 +1,5 @@
 config:
-  version: 1
+  version: 2
 
 backend:
   host: 127.0.0.1
@@ -8,6 +8,10 @@ backend:
 frontend:
   host: 127.0.0.1
   port: 8081
+
+websocket:
+  host: 127.0.0.1
+  port: 8082
 
 kubernetes:
   cluster_name: your-cluster-name

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -65,9 +66,9 @@ func CreateAdminUser() {
 	password := utils.NanoId()
 
 	adminUser, _ := AddUser(dtos.PunqUserCreateInput{
-		Email:       "admin@punq.dev",
+		Email:       fmt.Sprintf("%s-%s@punq.dev", strings.ToLower(utils.RandomFirstName()), strings.ToLower(utils.RandomLastName())),
 		Password:    password,
-		DisplayName: "Admin User",
+		DisplayName: "ADMIN USER",
 		AccessLevel: dtos.ADMIN,
 	})
 

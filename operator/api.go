@@ -36,6 +36,7 @@ func InitFrontend() {
 		c.Data(http.StatusOK, "text/html; charset=utf-8", getIndexHtml())
 	})
 
+	utils.PrintInfo(fmt.Sprintf("Frontend started:  http://%s:%d", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port))
 	err := router.Run(fmt.Sprintf(":%d", utils.CONFIG.Frontend.Port))
 	logger.Log.Errorf("Frontend (gin) stopped with error: %s", err.Error())
 }
@@ -62,8 +63,25 @@ func InitBackend() {
 	InitGeneralRoutes(router)
 	InitWorkloadRoutes(router)
 
+	utils.PrintInfo(fmt.Sprintf("Backend started:   http://%s:%d", utils.CONFIG.Backend.Host, utils.CONFIG.Backend.Port))
 	err := router.Run(fmt.Sprintf(":%d", utils.CONFIG.Backend.Port))
 	logger.Log.Errorf("Operator (gin) stopped with error: %s", err.Error())
+}
+
+func InitWebsocket() {
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+
+	router.Use(cors.New(config))
+	router.Use(CreateLogger("WEBSOCK"))
+
+	InitWebsocketRoutes(router)
+
+	utils.PrintInfo(fmt.Sprintf("Websocket started: ws://%s:%d", utils.CONFIG.Websocket.Host, utils.CONFIG.Websocket.Port))
+	err := router.Run(fmt.Sprintf(":%d", utils.CONFIG.Websocket.Port))
+	logger.Log.Errorf("Websocket (gin) stopped with error: %s", err.Error())
 }
 
 func embedFs() http.FileSystem {
@@ -80,7 +98,7 @@ func embedFs() http.FileSystem {
 	if len(dirContent) <= 0 {
 		panic("dist folder empty. Cannnot serve site. FATAL.")
 	} else {
-		logger.Log.Noticef("Loaded %d static files from embed.", len(dirContent))
+		fmt.Printf("Loaded %d static files from embed.\n", len(dirContent))
 	}
 	return http.FS(sub)
 }
