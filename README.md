@@ -91,8 +91,14 @@ punq clean
 
 ## Development
 
-To update the documentation please run (in project root):
+punq has a development application that you can install with the following commands.
+This version points to the branch `develop`. Please note that you can't run `punq` and `punq-dev` simultaneously on a cluster.
+```
+brew tap mogenius/punq-dev
+brew install punq-dev
+```
 
+To update the documentation please run (in project root):
 ```
 go install github.com/swaggo/swag/cmd/swag@latest
 swag init --parseDependency --parseInternal
