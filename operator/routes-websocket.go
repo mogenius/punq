@@ -1,18 +1,24 @@
 package operator
 
 import (
-	"bufio"
+	"encoding/json"
 	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"os/exec"
-
+	"github.com/creack/pty"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/utils"
+	"log"
+	"net/http"
+	"os"
+	"os/exec"
+	"strings"
 )
+
+type WindowSize struct {
+	Rows uint16 `json:"rows"`
+	Cols uint16 `json:"cols"`
+}
 
 func InitWebsocketRoutes(router *gin.Engine) {
 	router.GET("/exec-sh", AuthByParameter(dtos.ADMIN), connectWs)
@@ -49,83 +55,71 @@ func connectWs(c *gin.Context) {
 
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		log.Printf("Failed to upgrade ws: %+v", err)
+		log.Printf("Failed to upgrade ws: %s", err.Error())
 		return
 	}
 	defer func() {
 		ws.Close()
 	}()
-
-	cmd := exec.Command("sh", "-c", fmt.Sprintf("kubectl exec -i --tty -c %s -n %s %s -- /bin/sh", container, namespace, podName))
-	cmd.Env = os.Environ()
-	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		log.Fatal("Error creating stdin pipe:", err)
-	}
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		log.Fatal("Error creating stdout pipe:", err)
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		log.Fatal("Error creating stderr pipe:", err)
+		log.Printf("Unable to upgrade connection: %s", err.Error())
+		return
 	}
 
-	go func() {
-		scanner := bufio.NewScanner(stdout)
-		for scanner.Scan() {
-			data := scanner.Bytes()
-			if utils.CONFIG.Misc.Debug {
-				fmt.Printf("Response-Line: '%s'\n", string(data))
-			}
-			err = ws.WriteMessage(websocket.TextMessage, data)
-			if err != nil {
-				log.Printf("Error writing to ws: %+v", err)
-			}
-		}
-	}()
-	go func() {
-		scanner := bufio.NewScanner(stderr)
-		for scanner.Scan() {
-			data := scanner.Bytes()
-			if utils.CONFIG.Misc.Debug {
-				fmt.Printf("Response-Line: '%s'\n", string(data))
-			}
-			err = ws.WriteMessage(websocket.TextMessage, data)
-			if err != nil {
-				log.Printf("Error writing to ws: %+v", err)
-			}
-		}
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("kubectl exec -it -c %s -n %s %s -- sh -c \"clear; (bash || ash || sh || ksh || csh || zsh )\"", container, namespace, podName))
+	cmd.Env = append(os.Environ(), "TERM=xterm-color")
+
+	tty, err := pty.Start(cmd)
+	if err != nil {
+		log.Printf("Unable to start pty/cmd")
+		ws.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		return
+	}
+
+	defer func() {
+		cmd.Process.Kill()
+		cmd.Process.Wait()
+		tty.Close()
+		ws.Close()
 	}()
 
 	go func() {
 		for {
-			_, msg, err := ws.ReadMessage()
-			if utils.CONFIG.Misc.Debug {
-				fmt.Printf("Received Cmd: '%s'", string(msg))
-			}
-			msg = append(msg, '\n')
+			buf := make([]byte, 1024)
+			read, err := tty.Read(buf)
 			if err != nil {
-				log.Printf("Error reading from ws: %+v", err)
-				log.Printf("CLOSE: exec-sh: %s %s %s\n", namespace, container, podName)
-				break
+				ws.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+				log.Printf("Unable to read from pty/cmd: %s", err.Error())
+				return
 			}
-			_, err = stdin.Write(msg)
-			if err != nil {
-				log.Printf("Error writing to stdin: %+v", err)
-			}
+			ws.WriteMessage(websocket.BinaryMessage, buf[:read])
 		}
 	}()
 
-	err = cmd.Start()
-	if err != nil {
-		log.Printf("Error starting cmd: %+v", err)
-		return
-	}
+	for {
+		_, reader, err := ws.ReadMessage()
+		if err != nil {
+			log.Printf("Unable to grab next reader: %s", err.Error())
+			return
+		}
 
-	err = cmd.Wait()
-	if err != nil {
-		log.Printf("Cmd returned error: %+v", err.Error())
-		return
+		if strings.HasPrefix(string(reader), "\x04") {
+			str := strings.TrimPrefix(string(reader), "\x04")
+
+			var resizeMessage WindowSize
+			err := json.Unmarshal([]byte(str), &resizeMessage)
+			if err != nil {
+				log.Printf("%s", err.Error())
+				continue
+			}
+
+			if err := pty.Setsize(tty, &pty.Winsize{Rows: uint16(resizeMessage.Rows), Cols: uint16(resizeMessage.Cols)}); err != nil {
+				log.Printf("Unable to resize: %s", err.Error())
+				continue
+			}
+			continue
+		}
+
+		tty.Write(reader)
 	}
 }
