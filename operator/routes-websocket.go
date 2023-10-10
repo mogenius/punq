@@ -71,7 +71,7 @@ func connectWs(c *gin.Context) {
 
 	tty, err := pty.Start(cmd)
 	if err != nil {
-		log.Printf("Unable to start pty/cmd")
+		log.Printf("Unable to start pty/cmd: %s", err.Error())
 		ws.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		return
 	}
@@ -90,7 +90,7 @@ func connectWs(c *gin.Context) {
 			if err != nil {
 				ws.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 				log.Printf("Unable to read from pty/cmd: %s", err.Error())
-				return
+				continue
 			}
 			ws.WriteMessage(websocket.BinaryMessage, buf[:read])
 		}
