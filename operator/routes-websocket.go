@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-type WindowSize struct {
+type windowSize struct {
 	Rows uint16 `json:"rows"`
 	Cols uint16 `json:"cols"`
 }
@@ -106,7 +106,7 @@ func connectWs(c *gin.Context) {
 		if strings.HasPrefix(string(reader), "\x04") {
 			str := strings.TrimPrefix(string(reader), "\x04")
 
-			var resizeMessage WindowSize
+			var resizeMessage windowSize
 			err := json.Unmarshal([]byte(str), &resizeMessage)
 			if err != nil {
 				log.Printf("%s", err.Error())
