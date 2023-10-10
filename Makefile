@@ -3,7 +3,6 @@ BINARY_NAME=punq
 GO=go
 GOBUILD=$(GO) build
 GOCLEAN=$(GO) clean
-GOTEST=$(GO) test
 GOGET=$(GO) get
 
 # Ensure linker embeds versioning information
@@ -39,9 +38,6 @@ clean:
 	rm -f $(BINARY_NAME)-$(VERSION)-linux-arm
 	rm -f $(BINARY_NAME)-$(VERSION)-windows-amd64
 	rm -f $(BINARY_NAME)-$(VERSION)-windows-386
-
-test:
-	$(GOTEST) -v ./...
 
 darwin_arm64:
 	GOOS=darwin GOARCH=arm64 $(GOBUILD) -ldflags="$(LDFLAGS)" -o builds/$(BINARY_NAME)-$(VERSION)-darwin-arm64 -v

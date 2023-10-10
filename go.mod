@@ -4,6 +4,7 @@ go 1.21
 
 require (
 	github.com/cert-manager/cert-manager v1.12.3
+	github.com/creack/pty v1.1.18
 	github.com/fatih/color v1.15.0
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1

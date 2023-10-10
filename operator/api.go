@@ -25,7 +25,7 @@ func InitFrontend() {
 	router := gin.New()
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
-	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "authorization"}
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "authorization", "x-context-id"}
 
 	router.Use(cors.New(config))
 	router.Use(CreateLogger("ANGULAR"))
@@ -46,7 +46,7 @@ func InitBackend() {
 	router := gin.New()
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
-	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "authorization"}
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "authorization", "x-context-id"}
 
 	router.Use(cors.New(config))
 	router.Use(CreateLogger("BACKEND"))
