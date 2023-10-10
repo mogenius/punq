@@ -90,7 +90,7 @@ func connectWs(c *gin.Context) {
 			if err != nil {
 				ws.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 				log.Printf("Unable to read from pty/cmd: %s", err.Error())
-				continue
+				return
 			}
 			ws.WriteMessage(websocket.BinaryMessage, buf[:read])
 		}
