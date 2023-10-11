@@ -59,23 +59,24 @@ scoop bucket add mogenius https://github.com/mogenius/punq
 scoop install punq
 ```
 
-
 ## Getting started
 
 Once you installed the punq CLI here's how to get started.
 
 ```
-# Install punq on your cluster in your current context. This will also set up the ingress to deliver punq on your own domain. You'll be asked to confirm with "Y". 
+# Install punq on your cluster in your current context. This will also set up the ingress to deliver punq on your own domain. You'll be asked to confirm with "Y".
 punq install -i punq.yourdomain.com
 ```
+
 - In your domain's DNS settings, add a record for the punq domain, e.g. punq.yourdomain.com.
 - Open punq in your browser.
 - Log in with the admin credentials. They are prompted to your terminal once punq is installed. Make sure to store the admin credentials in a safe place, they will only be displayed once after installation.
-- The cluster where punq was installed is set up per default in your punq instance. To add more clusters, use the dropdown in the top left corner and follow the instructions. Upload your kubeconfig to add more clusters. 
+- The cluster where punq was installed is set up per default in your punq instance. To add more clusters, use the dropdown in the top left corner and follow the instructions. Upload your kubeconfig to add more clusters.
 
 **🤘 You're ready to go, have fun with punq 🤘**
 
 ## Managing punq via CLI
+
 ```
 # List all available CLI features
 punq help
@@ -93,12 +94,14 @@ punq clean
 
 punq has a development application that you can install with the following commands.
 This version points to the branch `develop`. Please note that you can't run `punq` and `punq-dev` simultaneously on a cluster.
+
 ```
 brew tap mogenius/punq-dev
 brew install punq-dev
 ```
 
 To update the documentation please run (in project root):
+
 ```
 go install github.com/swaggo/swag/cmd/swag@latest
 swag init --parseDependency --parseInternal
@@ -106,8 +109,8 @@ swag init --parseDependency --parseInternal
 
 ## Contribution
 
-punq is still still early stage and we're inviting you to contribute. Feel free to pick up open issues and create PRs.
+punq is still in its early stages and we're inviting you to contribute. Feel free to pick up open issues and create PRs.
 
 ![punq for k8s](images/punq_four.png)
 
-Made with 💜 by the folks from [mogenius](https://mogenius.com)
+Made with 💜 by the folks at [mogenius](https://mogenius.com)
