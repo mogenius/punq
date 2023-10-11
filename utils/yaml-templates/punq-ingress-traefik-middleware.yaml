@@ -8,3 +8,4 @@ spec:
     forceSlash: false
     prefixes:
       - /backend
+      - /websocket

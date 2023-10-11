@@ -35,7 +35,7 @@ var updateOperatorImageCmd = &cobra.Command{
 		utils.PrintInfo(fmt.Sprintf("\nYour version:    %s", operatorVer))
 		utils.PrintInfo(fmt.Sprintf("Current version: %s", vers))
 
-		if vers == version.Ver && !forceUpgrade {
+		if vers == operatorVer && !forceUpgrade {
 			utils.PrintInfo("You are already on the latest version.")
 			return
 		} else {
