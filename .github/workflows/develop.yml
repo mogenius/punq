@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - develop
-  repository_dispatch:
-    types: [build-from-punq-frontend-dev]
+  # repository_dispatch:
+  #   types: [build-from-punq-frontend-dev]
 
 env:
   IMAGE_NAME: ghcr.io/mogenius/punq-dev
