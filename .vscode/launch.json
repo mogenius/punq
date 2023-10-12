@@ -122,12 +122,22 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "test",
+            "name": "cluster info",
             "type": "go",
             "request": "launch",
             "mode": "debug",
             "program": "main.go",
-            "args": ["system", "test"],
+            "args": ["cluster", "info"],
+            "asRoot": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "system check",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["system", "check"],
             "asRoot": false,
             "console": "integratedTerminal"
         }

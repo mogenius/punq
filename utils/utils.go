@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/gob"
 	"encoding/hex"
@@ -342,4 +343,32 @@ func parseIPs(ips []string) ([]net.IP, error) {
 		parsed = append(parsed, parsedIP.To4())
 	}
 	return parsed, nil
+}
+
+func CheckInternetAccess() (bool, error) {
+	// Create a custom resolver
+	r := &net.Resolver{
+		PreferGo: true,
+		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+			d := net.Dialer{}
+			return d.DialContext(ctx, "udp", "1.1.1.1:53")
+		},
+	}
+
+	// Attempt to resolve a known domain
+	// If it succeeds, it means we have internet access
+	_, err := r.LookupHost(context.Background(), "mogenius.com")
+	return err == nil, err
+}
+
+func IsKubectlInstalled() (bool, string, error) {
+	cmd := exec.Command("kubectl", "version")
+	output, err := cmd.CombinedOutput()
+	return err == nil, strings.TrimRight(string(output), "\n\r"), err
+}
+
+func IsHelmInstalled() (bool, string, error) {
+	cmd := exec.Command("helm", "version", "--short")
+	output, err := cmd.CombinedOutput()
+	return err == nil, strings.TrimRight(string(output), "\n\r"), err
 }

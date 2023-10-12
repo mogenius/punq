@@ -15,7 +15,7 @@ require (
 	github.com/ivanpirog/coloredcobra v1.0.1
 	github.com/jaevor/go-nanoid v1.3.0
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
-	github.com/jedib0t/go-pretty/v6 v6.4.6
+	github.com/jedib0t/go-pretty/v6 v6.4.8
 	github.com/json-iterator/go v1.1.12
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/spf13/cobra v1.7.0
