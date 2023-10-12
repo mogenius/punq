@@ -21,7 +21,7 @@ const (
 	ACK                          KubernetesProvider = "ACK"                          // Alibaba Cloud Kubernetes
 	OKE                          KubernetesProvider = "OKE"                          // Oracle Cloud Kubernetes
 	OTC                          KubernetesProvider = "OTC"                          // Telekom cloud
-	OPEN_SHIFT                   KubernetesProvider = "OPEN_SHIFT"                   // Telekom cloud
+	OPEN_SHIFT                   KubernetesProvider = "OPEN_SHIFT"                   // RED HAT OpenShift
 	GKE_ON_PREM                  KubernetesProvider = "GKE_ON_PREM"                  // Google Kubernetes Engine On-Prem
 	RKE                          KubernetesProvider = "RKE"                          // Rancher Kubernetes Engine
 	KUBEADM                      KubernetesProvider = "KUBEADM"                      // Kubeadm
@@ -36,6 +36,20 @@ const (
 	STACKIT                      KubernetesProvider = "SKE"                          // STACKIT Kubernetes Engine (SKE)
 	IONOS                        KubernetesProvider = "IONOS"                        // IONOS Cloud Managed
 	SCALEWAY                     KubernetesProvider = "SCALEWAY"                     // scaleway
+	VMWARE                       KubernetesProvider = "VMWARE"                       // VMware Tanzu Kubernetes Grid Integrated Edition
+	MICROK8S                     KubernetesProvider = "MICROK8S"                     // MicroK8s
+	CIVO                         KubernetesProvider = "CIVO"                         // Civo Kubernetes
+	GIANTSWARM                   KubernetesProvider = "GIANTSWARM"                   // Giant Swarm Kubernetes
+	OVHCLOUD                     KubernetesProvider = "OVHCLOUD"                     // OVHCloud Kubernetes
+	GARDENER                     KubernetesProvider = "GARDENER"                     // SAP Gardener Kubernetes
+	HUAWEI                       KubernetesProvider = "HUAWEI"                       // Huawei Cloud Kubernetes
+	NIRMATA                      KubernetesProvider = "NIRMATA"                      // Nirmata Kubernetes
+	PF9                          KubernetesProvider = "PF9"                          // Platform9 Kubernetes
+	NKS                          KubernetesProvider = "NKS"                          // Netapp Kubernetes Service
+	APPSCODE                     KubernetesProvider = "APPSCODE"                     // AppsCode Kubernetes
+	LOFT                         KubernetesProvider = "LOFT"                         // Loft Kubernetes
+	SPECTROCLOUD                 KubernetesProvider = "SPECTROCLOUD"                 // Spectro Cloud Kubernetes
+	DIAMANTI                     KubernetesProvider = "DIAMANTI"                     // Diamanti Kubernetes
 )
 
 var ALL_PROVIDER []string = []string{
@@ -72,4 +86,18 @@ var ALL_PROVIDER []string = []string{
 	string(STACKIT),
 	string(IONOS),
 	string(SCALEWAY),
+	string(VMWARE),
+	string(MICROK8S),
+	string(CIVO),
+	string(GIANTSWARM),
+	string(OVHCLOUD),
+	string(GARDENER),
+	string(HUAWEI),
+	string(NIRMATA),
+	string(PF9),
+	string(NKS),
+	string(APPSCODE),
+	string(LOFT),
+	string(SPECTROCLOUD),
+	string(DIAMANTI),
 }

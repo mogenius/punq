@@ -12,29 +12,64 @@ import (
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	v1metrics "k8s.io/metrics/pkg/apis/metrics/v1beta1"
 )
 
 func GetNodeStats(contextId *string) []dtos.NodeStat {
 	result := []dtos.NodeStat{}
 	nodes := ListNodes(contextId)
+	nodeMetrics := ListNodeMetricss(contextId)
 
 	for index, node := range nodes {
+
+		utilizedCores := float64(0)
+		utilizedMemory := int64(0)
+		if len(nodeMetrics) > 0 {
+			// Find the corresponding node metrics
+			var nodeMetric *v1metrics.NodeMetrics
+			for _, nm := range nodeMetrics {
+				if nm.Name == node.Name {
+					nodeMetric = &nm
+					break
+				}
+			}
+
+			// CPU
+			cpuUsageDec := nodeMetric.Usage.Cpu().AsDec()
+			cpuUsage, works := cpuUsageDec.Unscaled()
+			if !works {
+				logger.Log.Errorf("Failed to get CPU usage for node %s", node.Name)
+			}
+			if cpuUsage == 0 {
+				cpuUsage = 1
+			}
+			utilizedCores = float64(cpuUsage) / 1000000000
+
+			// Memory
+			utilizedMemory, works = nodeMetric.Usage.Memory().AsInt64()
+			if !works {
+				logger.Log.Errorf("Failed to get MEMORY usage for node %s", node.Name)
+			}
+		}
+
 		mem, _ := node.Status.Capacity.Memory().AsInt64()
 		cpu, _ := node.Status.Capacity.Cpu().AsInt64()
 		maxPods, _ := node.Status.Capacity.Pods().AsInt64()
 		ephemeral, _ := node.Status.Capacity.StorageEphemeral().AsInt64()
 
 		nodeStat := dtos.NodeStat{
-			Name:             fmt.Sprintf("Node-%d", index+1),
-			MaschineId:       node.Status.NodeInfo.MachineID,
-			Cpus:             cpu,
-			MemoryInBytes:    mem,
-			EphemeralInBytes: ephemeral,
-			MaxPods:          maxPods,
-			KubletVersion:    node.Status.NodeInfo.KubeletVersion,
-			OsType:           node.Status.NodeInfo.OperatingSystem,
-			OsImage:          node.Status.NodeInfo.OSImage,
-			Architecture:     node.Status.NodeInfo.Architecture,
+			Name:                  fmt.Sprintf("Node-%d", index+1),
+			MaschineId:            node.Status.NodeInfo.MachineID,
+			CpuInCores:            cpu,
+			CpuInCoresUtilized:    utilizedCores,
+			MemoryInBytes:         mem,
+			MemoryInBytesUtilized: utilizedMemory,
+			EphemeralInBytes:      ephemeral,
+			MaxPods:               maxPods,
+			KubletVersion:         node.Status.NodeInfo.KubeletVersion,
+			OsType:                node.Status.NodeInfo.OperatingSystem,
+			OsImage:               node.Status.NodeInfo.OSImage,
+			Architecture:          node.Status.NodeInfo.Architecture,
 		}
 		result = append(result, nodeStat)
 		//nodeStat.PrintPretty()

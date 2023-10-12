@@ -7,16 +7,18 @@ import (
 )
 
 type NodeStat struct {
-	Name             string `json:"name" validate:"required"`
-	MaschineId       string `json:"maschineId" validate:"required"`
-	Cpus             int64  `json:"cpus" validate:"required"`
-	MemoryInBytes    int64  `json:"memoryInBytes" validate:"required"`
-	EphemeralInBytes int64  `json:"ephemeralInBytes" validate:"required"`
-	MaxPods          int64  `json:"maxPods" validate:"required"`
-	KubletVersion    string `json:"kubletVersion" validate:"required"`
-	OsType           string `json:"osType" validate:"required"`
-	OsImage          string `json:"osImage" validate:"required"`
-	Architecture     string `json:"architecture" validate:"required"`
+	Name                  string  `json:"name" validate:"required"`
+	MaschineId            string  `json:"maschineId" validate:"required"`
+	CpuInCores            int64   `json:"cpuInCores" validate:"required"`
+	CpuInCoresUtilized    float64 `json:"cpuInCoresUtilized" validate:"required"`
+	MemoryInBytes         int64   `json:"memoryInBytes" validate:"required"`
+	MemoryInBytesUtilized int64   `json:"memoryInBytesUtilized" validate:"required"`
+	EphemeralInBytes      int64   `json:"ephemeralInBytes" validate:"required"`
+	MaxPods               int64   `json:"maxPods" validate:"required"`
+	KubletVersion         string  `json:"kubletVersion" validate:"required"`
+	OsType                string  `json:"osType" validate:"required"`
+	OsImage               string  `json:"osImage" validate:"required"`
+	Architecture          string  `json:"architecture" validate:"required"`
 }
 
 func (o *NodeStat) PrintPretty() {
@@ -26,7 +28,7 @@ func (o *NodeStat) PrintPretty() {
 		o.OsImage,
 		o.OsType,
 		o.Architecture,
-		o.Cpus,
+		o.CpuInCores,
 		utils.BytesToHumanReadable(o.MemoryInBytes),
 		utils.BytesToHumanReadable(o.EphemeralInBytes),
 		o.MaxPods,

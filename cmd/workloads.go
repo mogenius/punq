@@ -45,7 +45,7 @@ var podsListCmd = &cobra.Command{
 		kubernetes.ListPodsTerminal(namespace, &contextId)
 	},
 }
-var podsDescrineCmd = &cobra.Command{
+var podsDescribeCmd = &cobra.Command{
 	Use:   "describe",
 	Short: "Describe pod.",
 	Long:  `Similar to kubectl, punq can describe workloads in an orderly fashion.`,
@@ -85,9 +85,9 @@ func init() {
 	podsCmd.AddCommand(podsListCmd)
 	podsListCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
 	podsListCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
-	podsCmd.AddCommand(podsDescrineCmd)
-	podsDescrineCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
-	podsDescrineCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
+	podsCmd.AddCommand(podsDescribeCmd)
+	podsDescribeCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")
+	podsDescribeCmd.Flags().StringVarP(&resource, "resource", "r", "", "Define a resource name")
 
 	podsCmd.AddCommand(podDeleteCmd)
 	podDeleteCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Define a namespace")

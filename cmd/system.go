@@ -6,7 +6,9 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/utils"
 
@@ -31,6 +33,86 @@ var resetConfig = &cobra.Command{
 			os.Exit(0)
 		}
 		utils.DeleteCurrentConfig()
+	},
+}
+
+var checkCmd = &cobra.Command{
+	Use:   "check",
+	Short: "Check the system for all required components and offer healing.",
+	Run: func(cmd *cobra.Command, args []string) {
+		// check internet access
+		// check for kubectl
+		// check kubernetes version
+		// check for ingresscontroller
+		// check for metrics server
+		// check for helm
+		// check for cluster provider
+		// check for api versions
+
+		t := table.NewWriter()
+		t.SetOutputMirror(os.Stdout)
+		t.AppendHeader(table.Row{"Check", "Status", "Message"})
+		// check internet access
+		inetResult, inetErr := utils.CheckInternetAccess()
+		t.AppendRow(
+			table.Row{"Internet Access", StatusEmoji(inetResult), StatusMessage(inetErr, "Check your internet connection.", "Internet access works.")},
+		)
+		t.AppendSeparator()
+
+		// check for kubectl
+		kubectlResult, kubectlOutput, kubectlErr := utils.IsKubectlInstalled()
+		t.AppendRow(
+			table.Row{"kubectl", StatusEmoji(kubectlResult), StatusMessage(kubectlErr, "Plase install kubectl (https://kubernetes.io/docs/tasks/tools/) on your system to proceed.", kubectlOutput)},
+		)
+		t.AppendSeparator()
+
+		// check kubernetes version
+		kubernetesVersion := kubernetes.KubernetesVersion(nil)
+		kubernetesVersionResult := kubernetesVersion != nil
+		t.AppendRow(
+			table.Row{"Kubernetes Version", StatusEmoji(kubernetesVersionResult), StatusMessage(kubectlErr, "Cannot determin version of kubernetes.", fmt.Sprintf("Version: %s\nPlatform: %s", kubernetesVersion.String(), kubernetesVersion.Platform))},
+		)
+		t.AppendSeparator()
+
+		// check for ingresscontroller
+		ingressType, ingressTypeErr := kubernetes.DetermineIngressControllerType(nil)
+		t.AppendRow(
+			table.Row{"Ingress Controller", StatusEmoji(ingressTypeErr == nil), StatusMessage(ingressTypeErr, "Cannot determin ingress controller type.", ingressType.String())},
+		)
+		t.AppendSeparator()
+
+		// check for metrics server
+		metricsResult, metricsVersion, metricsErr := kubernetes.IsMetricsServerAvailable(nil)
+		t.AppendRow(
+			table.Row{"Metrics Server", StatusEmoji(metricsResult), StatusMessage(metricsErr, "kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml\nNote: Running docker-desktop? Please add '- --kubelet-insecure-tls' to the args sction in the deployment of metrics-server.", metricsVersion)},
+		)
+		t.AppendSeparator()
+
+		// check for helm
+		helmResult, helmOutput, helmErr := utils.IsHelmInstalled()
+		t.AppendRow(
+			table.Row{"Helm", StatusEmoji(helmResult), StatusMessage(helmErr, "Plase install helm (https://helm.sh/docs/intro/install/) on your system to proceed.", helmOutput)},
+		)
+		t.AppendSeparator()
+
+		// check cluster provider
+		clusterProvOutput, clusterProvErr := kubernetes.GuessClusterProvider(nil)
+		t.AppendRow(
+			table.Row{"Cluster Provider", StatusEmoji(clusterProvErr == nil), StatusMessage(clusterProvErr, "We could not determine the provider of this cluster.", string(clusterProvOutput))},
+		)
+		t.AppendSeparator()
+
+		// API Versions
+		apiVerResult, apiVerErr := kubernetes.ApiVersions(nil)
+		apiVersStr := ""
+		for _, entry := range apiVerResult {
+			apiVersStr += fmt.Sprintf("%s\n", entry)
+		}
+		apiVersStr = strings.TrimRight(apiVersStr, "\n\r")
+		t.AppendRow(
+			table.Row{"API Versions", StatusEmoji(len(apiVerResult) > 0), StatusMessage(apiVerErr, "Cannot determin API versions.", apiVersStr)},
+		)
+		t.Render()
 	},
 }
 
@@ -61,4 +143,21 @@ func init() {
 	systemCmd.AddCommand(resetConfig)
 	systemCmd.AddCommand(infoCmd)
 	systemCmd.AddCommand(ingressControllerCmd)
+	systemCmd.AddCommand(checkCmd)
+}
+
+// UTILS
+
+func StatusEmoji(works bool) string {
+	if works {
+		return "✅"
+	}
+	return "❌"
+}
+
+func StatusMessage(err error, solution string, successMsg string) string {
+	if err != nil {
+		return fmt.Sprintf("Error: %s\nSolution: %s", err.Error(), solution)
+	}
+	return successMsg
 }
