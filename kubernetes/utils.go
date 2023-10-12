@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"sort"
 	"strings"
 	"time"
 
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	version2 "k8s.io/apimachinery/pkg/version"
+	v1beta1 "k8s.io/metrics/pkg/apis/metrics/v1beta1"
 
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/mogenius/punq/version"
@@ -23,6 +26,7 @@ import (
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -298,10 +302,10 @@ func ClusterStatus(contextId *string) dtos.ClusterStatusDto {
 	return dtos.ClusterStatusDto{
 		ClusterName:                  utils.CONFIG.Kubernetes.ClusterName,
 		Pods:                         len(result),
-		CpuInMilliCores:              int(cpu),
-		CpuLimitInMilliCores:         int(cpuLimit),
-		MemoryInBytes:                memory,
-		MemoryLimitInBytes:           memoryLimit,
+		PodCpuUsageInMilliCores:      int(cpu),
+		PodCpuLimitInMilliCores:      int(cpuLimit),
+		PodMemoryUsageInBytes:        memory,
+		PodMemoryLimitInBytes:        memoryLimit,
 		EphemeralStorageLimitInBytes: ephemeralStorageLimit,
 		KubernetesVersion:            kubernetesVersion,
 		Platform:                     platform,
@@ -356,6 +360,21 @@ func ListNodes(contextId *string) []v1.Node {
 	if err != nil {
 		logger.Log.Errorf("ListNodeMetrics ERROR: %s", err.Error())
 		return []v1.Node{}
+	}
+	return nodeMetricsList.Items
+}
+
+func ListNodeMetricss(contextId *string) []v1beta1.NodeMetrics {
+	provider, err := NewKubeProviderMetrics(contextId)
+	if provider == nil || err != nil {
+		logger.Log.Errorf("ListNodeMetricss ERROR: %s", err.Error())
+		return []v1beta1.NodeMetrics{}
+	}
+
+	nodeMetricsList, err := provider.ClientSet.MetricsV1beta1().NodeMetricses().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("ListNodeMetrics ERROR: %s", err.Error())
+		return []v1beta1.NodeMetrics{}
 	}
 	return nodeMetricsList.Items
 }
@@ -536,4 +555,213 @@ func DetermineIngressControllerType(contextId *string) (IngressType, error) {
 	}
 
 	return UNKNOWN, fmt.Errorf("unknown ingress controller: %s", unknownController)
+}
+
+func IsMetricsServerAvailable(contextId *string) (bool, string, error) {
+	// kube-system would be the right namespace but if somebody installed it in another namespace we want to find it
+	deployments := AllDeploymentsIncludeIgnored("", contextId)
+
+	for _, deployment := range deployments {
+		for key, label := range deployment.Labels {
+			if key == "k8s-app" && label == "metrics-server" {
+				if deployment.Status.UnavailableReplicas > 0 {
+					return false, "", fmt.Errorf("metrics-server installed but not running")
+				}
+				return true, deployment.Spec.Template.Spec.Containers[0].Image, nil
+			}
+		}
+	}
+
+	return false, "", fmt.Errorf("no metrics-server found")
+}
+
+func ApiVersions(contextId *string) ([]string, error) {
+	result := []string{}
+
+	provider, err := NewKubeProvider(contextId)
+	if provider == nil || err != nil {
+		return result, err
+	}
+
+	groupResources, err := provider.ClientSet.DiscoveryClient.ServerPreferredResources()
+	if err != nil {
+		fmt.Printf("Error fetching API GroupResources: %v\n", err)
+		return result, err
+	}
+
+	for _, groupList := range groupResources {
+		result = append(result, groupList.GroupVersion)
+	}
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i] < result[j]
+	})
+
+	return result, nil
+}
+
+func GuessClusterProvider(contextId *string) (dtos.KubernetesProvider, error) {
+	provider, err := NewKubeProvider(contextId)
+	if provider == nil || err != nil {
+		return dtos.SELF_HOSTED, err
+	}
+
+	nodes, err := provider.ClientSet.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return dtos.SELF_HOSTED, err
+	}
+
+	for _, node := range nodes.Items {
+		labels := node.GetLabels()
+
+		if LabelsContain(labels, "eks.amazonaws.com/capacity") {
+			return dtos.EKS, nil
+		} else if LabelsContain(labels, "docker-desktop") {
+			return dtos.DOCKER_DESKTOP, nil
+		} else if LabelsContain(labels, "kubernetes.azure.com/role") {
+			return dtos.AKS, nil
+		} else if LabelsContain(labels, "cloud.google.com/gke-nodepool") {
+			return dtos.GKE, nil
+		} else if LabelsContain(labels, "k3s.io/hostname") {
+			return dtos.K3S, nil
+		} else if LabelsContain(labels, "ibm-cloud.kubernetes.io/worker-version") {
+			return dtos.IBM, nil
+		} else if LabelsContain(labels, "doks.digitalocean.com/node-id") {
+			return dtos.DOKS, nil
+		} else if LabelsContain(labels, "oke.oraclecloud.com/node-pool") {
+			return dtos.OKE, nil
+		} else if LabelsContain(labels, "ack.aliyun.com") {
+			return dtos.ACK, nil
+		} else if LabelsContain(labels, "node-role.kubernetes.io/master") && LabelsContain(labels, "node.openshift.io/os_id") {
+			return dtos.OPEN_SHIFT, nil
+		} else if LabelsContain(labels, "vmware-system-vmware.io/role") {
+			return dtos.VMWARE, nil
+		} else if LabelsContain(labels, "io.rancher.os/hostname") {
+			return dtos.RKE, nil
+		} else if LabelsContain(labels, "linode-lke/") {
+			return dtos.LINODE, nil
+		} else if LabelsContain(labels, "scaleway-kapsule/") {
+			return dtos.SCALEWAY, nil
+		} else if LabelsContain(labels, "microk8s.io/cluster") {
+			return dtos.MICROK8S, nil
+		} else if strings.ToLower(node.Name) == "minikube" {
+			return dtos.MINIKUBE, nil
+		} else if LabelsContain(labels, "io.k8s.sigs.kind/role") {
+			return dtos.KIND, nil
+		} else if LabelsContain(labels, "civo/") {
+			return dtos.CIVO, nil
+		} else if LabelsContain(labels, "giantswarm.io/") {
+			return dtos.GIANTSWARM, nil
+		} else if LabelsContain(labels, "ovhcloud/") {
+			return dtos.OVHCLOUD, nil
+		} else if LabelsContain(labels, "gardener.cloud/role") {
+			return dtos.GARDENER, nil
+		} else if LabelsContain(labels, "cce.huawei.com") {
+			return dtos.HUAWEI, nil
+		} else if LabelsContain(labels, "nirmata.io") {
+			return dtos.NIRMATA, nil
+		} else if LabelsContain(labels, "platform9.com/role") {
+			return dtos.PF9, nil
+		} else if LabelsContain(labels, "nks.netapp.io") {
+			return dtos.NKS, nil
+		} else if LabelsContain(labels, "appscode.com") {
+			return dtos.APPSCODE, nil
+		} else if LabelsContain(labels, "loft.sh") {
+			return dtos.LOFT, nil
+		} else if LabelsContain(labels, "spectrocloud.com") {
+			return dtos.SPECTROCLOUD, nil
+		} else if LabelsContain(labels, "diamanti.com") {
+			return dtos.DIAMANTI, nil
+		} else if strings.HasPrefix(strings.ToLower(node.Name), "k3d-") {
+			return dtos.K3D, nil
+		} else if LabelsContain(labels, "cloud.google.com/gke-on-prem") {
+			return dtos.GKE_ON_PREM, nil
+		} else if LabelsContain(labels, "rke.cattle.io") {
+			return dtos.RKE, nil
+		}
+	}
+
+	fmt.Println("This cluster's provider is unknown or it might be self-managed.")
+	return dtos.SELF_HOSTED, nil
+}
+
+func LabelsContain(labels map[string]string, str string) bool {
+	// Keys
+	if _, ok := labels[strings.ToLower(str)]; ok {
+		return true
+	}
+	// Values
+	for _, label := range labels {
+		if strings.EqualFold(label, str) {
+			return true
+		}
+	}
+	return false
+}
+
+func AllResourcesFrom(namespace string, contextId *string) ([]interface{}, error) {
+	ignoredResources := []string{
+		"events.k8s.io/v1",
+		"events.k8s.io/v1beta1",
+		"metrics.k8s.io/v1beta1",
+		"discovery.k8s.io/v1",
+	}
+
+	result := []interface{}{}
+
+	provider, err := NewKubeProvider(contextId)
+	if provider == nil || err != nil {
+		return result, err
+	}
+
+	// Get a list of all resource types in the cluster
+	resourceList, err := provider.ClientSet.Discovery().ServerPreferredResources()
+	if err != nil {
+		return result, err
+	}
+
+	// Iterate over each resource type and backup all resources in the namespace
+	for _, resource := range resourceList {
+		if utils.Contains(ignoredResources, resource.GroupVersion) {
+			continue
+		}
+		gv, _ := schema.ParseGroupVersion(resource.GroupVersion)
+		if len(resource.APIResources) <= 0 {
+			continue
+		}
+
+		for _, aApiResource := range resource.APIResources {
+			if !aApiResource.Namespaced {
+				continue
+			}
+
+			resourceId := schema.GroupVersionResource{
+				Group:    gv.Group,
+				Version:  gv.Version,
+				Resource: aApiResource.Name,
+			}
+			// Get the REST client for this resource type
+			restClient := dynamic.New(provider.ClientSet.RESTClient()).Resource(resourceId).Namespace(namespace)
+
+			// Get a list of all resources of this type in the namespace
+			list, err := restClient.List(context.Background(), metav1.ListOptions{})
+			if err != nil {
+				logger.Log.Error("%s: %s", resourceId.Resource, err.Error())
+				continue
+			}
+
+			// Iterate over each resource and write it to a file
+			for _, obj := range list.Items {
+				logger.Log.Noticef("(SUCCESS) %s: %s/%s", resourceId.Resource, obj.GetNamespace(), obj.GetName())
+				obj.SetManagedFields(nil)
+				delete(obj.Object, "status")
+				obj.SetUID("")
+				obj.SetResourceVersion("")
+				obj.SetCreationTimestamp(metav1.Time{})
+
+				result = append(result, obj.Object)
+			}
+		}
+	}
+	return result, nil
 }

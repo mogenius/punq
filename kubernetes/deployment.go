@@ -32,6 +32,20 @@ func AllDeployments(namespaceName string, contextId *string) []v1.Deployment {
 	return result
 }
 
+func AllDeploymentsIncludeIgnored(namespaceName string, contextId *string) []v1.Deployment {
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return []v1.Deployment{}
+	}
+	deploymentList, err := provider.ClientSet.AppsV1().Deployments(namespaceName).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllDeployments ERROR: %s", err.Error())
+		return deploymentList.Items
+	}
+
+	return deploymentList.Items
+}
+
 func AllK8sDeployments(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.Deployment{}
 
