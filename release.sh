@@ -37,7 +37,7 @@ class Punq < Formula
         url "https://github.com/mogenius/homebrew-punq/releases/download/${VERSION}/punq-${VERSION}-linux-386.tar.gz"
         sha256 "$SHA256_LINUX_386"
       end
-    elif Hardware::CPU.arm?
+    elsif Hardware::CPU.arm?
       if Hardware::CPU.is_64_bit?
         url "https://github.com/mogenius/homebrew-punq/releases/download/${VERSION}/punq-${VERSION}-linux-arm64.tar.gz"
         sha256 "$SHA256_LINUX_ARM64"

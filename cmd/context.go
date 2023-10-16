@@ -3,8 +3,10 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/mogenius/punq/dtos"
+	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/structs"
 	"github.com/mogenius/punq/utils"
@@ -43,6 +45,22 @@ var addContextCmd = &cobra.Command{
 		if err != nil {
 			utils.FatalError(err.Error())
 		}
+
+		// Test Clusters for Reachability
+		for i := 0; i < len(contexts); i++ {
+			fmt.Printf("[%02d/%d] Testing context '%s'...", i+1, len(contexts), contexts[i].Name)
+			testResult, provider, err := kubernetes.CheckContext(contexts[i])
+			contexts[i].Reachable = testResult
+			contexts[i].Provider = string(provider)
+			if err != nil {
+				elements := strings.Split(err.Error(), ":")
+				if len(elements) > 0 {
+					fmt.Printf(" (%s) ", elements[len(elements)-1])
+				}
+			}
+			fmt.Printf(" %s\n", utils.StatusEmoji(testResult))
+		}
+
 		dtos.ListContextsToTerminal(contexts)
 
 		index := utils.SelectIndexInteractive("Select context to add", len(contexts))

@@ -225,60 +225,6 @@ func applyNamespace(provider *KubeProvider) {
 	fmt.Println("Created punq namespace. ✅")
 }
 
-// func CreateClusterSecretIfNotExist(provider *KubeProvider) (utils.ClusterSecret, error) {
-// 	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
-
-// 	existingSecret, getErr := secretClient.Get(context.TODO(), utils.CONFIG.Kubernetes.OwnNamespace, metav1.GetOptions{})
-// 	return writePunqSecret(secretClient, existingSecret, getErr)
-// }
-
-// func writePunqSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (utils.ClusterSecret, error) {
-// 	clusterSecret := utils.ClusterSecret{
-// 		ApiKey:       utils.NanoIdExtraLong(),
-// 		ClusterMfaId: utils.NanoIdExtraLong(),
-// 		ClusterName:  utils.CONFIG.Kubernetes.ClusterName,
-// 	}
-
-// 	secret := utils.InitSecret()
-// 	secret.ObjectMeta.Name = utils.CONFIG.Kubernetes.OwnNamespace
-// 	secret.ObjectMeta.Namespace = utils.CONFIG.Kubernetes.OwnNamespace
-// 	delete(secret.StringData, "exampleData") // delete example data
-// 	secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
-// 	secret.StringData["api-key"] = clusterSecret.ApiKey
-// 	secret.StringData["cluster-name"] = clusterSecret.ClusterName
-
-// 	if existingSecret == nil || getErr != nil {
-// 		logger.Log.Info("Creating new punq secret ...")
-// 		_, err := secretClient.Create(context.TODO(), &secret, MoCreateOptions())
-// 		if err != nil {
-// 			logger.Log.Error(err)
-// 			return clusterSecret, err
-// 		}
-// 		fmt.Println("Created new punq secret. ✅")
-// 	} else {
-// 		if string(existingSecret.Data["api-key"]) != clusterSecret.ApiKey ||
-// 			string(existingSecret.Data["cluster-name"]) != clusterSecret.ClusterName {
-// 			fmt.Println("Updating existing punq secret ...")
-// 			// keep existing mfa-id if possible
-// 			if string(existingSecret.Data["cluster-mfa-id"]) != "" {
-// 				clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
-// 				secret.StringData["cluster-mfa-id"] = clusterSecret.ClusterMfaId
-// 			}
-// 			_, err := secretClient.Update(context.TODO(), &secret, MoUpdateOptions())
-// 			if err != nil {
-// 				logger.Log.Error(err)
-// 				return clusterSecret, err
-// 			}
-// 			fmt.Println("Updated punq secret. ✅")
-// 		} else {
-// 			clusterSecret.ClusterMfaId = string(existingSecret.Data["cluster-mfa-id"])
-// 			fmt.Println("Using existing punq secret. ✅")
-// 		}
-// 	}
-
-// 	return clusterSecret, nil
-// }
-
 func CreateContextSecretIfNotExist(provider *KubeProvider) (*dtos.PunqContext, error) {
 	secretClient := provider.ClientSet.CoreV1().Secrets(utils.CONFIG.Kubernetes.OwnNamespace)
 
@@ -297,6 +243,15 @@ func writeContextSecret(secretClient v1.SecretInterface, existingSecret *core.Se
 	ownContext, err := dtos.ParseCurrentContextConfigToPunqContext(kubeconfigData)
 	if err != nil {
 		utils.FatalError(err.Error())
+	}
+
+	fmt.Println("Determining cluster provider ...")
+	ownProvider, err := GuessClusterProvider(nil)
+	if err == nil {
+		ownContext.Provider = string(ownProvider)
+		fmt.Printf("Determined cluster provider: '%s'. ✅\n", ownProvider)
+	} else {
+		fmt.Println("Determining cluster provider failed.")
 	}
 
 	ownContext.Id = utils.CONTEXTOWN

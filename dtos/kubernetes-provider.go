@@ -3,6 +3,7 @@ package dtos
 type KubernetesProvider string
 
 const (
+	UNKNOWN                      KubernetesProvider = "UNKNOWN"
 	BRING_YOUR_OWN               KubernetesProvider = "BRING_YOUR_OWN"
 	DOCKER_ENTERPRISE            KubernetesProvider = "DOCKER_ENTERPRISE"            // Docker
 	DOCKER_DESKTOP               KubernetesProvider = "DOCKER_DESKTOP"               // Docker

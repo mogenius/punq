@@ -108,6 +108,13 @@ func PrintInfo(message string) {
 	fmt.Println(yellow(message))
 }
 
+func StatusEmoji(works bool) string {
+	if works {
+		return "✅"
+	}
+	return "❌"
+}
+
 func NanoId() string {
 	id, err := nanoid.Custom("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 21)
 	if err != nil {
