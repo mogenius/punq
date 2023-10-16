@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/version"
@@ -122,13 +123,27 @@ func addTraefikMiddleware(provider *KubeProvider, ingressHostname string) {
 	fmt.Printf("Creating TRAEFIK middleware (%s) ...\n", ingressHostname)
 	mwYaml := utils.InitPunqIngressTraefikMiddlewareYaml()
 
-	cmd := exec.Command("bash", "-c", fmt.Sprintf("echo \"%s\" | kubectl %s apply -f -", mwYaml, ContextFlag(nil)))
+	if err := os.WriteFile("traefik-middleware.yaml", []byte(mwYaml), 0600); err != nil {
+		utils.FatalError(err.Error())
+	}
+
+	var cmd *exec.Cmd
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command("cmd", "/C", fmt.Sprintf("kubectl %s apply -f traefik-middleware.yaml", ContextFlag(nil)))
+	} else {
+		cmd = exec.Command("bash", "-c", fmt.Sprintf("kubectl %s apply -f traefik-middleware.yaml", ContextFlag(nil)))
+	}
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		utils.FatalError(fmt.Sprintf("failed to execute command (%s): %s\n%s", cmd.String(), err.Error(), string(output)))
 
 	}
+
+	if err := os.Remove("traefik-middleware.yaml"); err != nil {
+		utils.FatalError(err.Error())
+	}
+
 	fmt.Printf("Created TRAEFIK middleware (%s). ✅\n", ingressHostname)
 }
 

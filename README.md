@@ -144,6 +144,13 @@ go install github.com/swaggo/swag/cmd/swag@latest
 swag init --parseDependency --parseInternal
 ```
 
+## FAQ
+How to set a default editor for Windows (for example Visual Studio Code):
+```
+Open powershell as admin and run:
+[System.Environment]::SetEnvironmentVariable("EDITOR", "code -w", [System.EnvironmentVariableTarget]::Machine)
+```
+
 ## Contribution
 
 Punq is in its nascent stages, brimming with potential, and we're excited to extend an invitation for you to be part of this journey. Your insights, expertise, and contributions can significantly shape its evolution, enhancing this tool for many users and diverse needs. Here's how you can get involved:
