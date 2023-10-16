@@ -18,6 +18,7 @@ type PunqContext struct {
 	ContextHash string       `json:"contextHash" validate:"required"`
 	Context     string       `json:"context" validate:"required"`
 	Provider    string       `json:"provider" validate:"required"`
+	Reachable   bool         `json:"reachable" validate:"required"`
 	Access      []PunqAccess `json:"access" validate:"required"`
 }
 
@@ -96,7 +97,7 @@ func (c *PunqContext) PrintToTerminal() {
 func ListContextsToTerminal(contexts []PunqContext) {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"#", "ID", "Name", "Access", "Hash"})
+	t.AppendHeader(table.Row{"#", "ID", "Name", "Reachable", "Provider", "Access"})
 	for index, context := range contexts {
 		accessStr := "*"
 		accessEntries := []string{}
@@ -107,7 +108,7 @@ func ListContextsToTerminal(contexts []PunqContext) {
 			accessStr = strings.Join(accessEntries, ", ")
 		}
 		t.AppendRow(
-			table.Row{index + 1, context.Id, context.Name, accessStr, context.ContextHash},
+			table.Row{index + 1, context.Id, context.Name, utils.StatusEmoji(context.Reachable), context.Provider, accessStr},
 		)
 	}
 	t.Render()

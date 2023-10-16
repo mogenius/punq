@@ -3,16 +3,17 @@ package operator
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/creack/pty"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"github.com/mogenius/punq/dtos"
-	"github.com/mogenius/punq/utils"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/creack/pty"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	"github.com/mogenius/punq/dtos"
+	"github.com/mogenius/punq/utils"
 )
 
 type windowSize struct {
@@ -66,7 +67,11 @@ func connectWs(c *gin.Context) {
 		return
 	}
 
-	cmd := exec.Command("sh", "-c", fmt.Sprintf("kubectl exec -it -c %s -n %s %s -- sh -c \"clear; (bash || ash || sh || ksh || csh || zsh )\"", container, namespace, podName))
+	selectedShell := FindValidShell(container, namespace, podName)
+	fmt.Println("Selected shell: " + selectedShell)
+
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("kubectl exec -it -c %s -n %s %s -- %s -c 'echo -e \"\033[1;34mConnected to %s/%s/%s using \"$(echo $0)\". Happy hacking!\033[0m 🚀 🚀 🚀\"; %s'", container, namespace, podName, selectedShell, namespace, podName, container, selectedShell))
+	fmt.Println(cmd.String())
 	cmd.Env = append(os.Environ(), "TERM=xterm-color")
 
 	tty, err := pty.Start(cmd)
@@ -122,4 +127,16 @@ func connectWs(c *gin.Context) {
 
 		tty.Write(reader)
 	}
+}
+
+func FindValidShell(container string, namespace string, podName string) string {
+	availableShells := []string{"bash", "ash", "zsh", "sh", "ksh", "csh"}
+	for _, shell := range availableShells {
+		cmd := exec.Command("sh", "-c", fmt.Sprintf("kubectl exec -it -c %s -n %s %s -- sh -c '%s'", container, namespace, podName, shell))
+		err := cmd.Run()
+		if err == nil {
+			return shell
+		}
+	}
+	return "sh"
 }

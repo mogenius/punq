@@ -1,12 +1,16 @@
 package kubernetes
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/utils"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 var allContexts []dtos.PunqContext = []dtos.PunqContext{}
@@ -62,4 +66,33 @@ func contextWrite(id string) error {
 		return err
 	}
 	return nil
+}
+
+func CheckContext(ctx dtos.PunqContext) (bool, dtos.KubernetesProvider, error) {
+	configFromString, err := clientcmd.NewClientConfigFromBytes([]byte(ctx.Context))
+	if err != nil {
+		return false, dtos.UNKNOWN, err
+	}
+
+	config, err := configFromString.ClientConfig()
+	if err != nil {
+		return false, dtos.UNKNOWN, err
+	}
+
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return false, dtos.UNKNOWN, err
+	}
+
+	nodeList, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return false, dtos.UNKNOWN, err
+	}
+
+	provider, err := GuessCluserProviderFromNodeList(nodeList)
+	if err != nil {
+		return false, dtos.UNKNOWN, err
+	} else {
+		return true, provider, nil
+	}
 }

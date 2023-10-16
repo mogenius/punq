@@ -28,6 +28,12 @@ tarballs: all
 		tar -czvf builds/`basename "$$file"`.tar.gz -C builds `basename "$$file"`; \
 	done
 
+update-frontend:
+	@curl https://github.com/mogenius/punq-frontend/releases/download/latest/latest.tar.gz -L -o ui.tar.gz
+	@mkdir -p ui/dist
+	@tar -xzf ui.tar.gz -C ui/dist
+	@rm ui.tar.gz
+
 clean:
 	$(GOCLEAN)
 	rm -f $(BINARY_NAME)-$(VERSION)-darwin-amd64

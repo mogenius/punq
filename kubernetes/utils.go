@@ -611,10 +611,15 @@ func GuessClusterProvider(contextId *string) (dtos.KubernetesProvider, error) {
 		return dtos.SELF_HOSTED, err
 	}
 
+	return GuessCluserProviderFromNodeList(nodes)
+}
+
+func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvider, error) {
+
 	for _, node := range nodes.Items {
 		labels := node.GetLabels()
 
-		if LabelsContain(labels, "eks.amazonaws.com/capacity") {
+		if LabelsContain(labels, "eks.amazonaws.com/") {
 			return dtos.EKS, nil
 		} else if LabelsContain(labels, "docker-desktop") {
 			return dtos.DOCKER_DESKTOP, nil
@@ -678,21 +683,27 @@ func GuessClusterProvider(contextId *string) (dtos.KubernetesProvider, error) {
 			return dtos.GKE_ON_PREM, nil
 		} else if LabelsContain(labels, "rke.cattle.io") {
 			return dtos.RKE, nil
+		} else {
+			fmt.Println("This cluster's provider is unknown or it might be self-managed.")
+			return dtos.UNKNOWN, nil
 		}
 	}
-
-	fmt.Println("This cluster's provider is unknown or it might be self-managed.")
-	return dtos.SELF_HOSTED, nil
+	return dtos.UNKNOWN, nil
 }
 
 func LabelsContain(labels map[string]string, str string) bool {
-	// Keys
+	// Keys EQUAL
 	if _, ok := labels[strings.ToLower(str)]; ok {
 		return true
 	}
+
 	// Values
-	for _, label := range labels {
+	for key, label := range labels {
 		if strings.EqualFold(label, str) {
+			return true
+		}
+		// KEY CONTAINS
+		if strings.Contains(key, str) {
 			return true
 		}
 	}
