@@ -77,7 +77,7 @@ func DeleteK8sRoleBy(namespace string, name string, contextId *string) error {
 }
 
 func DescribeK8sRole(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "role", name, "-n", namespace)
+	cmd := exec.Command("kubectl", "describe", "role", name, "-n", namespace, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

@@ -77,7 +77,7 @@ func DeleteK8sCertificateSigningRequestBy(namespace string, name string, context
 }
 
 func DescribeK8sCertificateSigningRequest(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "-n", namespace, "csr", name)
+	cmd := exec.Command("kubectl", "describe", "-n", namespace, "csr", name, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

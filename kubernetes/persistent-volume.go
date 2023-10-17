@@ -73,7 +73,7 @@ func DeleteK8sPersistentVolumeBy(name string, contextId *string) error {
 }
 
 func DescribeK8sPersistentVolume(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "persistentvolume", name)
+	cmd := exec.Command("kubectl", "describe", "persistentvolume", name, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

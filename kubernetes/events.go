@@ -41,7 +41,7 @@ func GetEvent(namespaceName string, name string, contextId *string) (*v1Core.Eve
 }
 
 func DescribeK8sEvent(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "event", name, "-n", namespace)
+	cmd := exec.Command("kubectl", "describe", "event", name, "-n", namespace, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
