@@ -77,7 +77,7 @@ func DeleteK8sJobBy(namespace string, name string, contextId *string) error {
 }
 
 func DescribeK8sJob(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "job", name, "-n", namespace)
+	cmd := exec.Command("kubectl", "describe", "job", name, "-n", namespace, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

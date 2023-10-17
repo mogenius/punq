@@ -110,7 +110,7 @@ func DeleteK8sNode(name string, contextId *string) error {
 }
 
 func DescribeK8sNode(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "node", name)
+	cmd := exec.Command("kubectl", "describe", "node", name, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

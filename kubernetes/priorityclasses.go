@@ -78,7 +78,7 @@ func DeleteK8sPriorityClassBy(name string, contextId *string) error {
 }
 
 func DescribeK8sPriorityClass(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "priorityclasses", name)
+	cmd := exec.Command("kubectl", "describe", "priorityclasses", name, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

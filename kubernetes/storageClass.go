@@ -73,7 +73,7 @@ func DeleteK8sStorageClassBy(name string, contextId *string) error {
 }
 
 func DescribeK8sStorageClass(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "storageclass", name)
+	cmd := exec.Command("kubectl", "describe", "storageclass", name, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
