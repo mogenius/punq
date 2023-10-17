@@ -37,8 +37,9 @@ type ResponseError struct {
 }
 
 type Release struct {
-	TagName   string `json:"tag_name"`
-	Published string `json:"published_at"`
+	TagName    string `json:"tag_name"`
+	Published  string `json:"published_at"`
+	Prerelease bool   `json:"prerelease"`
 }
 
 func IsProduction() bool {
@@ -111,6 +112,39 @@ func CurrentReleaseVersion() (string, error) {
 		return "", err
 	}
 	return release.TagName, nil
+}
+
+func CurrentPreReleaseVersion() (string, error) {
+	resp, err := http.Get("https://api.github.com/repos/mogenius/punq/releases")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	// Check the status code, handle it accordingly
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("failed to fetch with status code: %d", resp.StatusCode)
+	}
+
+	// Read and parse the JSON response
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var releases []Release
+	if err := json.Unmarshal(body, &releases); err != nil {
+		return "", err
+	}
+
+	// Find the latest pre-release
+	for _, release := range releases {
+		if release.Prerelease {
+			return release.TagName, nil // Return the latest pre-release
+		}
+	}
+
+	return "", nil
 }
 
 func CreateError(err error) ResponseError {

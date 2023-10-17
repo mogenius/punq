@@ -20,7 +20,14 @@ var updateOperatorImageCmd = &cobra.Command{
 	Short: "Upgrade the container image of the punq operator.",
 	Long:  `Upgrade the container image of the punq operator within your currently selected kubernetes context.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		vers, err := utils.CurrentReleaseVersion()
+		var vers string
+		var err error
+		if version.Branch == "main" {
+			vers, err = utils.CurrentReleaseVersion()
+		} else {
+			vers, err = utils.CurrentPreReleaseVersion()
+		}
+
 		if err != nil {
 			utils.PrintError(err.Error())
 			return

@@ -2,6 +2,7 @@ package structs
 
 import (
 	"os/exec"
+	"runtime"
 	"time"
 
 	"github.com/mogenius/punq/utils"
@@ -27,7 +28,12 @@ type Command struct {
 }
 
 func ExecuteBashCommandSilent(title string, shellCmd string) {
-	_, err := exec.Command("bash", "-c", shellCmd).Output()
+	var err error
+	if runtime.GOOS == "windows" {
+		_, err = exec.Command("cmd", "/C", shellCmd).Output()
+	} else {
+		_, err = exec.Command("bash", "-c", shellCmd).Output()
+	}
 	if exitErr, ok := err.(*exec.ExitError); ok {
 		exitCode := exitErr.ExitCode()
 		errorMsg := string(exitErr.Stderr)
@@ -43,7 +49,14 @@ func ExecuteBashCommandSilent(title string, shellCmd string) {
 }
 
 func ExecuteBashCommandWithResponse(title string, shellCmd string) string {
-	returnStr, err := exec.Command("bash", "-c", shellCmd).Output()
+	var err error
+	var returnStr []byte
+	if runtime.GOOS == "windows" {
+		returnStr, err = exec.Command("cmd", "/C", shellCmd).Output()
+	} else {
+		returnStr, err = exec.Command("bash", "-c", shellCmd).Output()
+	}
+
 	if exitErr, ok := err.(*exec.ExitError); ok {
 		exitCode := exitErr.ExitCode()
 		errorMsg := string(exitErr.Stderr)
