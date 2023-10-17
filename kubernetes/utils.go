@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/yaml.v2"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	version2 "k8s.io/apimachinery/pkg/version"
 	v1beta1 "k8s.io/metrics/pkg/apis/metrics/v1beta1"
@@ -710,7 +711,7 @@ func LabelsContain(labels map[string]string, str string) bool {
 	return false
 }
 
-func AllResourcesFrom(namespace string, contextId *string) ([]interface{}, error) {
+func AllResourcesFrom(namespace string, resourcesToLookFor []string, contextId *string) ([]interface{}, error) {
 	ignoredResources := []string{
 		"events.k8s.io/v1",
 		"events.k8s.io/v1beta1",
@@ -757,22 +758,45 @@ func AllResourcesFrom(namespace string, contextId *string) ([]interface{}, error
 			// Get a list of all resources of this type in the namespace
 			list, err := restClient.List(context.Background(), metav1.ListOptions{})
 			if err != nil {
-				logger.Log.Error("%s: %s", resourceId.Resource, err.Error())
+				logger.Log.Errorf("%s: %s", resourceId.Resource, err.Error())
 				continue
 			}
 
 			// Iterate over each resource and write it to a file
 			for _, obj := range list.Items {
-				logger.Log.Noticef("(SUCCESS) %s: %s/%s", resourceId.Resource, obj.GetNamespace(), obj.GetName())
 				obj.SetManagedFields(nil)
 				delete(obj.Object, "status")
 				obj.SetUID("")
 				obj.SetResourceVersion("")
 				obj.SetCreationTimestamp(metav1.Time{})
 
-				result = append(result, obj.Object)
+				if len(resourcesToLookFor) > 0 {
+					if utils.ContainsToLowercase(resourcesToLookFor, obj.GetKind()) {
+						result = append(result, obj.Object)
+					}
+				} else {
+					result = append(result, obj.Object)
+				}
 			}
 		}
 	}
 	return result, nil
+}
+
+func AllResourcesFromToCombinedYaml(namespace string, resourcesToLookFor []string, contextId *string) (string, error) {
+	result := ""
+	resources, err := AllResourcesFrom(namespace, resourcesToLookFor, contextId)
+	if err != nil {
+		return result, err
+	}
+	for _, res := range resources {
+		yamlData, err := yaml.Marshal(res)
+		if err != nil {
+			return result, err
+		}
+
+		// Print the YAML string.
+		result += fmt.Sprintf("---\n%s\n", string(yamlData))
+	}
+	return result, err
 }
