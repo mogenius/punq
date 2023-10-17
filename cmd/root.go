@@ -26,6 +26,7 @@ var filePath string
 var contextId string
 var accessLevel string
 var forceUpgrade bool
+var resources []string
 
 var cmdsWithoutContext = []string{
 	"punq",

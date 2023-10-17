@@ -128,6 +128,15 @@ func Contains(s []string, str string) bool {
 	return false
 }
 
+func ContainsToLowercase(s []string, str string) bool {
+	for _, v := range s {
+		if strings.Contains(strings.ToLower(str), strings.ToLower(v)) {
+			return true
+		}
+	}
+	return false
+}
+
 func ContainsEqual(s []string, str string) bool {
 	for _, v := range s {
 		if str == v {

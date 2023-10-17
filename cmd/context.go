@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -156,7 +157,24 @@ var getContextCmd = &cobra.Command{
 			fmt.Printf("No context found for '%s'.\n", contextId)
 		} else {
 			structs.PrettyPrint(ctx)
+
 		}
+	},
+}
+
+var exportNamespaceCmd = &cobra.Command{
+	Use:   "export",
+	Short: "Export all resources from a specific namespace.",
+	Long:  `The get command lets you get a specific context from punq.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		RequireStringFlag(contextId, "context-id")
+		RequireStringFlag(namespace, "namespace")
+
+		resourcesYaml, err := kubernetes.AllResourcesFromToCombinedYaml(namespace, resources, &contextId)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		fmt.Print(resourcesYaml)
 	},
 }
 
@@ -176,6 +194,10 @@ func init() {
 	contextCmd.AddCommand(deleteContextCmd)
 
 	contextCmd.AddCommand(getContextCmd)
+
+	exportNamespaceCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "A namespace to export resources from")
+	exportNamespaceCmd.Flags().StringSliceVarP(&resources, "resources", "r", []string{}, "A list of resources to gather separated by comma (,)")
+	contextCmd.AddCommand(exportNamespaceCmd)
 
 	rootCmd.AddCommand(contextCmd)
 }
