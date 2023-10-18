@@ -20,6 +20,7 @@ var localCmd = &cobra.Command{
 	Long:  `Run punq from your local machine in your current-context in kubernetes.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		utils.PrintLogo()
+		fmt.Println("")
 		utils.PrintSettings()
 
 		contexts := services.ListContexts()

@@ -34,6 +34,7 @@ var cmdsWithoutContext = []string{
 	"punq system ingress-controller-type",
 	"punq install",
 	"punq clean",
+	"punq version",
 }
 
 var rootCmd = &cobra.Command{
@@ -62,6 +63,8 @@ var rootCmd = &cobra.Command{
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		utils.PrintLogo()
+		fmt.Println("")
 		utils.PrintWelcomeMessage()
 	},
 }

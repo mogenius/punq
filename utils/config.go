@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/charmbracelet/glamour"
@@ -180,7 +181,11 @@ func PrintWelcomeMessage() {
 }
 
 func getTermialSize() int {
-	width, _, err := term.GetSize(0)
+	fd := 0
+	if runtime.GOOS == "windows" {
+		fd = int(os.Stdout.Fd())
+	}
+	width, _, err := term.GetSize(fd)
 	if err != nil {
 		logger.Log.Errorf("Failed getting terminal size: %v", err)
 	}

@@ -30,6 +30,7 @@ func init() {
 
 func PrintVersion() {
 	utils.PrintLogo()
+	fmt.Println("")
 	yellow := color.New(color.FgYellow).SprintFunc()
 	fmt.Printf("        CLI:            %s\n", yellow(version.Ver))
 	fmt.Printf("        OperatorImage:  %s\n", yellow(version.OperatorImage))
