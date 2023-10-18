@@ -618,71 +618,71 @@ func GuessClusterProvider(contextId *string) (dtos.KubernetesProvider, error) {
 func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvider, error) {
 
 	for _, node := range nodes.Items {
-		labels := node.GetLabels()
+		labelsAndAnnotations := utils.MergeMaps(node.GetLabels(), node.GetAnnotations())
 
-		if LabelsContain(labels, "eks.amazonaws.com/") {
+		if LabelsContain(labelsAndAnnotations, "eks.amazonaws.com/") {
 			return dtos.EKS, nil
-		} else if LabelsContain(labels, "docker-desktop") {
+		} else if LabelsContain(labelsAndAnnotations, "docker-desktop") {
 			return dtos.DOCKER_DESKTOP, nil
-		} else if LabelsContain(labels, "kubernetes.azure.com/role") {
+		} else if LabelsContain(labelsAndAnnotations, "kubernetes.azure.com/role") {
 			return dtos.AKS, nil
-		} else if LabelsContain(labels, "cloud.google.com/gke-nodepool") {
+		} else if LabelsContain(labelsAndAnnotations, "cloud.google.com/gke-nodepool") {
 			return dtos.GKE, nil
-		} else if LabelsContain(labels, "k3s.io/hostname") {
+		} else if LabelsContain(labelsAndAnnotations, "k3s.io/hostname") {
 			return dtos.K3S, nil
-		} else if LabelsContain(labels, "ibm-cloud.kubernetes.io/worker-version") {
+		} else if LabelsContain(labelsAndAnnotations, "ibm-cloud.kubernetes.io/worker-version") {
 			return dtos.IBM, nil
-		} else if LabelsContain(labels, "doks.digitalocean.com/node-id") {
+		} else if LabelsContain(labelsAndAnnotations, "doks.digitalocean.com/node-id") {
 			return dtos.DOKS, nil
-		} else if LabelsContain(labels, "oke.oraclecloud.com/node-pool") {
+		} else if LabelsContain(labelsAndAnnotations, "oke.oraclecloud.com/node-pool") {
 			return dtos.OKE, nil
-		} else if LabelsContain(labels, "ack.aliyun.com") {
+		} else if LabelsContain(labelsAndAnnotations, "ack.aliyun.com") {
 			return dtos.ACK, nil
-		} else if LabelsContain(labels, "node-role.kubernetes.io/master") && LabelsContain(labels, "node.openshift.io/os_id") {
+		} else if LabelsContain(labelsAndAnnotations, "node-role.kubernetes.io/master") && LabelsContain(labelsAndAnnotations, "node.openshift.io/os_id") {
 			return dtos.OPEN_SHIFT, nil
-		} else if LabelsContain(labels, "vmware-system-vmware.io/role") {
+		} else if LabelsContain(labelsAndAnnotations, "vmware-system-vmware.io/role") {
 			return dtos.VMWARE, nil
-		} else if LabelsContain(labels, "io.rancher.os/hostname") {
+		} else if LabelsContain(labelsAndAnnotations, "io.rancher.os/hostname") {
 			return dtos.RKE, nil
-		} else if LabelsContain(labels, "linode-lke/") {
+		} else if LabelsContain(labelsAndAnnotations, "linode-lke/") {
 			return dtos.LINODE, nil
-		} else if LabelsContain(labels, "scaleway-kapsule/") {
+		} else if LabelsContain(labelsAndAnnotations, "scaleway-kapsule/") {
 			return dtos.SCALEWAY, nil
-		} else if LabelsContain(labels, "microk8s.io/cluster") {
+		} else if LabelsContain(labelsAndAnnotations, "microk8s.io/cluster") {
 			return dtos.MICROK8S, nil
 		} else if strings.ToLower(node.Name) == "minikube" {
 			return dtos.MINIKUBE, nil
-		} else if LabelsContain(labels, "io.k8s.sigs.kind/role") {
+		} else if LabelsContain(labelsAndAnnotations, "io.k8s.sigs.kind/role") {
 			return dtos.KIND, nil
-		} else if LabelsContain(labels, "civo/") {
+		} else if LabelsContain(labelsAndAnnotations, "civo/") {
 			return dtos.CIVO, nil
-		} else if LabelsContain(labels, "giantswarm.io/") {
+		} else if LabelsContain(labelsAndAnnotations, "giantswarm.io/") {
 			return dtos.GIANTSWARM, nil
-		} else if LabelsContain(labels, "ovhcloud/") {
+		} else if LabelsContain(labelsAndAnnotations, "ovhcloud/") {
 			return dtos.OVHCLOUD, nil
-		} else if LabelsContain(labels, "gardener.cloud/role") {
+		} else if LabelsContain(labelsAndAnnotations, "gardener.cloud/role") {
 			return dtos.GARDENER, nil
-		} else if LabelsContain(labels, "cce.huawei.com") {
+		} else if LabelsContain(labelsAndAnnotations, "cce.huawei.com") {
 			return dtos.HUAWEI, nil
-		} else if LabelsContain(labels, "nirmata.io") {
+		} else if LabelsContain(labelsAndAnnotations, "nirmata.io") {
 			return dtos.NIRMATA, nil
-		} else if LabelsContain(labels, "platform9.com/role") {
+		} else if LabelsContain(labelsAndAnnotations, "platform9.com/role") {
 			return dtos.PF9, nil
-		} else if LabelsContain(labels, "nks.netapp.io") {
+		} else if LabelsContain(labelsAndAnnotations, "nks.netapp.io") {
 			return dtos.NKS, nil
-		} else if LabelsContain(labels, "appscode.com") {
+		} else if LabelsContain(labelsAndAnnotations, "appscode.com") {
 			return dtos.APPSCODE, nil
-		} else if LabelsContain(labels, "loft.sh") {
+		} else if LabelsContain(labelsAndAnnotations, "loft.sh") {
 			return dtos.LOFT, nil
-		} else if LabelsContain(labels, "spectrocloud.com") {
+		} else if LabelsContain(labelsAndAnnotations, "spectrocloud.com") {
 			return dtos.SPECTROCLOUD, nil
-		} else if LabelsContain(labels, "diamanti.com") {
+		} else if LabelsContain(labelsAndAnnotations, "diamanti.com") {
 			return dtos.DIAMANTI, nil
 		} else if strings.HasPrefix(strings.ToLower(node.Name), "k3d-") {
 			return dtos.K3D, nil
-		} else if LabelsContain(labels, "cloud.google.com/gke-on-prem") {
+		} else if LabelsContain(labelsAndAnnotations, "cloud.google.com/gke-on-prem") {
 			return dtos.GKE_ON_PREM, nil
-		} else if LabelsContain(labels, "rke.cattle.io") {
+		} else if LabelsContain(labelsAndAnnotations, "rke.cattle.io") {
 			return dtos.RKE, nil
 		} else {
 			fmt.Println("This cluster's provider is unknown or it might be self-managed.")

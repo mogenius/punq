@@ -230,6 +230,22 @@ func HumanDuration(d time.Duration) string {
 	return fmt.Sprintf("%dy", int(hours/24/365))
 }
 
+func MergeMaps(map1, map2 map[string]string) map[string]string {
+	resultMap := make(map[string]string)
+
+	for key, value := range map1 {
+		resultMap[key] = value
+	}
+
+	// Add all elements from the second map, this could potentially overwrite
+	// values from the first map if there are matching keys.
+	for key, value := range map2 {
+		resultMap[key] = value
+	}
+
+	return resultMap
+}
+
 func PrintLogo() {
 	logo := `   ______  __    __ _______   ______  
   /      \|  \  |  \       \ /      \ 
