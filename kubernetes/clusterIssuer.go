@@ -77,7 +77,7 @@ func DeleteK8sClusterIssuerBy(name string, contextId *string) error {
 }
 
 func DescribeK8sClusterIssuer(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "clusterissuer", name)
+	cmd := exec.Command("kubectl", "describe", "clusterissuer", name, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

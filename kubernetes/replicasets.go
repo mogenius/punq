@@ -98,7 +98,7 @@ func DeleteK8sReplicasetBy(namespace string, name string, contextId *string) err
 }
 
 func DescribeK8sReplicaset(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "replicaset", name, "-n", namespace)
+	cmd := exec.Command("kubectl", "describe", "replicaset", name, "-n", namespace, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

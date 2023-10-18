@@ -77,7 +77,7 @@ func DeleteK8sOrderBy(namespace string, name string, contextId *string) error {
 }
 
 func DescribeK8sOrder(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "order", name, "-n", namespace)
+	cmd := exec.Command("kubectl", "describe", "order", name, "-n", namespace, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

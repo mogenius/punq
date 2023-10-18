@@ -78,7 +78,7 @@ func DeleteK8sResourceQuotaBy(namespace string, name string, contextId *string) 
 }
 
 func DescribeK8sResourceQuota(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "resourcequotas", name, "-n", namespace)
+	cmd := exec.Command("kubectl", "describe", "resourcequotas", name, "-n", namespace, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

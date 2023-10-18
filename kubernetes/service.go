@@ -109,7 +109,7 @@ func DeleteK8sServiceBy(namespace string, name string, contextId *string) error 
 }
 
 func DescribeK8sService(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "service", name, "-n", namespace)
+	cmd := exec.Command("kubectl", "describe", "service", name, "-n", namespace, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

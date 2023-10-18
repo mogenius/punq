@@ -72,7 +72,7 @@ func DeleteK8sVolumeAttachmentBy(name string, contextId *string) error {
 }
 
 func DescribeK8sVolumeAttachment(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "volumeattachment", name)
+	cmd := exec.Command("kubectl", "describe", "volumeattachment", name, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

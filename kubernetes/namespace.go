@@ -115,7 +115,7 @@ func DeleteK8sNamespaceBy(name string, contextId *string) error {
 }
 
 func DescribeK8sNamespace(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "namespace", name)
+	cmd := exec.Command("kubectl", "describe", "namespace", name, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

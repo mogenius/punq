@@ -75,7 +75,7 @@ func DeleteK8sClusterRoleBindingBy(name string, contextId *string) error {
 }
 
 func DescribeK8sClusterRoleBinding(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "clusterrolebinding", name)
+	cmd := exec.Command("kubectl", "describe", "clusterrolebinding", name, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

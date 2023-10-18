@@ -78,7 +78,7 @@ func DeleteK8sLeaseBy(namespace string, name string, contextId *string) error {
 }
 
 func DescribeK8sLease(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "lease", name, "-n", namespace)
+	cmd := exec.Command("kubectl", "describe", "lease", name, "-n", namespace, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

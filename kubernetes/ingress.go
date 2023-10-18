@@ -101,7 +101,7 @@ func DeleteK8sIngressBy(namespace string, name string, contextId *string) error 
 }
 
 func DescribeK8sIngress(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "ingress", name, "-n", namespace)
+	cmd := exec.Command("kubectl", "describe", "ingress", name, "-n", namespace, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

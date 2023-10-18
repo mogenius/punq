@@ -111,7 +111,7 @@ func DeleteK8sDeploymentBy(namespace string, name string, contextId *string) err
 }
 
 func DescribeK8sDeployment(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", ContextFlag(contextId), "describe", "deployment", name, "-n", namespace)
+	cmd := exec.Command("kubectl", "describe", "deployment", name, "-n", namespace, ContextFlag(contextId))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
