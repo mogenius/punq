@@ -123,15 +123,16 @@ func addTraefikMiddleware(provider *KubeProvider, ingressHostname string) {
 	fmt.Printf("Creating TRAEFIK middleware (%s) ...\n", ingressHostname)
 	mwYaml := utils.InitPunqIngressTraefikMiddlewareYaml()
 
-	if err := os.WriteFile("traefik-middleware.yaml", []byte(mwYaml), 0600); err != nil {
+	fileName, err := utils.WriteToTempFile("traefik-middleware.yaml", []byte(mwYaml))
+	if err != nil {
 		utils.FatalError(err.Error())
 	}
 
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
-		cmd = exec.Command("cmd", "/C", fmt.Sprintf("kubectl %s apply -f traefik-middleware.yaml", ContextFlag(nil)))
+		cmd = exec.Command("cmd", "/C", fmt.Sprintf("kubectl %s apply -f %s", fileName, ContextFlag(nil)))
 	} else {
-		cmd = exec.Command("bash", "-c", fmt.Sprintf("kubectl %s apply -f traefik-middleware.yaml", ContextFlag(nil)))
+		cmd = exec.Command("bash", "-c", fmt.Sprintf("kubectl %s apply -f %s", fileName, ContextFlag(nil)))
 	}
 
 	output, err := cmd.CombinedOutput()
@@ -140,7 +141,7 @@ func addTraefikMiddleware(provider *KubeProvider, ingressHostname string) {
 
 	}
 
-	if err := os.Remove("traefik-middleware.yaml"); err != nil {
+	if err := os.Remove(fileName); err != nil {
 		utils.FatalError(err.Error())
 	}
 

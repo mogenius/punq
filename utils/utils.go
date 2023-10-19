@@ -415,3 +415,28 @@ func IsHelmInstalled() (bool, string, error) {
 	output, err := cmd.CombinedOutput()
 	return err == nil, strings.TrimRight(string(output), "\n\r"), err
 }
+
+func WriteToTempFile(filename string, data []byte) (string, error) {
+	tempDir := ""
+	tempFile, err := os.CreateTemp(tempDir, filename)
+	if err != nil {
+		return "", fmt.Errorf("unable to create temporary file: %w", err)
+	}
+
+	// Write data to the temporary file.
+	if _, err := tempFile.Write(data); err != nil {
+		// If an error occurs, attempt to remove the temporary file and return the error.
+		_ = os.Remove(tempFile.Name())
+		return "", fmt.Errorf("failed to write to temporary file: %w", err)
+	}
+
+	// Close the file.
+	if err := tempFile.Close(); err != nil {
+		// If an error occurs, attempt to remove the temporary file and return the error.
+		_ = os.Remove(tempFile.Name())
+		return "", fmt.Errorf("failed to close temporary file: %w", err)
+	}
+
+	// Return the full path to the temporary file.
+	return tempFile.Name(), nil
+}
