@@ -100,7 +100,11 @@ And thereafter to finalize your punq setup, configure your domain, and getting s
 6. **Get Started:**
 	- With your clusters added, you're ready to dive into using punq! 🤘 Start monitoring workloads, managing resources, and deploying applications across your clusters from one unified interface,
 
-7. **Stay Secure:**
+7. **Invite your team**
+	- punq is great for working with Kubernetes in teams. Start by adding users with the CLI via `punq user add` together with the required flags.
+ 	- There are three roles that you can assign with the flag `-a` to set the access level of a user: ADMIN, USER, and READER.
+
+8. **Stay Secure:**
 	- Regularly update your login credentials and review your cluster's security settings to ensure your environment remains secure.
 
 Remember, the punq community and documentation are valuable resources if you encounter any issues or have further questions as you embark on this streamlined Kubernetes management experience.
@@ -114,7 +118,7 @@ Here are some basic punq commands to start with:
 punq help
 
 # Install the punq operator in your current kubecontext
-punq install
+punq install -i punq.yourdomain.com
 
 # Manage users and permissions
 punq user
@@ -150,6 +154,10 @@ How to set a default editor for Windows (for example Visual Studio Code):
 Open powershell as admin and run:
 [System.Environment]::SetEnvironmentVariable("EDITOR", "code -w", [System.EnvironmentVariableTarget]::Machine)
 ```
+
+## Community
+The punq community is on Slack! Check out the workspace to discuss questions and ideas with fellow punq users and the team.  
+[🏠 **Join us on Slack**](https://join.slack.com/t/punqworkspace/shared_invite/zt-25d91bf4j-rh7sfzx9zkTyr_dyj9kSjQ)
 
 ## Contribution
 
