@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/mogenius/punq/dtos"
+	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/utils"
 )
 
@@ -52,7 +53,11 @@ func connectWs(c *gin.Context) {
 		return
 	}
 
-	log.Printf("exec-sh: %s %s %s\n", namespace, container, podName)
+	contextId, contextOk := c.GetQuery("context")
+	if !contextOk || contextId == "" {
+		utils.MissingQueryParameter(c, "context")
+		return
+	}
 
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -68,9 +73,8 @@ func connectWs(c *gin.Context) {
 	}
 
 	selectedShell := FindValidShell(container, namespace, podName)
-	fmt.Println("Selected shell: " + selectedShell)
 
-	cmd := exec.Command("sh", "-c", fmt.Sprintf("kubectl exec -it -c %s -n %s %s -- %s -c 'echo -e \"\033[1;34mConnected to %s/%s/%s using \"$(echo $0)\". Happy hacking!\033[0m 🚀 🚀 🚀\"; %s'", container, namespace, podName, selectedShell, namespace, podName, container, selectedShell))
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("kubectl exec -it -c %s -n %s %s %s -- %s -c 'echo -e \"\033[1;34mConnected to %s/%s/%s using \"$(echo $0)\". Happy hacking!\033[0m 🚀 🚀 🚀\"; %s'", container, namespace, podName, kubernetes.ContextFlag(&contextId), selectedShell, namespace, podName, container, selectedShell))
 	fmt.Println(cmd.String())
 	cmd.Env = append(os.Environ(), "TERM=xterm-color")
 
