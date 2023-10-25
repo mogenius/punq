@@ -36,6 +36,7 @@ var cmdsWithoutContext = []string{
 	"punq install",
 	"punq clean",
 	"punq version",
+	"punq system check",
 }
 
 var rootCmd = &cobra.Command{

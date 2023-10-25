@@ -49,6 +49,8 @@ var checkCmd = &cobra.Command{
 		// check for cluster provider
 		// check for api versions
 
+		contextName := kubernetes.CurrentContextName()
+
 		t := table.NewWriter()
 		t.SetOutputMirror(os.Stdout)
 		t.AppendHeader(table.Row{"Check", "Status", "Message"})
@@ -56,6 +58,16 @@ var checkCmd = &cobra.Command{
 		inetResult, inetErr := utils.CheckInternetAccess()
 		t.AppendRow(
 			table.Row{"Internet Access", utils.StatusEmoji(inetResult), StatusMessage(inetErr, "Check your internet connection.", "Internet access works.")},
+		)
+		t.AppendSeparator()
+
+		// check for punq
+		punqInstalledVersion, punqInstalledErr := kubernetes.IsPunqInstalled()
+		if punqInstalledErr != nil {
+			punqInstalledErr = fmt.Errorf("punq is not installed in context '%s'", contextName)
+		}
+		t.AppendRow(
+			table.Row{"punq installed", utils.StatusEmoji(punqInstalledVersion != ""), StatusMessage(punqInstalledErr, "Please run 'punq install -i punq.localhost'", fmt.Sprintf("Version '%s' in '%s' found.", punqInstalledVersion, contextName))},
 		)
 		t.AppendSeparator()
 
