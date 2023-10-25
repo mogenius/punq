@@ -241,26 +241,22 @@ func OpenBrowser(url string) {
 	}
 }
 
-func ConfirmTask(s string, tries int) bool {
+func ConfirmTask(s string) bool {
 	r := bufio.NewReader(os.Stdin)
 
-	for ; tries > 0; tries-- {
-		fmt.Printf("%s [y/n]: ", s)
+	fmt.Printf("%s [Y/n]: ", s)
 
-		res, err := r.ReadString('\n')
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// Empty input (i.e. "\n")
-		if len(res) < 2 {
-			continue
-		}
-
-		return strings.ToLower(strings.TrimSpace(res))[0] == 'y'
+	res, err := r.ReadString('\n')
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	return false
+	// Empty input (i.e. "\n")
+	if res == "\n" {
+		return true
+	}
+
+	return strings.ToLower(strings.TrimSpace(res)) == "y"
 }
 
 func HashString(data string) string {

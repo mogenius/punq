@@ -29,7 +29,7 @@ var resetConfig = &cobra.Command{
 	This can be used if something went wrong during automatic cleanup.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		yellow := color.New(color.FgYellow).SprintFunc()
-		if !utils.ConfirmTask(yellow("Do you really want to reset your configuration file to default?"), 1) {
+		if !utils.ConfirmTask(yellow("Do you really want to reset your configuration file to default?")) {
 			os.Exit(0)
 		}
 		utils.DeleteCurrentConfig()

@@ -24,7 +24,7 @@ var proxyCmd = &cobra.Command{
 	Port-Forward to punq within your currently selected kubernetes context.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		yellow := color.New(color.FgYellow).SprintFunc()
-		if !utils.ConfirmTask(fmt.Sprintf("Do you really want to connect to punq in '%s' context?", yellow(kubernetes.CurrentContextName())), 1) {
+		if !utils.ConfirmTask(fmt.Sprintf("Do you really want to connect to punq in '%s' context?", yellow(kubernetes.CurrentContextName()))) {
 			os.Exit(0)
 		}
 

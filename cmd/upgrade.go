@@ -47,7 +47,7 @@ var updateOperatorImageCmd = &cobra.Command{
 			return
 		} else {
 			yellow := color.New(color.FgYellow).SprintFunc()
-			if !utils.ConfirmTask(fmt.Sprintf("Do you really want to upgrade to image '%s' in context '%s'?", yellow(vers), yellow(kubernetes.CurrentContextName())), 1) {
+			if !utils.ConfirmTask(fmt.Sprintf("Do you really want to upgrade to image '%s' in context '%s'?", yellow(vers), yellow(kubernetes.CurrentContextName()))) {
 				os.Exit(0)
 			}
 

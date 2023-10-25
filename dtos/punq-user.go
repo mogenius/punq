@@ -38,6 +38,26 @@ func ListUsers(users []PunqUser) {
 	t.Render()
 }
 
+func (user *PunqUser) PrintToTerminal() {
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"ID", "DisplayName", "Email", "AccessLevel"})
+	t.AppendRow(
+		table.Row{user.Id, user.DisplayName, user.Email, user.AccessLevel.String()},
+	)
+	t.Render()
+}
+
+func (user *PunqUser) PrintToTerminalWithPwd() {
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"ID", "DisplayName", "Email", "Password", "AccessLevel"})
+	t.AppendRow(
+		table.Row{user.Id, user.DisplayName, user.Email, user.Password, user.AccessLevel.String()},
+	)
+	t.Render()
+}
+
 func (user *PunqUser) PasswordCheck(password string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 

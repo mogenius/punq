@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mogenius/punq/structs"
 
 	"golang.org/x/crypto/bcrypt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -24,7 +23,6 @@ const PunqAdminIdKey = "admin_id"
 
 func InitUserService() {
 	CreateUserSecret()
-	CreateAdminUser()
 }
 
 func CreateUserSecret() {
@@ -49,7 +47,7 @@ func CreateUserSecret() {
 			logger.Log.Error(err)
 			return
 		}
-		fmt.Println("Created new punq-users secret. ✅")
+		fmt.Println("Created new punq-auth secret. ✅")
 	}
 }
 
@@ -75,7 +73,8 @@ func CreateAdminUser() {
 	// display admin user
 	displayAdminUser := adminUser
 	displayAdminUser.Password = password
-	structs.PrettyPrint(displayAdminUser)
+	utils.PrintInfo("Please store following admin user credentials in a safe place:")
+	displayAdminUser.PrintToTerminalWithPwd()
 
 	secret = kubernetes.SecretFor(utils.CONFIG.Kubernetes.OwnNamespace, utils.USERSSECRET, nil)
 	strData := make(map[string]string)

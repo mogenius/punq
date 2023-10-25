@@ -10,7 +10,8 @@ import "strings"
 type AccessLevel int
 
 const (
-	READER AccessLevel = iota
+	UNKNOWNACCESS AccessLevel = iota
+	READER
 	USER
 	ADMIN
 	// and so on...
@@ -31,6 +32,24 @@ func AccessLevelFromString(level string) AccessLevel {
 		return ADMIN
 	default:
 		return READER
+	}
+}
+
+func (level *AccessLevel) String() string {
+	if level == nil {
+		return "UNKNOWNACCESS"
+	} else {
+		level := *level
+		switch level {
+		case READER:
+			return "READER"
+		case USER:
+			return "USER"
+		case ADMIN:
+			return "ADMIN"
+		default:
+			return "UNKNOWNACCESS"
+		}
 	}
 }
 

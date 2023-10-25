@@ -28,8 +28,6 @@ func Remove(clusterName string) {
 	removeUsersSecret(provider)
 	removeService(provider)
 	removeIngress(provider)
-
-	fmt.Printf("\n🚀🚀🚀 Successfully uninstalled punq from '%s'.\n\n", clusterName)
 }
 
 func removeDeployment(provider *KubeProvider) {

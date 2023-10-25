@@ -24,11 +24,16 @@ var cleanCmd = &cobra.Command{
 	This can be used if something went wrong during automatic setup/cleanup.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		yellow := color.New(color.FgYellow).SprintFunc()
-		if !utils.ConfirmTask(fmt.Sprintf("Do you really want to remove punq from '%s' context?", yellow(kubernetes.CurrentContextName())), 1) {
+		if !utils.ConfirmTask(fmt.Sprintf("Do you really want to remove punq from '%s' context?", yellow(kubernetes.CurrentContextName()))) {
 			os.Exit(0)
 		}
-		kubernetes.Remove(yellow(kubernetes.CurrentContextName()))
+
+		clusterName := kubernetes.CurrentContextName()
+
+		kubernetes.Remove(yellow(clusterName))
 		services.RemoveKeyPair()
+
+		fmt.Printf("\n🚀🚀🚀 Successfully uninstalled punq from '%s'.\n\n", clusterName)
 	},
 }
 

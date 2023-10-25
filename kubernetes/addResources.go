@@ -48,7 +48,7 @@ func Deploy(clusterName string, ingressHostname string) {
 		addIngress(provider, clusterName, ingressHostname)
 	}
 
-	fmt.Printf("\n🚀🚀🚀 Successfully installed punq in '%s'.\n\n", clusterName)
+	fmt.Printf("\nSuccessfully installed punq in '%s'.\n\n", clusterName)
 }
 
 func addService(provider *KubeProvider) {
