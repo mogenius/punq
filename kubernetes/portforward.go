@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"os/signal"
@@ -111,4 +112,49 @@ func portForwardAPod(req PortForwardAPodRequest, contextId *string) error {
 		return err
 	}
 	return fw.ForwardPorts()
+}
+
+func Proxy(backendUrl string, frontendUrl string, websocketUrl string) {
+	localPort := ":8888"
+
+	backendURL, err := url.Parse(backendUrl)
+	if err != nil {
+		utils.FatalError(fmt.Sprintf("Error parsing backend url: %s", err.Error()))
+	}
+	frontendURL, err := url.Parse(frontendUrl)
+	if err != nil {
+		utils.FatalError(fmt.Sprintf("Error parsing frontend url: %s", err.Error()))
+	}
+	websocketURL, err := url.Parse(websocketUrl)
+	if err != nil {
+		utils.FatalError(fmt.Sprintf("Error parsing websocket url: %s", err.Error()))
+	}
+
+	backendProxy := httputil.NewSingleHostReverseProxy(backendURL)
+	frontendProxy := httputil.NewSingleHostReverseProxy(frontendURL)
+	websocketProxy := httputil.NewSingleHostReverseProxy(websocketURL)
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		orig := r.URL
+		fmt.Printf("FRONTEND: localhost%s%s -> %s%s\n", localPort, orig, frontendURL, r.URL)
+		frontendProxy.ServeHTTP(w, r)
+	})
+
+	http.HandleFunc("/backend/", func(w http.ResponseWriter, r *http.Request) {
+		orig := r.URL
+		r.URL.Path = strings.Replace(r.URL.Path, "/backend", "", 1)
+		fmt.Printf("BACKEND : localhost%s%s -> %s%s\n", localPort, orig, backendURL, r.URL)
+		backendProxy.ServeHTTP(w, r)
+	})
+
+	http.HandleFunc("/websocket", func(w http.ResponseWriter, r *http.Request) {
+		orig := r.URL
+		r.URL.Path = strings.Replace(r.URL.Path, "/websocket", "", 1)
+		fmt.Printf("WEBSOCKET: localhost%s%s -> %s%s\n", localPort, orig, websocketURL, r.URL)
+		websocketProxy.ServeHTTP(w, r)
+	})
+
+	if err = http.ListenAndServe(localPort, nil); err != nil {
+		utils.FatalError(fmt.Sprintf("Error starting proxy: %s", err.Error()))
+	}
 }

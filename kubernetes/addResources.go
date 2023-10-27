@@ -305,7 +305,11 @@ func addDeployment(provider *KubeProvider) {
 	deploymentContainer.WithName(version.Name)
 	deploymentContainer.WithImage(version.OperatorImage)
 
-	deploymentContainer.WithPorts(applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Backend.Port)).WithContainerPort(int32(utils.CONFIG.Frontend.Port)).WithContainerPort(int32(utils.CONFIG.Websocket.Port)))
+	deploymentContainer.WithPorts(
+		applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Backend.Port)),
+		applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Frontend.Port)),
+		applyconfcore.ContainerPort().WithContainerPort(int32(utils.CONFIG.Websocket.Port)),
+	)
 
 	envVars := []applyconfcore.EnvVarApplyConfiguration{}
 	envVars = append(envVars, applyconfcore.EnvVarApplyConfiguration{

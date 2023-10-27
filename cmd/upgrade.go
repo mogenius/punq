@@ -52,6 +52,9 @@ var updateOperatorImageCmd = &cobra.Command{
 			}
 
 			imageName := fmt.Sprintf("ghcr.io/mogenius/punq:%s", vers)
+			if utils.CONFIG.Misc.Stage != "production" {
+				imageName = fmt.Sprintf("ghcr.io/mogenius/punq-dev:%s", vers)
+			}
 			err = kubernetes.UpdateDeploymentImage(utils.CONFIG.Kubernetes.OwnNamespace, version.Name, imageName, nil)
 			if err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
