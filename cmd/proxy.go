@@ -43,7 +43,7 @@ var proxyCmd = &cobra.Command{
 		// FORWARD WEBSOCKET
 		readyWebsocketCh := make(chan struct{})
 		stopWebsocketCh := make(chan struct{}, 1)
-		websocketUrl := fmt.Sprintf("ws://%s:%d", utils.CONFIG.Websocket.Host, utils.CONFIG.Websocket.Port)
+		websocketUrl := fmt.Sprintf("http://%s:%d", utils.CONFIG.Websocket.Host, utils.CONFIG.Websocket.Port)
 		go kubernetes.StartPortForward(utils.CONFIG.Websocket.Port, utils.CONFIG.Websocket.Port, readyWebsocketCh, stopWebsocketCh, &contextId)
 
 		select {
@@ -71,7 +71,7 @@ var proxyCmd = &cobra.Command{
 			break
 		}
 
-		kubernetes.Proxy(backendUrl, frontendUrl, websocketUrl)
+		go kubernetes.Proxy(backendUrl, frontendUrl, websocketUrl)
 
 		quit := make(chan os.Signal)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

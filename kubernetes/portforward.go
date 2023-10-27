@@ -53,7 +53,7 @@ func StartPortForward(localPort int, podPort int, readyChannel chan struct{}, st
 		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 		go func() {
 			<-sigs
-			fmt.Println("Port-Forward to punq closed!")
+			fmt.Printf("Port-Forward to punq (%d:%d) closed!\n", localPort, podPort)
 			close(stopChannel)
 			wg.Done()
 		}()
@@ -74,14 +74,8 @@ func StartPortForward(localPort int, podPort int, readyChannel chan struct{}, st
 			}
 		}()
 
-		select {
-		case <-readyChannel:
-			fmt.Printf("PortForward for %s(%d:%d) is ready!\n", pod.Name, localPort, podPort)
-			break
-		case <-stopChannel:
-			fmt.Printf("PortForward for %s is stopped!\n", pod.Name)
-			break
-		}
+		<-stopChannel
+		fmt.Printf("PortForward for %s is stopped!\n", pod.Name)
 
 		wg.Wait()
 
@@ -143,14 +137,15 @@ func Proxy(backendUrl string, frontendUrl string, websocketUrl string) {
 	http.HandleFunc("/backend/", func(w http.ResponseWriter, r *http.Request) {
 		orig := r.URL
 		r.URL.Path = strings.Replace(r.URL.Path, "/backend", "", 1)
-		fmt.Printf("BACKEND : localhost%s%s -> %s%s\n", localPort, orig, backendURL, r.URL)
+		fmt.Printf("BACKEND:  localhost%s%s -> %s%s\n", localPort, orig, backendURL, r.URL)
 		backendProxy.ServeHTTP(w, r)
 	})
 
-	http.HandleFunc("/websocket", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/websocket/", func(w http.ResponseWriter, r *http.Request) {
 		orig := r.URL
 		r.URL.Path = strings.Replace(r.URL.Path, "/websocket", "", 1)
-		fmt.Printf("WEBSOCKET: localhost%s%s -> %s%s\n", localPort, orig, websocketURL, r.URL)
+		r.Proto = "http"
+		fmt.Printf("WEBSOCKET:localhost%s%s -> %s%s\n", localPort, orig, websocketURL, r.URL)
 		websocketProxy.ServeHTTP(w, r)
 	})
 
