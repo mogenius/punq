@@ -24,14 +24,14 @@ var proxyCmd = &cobra.Command{
 	Port-Forward to punq within your currently selected kubernetes context.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		yellow := color.New(color.FgYellow).SprintFunc()
-		if !utils.ConfirmTask(fmt.Sprintf("Do you really want to connect to punq in '%s' context?", yellow(kubernetes.CurrentContextName())), 1) {
+		if !utils.ConfirmTask(fmt.Sprintf("Do you really want to connect to punq in '%s' context?", yellow(kubernetes.CurrentContextName()))) {
 			os.Exit(0)
 		}
 
 		// FORWARD BACKEND
 		readyBackendCh := make(chan struct{})
 		stopBackendCh := make(chan struct{}, 1)
-		backendUrl := fmt.Sprintf("http://%s:%d/version", utils.CONFIG.Backend.Host, utils.CONFIG.Backend.Port)
+		backendUrl := fmt.Sprintf("http://%s:%d", utils.CONFIG.Backend.Host, utils.CONFIG.Backend.Port)
 		go kubernetes.StartPortForward(utils.CONFIG.Backend.Port, utils.CONFIG.Backend.Port, readyBackendCh, stopBackendCh, &contextId)
 
 		// FORWARD FRONTEND
@@ -39,6 +39,12 @@ var proxyCmd = &cobra.Command{
 		stopFrontendCh := make(chan struct{}, 1)
 		frontendUrl := fmt.Sprintf("http://%s:%d", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port)
 		go kubernetes.StartPortForward(utils.CONFIG.Frontend.Port, utils.CONFIG.Frontend.Port, readyFrontendCh, stopFrontendCh, &contextId)
+
+		// FORWARD WEBSOCKET
+		readyWebsocketCh := make(chan struct{})
+		stopWebsocketCh := make(chan struct{}, 1)
+		websocketUrl := fmt.Sprintf("http://%s:%d", utils.CONFIG.Websocket.Host, utils.CONFIG.Websocket.Port)
+		go kubernetes.StartPortForward(utils.CONFIG.Websocket.Port, utils.CONFIG.Websocket.Port, readyWebsocketCh, stopWebsocketCh, &contextId)
 
 		select {
 		case <-readyBackendCh:
@@ -50,13 +56,22 @@ var proxyCmd = &cobra.Command{
 
 		select {
 		case <-readyFrontendCh:
-
 			fmt.Printf("Frontend %s is ready! 🚀🚀🚀\n", frontendUrl)
-			utils.OpenBrowser(frontendUrl)
+			utils.OpenBrowser("http://localhost:8888")
 			break
 		case <-stopFrontendCh:
 			break
 		}
+
+		select {
+		case <-readyWebsocketCh:
+			fmt.Printf("Websocket %s is ready! 🚀🚀🚀\n", websocketUrl)
+			break
+		case <-stopWebsocketCh:
+			break
+		}
+
+		go kubernetes.Proxy(backendUrl, frontendUrl, websocketUrl)
 
 		quit := make(chan os.Signal)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
@@ -65,6 +80,5 @@ var proxyCmd = &cobra.Command{
 }
 
 func init() {
-	proxyCmd.Hidden = true
 	rootCmd.AddCommand(proxyCmd)
 }

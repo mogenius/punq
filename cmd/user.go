@@ -6,7 +6,6 @@ import (
 
 	"github.com/mogenius/punq/dtos"
 	"github.com/mogenius/punq/services"
-	"github.com/mogenius/punq/structs"
 	"github.com/mogenius/punq/utils"
 	"github.com/spf13/cobra"
 )
@@ -62,12 +61,13 @@ var addUserCmd = &cobra.Command{
 			AccessLevel: selectedAccess,
 		}
 
-		_, err := services.AddUser(newUser)
+		newPunqUser, err := services.AddUser(newUser)
 		if err != nil {
 			utils.FatalError(err.Error())
 		} else {
 			utils.PrintInfo("User added succesfully ✅.")
-			structs.PrettyPrint(newUser)
+			newPunqUser.Password = password // print password to terminal once
+			newPunqUser.PrintToTerminalWithPwd()
 		}
 	},
 }
@@ -136,7 +136,7 @@ var getUserCmd = &cobra.Command{
 		if err != nil {
 			utils.FatalError(err.Error())
 		}
-		structs.PrettyPrint(user)
+		user.PrintToTerminal()
 	},
 }
 

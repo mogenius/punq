@@ -1,5 +1,11 @@
 # Install punq on your cluster in your current context. This will also set up the ingress to deliver punq on your own domain. You'll be asked to confirm with "Y". 
-punq install -i punq.yourdomain.com
+## Without Ingress (local / not exposed to the internet):
+    punq install
+    punq proxy
+
+## With Ingress
+    punq install -i punq.yourdomain.com
+    open https://punq.yourdomain.com
 
 - In your domain's DNS settings, add an A-Record for the punq domain which points to your cluster loadbalancer IP, e.g. A: 123.123.123.123 -> punq.yourdomain.com.
 - Open punq in your browser.

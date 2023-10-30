@@ -73,6 +73,14 @@ After successfully installing punq, you're just a few steps away from harnessing
 
 To install punq on your cluster within the current context and set up ingress routing, enabling you to access punq via your custom domain:
 
+### Without Ingress (local / not exposed to the internet)
+
+```
+punq install
+punq proxy
+```
+
+### With Ingress
 ```
 punq install -i punq.yourdomain.com
 ```

@@ -47,11 +47,14 @@ var updateOperatorImageCmd = &cobra.Command{
 			return
 		} else {
 			yellow := color.New(color.FgYellow).SprintFunc()
-			if !utils.ConfirmTask(fmt.Sprintf("Do you really want to upgrade to image '%s' in context '%s'?", yellow(vers), yellow(kubernetes.CurrentContextName())), 1) {
+			if !utils.ConfirmTask(fmt.Sprintf("Do you really want to upgrade to image '%s' in context '%s'?", yellow(vers), yellow(kubernetes.CurrentContextName()))) {
 				os.Exit(0)
 			}
 
 			imageName := fmt.Sprintf("ghcr.io/mogenius/punq:%s", vers)
+			if utils.CONFIG.Misc.Stage != "production" {
+				imageName = fmt.Sprintf("ghcr.io/mogenius/punq-dev:%s", vers)
+			}
 			err = kubernetes.UpdateDeploymentImage(utils.CONFIG.Kubernetes.OwnNamespace, version.Name, imageName, nil)
 			if err != nil {
 				fmt.Printf("Error: %s\n", err.Error())
