@@ -17,11 +17,6 @@ const (
 	// and so on...
 )
 
-type PunqAccess struct {
-	UserId string      `json:"userId" validate:"required"`
-	Level  AccessLevel `json:"level" validate:"required"`
-}
-
 func AccessLevelFromString(level string) AccessLevel {
 	switch strings.ToUpper(level) {
 	case "READER":

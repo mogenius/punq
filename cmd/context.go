@@ -94,18 +94,18 @@ var addContextCmd = &cobra.Command{
 var addContextAccessCmd = &cobra.Command{
 	Use:   "add-access",
 	Short: "Add access to punq context.",
-	Long:  `The add-access command lets you add a user + access level to a context in punq.`,
+	Long:  `The add-access command lets you add a user to a context in punq.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		RequireStringFlag(contextId, "context-id")
-		RequireStringFlag(accessLevel, "access-level")
 		RequireStringFlag(userId, "user-id")
 
 		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
 			utils.FatalError(fmt.Sprintf("context '%s' not found.", contextId))
+			return
 		}
 
-		ctx.AddAccess(userId, dtos.AccessLevelFromString(accessLevel))
+		ctx.AddAccess(userId)
 		services.UpdateContext(*ctx)
 	},
 }
@@ -121,6 +121,7 @@ var removeContextAccessCmd = &cobra.Command{
 		ctx, _ := services.GetContext(contextId)
 		if ctx == nil {
 			utils.FatalError(fmt.Sprintf("context '%s' not found.", contextId))
+			return
 		}
 
 		ctx.RemoveAccess(userId)
@@ -183,7 +184,6 @@ func init() {
 
 	contextCmd.AddCommand(addContextAccessCmd)
 	addContextAccessCmd.Flags().StringVarP(&userId, "user-id", "u", "", "Id of the user you want to add")
-	addContextAccessCmd.Flags().StringVarP(&accessLevel, "access-level", "l", string(dtos.ADMIN), "Access level of the user you want to add (READER, USER, ADMIN)")
 
 	contextCmd.AddCommand(removeContextAccessCmd)
 	removeContextAccessCmd.Flags().StringVarP(&userId, "user-id", "u", "", "Id of the user you want to add")

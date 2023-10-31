@@ -109,7 +109,7 @@ func portForwardAPod(req PortForwardAPodRequest, contextId *string) error {
 }
 
 func Proxy(backendUrl string, frontendUrl string, websocketUrl string) {
-	localPort := ":8888"
+	localPort := fmt.Sprintf(":%d", utils.CONFIG.Misc.ProxyPort)
 
 	backendURL, err := url.Parse(backendUrl)
 	if err != nil {

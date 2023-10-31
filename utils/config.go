@@ -57,6 +57,7 @@ type Config struct {
 		Stage            string   `yaml:"stage" env:"stage" env-description:"mogenius k8s-manager stage" env-default:"prod"`
 		Debug            bool     `yaml:"debug" env:"debug" env-description:"If set to true, debug features will be enabled." env-default:"false"`
 		CheckForUpdates  int      `yaml:"check_for_updates" env:"check_for_updates" env-description:"Time interval between update checks." env-default:"86400"`
+		ProxyPort        int      `yaml:"proxy_port" env:"proxy_port" env-description:"Default port for proxy releated stuff." env-default:"8888"`
 		IgnoreNamespaces []string `yaml:"ignore_namespaces" env:"ignore_namespaces" env-description:"List of all ignored namespaces." env-default:""`
 	} `yaml:"misc"`
 }
@@ -148,6 +149,7 @@ func PrintSettings() {
 	fmt.Printf("Stage:                    %s\n", CONFIG.Misc.Stage)
 	fmt.Printf("Debug:                    %t\n", CONFIG.Misc.Debug)
 	fmt.Printf("CheckForUpdates:          %d\n", CONFIG.Misc.CheckForUpdates)
+	fmt.Printf("ProxyPort:                %d\n", CONFIG.Misc.ProxyPort)
 	fmt.Printf("IgnoreNamespaces:         %s\n\n", strings.Join(CONFIG.Misc.IgnoreNamespaces, ","))
 
 	fmt.Printf("Config:                   %s\n\n", ConfigPath)

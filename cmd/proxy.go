@@ -57,7 +57,7 @@ var proxyCmd = &cobra.Command{
 		select {
 		case <-readyFrontendCh:
 			fmt.Printf("Frontend %s is ready! 🚀🚀🚀\n", frontendUrl)
-			utils.OpenBrowser("http://localhost:8888")
+			utils.OpenBrowser(fmt.Sprintf("http://%s:%d)", utils.CONFIG.Frontend.Host, utils.CONFIG.Misc.ProxyPort))
 			break
 		case <-stopFrontendCh:
 			break

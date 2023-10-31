@@ -13,14 +13,14 @@ import (
 
 func InitUserRoutes(router *gin.Engine) {
 
-	userRoutes := router.Group("/user", Auth(dtos.ADMIN))
+	userRoutes := router.Group("/user")
 	{
-		userRoutes.GET("/all", userList)
-		userRoutes.GET("/", currentUserGet)
-		userRoutes.GET("/:id", validateParam("id"), userGet)
-		userRoutes.DELETE("/:id", validateParam("id"), userDelete)
-		userRoutes.PATCH("/", userUpdate)
-		userRoutes.POST("/", userAdd)
+		userRoutes.GET("/all", Auth(dtos.ADMIN), userList)
+		userRoutes.GET("/", Auth(dtos.READER), currentUserGet)
+		userRoutes.GET("/:id", validateParam("id"), Auth(dtos.ADMIN), userGet)
+		userRoutes.DELETE("/:id", validateParam("id"), Auth(dtos.ADMIN), userDelete)
+		userRoutes.PATCH("/", Auth(dtos.ADMIN), userUpdate)
+		userRoutes.POST("/", Auth(dtos.ADMIN), userAdd)
 	}
 
 }

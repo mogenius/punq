@@ -1,5 +1,5 @@
 config:
-  version: 2
+  version: 3
 
 backend:
   host: 127.0.0.1
@@ -13,7 +13,6 @@ websocket:
   host: 127.0.0.1
   port: 8082
 
-
 kubernetes:
   cluster_name: your-cluster-name
   own_namespace: punq
@@ -24,3 +23,4 @@ misc:
   debug: false
   check_for_updates: 86400
   ignore_namespaces: ["kube-system"]
+  proxy_port: 8888

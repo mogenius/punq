@@ -132,6 +132,16 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "local",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": ["local"],
+            "asRoot": false,
+            "console": "integratedTerminal"
+        },
+        {
             "name": "system check",
             "type": "go",
             "request": "launch",
