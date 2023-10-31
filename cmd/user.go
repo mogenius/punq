@@ -35,7 +35,7 @@ var addUserCmd = &cobra.Command{
 		if accessLevel != "" {
 			selectedAccess = dtos.AccessLevelFromString(accessLevel)
 		} else {
-			selectedAccess = dtos.ADMIN
+			selectedAccess = dtos.READER
 		}
 
 		firstname := utils.RandomFirstName()

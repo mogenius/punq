@@ -16,9 +16,9 @@ import (
 
 func InitContextRoutes(router *gin.Engine) {
 
-	contextRoutes := router.Group("/context", Auth(dtos.ADMIN))
+	contextRoutes := router.Group("/context")
 	{
-		contextRoutes.GET("/all", Auth(dtos.ADMIN), allContexts)
+		contextRoutes.GET("/all", Auth(dtos.READER), allContexts)
 		contextRoutes.GET("/info", Auth(dtos.ADMIN), RequireContextId(), getInfoContexts)
 		contextRoutes.GET("", Auth(dtos.ADMIN), RequireContextId(), getContext)
 		contextRoutes.DELETE("", Auth(dtos.ADMIN), RequireContextId(), deleteContext)
@@ -34,7 +34,25 @@ func InitContextRoutes(router *gin.Engine) {
 // @Router /backend/context/all [get]
 // @Security Bearer
 func allContexts(c *gin.Context) {
-	c.JSON(http.StatusOK, services.ListContexts())
+	resultingContexts := []dtos.PunqContext{}
+
+	user := services.GetGinContextUser(c)
+	contexts := services.ListContexts()
+
+	for _, ctx := range contexts {
+		if ctx.AccessLevel >= user.AccessLevel {
+			// USER IS IN A GROUP THAT IS ALLOWED
+			resultingContexts = append(resultingContexts, ctx)
+			continue
+		}
+		for _, userFromList := range ctx.Users {
+			if userFromList == user.Id {
+				// USERID IS EXPLICITLY ALLOWED
+				resultingContexts = append(resultingContexts, ctx)
+			}
+		}
+	}
+	c.JSON(http.StatusOK, resultingContexts)
 }
 
 // @Tags Context

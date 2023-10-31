@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/mogenius/punq/kubernetes"
 	"github.com/mogenius/punq/operator"
 	"github.com/mogenius/punq/services"
 	"github.com/mogenius/punq/utils"
@@ -27,7 +28,14 @@ var localCmd = &cobra.Command{
 		utils.PrintInfo(fmt.Sprintf("Initialized operator with %d contexts.", len(contexts)))
 
 		go operator.InitFrontend()
-		utils.OpenBrowser(fmt.Sprintf("http://%s:%d", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port))
+
+		backendUrl := fmt.Sprintf("http://%s:%d", utils.CONFIG.Backend.Host, utils.CONFIG.Backend.Port)
+		frontendUrl := fmt.Sprintf("http://%s:%d", utils.CONFIG.Frontend.Host, utils.CONFIG.Frontend.Port)
+		websocketUrl := fmt.Sprintf("http://%s:%d", utils.CONFIG.Websocket.Host, utils.CONFIG.Websocket.Port)
+
+		go kubernetes.Proxy(backendUrl, frontendUrl, websocketUrl)
+
+		utils.OpenBrowser(fmt.Sprintf("http://%s:%d)", utils.CONFIG.Frontend.Host, utils.CONFIG.Misc.ProxyPort))
 		operator.InitBackend()
 	},
 }

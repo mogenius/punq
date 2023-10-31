@@ -19,7 +19,7 @@ func InitAuthRoutes(router *gin.Engine) {
 
 	authRoutes := router.Group("/auth")
 	{
-		authRoutes.POST("/login", Auth(dtos.READER), login)
+		authRoutes.POST("/login", login)
 		authRoutes.GET("/authenticate", Auth(dtos.READER), authenticate)
 	}
 

@@ -32,7 +32,7 @@ func ListUsers(users []PunqUser) {
 	t.AppendHeader(table.Row{"#", "ID", "DisplayName", "Email", "AccessLevel", "Created"})
 	for index, user := range users {
 		t.AppendRow(
-			table.Row{index + 1, user.Id, user.DisplayName, user.Email, user.AccessLevel, utils.JsonStringToHumanDuration(user.Created)},
+			table.Row{index + 1, user.Id, user.DisplayName, user.Email, user.AccessLevel.String(), utils.JsonStringToHumanDuration(user.Created)},
 		)
 	}
 	t.Render()

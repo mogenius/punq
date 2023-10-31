@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"sort"
-	"strings"
 
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/mogenius/punq/utils"
@@ -13,16 +12,17 @@ import (
 )
 
 type PunqContext struct {
-	Id          string       `json:"id" validate:"required"`
-	Name        string       `json:"name" validate:"required"`
-	ContextHash string       `json:"contextHash" validate:"required"`
-	Context     string       `json:"context" validate:"required"`
-	Provider    string       `json:"provider" validate:"required"`
-	Reachable   bool         `json:"reachable" validate:"required"`
-	Access      []PunqAccess `json:"access" validate:"required"`
+	Id          string      `json:"id" validate:"required"`
+	Name        string      `json:"name" validate:"required"`
+	ContextHash string      `json:"contextHash" validate:"required"`
+	Context     string      `json:"context" validate:"required"`
+	Provider    string      `json:"provider" validate:"required"`
+	Reachable   bool        `json:"reachable" validate:"required"`
+	Users       []string    `json:"users" validate:"required"`
+	AccessLevel AccessLevel `json:"accessLevel" validate:"required"`
 }
 
-func CreateContext(id string, name string, context string, provider string, access []PunqAccess) PunqContext {
+func CreateContext(id string, name string, context string, provider string, minAccessLevel AccessLevel) PunqContext {
 	ctx := PunqContext{}
 
 	ctx.Name = name
@@ -42,54 +42,39 @@ func CreateContext(id string, name string, context string, provider string, acce
 		ctx.Provider = provider
 	}
 
-	if len(access) > 0 {
-		ctx.Access = access
-	} else {
-		ctx.Access = []PunqAccess{}
-	}
+	ctx.AccessLevel = minAccessLevel
+	ctx.Users = []string{}
 
 	return ctx
 }
 
-func (c *PunqContext) AddAccess(userId string, accessLevel AccessLevel) {
-	for _, access := range c.Access {
-		if access.UserId == userId {
-			// UPDATE EXISTING
-			access.Level = accessLevel
+func (c *PunqContext) AddAccess(newUserId string) {
+	for _, user := range c.Users {
+		if user == newUserId {
+			// ALREADY EXISTS
 			return
 		}
 	}
 	// CREATE NEW
-	c.Access = append(c.Access, PunqAccess{
-		UserId: userId,
-		Level:  accessLevel,
-	})
+	c.Users = append(c.Users, newUserId)
 }
 
-func (c *PunqContext) RemoveAccess(userId string) {
-	resultingArray := []PunqAccess{}
-	for _, access := range c.Access {
-		if access.UserId != userId {
-			resultingArray = append(resultingArray, access)
+func (c *PunqContext) RemoveAccess(userIdToRemove string) {
+	resultingArray := []string{}
+	for _, userId := range c.Users {
+		if userId != userIdToRemove {
+			resultingArray = append(resultingArray, userId)
 		}
 	}
-	c.Access = resultingArray
+	c.Users = resultingArray
 }
 
 func (c *PunqContext) PrintToTerminal() {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"ID", "Name", "Access", "Hash"})
-	accessStr := "*"
-	accessEntries := []string{}
-	for _, access := range c.Access {
-		accessEntries = append(accessEntries, fmt.Sprintf("%s (%d)", access.UserId, access.Level))
-	}
-	if len(accessEntries) > 0 {
-		accessStr = strings.Join(accessEntries, ", ")
-	}
+	t.AppendHeader(table.Row{"ID", "Name", "Min. AccessLevel", "Users with ", "Hash"})
 	t.AppendRow(
-		table.Row{c.Id, c.Name, accessStr, c.ContextHash},
+		table.Row{c.Id, c.Name, c.AccessLevel.String(), len(c.Users), c.ContextHash},
 	)
 	t.Render()
 }
@@ -97,18 +82,10 @@ func (c *PunqContext) PrintToTerminal() {
 func ListContextsToTerminal(contexts []PunqContext) {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"#", "ID", "Name", "Reachable", "Provider", "Access"})
+	t.AppendHeader(table.Row{"#", "ID", "Name", "Reachable", "Provider", "Min. AccessLevel"})
 	for index, context := range contexts {
-		accessStr := "*"
-		accessEntries := []string{}
-		for _, access := range context.Access {
-			accessEntries = append(accessEntries, fmt.Sprintf("%s (%d)", access.UserId, access.Level))
-		}
-		if len(accessEntries) > 0 {
-			accessStr = strings.Join(accessEntries, ", ")
-		}
 		t.AppendRow(
-			table.Row{index + 1, context.Id, context.Name, utils.StatusEmoji(context.Reachable), context.Provider, accessStr},
+			table.Row{index + 1, context.Id, context.Name, utils.StatusEmoji(context.Reachable), context.Provider, context.AccessLevel.String()},
 		)
 	}
 	t.Render()
@@ -172,7 +149,7 @@ func ParseConfigToPunqContexts(data []byte) ([]PunqContext, error) {
 		if err != nil {
 			return result, err
 		}
-		result = append(result, CreateContext("", contextName, string(configBytes), "", []PunqAccess{}))
+		result = append(result, CreateContext("", contextName, string(configBytes), "", ADMIN))
 	}
 	sort.Slice(result, func(i, j int) bool {
 		return result[i].Name < result[j].Name
@@ -201,7 +178,7 @@ func ParseCurrentContextConfigToPunqContext(data []byte) (PunqContext, error) {
 		if err != nil {
 			return result, err
 		}
-		result = CreateContext("", contextName, string(configBytes), "", []PunqAccess{})
+		result = CreateContext("", contextName, string(configBytes), "", ADMIN)
 	}
 
 	if result.Id == "" {
@@ -221,7 +198,7 @@ func PrintAllContextFromConfig(config *api.Config) {
 		table.Row{"ALL CONTEXTS", "*", "*", "*"},
 	)
 	for contextName, context := range config.Contexts {
-		CreateContext("", contextName, "", "", []PunqAccess{})
+		CreateContext("", contextName, "", "", ADMIN)
 		t.AppendRow(
 			table.Row{contextName, context.Cluster, context.AuthInfo, config.Clusters[context.Cluster].Server},
 		)
