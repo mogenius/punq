@@ -167,7 +167,7 @@ func PrintVersionInfo() {
 func PrintChangeLog() {
 	r, _ := glamour.NewTermRenderer(
 		glamour.WithAutoStyle(),
-		glamour.WithWordWrap(getTermialSize()),
+		glamour.WithWordWrap(getTerminalSize()),
 	)
 	out, _ := r.Render(ChangeLog)
 	fmt.Println(out)
@@ -176,13 +176,13 @@ func PrintChangeLog() {
 func PrintWelcomeMessage() {
 	r, _ := glamour.NewTermRenderer(
 		glamour.WithAutoStyle(),
-		glamour.WithWordWrap(getTermialSize()),
+		glamour.WithWordWrap(getTerminalSize()),
 	)
 	out, _ := r.Render(WelcomeMessage)
 	fmt.Println(out)
 }
 
-func getTermialSize() int {
+func getTerminalSize() int {
 	fd := 0
 	if runtime.GOOS == "windows" {
 		fd = int(os.Stdout.Fd())
