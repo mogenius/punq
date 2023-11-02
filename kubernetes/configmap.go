@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func ConfigMapFor(namespace string, configMapName string, contextId *string) *v1.ConfigMap {
+func ConfigMapFor(namespace string, configMapName string, showError bool, contextId *string) *v1.ConfigMap {
 	provider, err := NewKubeProvider(contextId)
 	if err != nil {
 		return nil
@@ -20,7 +20,9 @@ func ConfigMapFor(namespace string, configMapName string, contextId *string) *v1
 	configMapClient := provider.ClientSet.CoreV1().ConfigMaps(namespace)
 	configMap, err := configMapClient.Get(context.TODO(), configMapName, metav1.GetOptions{})
 	if err != nil {
-		logger.Log.Errorf("ConfigMapFor ERROR: %s", err.Error())
+		if showError {
+			logger.Log.Errorf("ConfigMapFor ERROR: %s", err.Error())
+		}
 		return nil
 	}
 	return configMap
