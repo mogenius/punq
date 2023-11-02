@@ -810,7 +810,7 @@ func AllResourcesFromToCombinedYaml(namespace string, resourcesToLookFor []strin
 	return result, err
 }
 
-func SystemCheck() {
+func SystemCheck() string {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Check", "Status", "Message"})
@@ -874,7 +874,7 @@ func SystemCheck() {
 	t.AppendRow(
 		table.Row{"API Versions", utils.StatusEmoji(len(apiVerResult) > 0), StatusMessage(apiVerErr, "Cannot determin API versions.", apiVersStr)},
 	)
-	t.Render()
+	return t.Render()
 }
 
 func StatusMessage(err error, solution string, successMsg string) string {
