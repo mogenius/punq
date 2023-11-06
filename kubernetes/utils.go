@@ -333,11 +333,9 @@ func KubernetesVersion(contextId *string) *version2.Info {
 }
 
 func ClusterInfo(contextId *string) dtos.ClusterInfoDto {
-	country, _ := utils.GuessClusterCountry()
 	result := dtos.ClusterInfoDto{
 		ClusterStatus: ClusterStatus(contextId),
 		NodeStats:     GetNodeStats(contextId),
-		Country:       country,
 	}
 	return result
 }
