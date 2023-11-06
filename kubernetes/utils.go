@@ -920,6 +920,14 @@ func SystemCheck() []SystemCheckEntry {
 	countryMsg := StatusMessage(countryErr, "We could not determine the location of the cluster.", countryName)
 	result = append(result, SystemCheckEntry{CheckName: "Cluster Country", Success: countryErr == nil, Message: countryMsg})
 
+	lbName := "LoadBalancer IPs/Hostnames"
+	loadbalancerIps := GetClusterExternalIps(nil)
+	lbIpsMsg := strings.Join(loadbalancerIps, ", ")
+	if len(loadbalancerIps) == 0 {
+		lbIpsMsg = "No external IPs/Hostnames.\nMaybe you don't have TREAFIK or NGINX ingress controller installed."
+	}
+	result = append(result, SystemCheckEntry{CheckName: lbName, Success: len(loadbalancerIps) > 0, Message: lbIpsMsg})
+
 	return result
 }
 
