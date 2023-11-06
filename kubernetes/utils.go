@@ -810,58 +810,86 @@ func AllResourcesFromToCombinedYaml(namespace string, resourcesToLookFor []strin
 	return result, err
 }
 
-func SystemCheck() string {
+type SystemCheckResponse struct {
+	TerminalString string             `json:"terminalString"`
+	Entries        []SystemCheckEntry `json:"entries"`
+}
+
+type SystemCheckEntry struct {
+	CheckName string `json:"checkName"`
+	Success   bool   `json:"success"`
+	Message   string `json:"message"`
+}
+
+func SystemCheck() SystemCheckResponse {
+	result := SystemCheckResponse{}
+	result.Entries = []SystemCheckEntry{}
+
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Check", "Status", "Message"})
 	// check internet access
 	inetResult, inetErr := utils.CheckInternetAccess()
+	inetMsg := StatusMessage(inetErr, "Check your internet connection.", "Internet access works.")
 	t.AppendRow(
-		table.Row{"Internet Access", utils.StatusEmoji(inetResult), StatusMessage(inetErr, "Check your internet connection.", "Internet access works.")},
+		table.Row{"Internet Access", utils.StatusEmoji(inetResult), inetMsg},
 	)
+	result.Entries = append(result.Entries, SystemCheckEntry{CheckName: "Internet Access", Success: inetResult, Message: inetMsg})
 	t.AppendSeparator()
 
 	// check for kubectl
 	kubectlResult, kubectlOutput, kubectlErr := utils.IsKubectlInstalled()
+	kubeCtlMsg := StatusMessage(kubectlErr, "Plase install kubectl (https://kubernetes.io/docs/tasks/tools/) on your system to proceed.", kubectlOutput)
 	t.AppendRow(
-		table.Row{"kubectl", utils.StatusEmoji(kubectlResult), StatusMessage(kubectlErr, "Plase install kubectl (https://kubernetes.io/docs/tasks/tools/) on your system to proceed.", kubectlOutput)},
+		table.Row{"kubectl", utils.StatusEmoji(kubectlResult), kubeCtlMsg},
 	)
+	result.Entries = append(result.Entries, SystemCheckEntry{CheckName: "kubectl", Success: kubectlResult, Message: kubeCtlMsg})
 	t.AppendSeparator()
 
 	// check kubernetes version
 	kubernetesVersion := KubernetesVersion(nil)
 	kubernetesVersionResult := kubernetesVersion != nil
+	kubernetesVersionMsg := StatusMessage(kubectlErr, "Cannot determin version of kubernetes.", fmt.Sprintf("Version: %s\nPlatform: %s", kubernetesVersion.String(), kubernetesVersion.Platform))
 	t.AppendRow(
-		table.Row{"Kubernetes Version", utils.StatusEmoji(kubernetesVersionResult), StatusMessage(kubectlErr, "Cannot determin version of kubernetes.", fmt.Sprintf("Version: %s\nPlatform: %s", kubernetesVersion.String(), kubernetesVersion.Platform))},
+		table.Row{"Kubernetes Version", utils.StatusEmoji(kubernetesVersionResult), kubernetesVersionMsg},
 	)
+	result.Entries = append(result.Entries, SystemCheckEntry{CheckName: "Kubernetes Version", Success: kubernetesVersionResult, Message: kubernetesVersionMsg})
 	t.AppendSeparator()
 
 	// check for ingresscontroller
 	ingressType, ingressTypeErr := DetermineIngressControllerType(nil)
+	ingressMsg := StatusMessage(ingressTypeErr, "Cannot determin ingress controller type.", ingressType.String())
 	t.AppendRow(
-		table.Row{"Ingress Controller", utils.StatusEmoji(ingressTypeErr == nil), StatusMessage(ingressTypeErr, "Cannot determin ingress controller type.", ingressType.String())},
+		table.Row{"Ingress Controller", utils.StatusEmoji(ingressTypeErr == nil), ingressMsg},
 	)
+	result.Entries = append(result.Entries, SystemCheckEntry{CheckName: "Ingress Controller", Success: ingressTypeErr == nil, Message: ingressMsg})
 	t.AppendSeparator()
 
 	// check for metrics server
 	metricsResult, metricsVersion, metricsErr := IsMetricsServerAvailable(nil)
+	metricsMsg := StatusMessage(metricsErr, "kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml\nNote: Running docker-desktop? Please add '- --kubelet-insecure-tls' to the args sction in the deployment of metrics-server.", metricsVersion)
 	t.AppendRow(
-		table.Row{"Metrics Server", utils.StatusEmoji(metricsResult), StatusMessage(metricsErr, "kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml\nNote: Running docker-desktop? Please add '- --kubelet-insecure-tls' to the args sction in the deployment of metrics-server.", metricsVersion)},
+		table.Row{"Metrics Server", utils.StatusEmoji(metricsResult), metricsMsg},
 	)
+	result.Entries = append(result.Entries, SystemCheckEntry{CheckName: "Metrics Server", Success: metricsResult, Message: metricsMsg})
 	t.AppendSeparator()
 
 	// check for helm
 	helmResult, helmOutput, helmErr := utils.IsHelmInstalled()
+	helmMsg := StatusMessage(helmErr, "Plase install helm (https://helm.sh/docs/intro/install/) on your system to proceed.", helmOutput)
 	t.AppendRow(
-		table.Row{"Helm", utils.StatusEmoji(helmResult), StatusMessage(helmErr, "Plase install helm (https://helm.sh/docs/intro/install/) on your system to proceed.", helmOutput)},
+		table.Row{"Helm", utils.StatusEmoji(helmResult), helmMsg},
 	)
+	result.Entries = append(result.Entries, SystemCheckEntry{CheckName: "Helm", Success: helmResult, Message: helmMsg})
 	t.AppendSeparator()
 
 	// check cluster provider
 	clusterProvOutput, clusterProvErr := GuessClusterProvider(nil)
+	clusterProviderMsg := StatusMessage(clusterProvErr, "We could not determine the provider of this cluster.", string(clusterProvOutput))
 	t.AppendRow(
-		table.Row{"Cluster Provider", utils.StatusEmoji(clusterProvErr == nil), StatusMessage(clusterProvErr, "We could not determine the provider of this cluster.", string(clusterProvOutput))},
+		table.Row{"Cluster Provider", utils.StatusEmoji(clusterProvErr == nil), clusterProviderMsg},
 	)
+	result.Entries = append(result.Entries, SystemCheckEntry{CheckName: "Cluster Provider", Success: clusterProvErr == nil, Message: clusterProviderMsg})
 	t.AppendSeparator()
 
 	// API Versions
@@ -871,10 +899,15 @@ func SystemCheck() string {
 		apiVersStr += fmt.Sprintf("%s\n", entry)
 	}
 	apiVersStr = strings.TrimRight(apiVersStr, "\n\r")
+	apiVersMsg := StatusMessage(apiVerErr, "Cannot determin API versions.", apiVersStr)
 	t.AppendRow(
-		table.Row{"API Versions", utils.StatusEmoji(len(apiVerResult) > 0), StatusMessage(apiVerErr, "Cannot determin API versions.", apiVersStr)},
+		table.Row{"API Versions", utils.StatusEmoji(len(apiVerResult) > 0), apiVersMsg},
 	)
-	return t.Render()
+	result.Entries = append(result.Entries, SystemCheckEntry{CheckName: "API Versions", Success: len(apiVerResult) > 0, Message: apiVersMsg})
+
+	result.TerminalString = t.Render()
+
+	return result
 }
 
 func StatusMessage(err error, solution string, successMsg string) string {
