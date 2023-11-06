@@ -899,11 +899,25 @@ func SystemCheck() SystemCheckResponse {
 		apiVersStr += fmt.Sprintf("%s\n", entry)
 	}
 	apiVersStr = strings.TrimRight(apiVersStr, "\n\r")
-	apiVersMsg := StatusMessage(apiVerErr, "Cannot determin API versions.", apiVersStr)
+	apiVersMsg := StatusMessage(apiVerErr, "Metrics Server might be missing. Install the metrics server and try again.", apiVersStr)
 	t.AppendRow(
 		table.Row{"API Versions", utils.StatusEmoji(len(apiVerResult) > 0), apiVersMsg},
 	)
 	result.Entries = append(result.Entries, SystemCheckEntry{CheckName: "API Versions", Success: len(apiVerResult) > 0, Message: apiVersMsg})
+	t.AppendSeparator()
+
+	// check cluster provider
+	countryResult, countryErr := utils.GuessClusterCountry()
+	countryName := ""
+	if countryResult != nil {
+		countryName = countryResult.Name
+	}
+	countryMsg := StatusMessage(countryErr, "We could not determine the location of the cluster.", countryName)
+	t.AppendRow(
+		table.Row{"Cluster Country", utils.StatusEmoji(countryErr == nil), countryMsg},
+	)
+	result.Entries = append(result.Entries, SystemCheckEntry{CheckName: "Cluster Country", Success: countryErr == nil, Message: countryMsg})
+	t.AppendSeparator()
 
 	result.TerminalString = t.Render()
 

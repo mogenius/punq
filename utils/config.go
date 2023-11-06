@@ -59,6 +59,7 @@ type Config struct {
 		CheckForUpdates  int      `yaml:"check_for_updates" env:"check_for_updates" env-description:"Time interval between update checks." env-default:"86400"`
 		ProxyPort        int      `yaml:"proxy_port" env:"proxy_port" env-description:"Default port for proxy releated stuff." env-default:"8888"`
 		IgnoreNamespaces []string `yaml:"ignore_namespaces" env:"ignore_namespaces" env-description:"List of all ignored namespaces." env-default:""`
+		CountryEndpoint  string   `yaml:"country_endpoint" env:"country_endpoint" env-description:"mogenius k8s-manager stage"`
 	} `yaml:"misc"`
 }
 
@@ -150,7 +151,8 @@ func PrintSettings() {
 	fmt.Printf("Debug:                    %t\n", CONFIG.Misc.Debug)
 	fmt.Printf("CheckForUpdates:          %d\n", CONFIG.Misc.CheckForUpdates)
 	fmt.Printf("ProxyPort:                %d\n", CONFIG.Misc.ProxyPort)
-	fmt.Printf("IgnoreNamespaces:         %s\n\n", strings.Join(CONFIG.Misc.IgnoreNamespaces, ","))
+	fmt.Printf("IgnoreNamespaces:         %s\n", strings.Join(CONFIG.Misc.IgnoreNamespaces, ","))
+	fmt.Printf("CountryEndpoint:          %s\n\n", CONFIG.Misc.CountryEndpoint)
 
 	fmt.Printf("Config:                   %s\n\n", ConfigPath)
 }

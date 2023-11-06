@@ -28,6 +28,8 @@ import (
 
 const APP_NAME = "k8s"
 
+var CURRENT_COUNTRY *CountryDetails
+
 func Pointer[K any](val K) *K {
 	return &val
 }
@@ -40,6 +42,25 @@ type Release struct {
 	TagName    string `json:"tag_name"`
 	Published  string `json:"published_at"`
 	Prerelease bool   `json:"prerelease"`
+}
+
+type CountryDetails struct {
+	Code              string   `json:"code"`
+	Code3             string   `json:"code3"`
+	IsoID             int      `json:"isoId"`
+	Name              string   `json:"name"`
+	Currency          string   `json:"currency"`
+	CurrencyName      string   `json:"currencyName"`
+	TaxPercent        float64  `json:"taxPercent"`
+	Continent         string   `json:"continent"`
+	CapitalCity       string   `json:"capitalCity"`
+	CapitalCityLat    float64  `json:"capitalCityLat"`
+	CapitalCityLng    float64  `json:"capitalCityLng"`
+	IsEuMember        bool     `json:"isEuMember"`
+	PhoneNumberPrefix string   `json:"phoneNumberPrefix"`
+	DomainTld         string   `json:"domainTld"`
+	Languages         []string `json:"languages"`
+	IsActive          bool     `json:"isActive"`
 }
 
 func IsProduction() bool {
@@ -239,6 +260,37 @@ func OpenBrowser(url string) {
 	if err != nil {
 		fmt.Println(fmt.Errorf("error while opening browser, %v", err))
 	}
+}
+
+func GuessClusterCountry() (*CountryDetails, error) {
+	if CURRENT_COUNTRY != nil {
+		return CURRENT_COUNTRY, nil
+	}
+
+	if CONFIG.Misc.CountryEndpoint != "" {
+		resp, err := http.Get(CONFIG.Misc.CountryEndpoint)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != 200 {
+			return nil, fmt.Errorf("failed to fetch with status code: %d", resp.StatusCode)
+		}
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var country CountryDetails
+		if err := json.Unmarshal(body, &country); err != nil {
+			return CURRENT_COUNTRY, err
+		} else {
+			CURRENT_COUNTRY = &country
+			return CURRENT_COUNTRY, err
+		}
+	}
+	return nil, nil
 }
 
 func ConfirmTask(s string) bool {
