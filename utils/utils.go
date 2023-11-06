@@ -267,8 +267,8 @@ func GuessClusterCountry() (*CountryDetails, error) {
 		return CURRENT_COUNTRY, nil
 	}
 
-	if CONFIG.Misc.CountryEndpoint != "" {
-		resp, err := http.Get(CONFIG.Misc.CountryEndpoint)
+	if !CONFIG.Misc.ForbidCountryCheck {
+		resp, err := http.Get("https://platform-api.mogenius.com/country/location")
 		if err != nil {
 			return nil, err
 		}

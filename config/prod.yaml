@@ -24,4 +24,4 @@ misc:
   check_for_updates: 86400
   ignore_namespaces: ["kube-system"]
   proxy_port: 8888
-  country_endpoint: https://platform-api.mogenius.com/country/location
+  forbid_country_check: false
