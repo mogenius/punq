@@ -1,5 +1,5 @@
 config:
-  version: 3
+  version: 4
 
 backend:
   host: 127.0.0.1
@@ -24,3 +24,4 @@ misc:
   check_for_updates: 86400
   ignore_namespaces: ["kube-system"]
   proxy_port: 8888
+  forbid_country_check: false

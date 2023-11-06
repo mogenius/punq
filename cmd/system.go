@@ -48,7 +48,7 @@ var checkCmd = &cobra.Command{
 		}
 		utils.PrintInfo(fmt.Sprintf("Found version '%s' of %s in '%s'.", punqInstalledVersion, version.Name, contextName))
 
-		kubernetes.SystemCheck()
+		kubernetes.GenerateSystemCheckResponse(kubernetes.SystemCheck())
 	},
 }
 

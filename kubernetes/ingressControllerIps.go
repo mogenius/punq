@@ -11,6 +11,7 @@ import (
 	"net"
 
 	"github.com/mogenius/punq/logger"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -43,19 +44,15 @@ func GetIngressControllerIps(useLocalKubeConfig bool, contextId *string) []net.I
 
 func GetClusterExternalIps(contextId *string) []string {
 	var result []string = []string{}
+	var allServices []v1.Service = []v1.Service{}
+
 	provider, err := NewKubeProvider(contextId)
 	if err != nil {
 		return result
 	}
 	labelSelector := "app.kubernetes.io/component=controller,app.kubernetes.io/name=ingress-nginx"
 	services, err := provider.ClientSet.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{LabelSelector: labelSelector})
-
-	for _, service := range services.Items {
-		for _, ingress := range service.Status.LoadBalancer.Ingress {
-			fmt.Println(ingress.IP)
-			result = append(result, ingress.IP)
-		}
-	}
+	allServices = append(allServices, services.Items...)
 
 	if err != nil {
 		fmt.Println("Error:", err)
@@ -66,17 +63,21 @@ func GetClusterExternalIps(contextId *string) []string {
 	if len(result) <= 0 {
 		traefikSelector := "app.kubernetes.io/name=traefik"
 		services, err := provider.ClientSet.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{LabelSelector: traefikSelector})
-
-		for _, service := range services.Items {
-			for _, ingress := range service.Status.LoadBalancer.Ingress {
-				fmt.Println(ingress.IP)
-				result = append(result, ingress.IP)
-			}
-		}
+		allServices = append(allServices, services.Items...)
 
 		if err != nil {
 			fmt.Println("Error:", err)
 			return result
+		}
+	}
+
+	for _, service := range allServices {
+		for _, ingress := range service.Status.LoadBalancer.Ingress {
+			if ingress.IP != "" {
+				result = append(result, ingress.IP)
+			} else if ingress.IP == "" && ingress.Hostname != "" {
+				result = append(result, ingress.Hostname)
+			}
 		}
 	}
 

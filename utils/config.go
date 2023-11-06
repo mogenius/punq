@@ -54,11 +54,12 @@ type Config struct {
 		RunInCluster bool   `yaml:"run_in_cluster" env:"run_in_cluster" env-description:"If set to true, the application will run in the cluster (using the service account token). Otherwise it will try to load your local default context." env-default:"false"`
 	} `yaml:"kubernetes"`
 	Misc struct {
-		Stage            string   `yaml:"stage" env:"stage" env-description:"mogenius k8s-manager stage" env-default:"prod"`
-		Debug            bool     `yaml:"debug" env:"debug" env-description:"If set to true, debug features will be enabled." env-default:"false"`
-		CheckForUpdates  int      `yaml:"check_for_updates" env:"check_for_updates" env-description:"Time interval between update checks." env-default:"86400"`
-		ProxyPort        int      `yaml:"proxy_port" env:"proxy_port" env-description:"Default port for proxy releated stuff." env-default:"8888"`
-		IgnoreNamespaces []string `yaml:"ignore_namespaces" env:"ignore_namespaces" env-description:"List of all ignored namespaces." env-default:""`
+		Stage              string   `yaml:"stage" env:"stage" env-description:"Stage to run in" env-default:"prod"`
+		Debug              bool     `yaml:"debug" env:"debug" env-description:"If set to true, debug features will be enabled." env-default:"false"`
+		CheckForUpdates    int      `yaml:"check_for_updates" env:"check_for_updates" env-description:"Time interval between update checks." env-default:"86400"`
+		ProxyPort          int      `yaml:"proxy_port" env:"proxy_port" env-description:"Default port for proxy releated stuff." env-default:"8888"`
+		IgnoreNamespaces   []string `yaml:"ignore_namespaces" env:"ignore_namespaces" env-description:"List of all ignored namespaces." env-default:""`
+		ForbidCountryCheck bool     `yaml:"forbid_country_check" env:"forbid_country_check" env-description:"Check clusters location" env-default:"false"`
 	} `yaml:"misc"`
 }
 
@@ -150,7 +151,8 @@ func PrintSettings() {
 	fmt.Printf("Debug:                    %t\n", CONFIG.Misc.Debug)
 	fmt.Printf("CheckForUpdates:          %d\n", CONFIG.Misc.CheckForUpdates)
 	fmt.Printf("ProxyPort:                %d\n", CONFIG.Misc.ProxyPort)
-	fmt.Printf("IgnoreNamespaces:         %s\n\n", strings.Join(CONFIG.Misc.IgnoreNamespaces, ","))
+	fmt.Printf("IgnoreNamespaces:         %s\n", strings.Join(CONFIG.Misc.IgnoreNamespaces, ","))
+	fmt.Printf("CountryCheck:             %t\n\n", CONFIG.Misc.ForbidCountryCheck)
 
 	fmt.Printf("Config:                   %s\n\n", ConfigPath)
 }
