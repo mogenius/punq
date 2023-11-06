@@ -446,6 +446,15 @@ func IsDeploymentInstalled(namespaceName string, name string) (string, error) {
 	return strings.Split(ownDeployment.Spec.Template.Spec.Containers[0].Image, ":")[1], nil
 }
 
+func IsDaemonSetInstalled(namespaceName string, name string) (string, error) {
+	ownDaemonset, err := GetK8sDaemonset(namespaceName, name, nil)
+	if err != nil {
+		return "", err
+	}
+
+	return strings.Split(ownDaemonset.Spec.Template.Spec.Containers[0].Image, ":")[1], nil
+}
+
 // TAKEN FROM Kubernetes apimachineryv0.25.1
 func HumanDuration(d time.Duration) string {
 	// Allow deviation no more than 2 seconds(excluded) to tolerate machine time
