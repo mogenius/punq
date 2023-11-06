@@ -300,6 +300,11 @@ func ClusterStatus(contextId *string) dtos.ClusterStatusDto {
 		platform = info.Platform
 	}
 
+	country, err := utils.GuessClusterCountry()
+	if err != nil {
+		logger.Log.Error("GuessClusterCountry: ", err)
+	}
+
 	return dtos.ClusterStatusDto{
 		ClusterName:                  utils.CONFIG.Kubernetes.ClusterName,
 		Pods:                         len(result),
@@ -310,6 +315,7 @@ func ClusterStatus(contextId *string) dtos.ClusterStatusDto {
 		EphemeralStorageLimitInBytes: ephemeralStorageLimit,
 		KubernetesVersion:            kubernetesVersion,
 		Platform:                     platform,
+		Country:                      country,
 	}
 }
 
