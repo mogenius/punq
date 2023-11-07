@@ -831,11 +831,11 @@ type SystemCheckResponse struct {
 }
 
 type SystemCheckEntry struct {
-	CheckName       string `json:"checkName"`
-	Success         bool   `json:"success"`
-	Message         string `json:"message"`
-	InstallPattern  string `json:"installPattern"`
-	UnistallPattern string `json:"unistallPattern"`
+	CheckName        string `json:"checkName"`
+	Success          bool   `json:"success"`
+	Message          string `json:"message"`
+	InstallPattern   string `json:"installPattern"`
+	UninstallPattern string `json:"uninstallPattern"`
 }
 
 func SystemCheckTerminalString(entries []SystemCheckEntry) string {
