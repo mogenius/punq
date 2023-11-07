@@ -587,8 +587,8 @@ func IsMetricsServerAvailable(contextId *string) (bool, string, error) {
 	deployments := AllDeploymentsIncludeIgnored("", contextId)
 
 	for _, deployment := range deployments {
-		for key, label := range deployment.Labels {
-			if key == "k8s-app" && label == "metrics-server" {
+		for _, label := range deployment.Labels {
+			if label == "metrics-server" {
 				if deployment.Status.UnavailableReplicas > 0 {
 					return false, "", fmt.Errorf("metrics-server installed but not running")
 				}
