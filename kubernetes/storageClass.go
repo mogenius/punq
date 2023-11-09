@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 
 	"github.com/mogenius/punq/utils"
@@ -73,7 +74,7 @@ func DeleteK8sStorageClassBy(name string, contextId *string) error {
 }
 
 func DescribeK8sStorageClass(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "storageclass", name, ContextFlag(contextId))
+	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe storageclass %s%s", name, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

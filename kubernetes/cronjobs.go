@@ -10,12 +10,11 @@ import (
 	"github.com/mogenius/punq/logger"
 
 	v1 "k8s.io/api/batch/v1"
-	v1job "k8s.io/api/batch/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func AllCronjobs(namespaceName string, contextId *string) utils.K8sWorkloadResult {
-	result := []v1job.CronJob{}
+	result := []v1.CronJob{}
 
 	provider, err := NewKubeProvider(contextId)
 	if err != nil {
@@ -35,7 +34,7 @@ func AllCronjobs(namespaceName string, contextId *string) utils.K8sWorkloadResul
 	return WorkloadResult(result, nil)
 }
 
-func GetCronjob(namespaceName string, name string, contextId *string) (*v1job.CronJob, error) {
+func GetCronjob(namespaceName string, name string, contextId *string) (*v1.CronJob, error) {
 	provider, err := NewKubeProvider(contextId)
 	if err != nil {
 		return nil, err
@@ -56,7 +55,7 @@ func UpdateK8sCronJob(data v1.CronJob, contextId *string) utils.K8sWorkloadResul
 	return WorkloadResult(res, nil)
 }
 
-func DeleteK8sCronJob(data v1job.CronJob, contextId *string) utils.K8sWorkloadResult {
+func DeleteK8sCronJob(data v1.CronJob, contextId *string) utils.K8sWorkloadResult {
 	provider, err := NewKubeProvider(contextId)
 	if err != nil {
 		return WorkloadResult(nil, err)
@@ -79,7 +78,7 @@ func DeleteK8sCronJobBy(namespace string, name string, contextId *string) error 
 }
 
 func DescribeK8sCronJob(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", fmt.Sprintf("describe cronjob %s -n %s%s", namespace, ContextFlag(contextId)))
+	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe cronjob %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

@@ -104,7 +104,7 @@ func DeleteK8sCertificateBy(namespace string, name string, contextId *string) er
 }
 
 func DescribeK8sCertificate(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", fmt.Sprintf("describe certificate %s -n %s%s", name, namespace, ContextFlag(contextId)))
+	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe certificate %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
