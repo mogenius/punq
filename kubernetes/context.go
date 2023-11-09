@@ -46,7 +46,7 @@ func ContextFlag(id *string) string {
 	if id == nil {
 		return ""
 	}
-	return fmt.Sprintf("--kubeconfig=%s.yaml", *id)
+	return fmt.Sprintf(" --kubeconfig=%s.yaml", *id)
 }
 
 func contextWrite(id string) error {

@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 
 	"github.com/mogenius/punq/utils"
@@ -78,7 +79,7 @@ func DeleteK8sCronJobBy(namespace string, name string, contextId *string) error 
 }
 
 func DescribeK8sCronJob(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "cronjob", name, "-n", namespace, ContextFlag(contextId))
+	cmd := exec.Command("kubectl", fmt.Sprintf("describe cronjob %s -n %s%s", namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
