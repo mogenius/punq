@@ -177,6 +177,26 @@ func PodExists(namespace string, name string, contextId *string) ServicePodExist
 	return result
 }
 
+func AllPodsOnNode(nodeName string, contextId *string) []v1.Pod {
+	result := []v1.Pod{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+
+	podsList, err := provider.ClientSet.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{
+		FieldSelector: "spec.nodeName=" + nodeName,
+	})
+	if err != nil {
+		logger.Log.Errorf("AllPodsOnNode ERROR: %s", err.Error())
+		return result
+	}
+	result = append(result, podsList.Items...)
+
+	return result
+}
+
 func AllPods(namespaceName string, contextId *string) []v1.Pod {
 	result := []v1.Pod{}
 

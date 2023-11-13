@@ -22,6 +22,10 @@ func GetNodeStats(contextId *string) []dtos.NodeStat {
 
 	for index, node := range nodes {
 
+		allPods := AllPodsOnNode(node.Name, contextId)
+		requestCpuCores, limitCpuCores := SumCpuResources(allPods)
+		requestMemoryBytes, limitMemoryBytes := SumMemoryResources(allPods)
+
 		utilizedCores := float64(0)
 		utilizedMemory := int64(0)
 		if len(nodeMetrics) > 0 {
@@ -35,8 +39,7 @@ func GetNodeStats(contextId *string) []dtos.NodeStat {
 			}
 
 			// CPU
-			cpuUsageDec := nodeMetric.Usage.Cpu().AsDec()
-			cpuUsage, works := cpuUsageDec.Unscaled()
+			cpuUsage, works := nodeMetric.Usage.Cpu().AsDec().Unscaled()
 			if !works {
 				logger.Log.Errorf("Failed to get CPU usage for node %s", node.Name)
 			}
@@ -58,23 +61,64 @@ func GetNodeStats(contextId *string) []dtos.NodeStat {
 		ephemeral, _ := node.Status.Capacity.StorageEphemeral().AsInt64()
 
 		nodeStat := dtos.NodeStat{
-			Name:                  fmt.Sprintf("Node-%d", index+1),
-			MaschineId:            node.Status.NodeInfo.MachineID,
-			CpuInCores:            cpu,
-			CpuInCoresUtilized:    utilizedCores,
-			MemoryInBytes:         mem,
-			MemoryInBytesUtilized: utilizedMemory,
-			EphemeralInBytes:      ephemeral,
-			MaxPods:               maxPods,
-			KubletVersion:         node.Status.NodeInfo.KubeletVersion,
-			OsType:                node.Status.NodeInfo.OperatingSystem,
-			OsImage:               node.Status.NodeInfo.OSImage,
-			Architecture:          node.Status.NodeInfo.Architecture,
+			Name:                   fmt.Sprintf("Node-%d", index+1),
+			MaschineId:             node.Status.NodeInfo.MachineID,
+			CpuInCores:             cpu,
+			CpuInCoresUtilized:     utilizedCores,
+			CpuInCoresRequested:    requestCpuCores,
+			CpuInCoresLimited:      limitCpuCores,
+			MemoryInBytes:          mem,
+			MemoryInBytesUtilized:  utilizedMemory,
+			MemoryInBytesRequested: requestMemoryBytes,
+			MemoryInBytesLimited:   limitMemoryBytes,
+			EphemeralInBytes:       ephemeral,
+			MaxPods:                maxPods,
+			TotalPods:              int64(len(allPods)),
+			KubletVersion:          node.Status.NodeInfo.KubeletVersion,
+			OsType:                 node.Status.NodeInfo.OperatingSystem,
+			OsImage:                node.Status.NodeInfo.OSImage,
+			Architecture:           node.Status.NodeInfo.Architecture,
 		}
 		result = append(result, nodeStat)
 		//nodeStat.PrintPretty()
 	}
 	return result
+}
+
+func SumMemoryResources(pods []v1.Pod) (request int64, limit int64) {
+	resultRequest := int64(0)
+	resultLimit := int64(0)
+	for _, pod := range pods {
+		for _, container := range pod.Spec.Containers {
+			memReq, works := container.Resources.Requests.Memory().AsDec().Unscaled()
+			if works && memReq != 0 {
+				resultRequest += memReq
+			}
+			memLim, works := container.Resources.Limits.Memory().AsDec().Unscaled()
+			if works && memLim != 0 {
+				resultLimit += memLim
+			}
+		}
+	}
+	return resultRequest, resultLimit
+}
+
+func SumCpuResources(pods []v1.Pod) (request float64, limit float64) {
+	resultRequest := float64(0)
+	resultLimit := float64(0)
+	for _, pod := range pods {
+		for _, container := range pod.Spec.Containers {
+			resultRequest += float64(container.Resources.Requests.Cpu().MilliValue())
+			resultLimit += float64(container.Resources.Limits.Cpu().MilliValue())
+		}
+	}
+	if resultLimit > 0 {
+		resultLimit = resultLimit / 1000
+	}
+	if resultRequest > 0 {
+		resultRequest = resultRequest / 1000
+	}
+	return resultRequest, resultLimit
 }
 
 func ListK8sNodes(contextId *string) utils.K8sWorkloadResult {
