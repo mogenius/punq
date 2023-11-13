@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"fmt"
 	"os/exec"
 
 	"github.com/mogenius/punq/utils"
@@ -56,7 +57,7 @@ func DeleteK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) uti
 }
 
 func DescribeK8sCustomResourceDefinition(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "crds", name, ContextFlag(contextId))
+	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe crds %s%s", name, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

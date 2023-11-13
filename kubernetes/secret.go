@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os/exec"
 	"sort"
 
@@ -138,7 +139,7 @@ func DeleteK8sSecretBy(namespace string, name string, contextId *string) error {
 }
 
 func DescribeK8sSecret(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "secret", name, "-n", namespace, ContextFlag(contextId))
+	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe secret %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

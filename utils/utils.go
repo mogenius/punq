@@ -453,7 +453,7 @@ func CheckInternetAccess() (bool, error) {
 }
 
 func IsKubectlInstalled() (bool, string, error) {
-	cmd := exec.Command("kubectl", "version")
+	cmd := exec.Command("/bin/ash", "-c", "/usr/local/bin/kubectl version")
 	output, err := cmd.CombinedOutput()
 	return err == nil, strings.TrimRight(string(output), "\n\r"), err
 }

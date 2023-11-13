@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 
 	"github.com/mogenius/punq/utils"
@@ -98,7 +99,7 @@ func DeleteK8sReplicasetBy(namespace string, name string, contextId *string) err
 }
 
 func DescribeK8sReplicaset(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "replicaset", name, "-n", namespace, ContextFlag(contextId))
+	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe replicaset %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

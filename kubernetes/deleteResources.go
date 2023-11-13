@@ -83,7 +83,7 @@ func removeIngress(provider *KubeProvider) {
 	}
 	if ingressControllerType == TRAEFIK {
 		fmt.Printf("Deleting TRAEFIK middleware ...\n")
-		cmd := exec.Command("kubectl", "delete", "middleware", "mw-backend", "-n", utils.CONFIG.Kubernetes.OwnNamespace)
+		cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl delete middleware mw-backend -n %s", utils.CONFIG.Kubernetes.OwnNamespace))
 
 		output, err := cmd.CombinedOutput()
 		if err != nil {

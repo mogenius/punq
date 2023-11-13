@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 
 	"github.com/mogenius/punq/logger"
@@ -76,7 +77,7 @@ func DeleteK8sEndpointBy(namespace string, name string, contextId *string) error
 }
 
 func DescribeK8sEndpoint(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "endpoint", name, "-n", namespace, ContextFlag(contextId))
+	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe endpoint %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

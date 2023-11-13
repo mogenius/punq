@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 
 	"github.com/mogenius/punq/utils"
@@ -115,7 +116,7 @@ func DeleteK8sConfigmapBy(namespaceName string, name string, contextId *string) 
 }
 
 func DescribeK8sConfigmap(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "configmap", name, "-n", namespace, ContextFlag(contextId))
+	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe configmap %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 
 	"github.com/mogenius/punq/logger"
@@ -72,7 +73,7 @@ func DeleteK8sVolumeAttachmentBy(name string, contextId *string) error {
 }
 
 func DescribeK8sVolumeAttachment(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "volumeattachment", name, ContextFlag(contextId))
+	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe volumeattachment %s%s", name, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

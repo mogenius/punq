@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 
 	"github.com/mogenius/punq/logger"
@@ -77,7 +78,7 @@ func DeleteK8sRoleBy(namespace string, name string, contextId *string) error {
 }
 
 func DescribeK8sRole(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "role", name, "-n", namespace, ContextFlag(contextId))
+	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe role %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

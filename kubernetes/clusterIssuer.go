@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 
 	"github.com/mogenius/punq/utils"
@@ -77,7 +78,7 @@ func DeleteK8sClusterIssuerBy(name string, contextId *string) error {
 }
 
 func DescribeK8sClusterIssuer(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("kubectl", "describe", "clusterissuer", name, ContextFlag(contextId))
+	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe clusterissuer %s%s", name, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

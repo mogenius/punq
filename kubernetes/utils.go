@@ -587,8 +587,8 @@ func IsMetricsServerAvailable(contextId *string) (bool, string, error) {
 	deployments := AllDeploymentsIncludeIgnored("", contextId)
 
 	for _, deployment := range deployments {
-		for key, label := range deployment.Labels {
-			if key == "k8s-app" && label == "metrics-server" {
+		for _, label := range deployment.Labels {
+			if label == "metrics-server" {
 				if deployment.Status.UnavailableReplicas > 0 {
 					return false, "", fmt.Errorf("metrics-server installed but not running")
 				}
@@ -830,12 +830,36 @@ type SystemCheckResponse struct {
 	Entries        []SystemCheckEntry `json:"entries"`
 }
 
+type SystemCheckStatus string
+
+const (
+	UNKNOWN_STATUS SystemCheckStatus = "UNKNOWN_STATUS"
+	INSTALLING     SystemCheckStatus = "INSTALLING"
+	UNINSTALLING   SystemCheckStatus = "UNINSTALLING"
+	NOT_INSTALLED  SystemCheckStatus = "NOT_INSTALLED"
+	INSTALLED      SystemCheckStatus = "INSTALLED"
+)
+
 type SystemCheckEntry struct {
-	CheckName       string `json:"checkName"`
-	Success         bool   `json:"success"`
-	Message         string `json:"message"`
-	InstallPattern  string `json:"installPattern"`
-	UnistallPattern string `json:"unistallPattern"`
+	CheckName        string            `json:"checkName"`
+	Status           SystemCheckStatus `json:"status"`
+	Message          string            `json:"message"`
+	InstallPattern   string            `json:"installPattern"`
+	UninstallPattern string            `json:"uninstallPattern"`
+}
+
+func CreateSystemCheckEntry(checkName string, alreadyInstalled bool, message string) SystemCheckEntry {
+	status := UNKNOWN_STATUS
+	if alreadyInstalled {
+		status = INSTALLED
+	} else {
+		status = NOT_INSTALLED
+	}
+	return SystemCheckEntry{
+		CheckName: checkName,
+		Status:    status,
+		Message:   message,
+	}
 }
 
 func SystemCheckTerminalString(entries []SystemCheckEntry) string {
@@ -845,7 +869,7 @@ func SystemCheckTerminalString(entries []SystemCheckEntry) string {
 
 	for index, entry := range entries {
 		t.AppendRow(
-			table.Row{entry.CheckName, utils.StatusEmoji(entry.Success), entry.Message},
+			table.Row{entry.CheckName, StatusEmoji(entry.Status), entry.Message},
 		)
 		if index < len(entries)-1 {
 			t.AppendSeparator()
@@ -853,6 +877,23 @@ func SystemCheckTerminalString(entries []SystemCheckEntry) string {
 	}
 
 	return t.Render()
+}
+
+func StatusEmoji(state SystemCheckStatus) string {
+	switch state {
+	case UNKNOWN_STATUS:
+		return "❓"
+	case INSTALLING:
+		return "🔧"
+	case UNINSTALLING:
+		return "🔧"
+	case NOT_INSTALLED:
+		return "❌"
+	case INSTALLED:
+		return "✅"
+	default:
+		return "❓"
+	}
 }
 
 func GenerateSystemCheckResponse(entries []SystemCheckEntry) SystemCheckResponse {
@@ -868,38 +909,38 @@ func SystemCheck() []SystemCheckEntry {
 	// check internet access
 	inetResult, inetErr := utils.CheckInternetAccess()
 	inetMsg := StatusMessage(inetErr, "Check your internet connection.", "Internet access works.")
-	result = append(result, SystemCheckEntry{CheckName: "Internet Access", Success: inetResult, Message: inetMsg})
+	result = append(result, CreateSystemCheckEntry("Internet Access", inetResult, inetMsg))
 
 	// check for kubectl
 	kubectlResult, kubectlOutput, kubectlErr := utils.IsKubectlInstalled()
 	kubeCtlMsg := StatusMessage(kubectlErr, "Plase install kubectl (https://kubernetes.io/docs/tasks/tools/) on your system to proceed.", kubectlOutput)
-	result = append(result, SystemCheckEntry{CheckName: "kubectl", Success: kubectlResult, Message: kubeCtlMsg})
+	result = append(result, CreateSystemCheckEntry("kubectl", kubectlResult, kubeCtlMsg))
 
 	// check kubernetes version
 	kubernetesVersion := KubernetesVersion(nil)
 	kubernetesVersionResult := kubernetesVersion != nil
 	kubernetesVersionMsg := StatusMessage(kubectlErr, "Cannot determin version of kubernetes.", fmt.Sprintf("Version: %s\nPlatform: %s", kubernetesVersion.String(), kubernetesVersion.Platform))
-	result = append(result, SystemCheckEntry{CheckName: "Kubernetes Version", Success: kubernetesVersionResult, Message: kubernetesVersionMsg})
+	result = append(result, CreateSystemCheckEntry("Kubernetes Version", kubernetesVersionResult, kubernetesVersionMsg))
 
 	// check for ingresscontroller
 	ingressType, ingressTypeErr := DetermineIngressControllerType(nil)
 	ingressMsg := StatusMessage(ingressTypeErr, "Cannot determin ingress controller type.", ingressType.String())
-	result = append(result, SystemCheckEntry{CheckName: "Ingress Controller", Success: ingressTypeErr == nil, Message: ingressMsg})
+	result = append(result, CreateSystemCheckEntry("Ingress Controller", ingressTypeErr == nil, ingressMsg))
 
 	// check for metrics server
 	metricsResult, metricsVersion, metricsErr := IsMetricsServerAvailable(nil)
 	metricsMsg := StatusMessage(metricsErr, "kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml\nNote: Running docker-desktop? Please add '- --kubelet-insecure-tls' to the args sction in the deployment of metrics-server.", metricsVersion)
-	result = append(result, SystemCheckEntry{CheckName: "Metrics Server", Success: metricsResult, Message: metricsMsg})
+	result = append(result, CreateSystemCheckEntry("Metrics Server", metricsResult, metricsMsg))
 
 	// check for helm
 	helmResult, helmOutput, helmErr := utils.IsHelmInstalled()
 	helmMsg := StatusMessage(helmErr, "Plase install helm (https://helm.sh/docs/intro/install/) on your system to proceed.", helmOutput)
-	result = append(result, SystemCheckEntry{CheckName: "Helm", Success: helmResult, Message: helmMsg})
+	result = append(result, CreateSystemCheckEntry("Helm", helmResult, helmMsg))
 
 	// check cluster provider
 	clusterProvOutput, clusterProvErr := GuessClusterProvider(nil)
 	clusterProviderMsg := StatusMessage(clusterProvErr, "We could not determine the provider of this cluster.", string(clusterProvOutput))
-	result = append(result, SystemCheckEntry{CheckName: "Cluster Provider", Success: clusterProvErr == nil, Message: clusterProviderMsg})
+	result = append(result, CreateSystemCheckEntry("Cluster Provider", clusterProvErr == nil, clusterProviderMsg))
 
 	// API Versions
 	apiVerResult, apiVerErr := ApiVersions(nil)
@@ -909,7 +950,7 @@ func SystemCheck() []SystemCheckEntry {
 	}
 	apiVersStr = strings.TrimRight(apiVersStr, "\n\r")
 	apiVersMsg := StatusMessage(apiVerErr, "Metrics Server might be missing. Install the metrics server and try again.", apiVersStr)
-	result = append(result, SystemCheckEntry{CheckName: "API Versions", Success: len(apiVerResult) > 0, Message: apiVersMsg})
+	result = append(result, CreateSystemCheckEntry("API Versions", len(apiVerResult) > 0, apiVersMsg))
 
 	// check cluster provider
 	countryResult, countryErr := utils.GuessClusterCountry()
@@ -918,7 +959,7 @@ func SystemCheck() []SystemCheckEntry {
 		countryName = countryResult.Name
 	}
 	countryMsg := StatusMessage(countryErr, "We could not determine the location of the cluster.", countryName)
-	result = append(result, SystemCheckEntry{CheckName: "Cluster Country", Success: countryErr == nil, Message: countryMsg})
+	result = append(result, CreateSystemCheckEntry("Cluster Country", countryErr == nil, countryMsg))
 
 	lbName := "LoadBalancer IPs/Hostnames"
 	loadbalancerIps := GetClusterExternalIps(nil)
@@ -926,7 +967,7 @@ func SystemCheck() []SystemCheckEntry {
 	if len(loadbalancerIps) == 0 {
 		lbIpsMsg = "No external IPs/Hostnames.\nMaybe you don't have TREAFIK or NGINX ingress controller installed."
 	}
-	result = append(result, SystemCheckEntry{CheckName: lbName, Success: len(loadbalancerIps) > 0, Message: lbIpsMsg})
+	result = append(result, CreateSystemCheckEntry(lbName, len(loadbalancerIps) > 0, lbIpsMsg))
 
 	return result
 }
