@@ -3,7 +3,6 @@ package kubernetes
 import (
 	"context"
 	"fmt"
-	"os/exec"
 
 	"github.com/mogenius/punq/utils"
 
@@ -74,7 +73,7 @@ func DeleteK8sPersistentVolumeBy(name string, contextId *string) error {
 }
 
 func DescribeK8sPersistentVolume(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe persistentvolume %s%s", name, ContextFlag(contextId)))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl describe persistentvolume %s%s", name, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

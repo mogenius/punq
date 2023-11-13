@@ -130,9 +130,9 @@ func addTraefikMiddleware(provider *KubeProvider, ingressHostname string) {
 
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
-		cmd = exec.Command("cmd", "/C", fmt.Sprintf("kubectl apply -f %s%s", fileName, ContextFlag(nil)))
+		cmd = utils.RunOnLocalShell(fmt.Sprintf("kubectl apply -f %s%s", fileName, ContextFlag(nil)))
 	} else {
-		cmd = exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl apply -f %s%s", fileName, ContextFlag(nil)))
+		cmd = utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl apply -f %s%s", fileName, ContextFlag(nil)))
 	}
 
 	output, err := cmd.CombinedOutput()

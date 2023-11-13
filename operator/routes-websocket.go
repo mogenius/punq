@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/creack/pty"
@@ -74,7 +73,7 @@ func connectWs(c *gin.Context) {
 
 	selectedShell := FindValidShell(container, namespace, podName)
 
-	cmd := exec.Command("sh", "-c", fmt.Sprintf("kubectl exec -it -c %s -n %s %s %s -- %s -c 'echo -e \"\033[1;34mConnected to %s/%s/%s using \"$(echo $0)\". Happy hacking!\033[0m 🚀 🚀 🚀\"; %s'", container, namespace, podName, kubernetes.ContextFlag(&contextId), selectedShell, namespace, podName, container, selectedShell))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("kubectl exec -it -c %s -n %s %s %s -- %s -c 'echo -e \"\033[1;34mConnected to %s/%s/%s using \"$(echo $0)\". Happy hacking!\033[0m 🚀 🚀 🚀\"; %s'", container, namespace, podName, kubernetes.ContextFlag(&contextId), selectedShell, namespace, podName, container, selectedShell))
 	fmt.Println(cmd.String())
 	cmd.Env = append(os.Environ(), "TERM=xterm-color")
 
@@ -136,7 +135,7 @@ func connectWs(c *gin.Context) {
 func FindValidShell(container string, namespace string, podName string) string {
 	availableShells := []string{"bash", "ash", "zsh", "sh", "ksh", "csh"}
 	for _, shell := range availableShells {
-		cmd := exec.Command("sh", "-c", fmt.Sprintf("kubectl exec -it -c %s -n %s %s -- sh -c '%s'", container, namespace, podName, shell))
+		cmd := utils.RunOnLocalShell(fmt.Sprintf("kubectl exec -it -c %s -n %s %s -- sh -c '%s'", container, namespace, podName, shell))
 		err := cmd.Run()
 		if err == nil {
 			return shell

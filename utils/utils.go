@@ -262,6 +262,19 @@ func OpenBrowser(url string) {
 	}
 }
 
+func RunOnLocalShell(cmd string) *exec.Cmd {
+	switch runtime.GOOS {
+	case "linux":
+		return exec.Command("/bin/bash", "-c", cmd)
+	case "windows":
+		return exec.Command("cmd", "/C", cmd)
+	case "darwin":
+		return exec.Command("/bin/zsh", "-c", cmd)
+	default:
+		return exec.Command("/bin/bash", "-c", cmd)
+	}
+}
+
 func GuessClusterCountry() (*CountryDetails, error) {
 	if CURRENT_COUNTRY != nil {
 		return CURRENT_COUNTRY, nil
@@ -453,7 +466,7 @@ func CheckInternetAccess() (bool, error) {
 }
 
 func IsKubectlInstalled() (bool, string, error) {
-	cmd := exec.Command("/bin/ash", "-c", "/usr/local/bin/kubectl version")
+	cmd := RunOnLocalShell("/usr/local/bin/kubectl version")
 	output, err := cmd.CombinedOutput()
 	return err == nil, strings.TrimRight(string(output), "\n\r"), err
 }

@@ -3,7 +3,6 @@ package kubernetes
 import (
 	"context"
 	"fmt"
-	"os/exec"
 
 	"github.com/mogenius/punq/utils"
 
@@ -78,7 +77,7 @@ func DeleteK8sNetworkPolicyBy(namespace string, name string, contextId *string) 
 }
 
 func DescribeK8sNetworkPolicy(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe netpol %s -n %s%s", name, namespace, ContextFlag(contextId)))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl describe netpol %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

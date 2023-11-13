@@ -3,7 +3,6 @@ package kubernetes
 import (
 	"context"
 	"fmt"
-	"os/exec"
 
 	"github.com/mogenius/punq/logger"
 	"github.com/mogenius/punq/utils"
@@ -102,7 +101,7 @@ func DeleteK8sIngressBy(namespace string, name string, contextId *string) error 
 }
 
 func DescribeK8sIngress(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe ingress %s -n %s%s", name, namespace, ContextFlag(contextId)))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl describe ingress %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
