@@ -1,14 +1,14 @@
 {
-    "version": "1.5.0-develop.28",
+    "version": "1.5.0-develop.29",
     "license": "MIT",
     "homepage": "https://punq.dev",
     "bin": "punq-dev.exe",
-    "pre_install": "Rename-Item \"$dir\\punq-dev-v1.5.0-develop.28-windows-amd64\" punq-dev.exe",
+    "pre_install": "Rename-Item \"$dir\\punq-dev-v1.5.0-develop.29-windows-amd64\" punq-dev.exe",
     "description": "A slim open-source workload manager for Kubernetes with team collaboration, WebApp, and CLI.",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/mogenius/punq/releases/download/v1.5.0-develop.28/punq-v1.5.0-develop.28-windows-amd64",
-            "hash": "04e92d80bdf24f0edd4b1e1f1df863617883a5d2e0c3b0b8611aada9c70b8e16"
+            "url": "https://github.com/mogenius/punq/releases/download/v1.5.0-develop.29/punq-v1.5.0-develop.29-windows-amd64",
+            "hash": "229f8b1c49eb30c2685bbfea33f80ed6a2fdd5d2084816acc8ddb5f145fa73ae"
         }
     }
 }
