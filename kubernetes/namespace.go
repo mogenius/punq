@@ -3,7 +3,6 @@ package kubernetes
 import (
 	"context"
 	"fmt"
-	"os/exec"
 	"strings"
 
 	"github.com/mogenius/punq/utils"
@@ -116,7 +115,7 @@ func DeleteK8sNamespaceBy(name string, contextId *string) error {
 }
 
 func DescribeK8sNamespace(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := exec.Command("/bin/ash", "-c", fmt.Sprintf("/usr/local/bin/kubectl describe namespace %s%s", name, ContextFlag(contextId)))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl describe namespace %s%s", name, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
