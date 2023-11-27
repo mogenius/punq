@@ -23,6 +23,7 @@ type Command struct {
 	MustSucceed             bool    `json:"mustSucceed"`
 	ReportToNotificationSvc bool    `json:"reportToNotificationService"`
 	IgnoreError             bool    `json:"ignoreError"`
+	BuildId                 int     `json:"buildId,omitempty"`
 	Started                 time.Time
 }
 
