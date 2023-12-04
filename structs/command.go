@@ -47,7 +47,7 @@ func ExecuteBashCommandSilent(title string, shellCmd string) {
 func ExecuteBashCommandWithResponse(title string, shellCmd string) string {
 	var err error
 	var returnStr []byte
-	_, err = utils.RunOnLocalShell(shellCmd).Output()
+	returnStr, err = utils.RunOnLocalShell(shellCmd).Output()
 	if exitErr, ok := err.(*exec.ExitError); ok {
 		exitCode := exitErr.ExitCode()
 		errorMsg := string(exitErr.Stderr)
