@@ -643,7 +643,11 @@ func GuessClusterProvider(contextId *string) (dtos.KubernetesProvider, error) {
 func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvider, error) {
 
 	for _, node := range nodes.Items {
-		labelsAndAnnotations := utils.MergeMaps(node.GetLabels(), node.GetAnnotations())
+		nodeInfo := map[string]string{}
+		nodeInfo["kubeProxyVersion"] = node.Status.NodeInfo.KubeProxyVersion
+		nodeInfo["kubeletVersion"] = node.Status.NodeInfo.KubeletVersion
+
+		labelsAndAnnotations := utils.MergeMaps(node.GetLabels(), node.GetAnnotations(), nodeInfo)
 
 		if LabelsContain(labelsAndAnnotations, "eks.amazonaws.com/") {
 			return dtos.EKS, nil
@@ -691,6 +695,8 @@ func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvide
 			return dtos.HUAWEI, nil
 		} else if LabelsContain(labelsAndAnnotations, "nirmata.io") {
 			return dtos.NIRMATA, nil
+		} else if LabelsContain(labelsAndAnnotations, "-CCE") {
+			return dtos.OTC, nil
 		} else if LabelsContain(labelsAndAnnotations, "platform9.com/role") {
 			return dtos.PF9, nil
 		} else if LabelsContain(labelsAndAnnotations, "nks.netapp.io") {
