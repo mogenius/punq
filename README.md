@@ -26,7 +26,6 @@
 </p>
 
 # punq
-
 Punq streamlines Kubernetes cluster management through an intuitive WebApp and a user-friendly CLI, designed to simplify the lives of DevOps professionals.
 
 It offers unified team collaboration, comprehensive log access, and a sophisticated workload editor, facilitates seamless oversight and manipulation of clusters spanning various infrastructures.
