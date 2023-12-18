@@ -12,6 +12,23 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+func AllPersistentVolumesRaw(namespaceName string, contextId *string) []core.PersistentVolume {
+	result := []core.PersistentVolume{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	pvList, err := provider.ClientSet.CoreV1().PersistentVolumes().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllPersistentVolumesRaw ERROR: %s", err.Error())
+		return result
+	}
+	result = append(result, pvList.Items...)
+
+	return result
+}
+
 func AllPersistentVolumes(contextId *string) utils.K8sWorkloadResult {
 	result := []core.PersistentVolume{}
 
