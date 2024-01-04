@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllPersistentVolumesRaw(namespaceName string, contextId *string) []core.PersistentVolume {
+func AllPersistentVolumesRaw(contextId *string) []core.PersistentVolume {
 	result := []core.PersistentVolume{}
 
 	provider, err := NewKubeProvider(contextId)
