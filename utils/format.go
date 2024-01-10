@@ -123,6 +123,14 @@ func NanoId() string {
 	return id()
 }
 
+func NanoIdSmallLowerCase() string {
+	id, err := nanoid.Custom("abcdefghijklmnopqrstuvwxyz1234567890", 10)
+	if err != nil {
+		logger.Log.Error(err)
+	}
+	return id()
+}
+
 func NanoIdExtraLong() string {
 	id, err := nanoid.Custom("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 21)
 	if err != nil {
