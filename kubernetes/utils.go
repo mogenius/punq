@@ -851,13 +851,14 @@ type SystemCheckEntry struct {
 	CheckName          string            `json:"checkName"`
 	Status             SystemCheckStatus `json:"status"`
 	Message            string            `json:"message"`
+	Description        string            `json:"description"`
 	InstallPattern     string            `json:"installPattern"`
 	UninstallPattern   string            `json:"uninstallPattern"`
 	IsRequired         bool              `json:"isRequired"`
 	WantsToBeInstalled bool              `json:"wantsToBeInstalled"`
 }
 
-func CreateSystemCheckEntry(checkName string, alreadyInstalled bool, message string, isRequired bool, wantsToBeInstalled bool) SystemCheckEntry {
+func CreateSystemCheckEntry(checkName string, alreadyInstalled bool, message string, description string, isRequired bool, wantsToBeInstalled bool) SystemCheckEntry {
 	status := UNKNOWN_STATUS
 	if alreadyInstalled {
 		status = INSTALLED
@@ -868,6 +869,7 @@ func CreateSystemCheckEntry(checkName string, alreadyInstalled bool, message str
 		CheckName:          checkName,
 		Status:             status,
 		Message:            message,
+		Description:        description,
 		IsRequired:         isRequired,
 		WantsToBeInstalled: wantsToBeInstalled,
 	}
@@ -928,38 +930,40 @@ func SystemCheck() []SystemCheckEntry {
 	// check internet access
 	inetResult, inetErr := utils.CheckInternetAccess()
 	inetMsg := StatusMessage(inetErr, "Check your internet connection.", "Internet access works.")
-	result = append(result, CreateSystemCheckEntry("Internet Access", inetResult, inetMsg, true, false))
+	result = append(result, CreateSystemCheckEntry("Internet Access", inetResult, inetMsg, "", true, false))
 
 	// check for kubectl
 	kubectlResult, kubectlOutput, kubectlErr := utils.IsKubectlInstalled()
 	kubeCtlMsg := StatusMessage(kubectlErr, "Plase install kubectl (https://kubernetes.io/docs/tasks/tools/) on your system to proceed.", kubectlOutput)
-	result = append(result, CreateSystemCheckEntry("kubectl", kubectlResult, kubeCtlMsg, true, false))
+	result = append(result, CreateSystemCheckEntry("kubectl", kubectlResult, kubeCtlMsg, "", true, false))
 
 	// check kubernetes version
 	kubernetesVersion := KubernetesVersion(nil)
 	kubernetesVersionResult := kubernetesVersion != nil
 	kubernetesVersionMsg := StatusMessage(kubectlErr, "Cannot determin version of kubernetes.", fmt.Sprintf("Version: %s\nPlatform: %s", kubernetesVersion.String(), kubernetesVersion.Platform))
-	result = append(result, CreateSystemCheckEntry("Kubernetes Version", kubernetesVersionResult, kubernetesVersionMsg, true, false))
+	result = append(result, CreateSystemCheckEntry("Kubernetes Version", kubernetesVersionResult, kubernetesVersionMsg, "", true, false))
 
 	// check for ingresscontroller
 	ingressType, ingressTypeErr := DetermineIngressControllerType(nil)
 	ingressMsg := StatusMessage(ingressTypeErr, "Cannot determin ingress controller type.", ingressType.String())
-	result = append(result, CreateSystemCheckEntry("Ingress Controller", ingressTypeErr == nil, ingressMsg, false, true))
+	ingressDescription := "Installs a traefik ingress controller to handle traffic from outside the cluster and more."
+	result = append(result, CreateSystemCheckEntry("Ingress Controller", ingressTypeErr == nil, ingressMsg, ingressDescription, false, true))
 
 	// check for metrics server
 	metricsResult, metricsVersion, metricsErr := IsMetricsServerAvailable(nil)
 	metricsMsg := StatusMessage(metricsErr, "kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml\nNote: Running docker-desktop? Please add '- --kubelet-insecure-tls' to the args sction in the deployment of metrics-server.", metricsVersion)
-	result = append(result, CreateSystemCheckEntry("Metrics Server", metricsResult, metricsMsg, true, true))
+	metricsDescription := "Maintained by Kubernetes-SIGs, handles metrics for built-in autoscaling pipelines."
+	result = append(result, CreateSystemCheckEntry("Metrics Server", metricsResult, metricsMsg, metricsDescription, true, true))
 
 	// check for helm
 	helmResult, helmOutput, helmErr := utils.IsHelmInstalled()
 	helmMsg := StatusMessage(helmErr, "Plase install helm (https://helm.sh/docs/intro/install/) on your system to proceed.", helmOutput)
-	result = append(result, CreateSystemCheckEntry("Helm", helmResult, helmMsg, true, false))
+	result = append(result, CreateSystemCheckEntry("Helm", helmResult, helmMsg, "", true, false))
 
 	// check cluster provider
 	clusterProvOutput, clusterProvErr := GuessClusterProvider(nil)
 	clusterProviderMsg := StatusMessage(clusterProvErr, "We could not determine the provider of this cluster.", string(clusterProvOutput))
-	result = append(result, CreateSystemCheckEntry("Cluster Provider", clusterProvErr == nil, clusterProviderMsg, false, false))
+	result = append(result, CreateSystemCheckEntry("Cluster Provider", clusterProvErr == nil, clusterProviderMsg, "", false, false))
 
 	// API Versions
 	apiVerResult, apiVerErr := ApiVersions(nil)
@@ -969,7 +973,7 @@ func SystemCheck() []SystemCheckEntry {
 	}
 	apiVersStr = strings.TrimRight(apiVersStr, "\n\r")
 	apiVersMsg := StatusMessage(apiVerErr, "Metrics Server might be missing. Install the metrics server and try again.", apiVersStr)
-	result = append(result, CreateSystemCheckEntry("API Versions", len(apiVerResult) > 0, apiVersMsg, true, false))
+	result = append(result, CreateSystemCheckEntry("API Versions", len(apiVerResult) > 0, apiVersMsg, "", true, false))
 
 	// check cluster provider
 	countryResult, countryErr := utils.GuessClusterCountry()
@@ -978,7 +982,7 @@ func SystemCheck() []SystemCheckEntry {
 		countryName = countryResult.Name
 	}
 	countryMsg := StatusMessage(countryErr, "We could not determine the location of the cluster.", countryName)
-	result = append(result, CreateSystemCheckEntry("Cluster Country", countryErr == nil, countryMsg, false, false))
+	result = append(result, CreateSystemCheckEntry("Cluster Country", countryErr == nil, countryMsg, "", false, false))
 
 	lbName := "LoadBalancer IPs/Hosts"
 	loadbalancerIps := GetClusterExternalIps(nil)
@@ -986,7 +990,7 @@ func SystemCheck() []SystemCheckEntry {
 	if len(loadbalancerIps) == 0 {
 		lbIpsMsg = "No external IPs/Hosts.\nMaybe you don't have TREAFIK or NGINX ingress controller installed."
 	}
-	result = append(result, CreateSystemCheckEntry(lbName, len(loadbalancerIps) > 0, lbIpsMsg, false, false))
+	result = append(result, CreateSystemCheckEntry(lbName, len(loadbalancerIps) > 0, lbIpsMsg, "", false, false))
 
 	return result
 }
