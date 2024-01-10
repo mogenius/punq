@@ -683,7 +683,7 @@ func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvide
 			return dtos.MINIKUBE, nil
 		} else if LabelsContain(labelsAndAnnotations, "io.k8s.sigs.kind/role") {
 			return dtos.KIND, nil
-		} else if LabelsContain(labelsAndAnnotations, "civo/") {
+		} else if LabelsContain(labelsAndAnnotations, "civo-node-pool") {
 			return dtos.CIVO, nil
 		} else if LabelsContain(labelsAndAnnotations, "giantswarm.io/") {
 			return dtos.GIANTSWARM, nil
