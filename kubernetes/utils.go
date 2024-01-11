@@ -453,7 +453,13 @@ func IsDaemonSetInstalled(namespaceName string, name string) (string, error) {
 		return "", err
 	}
 
-	return strings.Split(ownDaemonset.Spec.Template.Spec.Containers[0].Image, ":")[1], nil
+	result := ""
+	split := strings.Split(ownDaemonset.Spec.Template.Spec.Containers[0].Image, ":")
+	if len(split) > 1 {
+		result = split[1]
+	}
+
+	return result, nil
 }
 
 // TAKEN FROM Kubernetes apimachineryv0.25.1
