@@ -29,12 +29,12 @@ type Command struct {
 
 func ExecuteBashCommandSilent(title string, shellCmd string) {
 	var err error
-	_, err = utils.RunOnLocalShell(shellCmd).Output()
+	output, err := utils.RunOnLocalShell(shellCmd).Output()
 	if exitErr, ok := err.(*exec.ExitError); ok {
 		exitCode := exitErr.ExitCode()
 		errorMsg := string(exitErr.Stderr)
 		logger.Log.Error(shellCmd)
-		logger.Log.Errorf("%d: %s", exitCode, errorMsg)
+		logger.Log.Errorf("ExitCode: %d - Error: '%s' -> Output: '%s'", exitCode, errorMsg, string(output))
 	} else if err != nil {
 		logger.Log.Errorf("ERROR: '%s': %s\n", title, err.Error())
 	} else {
