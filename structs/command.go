@@ -27,7 +27,7 @@ type Command struct {
 	Started                 time.Time
 }
 
-func ExecuteBashCommandSilent(title string, shellCmd string) {
+func ExecuteShellCommandSilent(title string, shellCmd string) {
 	var err error
 	output, err := utils.RunOnLocalShell(shellCmd).Output()
 	if exitErr, ok := err.(*exec.ExitError); ok {
@@ -44,7 +44,7 @@ func ExecuteBashCommandSilent(title string, shellCmd string) {
 	}
 }
 
-func ExecuteBashCommandWithResponse(title string, shellCmd string) string {
+func ExecuteShellCommandWithResponse(title string, shellCmd string) string {
 	var err error
 	var returnStr []byte
 	returnStr, err = utils.RunOnLocalShell(shellCmd).Output()

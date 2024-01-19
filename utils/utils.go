@@ -265,13 +265,13 @@ func OpenBrowser(url string) {
 func RunOnLocalShell(cmd string) *exec.Cmd {
 	switch runtime.GOOS {
 	case "linux":
-		return exec.Command("/bin/bash", "-c", cmd)
+		return exec.Command("/bin/sh", "-c", cmd)
 	case "windows":
 		return exec.Command("cmd", "/C", cmd)
 	case "darwin":
 		return exec.Command("/bin/zsh", "-c", cmd)
 	default:
-		return exec.Command("/bin/bash", "-c", cmd)
+		return exec.Command("/bin/sh", "-c", cmd)
 	}
 }
 

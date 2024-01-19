@@ -33,7 +33,7 @@ FROM alpine:latest
 ARG GOOS
 ARG GOARCH
 
-RUN apk add --no-cache curl bash
+RUN apk add --no-cache curl
 
 RUN echo "${GOOS} ${GOARCH}"
 
