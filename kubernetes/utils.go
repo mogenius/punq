@@ -707,7 +707,7 @@ func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvide
 			return dtos.HUAWEI, nil
 		} else if LabelsContain(labelsAndAnnotations, "nirmata.io") {
 			return dtos.NIRMATA, nil
-		} else if LabelsContain(labelsAndAnnotations, "-CCE") {
+		} else if LabelsContain(labelsAndAnnotations, "-CCE") || ImagesContain(node.Status.Images, "cce-addons") {
 			return dtos.OTC, nil
 		} else if LabelsContain(labelsAndAnnotations, "platform9.com/role") {
 			return dtos.PF9, nil
@@ -733,6 +733,17 @@ func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvide
 		}
 	}
 	return dtos.UNKNOWN, nil
+}
+
+func ImagesContain(images []v1.ContainerImage, str string) bool {
+	for _, image := range images {
+		for _, name := range image.Names {
+			if strings.Contains(name, str) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func LabelsContain(labels map[string]string, str string) bool {
