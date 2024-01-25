@@ -322,38 +322,6 @@ func InitPunqService() core.Service {
 	return app
 }
 
-func InitUpgradeConfigMap() core.ConfigMap {
-	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/upgrade-configmap.yaml")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	s := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
-
-	var app core.ConfigMap
-	_, _, err = s.Decode(yaml, nil, &app)
-	if err != nil {
-		panic(err)
-	}
-	return app
-}
-
-func InitUpgradeJob() v1job.Job {
-	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/upgrade-job.yaml")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	s := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
-
-	var app v1job.Job
-	_, _, err = s.Decode(yaml, nil, &app)
-	if err != nil {
-		panic(err)
-	}
-	return app
-}
-
 func InitVolumeAttachmentYaml() string {
 	yaml, err := YamlTemplatesFolder.ReadFile("yaml-templates/volumeattachment.yaml")
 	if err != nil {
