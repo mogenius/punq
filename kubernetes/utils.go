@@ -876,6 +876,7 @@ type SystemCheckEntry struct {
 	Message            string            `json:"message"`
 	Description        string            `json:"description"`
 	InstallPattern     string            `json:"installPattern"`
+	UpgradePattern     string            `json:"upgradePattern"`
 	UninstallPattern   string            `json:"uninstallPattern"`
 	IsRequired         bool              `json:"isRequired"`
 	WantsToBeInstalled bool              `json:"wantsToBeInstalled"`
