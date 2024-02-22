@@ -36,6 +36,10 @@ func GetNodeStats(contextId *string) []dtos.NodeStat {
 					break
 				}
 			}
+			if nodeMetric == nil {
+				logger.Log.Errorf("Failed to find node metrics for node %s", node.Name)
+				continue
+			}
 
 			// CPU
 			cpuUsage, works := nodeMetric.Usage.Cpu().AsDec().Unscaled()
