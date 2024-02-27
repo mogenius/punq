@@ -29,7 +29,7 @@ jobs:
           git config --global user.email "punqs@mogenius.com"
           git config --global user.name "punq"
           git config --global credential.helper cache
-          semantic-release
+          npx semantic-release
           VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           COMMIT_HASH=$(git rev-parse --short HEAD)
