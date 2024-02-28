@@ -4,6 +4,7 @@ GO=go
 GOBUILD=$(GO) build
 GOCLEAN=$(GO) clean
 GOGET=$(GO) get
+CGO_ENABLED=0
 
 # Ensure linker embeds versioning information
 VERSION=${shell git describe --tags $(git rev-list --tags --max-count=1)}

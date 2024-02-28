@@ -123,6 +123,14 @@ func NanoId() string {
 	return id()
 }
 
+func NanoIdSmallLowerCase() string {
+	id, err := nanoid.Custom("abcdefghijklmnopqrstuvwxyz1234567890", 10)
+	if err != nil {
+		logger.Log.Error(err)
+	}
+	return id()
+}
+
 func NanoIdExtraLong() string {
 	id, err := nanoid.Custom("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 21)
 	if err != nil {
@@ -230,19 +238,16 @@ func HumanDuration(d time.Duration) string {
 	return fmt.Sprintf("%dy", int(hours/24/365))
 }
 
-func MergeMaps(map1, map2 map[string]string) map[string]string {
+func MergeMaps(maps ...map[string]string) map[string]string {
 	resultMap := make(map[string]string)
 
-	for key, value := range map1 {
-		resultMap[key] = value
+	// Iterate over the slice of maps
+	for _, m := range maps {
+		// Add all elements from each map, potentially overwriting
+		for key, value := range m {
+			resultMap[key] = value
+		}
 	}
-
-	// Add all elements from the second map, this could potentially overwrite
-	// values from the first map if there are matching keys.
-	for key, value := range map2 {
-		resultMap[key] = value
-	}
-
 	return resultMap
 }
 

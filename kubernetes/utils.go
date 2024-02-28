@@ -444,7 +444,13 @@ func IsDeploymentInstalled(namespaceName string, name string) (string, error) {
 		return "", err
 	}
 
-	return strings.Split(ownDeployment.Spec.Template.Spec.Containers[0].Image, ":")[1], nil
+	result := ""
+	split := strings.Split(ownDeployment.Spec.Template.Spec.Containers[0].Image, ":")
+	if len(split) > 1 {
+		result = split[1]
+	}
+
+	return result, nil
 }
 
 func IsDaemonSetInstalled(namespaceName string, name string) (string, error) {
@@ -453,7 +459,13 @@ func IsDaemonSetInstalled(namespaceName string, name string) (string, error) {
 		return "", err
 	}
 
-	return strings.Split(ownDaemonset.Spec.Template.Spec.Containers[0].Image, ":")[1], nil
+	result := ""
+	split := strings.Split(ownDaemonset.Spec.Template.Spec.Containers[0].Image, ":")
+	if len(split) > 1 {
+		result = split[1]
+	}
+
+	return result, nil
 }
 
 // TAKEN FROM Kubernetes apimachineryv0.25.1
@@ -643,7 +655,11 @@ func GuessClusterProvider(contextId *string) (dtos.KubernetesProvider, error) {
 func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvider, error) {
 
 	for _, node := range nodes.Items {
-		labelsAndAnnotations := utils.MergeMaps(node.GetLabels(), node.GetAnnotations())
+		nodeInfo := map[string]string{}
+		nodeInfo["kubeProxyVersion"] = node.Status.NodeInfo.KubeProxyVersion
+		nodeInfo["kubeletVersion"] = node.Status.NodeInfo.KubeletVersion
+
+		labelsAndAnnotations := utils.MergeMaps(node.GetLabels(), node.GetAnnotations(), nodeInfo)
 
 		if LabelsContain(labelsAndAnnotations, "eks.amazonaws.com/") {
 			return dtos.EKS, nil
@@ -679,7 +695,7 @@ func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvide
 			return dtos.MINIKUBE, nil
 		} else if LabelsContain(labelsAndAnnotations, "io.k8s.sigs.kind/role") {
 			return dtos.KIND, nil
-		} else if LabelsContain(labelsAndAnnotations, "civo/") {
+		} else if LabelsContain(labelsAndAnnotations, "civo-node-pool") {
 			return dtos.CIVO, nil
 		} else if LabelsContain(labelsAndAnnotations, "giantswarm.io/") {
 			return dtos.GIANTSWARM, nil
@@ -691,6 +707,8 @@ func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvide
 			return dtos.HUAWEI, nil
 		} else if LabelsContain(labelsAndAnnotations, "nirmata.io") {
 			return dtos.NIRMATA, nil
+		} else if LabelsContain(labelsAndAnnotations, "-CCE") || ImagesContain(node.Status.Images, "cce-addons") {
+			return dtos.OTC, nil
 		} else if LabelsContain(labelsAndAnnotations, "platform9.com/role") {
 			return dtos.PF9, nil
 		} else if LabelsContain(labelsAndAnnotations, "nks.netapp.io") {
@@ -715,6 +733,17 @@ func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvide
 		}
 	}
 	return dtos.UNKNOWN, nil
+}
+
+func ImagesContain(images []v1.ContainerImage, str string) bool {
+	for _, image := range images {
+		for _, name := range image.Names {
+			if strings.Contains(name, str) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func LabelsContain(labels map[string]string, str string) bool {
@@ -842,15 +871,20 @@ const (
 )
 
 type SystemCheckEntry struct {
-	CheckName        string            `json:"checkName"`
-	Status           SystemCheckStatus `json:"status"`
-	Message          string            `json:"message"`
-	InstallPattern   string            `json:"installPattern"`
-	UninstallPattern string            `json:"uninstallPattern"`
-	IsRequired       bool              `json:"isRequired"`
+	CheckName          string            `json:"checkName"`
+	Status             SystemCheckStatus `json:"status"`
+	Message            string            `json:"message"`
+	Description        string            `json:"description"`
+	InstallPattern     string            `json:"installPattern"`
+	UpgradePattern     string            `json:"upgradePattern"`
+	UninstallPattern   string            `json:"uninstallPattern"`
+	IsRequired         bool              `json:"isRequired"`
+	WantsToBeInstalled bool              `json:"wantsToBeInstalled"`
+	VersionInstalled   string            `json:"versionInstalled"`
+	VersionAvailable   string            `json:"versionAvailable"`
 }
 
-func CreateSystemCheckEntry(checkName string, alreadyInstalled bool, message string, isRequired bool) SystemCheckEntry {
+func CreateSystemCheckEntry(checkName string, alreadyInstalled bool, message string, description string, isRequired bool, wantsToBeInstalled bool, versionInstalled string, versionAvailable string) SystemCheckEntry {
 	status := UNKNOWN_STATUS
 	if alreadyInstalled {
 		status = INSTALLED
@@ -858,10 +892,14 @@ func CreateSystemCheckEntry(checkName string, alreadyInstalled bool, message str
 		status = NOT_INSTALLED
 	}
 	return SystemCheckEntry{
-		CheckName:  checkName,
-		Status:     status,
-		Message:    message,
-		IsRequired: isRequired,
+		CheckName:          checkName,
+		Status:             status,
+		Message:            message,
+		Description:        description,
+		IsRequired:         isRequired,
+		WantsToBeInstalled: wantsToBeInstalled,
+		VersionInstalled:   versionInstalled,
+		VersionAvailable:   versionAvailable,
 	}
 }
 
@@ -920,38 +958,40 @@ func SystemCheck() []SystemCheckEntry {
 	// check internet access
 	inetResult, inetErr := utils.CheckInternetAccess()
 	inetMsg := StatusMessage(inetErr, "Check your internet connection.", "Internet access works.")
-	result = append(result, CreateSystemCheckEntry("Internet Access", inetResult, inetMsg, true))
+	result = append(result, CreateSystemCheckEntry("Internet Access", inetResult, inetMsg, "", true, false, "", ""))
 
 	// check for kubectl
 	kubectlResult, kubectlOutput, kubectlErr := utils.IsKubectlInstalled()
 	kubeCtlMsg := StatusMessage(kubectlErr, "Plase install kubectl (https://kubernetes.io/docs/tasks/tools/) on your system to proceed.", kubectlOutput)
-	result = append(result, CreateSystemCheckEntry("kubectl", kubectlResult, kubeCtlMsg, true))
+	result = append(result, CreateSystemCheckEntry("kubectl", kubectlResult, kubeCtlMsg, "", true, false, "", ""))
 
 	// check kubernetes version
 	kubernetesVersion := KubernetesVersion(nil)
 	kubernetesVersionResult := kubernetesVersion != nil
 	kubernetesVersionMsg := StatusMessage(kubectlErr, "Cannot determin version of kubernetes.", fmt.Sprintf("Version: %s\nPlatform: %s", kubernetesVersion.String(), kubernetesVersion.Platform))
-	result = append(result, CreateSystemCheckEntry("Kubernetes Version", kubernetesVersionResult, kubernetesVersionMsg, true))
+	result = append(result, CreateSystemCheckEntry("Kubernetes Version", kubernetesVersionResult, kubernetesVersionMsg, "", true, false, kubernetesVersion.String(), ""))
 
 	// check for ingresscontroller
 	ingressType, ingressTypeErr := DetermineIngressControllerType(nil)
 	ingressMsg := StatusMessage(ingressTypeErr, "Cannot determin ingress controller type.", ingressType.String())
-	result = append(result, CreateSystemCheckEntry("Ingress Controller", ingressTypeErr == nil, ingressMsg, false))
+	ingressDescription := "Installs a traefik ingress controller to handle traffic from outside the cluster and more."
+	result = append(result, CreateSystemCheckEntry("Ingress Controller", ingressTypeErr == nil, ingressMsg, ingressDescription, false, true, "", ""))
 
 	// check for metrics server
 	metricsResult, metricsVersion, metricsErr := IsMetricsServerAvailable(nil)
 	metricsMsg := StatusMessage(metricsErr, "kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml\nNote: Running docker-desktop? Please add '- --kubelet-insecure-tls' to the args sction in the deployment of metrics-server.", metricsVersion)
-	result = append(result, CreateSystemCheckEntry("Metrics Server", metricsResult, metricsMsg, true))
+	metricsDescription := "Maintained by Kubernetes-SIGs, handles metrics for built-in autoscaling pipelines."
+	result = append(result, CreateSystemCheckEntry("Metrics Server", metricsResult, metricsMsg, metricsDescription, true, true, metricsVersion, ""))
 
 	// check for helm
 	helmResult, helmOutput, helmErr := utils.IsHelmInstalled()
 	helmMsg := StatusMessage(helmErr, "Plase install helm (https://helm.sh/docs/intro/install/) on your system to proceed.", helmOutput)
-	result = append(result, CreateSystemCheckEntry("Helm", helmResult, helmMsg, true))
+	result = append(result, CreateSystemCheckEntry("Helm", helmResult, helmMsg, "", true, false, helmOutput, ""))
 
 	// check cluster provider
 	clusterProvOutput, clusterProvErr := GuessClusterProvider(nil)
 	clusterProviderMsg := StatusMessage(clusterProvErr, "We could not determine the provider of this cluster.", string(clusterProvOutput))
-	result = append(result, CreateSystemCheckEntry("Cluster Provider", clusterProvErr == nil, clusterProviderMsg, false))
+	result = append(result, CreateSystemCheckEntry("Cluster Provider", clusterProvErr == nil, clusterProviderMsg, "", false, false, "", ""))
 
 	// API Versions
 	apiVerResult, apiVerErr := ApiVersions(nil)
@@ -961,7 +1001,7 @@ func SystemCheck() []SystemCheckEntry {
 	}
 	apiVersStr = strings.TrimRight(apiVersStr, "\n\r")
 	apiVersMsg := StatusMessage(apiVerErr, "Metrics Server might be missing. Install the metrics server and try again.", apiVersStr)
-	result = append(result, CreateSystemCheckEntry("API Versions", len(apiVerResult) > 0, apiVersMsg, true))
+	result = append(result, CreateSystemCheckEntry("API Versions", len(apiVerResult) > 0, apiVersMsg, "", true, false, "", ""))
 
 	// check cluster provider
 	countryResult, countryErr := utils.GuessClusterCountry()
@@ -970,7 +1010,7 @@ func SystemCheck() []SystemCheckEntry {
 		countryName = countryResult.Name
 	}
 	countryMsg := StatusMessage(countryErr, "We could not determine the location of the cluster.", countryName)
-	result = append(result, CreateSystemCheckEntry("Cluster Country", countryErr == nil, countryMsg, false))
+	result = append(result, CreateSystemCheckEntry("Cluster Country", countryErr == nil, countryMsg, "", false, false, "", ""))
 
 	lbName := "LoadBalancer IPs/Hosts"
 	loadbalancerIps := GetClusterExternalIps(nil)
@@ -978,7 +1018,7 @@ func SystemCheck() []SystemCheckEntry {
 	if len(loadbalancerIps) == 0 {
 		lbIpsMsg = "No external IPs/Hosts.\nMaybe you don't have TREAFIK or NGINX ingress controller installed."
 	}
-	result = append(result, CreateSystemCheckEntry(lbName, len(loadbalancerIps) > 0, lbIpsMsg, false))
+	result = append(result, CreateSystemCheckEntry(lbName, len(loadbalancerIps) > 0, lbIpsMsg, "", false, false, "", ""))
 
 	return result
 }
