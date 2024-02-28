@@ -73,7 +73,7 @@ func DeleteK8sStorageClassBy(name string, contextId *string) error {
 }
 
 func DescribeK8sStorageClass(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl describe storageclass %s%s", name, ContextFlag(contextId)))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("kubectl describe storageclass %s%s", name, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

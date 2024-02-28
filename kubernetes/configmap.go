@@ -115,7 +115,7 @@ func DeleteK8sConfigmapBy(namespaceName string, name string, contextId *string) 
 }
 
 func DescribeK8sConfigmap(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl describe configmap %s -n %s%s", name, namespace, ContextFlag(contextId)))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("kubectl describe configmap %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

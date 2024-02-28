@@ -77,7 +77,7 @@ func DeleteK8sHpaBy(namespace string, name string, contextId *string) error {
 }
 
 func DescribeK8sHpa(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl describe hpa %s -n %s%s", name, namespace, ContextFlag(contextId)))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("kubectl describe hpa %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

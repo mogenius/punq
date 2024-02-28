@@ -77,7 +77,7 @@ func DeleteK8sOrderBy(namespace string, name string, contextId *string) error {
 }
 
 func DescribeK8sOrder(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl describe order %s -n %s%s", name, namespace, ContextFlag(contextId)))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("kubectl describe order %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
