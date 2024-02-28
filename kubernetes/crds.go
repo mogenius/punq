@@ -56,7 +56,7 @@ func DeleteK8sCustomResourceDefinition(data apiExt.CustomResourceDefinition) uti
 }
 
 func DescribeK8sCustomResourceDefinition(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl describe crds %s%s", name, ContextFlag(contextId)))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("kubectl describe crds %s%s", name, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

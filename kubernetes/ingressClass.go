@@ -91,7 +91,7 @@ func DeleteK8sIngressClassBy(name string, contextId *string) error {
 }
 
 func DescribeK8sIngressClass(name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl describe ingressclass %s%s", name, ContextFlag(contextId)))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("kubectl describe ingressclass %s%s", name, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

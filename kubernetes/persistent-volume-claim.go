@@ -90,7 +90,7 @@ func DeleteK8sPersistentVolumeClaimBy(namespace string, name string, contextId *
 }
 
 func DescribeK8sPersistentVolumeClaim(namespace string, name string, contextId *string) utils.K8sWorkloadResult {
-	cmd := utils.RunOnLocalShell(fmt.Sprintf("/usr/local/bin/kubectl describe persistentvolumeclaim %s -n %s%s", name, namespace, ContextFlag(contextId)))
+	cmd := utils.RunOnLocalShell(fmt.Sprintf("kubectl describe persistentvolumeclaim %s -n %s%s", name, namespace, ContextFlag(contextId)))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
