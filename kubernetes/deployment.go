@@ -26,6 +26,7 @@ func AllDeployments(namespaceName string, contextId *string) []v1.Deployment {
 
 	for _, deployment := range deploymentList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, deployment.ObjectMeta.Namespace) {
+			deployment.Kind = "Deployment"
 			result = append(result, deployment)
 		}
 	}
