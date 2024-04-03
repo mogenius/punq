@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllK8sStatefulSets(namespaceName string, contextId *string) []v1.StatefulSet {
+func AllStatefulSets(namespaceName string, contextId *string) []v1.StatefulSet {
 	result := []v1.StatefulSet{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -35,7 +35,7 @@ func AllK8sStatefulSets(namespaceName string, contextId *string) []v1.StatefulSe
 	return result
 }
 
-func AllStatefulSets(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllK8sStatefulSets(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.StatefulSet{}
 
 	provider, err := NewKubeProvider(contextId)
