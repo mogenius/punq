@@ -29,6 +29,7 @@ func AllPriorityClasses(contextId *string) []v1.PriorityClass {
 	for _, prioClass := range pcList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, prioClass.ObjectMeta.Namespace) {
 			prioClass.Kind = "PriorityClass"
+			prioClass.APIVersion = "scheduling.k8s.io/v1"
 			result = append(result, prioClass)
 		}
 	}
@@ -51,6 +52,7 @@ func AllK8sPriorityClasses(contextId *string) utils.K8sWorkloadResult {
 	for _, prioClass := range pcList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, prioClass.ObjectMeta.Namespace) {
 			prioClass.Kind = "PriorityClass"
+			prioClass.APIVersion = "scheduling.k8s.io/v1"
 			result = append(result, prioClass)
 		}
 	}

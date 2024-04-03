@@ -28,6 +28,7 @@ func AllK8sStatefulSets(namespaceName string, contextId *string) []v1.StatefulSe
 	for _, statefulSet := range statefulSetList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, statefulSet.ObjectMeta.Namespace) {
 			statefulSet.Kind = "StatefulSet"
+			statefulSet.APIVersion = "apps/v1"
 			result = append(result, statefulSet)
 		}
 	}
@@ -50,6 +51,7 @@ func AllStatefulSets(namespaceName string, contextId *string) utils.K8sWorkloadR
 	for _, statefulSet := range statefulSetList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, statefulSet.ObjectMeta.Namespace) {
 			statefulSet.Kind = "StatefulSet"
+			statefulSet.APIVersion = "apps/v1"
 			result = append(result, statefulSet)
 		}
 	}

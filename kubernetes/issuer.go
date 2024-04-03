@@ -28,6 +28,7 @@ func AllIssuer(namespaceName string, contextId *string) []cmapi.Issuer {
 	for _, issuer := range issuersList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, issuer.ObjectMeta.Namespace) {
 			issuer.Kind = "Issuer"
+			issuer.APIVersion = "cert-manager.io/v1"
 			result = append(result, issuer)
 		}
 	}
@@ -50,6 +51,7 @@ func AllK8sIssuer(namespaceName string, contextId *string) utils.K8sWorkloadResu
 	for _, issuer := range issuersList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, issuer.ObjectMeta.Namespace) {
 			issuer.Kind = "Issuer"
+			issuer.APIVersion = "cert-manager.io/v1"
 			result = append(result, issuer)
 		}
 	}

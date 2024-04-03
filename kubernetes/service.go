@@ -63,6 +63,7 @@ func AllServices(namespaceName string, contextId *string) []v1.Service {
 	for _, service := range serviceList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, service.ObjectMeta.Namespace) {
 			service.Kind = "Service"
+			service.APIVersion = "v1"
 			result = append(result, service)
 		}
 	}

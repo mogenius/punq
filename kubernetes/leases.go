@@ -29,6 +29,7 @@ func AllLeases(namespaceName string, contextId *string) []v1.Lease {
 	for _, role := range rolesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
 			role.Kind = "Lease"
+			role.APIVersion = "coordination.k8s.io/v1"
 			result = append(result, role)
 		}
 	}
@@ -51,6 +52,7 @@ func AllK8sLeases(namespaceName string, contextId *string) utils.K8sWorkloadResu
 	for _, role := range rolesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
 			role.Kind = "Lease"
+			role.APIVersion = "coordination.k8s.io/v1"
 			result = append(result, role)
 		}
 	}

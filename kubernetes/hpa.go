@@ -28,6 +28,7 @@ func AllHpas(namespaceName string, contextId *string) []v2.HorizontalPodAutoscal
 	for _, hpa := range hpaList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, hpa.ObjectMeta.Namespace) {
 			hpa.Kind = "HorizontalPodAutoscaler"
+			hpa.APIVersion = "autoscaling/v2"
 			result = append(result, hpa)
 		}
 	}
@@ -50,6 +51,7 @@ func AllK8sHpas(namespaceName string, contextId *string) utils.K8sWorkloadResult
 	for _, hpa := range hpaList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, hpa.ObjectMeta.Namespace) {
 			hpa.Kind = "HorizontalPodAutoscaler"
+			hpa.APIVersion = "autoscaling/v2"
 			result = append(result, hpa)
 		}
 	}

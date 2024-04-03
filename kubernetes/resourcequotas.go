@@ -29,6 +29,7 @@ func AllResourceQuotas(namespaceName string, contextId *string) []core.ResourceQ
 	for _, rq := range rqList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, rq.ObjectMeta.Namespace) {
 			rq.Kind = "ResourceQuota"
+			rq.APIVersion = "v1"
 			result = append(result, rq)
 		}
 	}
@@ -51,6 +52,7 @@ func AllK8sResourceQuotas(namespaceName string, contextId *string) utils.K8sWork
 	for _, rq := range rqList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, rq.ObjectMeta.Namespace) {
 			rq.Kind = "ResourceQuota"
+			rq.APIVersion = "v1"
 			result = append(result, rq)
 		}
 	}

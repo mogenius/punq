@@ -52,6 +52,7 @@ func ListAllNamespace(contextId *string) []v1.Namespace {
 
 	for _, namespace := range namespaceList.Items {
 		namespace.Kind = "Namespace"
+		namespace.APIVersion = "v1"
 		result = append(result, namespace)
 	}
 
@@ -75,6 +76,7 @@ func AllK8sNamespace(contextId *string) utils.K8sWorkloadResult {
 
 	for _, namespace := range namespaceList.Items {
 		namespace.Kind = "Namespace"
+		namespace.APIVersion = "v1"
 		result = append(result, namespace)
 	}
 

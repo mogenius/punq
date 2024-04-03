@@ -28,6 +28,7 @@ func AllReplicasets(namespaceName string, contextId *string) []v1.ReplicaSet {
 	for _, replicaSet := range replicaSetList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, replicaSet.ObjectMeta.Namespace) {
 			replicaSet.Kind = "ReplicaSet"
+			replicaSet.APIVersion = "apps/v1"
 			result = append(result, replicaSet)
 		}
 	}
@@ -58,6 +59,7 @@ func AllK8sReplicasets(namespaceName string, contextId *string) utils.K8sWorkloa
 	for _, replicaSet := range replicaSetList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, replicaSet.ObjectMeta.Namespace) {
 			replicaSet.Kind = "ReplicaSet"
+			replicaSet.APIVersion = "apps/v1"
 			result = append(result, replicaSet)
 		}
 	}

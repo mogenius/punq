@@ -28,6 +28,7 @@ func AllCertificateSigningRequests(namespaceName string, contextId *string) []cm
 	for _, certificate := range certificatesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, certificate.ObjectMeta.Namespace) {
 			certificate.Kind = "CertificateSigningRequest"
+			certificate.APIVersion = "cert-manager.io/v1"
 			result = append(result, certificate)
 		}
 	}
@@ -50,6 +51,7 @@ func AllK8sCertificateSigningRequests(namespaceName string, contextId *string) u
 	for _, certificate := range certificatesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, certificate.ObjectMeta.Namespace) {
 			certificate.Kind = "CertificateSigningRequest"
+			certificate.APIVersion = "cert-manager.io/v1"
 			result = append(result, certificate)
 		}
 	}

@@ -27,6 +27,7 @@ func AllDeployments(namespaceName string, contextId *string) []v1.Deployment {
 	for _, deployment := range deploymentList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, deployment.ObjectMeta.Namespace) {
 			deployment.Kind = "Deployment"
+			deployment.APIVersion = "apps/v1"
 			result = append(result, deployment)
 		}
 	}
@@ -47,6 +48,7 @@ func AllDeploymentsIncludeIgnored(namespaceName string, contextId *string) []v1.
 
 	for _, deployment := range deploymentList.Items {
 		deployment.Kind = "Deployment"
+		deployment.APIVersion = "apps/v1"
 		result = append(result, deployment)
 	}
 
@@ -69,6 +71,7 @@ func AllK8sDeployments(namespaceName string, contextId *string) utils.K8sWorkloa
 	for _, deployment := range deploymentList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, deployment.ObjectMeta.Namespace) {
 			deployment.Kind = "Deployment"
+			deployment.APIVersion = "apps/v1"
 			result = append(result, deployment)
 		}
 	}

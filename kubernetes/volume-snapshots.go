@@ -26,6 +26,7 @@ func AllVolumeSnapshots(namespace string, contextId *string) []snap.VolumeSnapsh
 
 	for _, v := range volSnapshotsList.Items {
 		v.Kind = "VolumeSnapshot"
+		v.APIVersion = "snapshot.storage.k8s.io/v1"
 		result = append(result, v)
 	}
 	return result
@@ -46,6 +47,7 @@ func AllK8sVolumeSnapshots(namespace string, contextId *string) utils.K8sWorkloa
 
 	for _, v := range volSnapshotsList.Items {
 		v.Kind = "VolumeSnapshot"
+		v.APIVersion = "snapshot.storage.k8s.io/v1"
 		result = append(result, v)
 	}
 	return WorkloadResult(result, nil)

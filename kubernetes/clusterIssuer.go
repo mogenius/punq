@@ -28,6 +28,7 @@ func AllClusterIssuers(contextId *string) []cmapi.ClusterIssuer {
 	for _, issuer := range issuersList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, issuer.ObjectMeta.Namespace) {
 			issuer.Kind = "ClusterIssuer"
+			issuer.APIVersion = "cert-manager.io/v1"
 			result = append(result, issuer)
 		}
 	}
@@ -50,6 +51,7 @@ func AllK8sClusterIssuers(contextId *string) utils.K8sWorkloadResult {
 	for _, issuer := range issuersList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, issuer.ObjectMeta.Namespace) {
 			issuer.Kind = "ClusterIssuer"
+			issuer.APIVersion = "cert-manager.io/v1"
 			result = append(result, issuer)
 		}
 	}

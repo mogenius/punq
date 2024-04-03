@@ -26,6 +26,7 @@ func AllPersistentVolumesRaw(contextId *string) []core.PersistentVolume {
 	}
 	for _, v := range pvList.Items {
 		v.Kind = "PersistentVolume"
+		v.APIVersion = "v1"
 		result = append(result, v)
 	}
 
@@ -47,6 +48,7 @@ func AllK8sPersistentVolumes(contextId *string) utils.K8sWorkloadResult {
 
 	for _, v := range pvList.Items {
 		v.Kind = "PersistentVolume"
+		v.APIVersion = "v1"
 		result = append(result, v)
 	}
 	return WorkloadResult(result, nil)

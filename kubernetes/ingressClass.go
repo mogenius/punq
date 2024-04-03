@@ -26,6 +26,7 @@ func AllIngressClasses(contextId *string) []v1.IngressClass {
 
 	for _, ingress := range ingressList.Items {
 		ingress.Kind = "IngressClass"
+		ingress.APIVersion = "networking.k8s.io/v1"
 		result = append(result, ingress)
 	}
 
@@ -47,6 +48,7 @@ func AllK8sIngressClasses(contextId *string) utils.K8sWorkloadResult {
 
 	for _, ingress := range ingressList.Items {
 		ingress.Kind = "IngressClass"
+		ingress.APIVersion = "networking.k8s.io/v1"
 		result = append(result, ingress)
 	}
 

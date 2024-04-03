@@ -29,6 +29,7 @@ func AllClusterRoles(contextId *string) []v1.ClusterRole {
 	for _, role := range rolesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
 			role.Kind = "ClusterRole"
+			role.APIVersion = "rbac.authorization.k8s.io/v1"
 			result = append(result, role)
 		}
 	}
@@ -51,6 +52,7 @@ func AllK8sClusterRoles(contextId *string) utils.K8sWorkloadResult {
 	for _, role := range rolesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
 			role.Kind = "ClusterRole"
+			role.APIVersion = "rbac.authorization.k8s.io/v1"
 			result = append(result, role)
 		}
 	}

@@ -28,6 +28,7 @@ func AllOrders(namespaceName string, contextId *string) []v1.Order {
 	for _, order := range orderList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, order.ObjectMeta.Namespace) {
 			order.Kind = "Order"
+			order.APIVersion = "acme.cert-manager.io/v1"
 			result = append(result, order)
 		}
 	}
@@ -50,6 +51,7 @@ func AllK8sOrders(namespaceName string, contextId *string) utils.K8sWorkloadResu
 	for _, order := range orderList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, order.ObjectMeta.Namespace) {
 			order.Kind = "Order"
+			order.APIVersion = "acme.cert-manager.io/v1"
 			result = append(result, order)
 		}
 	}

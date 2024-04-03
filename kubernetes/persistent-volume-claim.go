@@ -27,6 +27,7 @@ func AllPersistentVolumeClaims(namespaceName string, contextId *string) []core.P
 
 	for _, v := range pvList.Items {
 		v.Kind = "PersistentVolumeClaim"
+		v.APIVersion = "v1"
 		result = append(result, v)
 	}
 
@@ -56,6 +57,7 @@ func AllK8sPersistentVolumeClaims(namespaceName string, contextId *string) utils
 
 	for _, v := range pvList.Items {
 		v.Kind = "PersistentVolumeClaim"
+		v.APIVersion = "v1"
 		result = append(result, v)
 	}
 	return WorkloadResult(result, nil)

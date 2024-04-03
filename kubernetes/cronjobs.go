@@ -28,6 +28,7 @@ func AllCronjobs(namespaceName string, contextId *string) []v1.CronJob {
 	for _, cronJob := range cronJobList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, cronJob.ObjectMeta.Namespace) {
 			cronJob.Kind = "CronJob"
+			cronJob.APIVersion = "batch/v1"
 			result = append(result, cronJob)
 		}
 	}
@@ -50,6 +51,7 @@ func AllK8sCronjobs(namespaceName string, contextId *string) utils.K8sWorkloadRe
 	for _, cronJob := range cronJobList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, cronJob.ObjectMeta.Namespace) {
 			cronJob.Kind = "CronJob"
+			cronJob.APIVersion = "batch/v1"
 			result = append(result, cronJob)
 		}
 	}

@@ -28,6 +28,7 @@ func AllJobs(namespaceName string, contextId *string) []v1job.Job {
 	for _, job := range jobList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, job.ObjectMeta.Namespace) {
 			job.Kind = "Job"
+			job.APIVersion = "batch/v1"
 			result = append(result, job)
 		}
 	}
@@ -50,6 +51,7 @@ func AllK8sJobs(namespaceName string, contextId *string) utils.K8sWorkloadResult
 	for _, job := range jobList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, job.ObjectMeta.Namespace) {
 			job.Kind = "Job"
+			job.APIVersion = "batch/v1"
 			result = append(result, job)
 		}
 	}

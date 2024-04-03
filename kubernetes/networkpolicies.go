@@ -28,6 +28,7 @@ func AllNetworkPolicies(namespaceName string, contextId *string) []v1.NetworkPol
 	for _, netpol := range netPolist.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, netpol.ObjectMeta.Namespace) {
 			netpol.Kind = "NetworkPolicy"
+			netpol.APIVersion = "networking.k8s.io/v1"
 			result = append(result, netpol)
 		}
 	}
@@ -50,6 +51,7 @@ func AllK8sNetworkPolicies(namespaceName string, contextId *string) utils.K8sWor
 	for _, netpol := range netPolist.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, netpol.ObjectMeta.Namespace) {
 			netpol.Kind = "NetworkPolicy"
+			netpol.APIVersion = "networking.k8s.io/v1"
 			result = append(result, netpol)
 		}
 	}

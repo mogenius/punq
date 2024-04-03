@@ -212,6 +212,7 @@ func AllPods(namespaceName string, contextId *string) []v1.Pod {
 	for _, pod := range podsList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, pod.ObjectMeta.Namespace) {
 			pod.Kind = "Pod"
+			pod.APIVersion = "v1"
 			result = append(result, pod)
 		}
 	}

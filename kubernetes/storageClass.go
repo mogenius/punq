@@ -27,6 +27,7 @@ func AllStorageClasses(contextId *string) []storage.StorageClass {
 
 	for _, v := range scList.Items {
 		v.Kind = "StorageClass"
+		v.APIVersion = "storage.k8s.io/v1"
 		result = append(result, v)
 	}
 	return result
@@ -47,6 +48,7 @@ func AllK8sStorageClasses(contextId *string) utils.K8sWorkloadResult {
 
 	for _, v := range scList.Items {
 		v.Kind = "StorageClass"
+		v.APIVersion = "storage.k8s.io/v1"
 		result = append(result, v)
 	}
 	return WorkloadResult(result, nil)

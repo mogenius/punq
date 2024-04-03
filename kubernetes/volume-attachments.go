@@ -26,6 +26,7 @@ func AllVolumeAttachments(contextId *string) []storage.VolumeAttachment {
 
 	for _, v := range volAttachList.Items {
 		v.Kind = "VolumeAttachment"
+		v.APIVersion = "storage.k8s.io/v1"
 		result = append(result, v)
 	}
 	return result
@@ -46,6 +47,7 @@ func AllK8sVolumeAttachments(contextId *string) utils.K8sWorkloadResult {
 
 	for _, v := range volAttachList.Items {
 		v.Kind = "VolumeAttachment"
+		v.APIVersion = "storage.k8s.io/v1"
 		result = append(result, v)
 	}
 	return WorkloadResult(result, nil)

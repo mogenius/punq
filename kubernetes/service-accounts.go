@@ -29,6 +29,7 @@ func AllServiceAccounts(namespaceName string, contextId *string) []v1.ServiceAcc
 	for _, srvAcc := range srvAccList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, srvAcc.ObjectMeta.Namespace) {
 			srvAcc.Kind = "ServiceAccount"
+			srvAcc.APIVersion = "v1"
 			result = append(result, srvAcc)
 		}
 	}
@@ -51,6 +52,7 @@ func AllK8sServiceAccounts(namespaceName string, contextId *string) utils.K8sWor
 	for _, srvAcc := range srvAccList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, srvAcc.ObjectMeta.Namespace) {
 			srvAcc.Kind = "ServiceAccount"
+			srvAcc.APIVersion = "v1"
 			result = append(result, srvAcc)
 		}
 	}

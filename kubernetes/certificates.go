@@ -28,6 +28,7 @@ func AllCertificates(namespaceName string, contextId *string) []cmapi.Certificat
 	for _, certificate := range certificatesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, certificate.ObjectMeta.Namespace) {
 			certificate.Kind = "Certificate"
+			certificate.APIVersion = "cert-manager.io/v1"
 			result = append(result, certificate)
 		}
 	}
@@ -63,6 +64,7 @@ func AllK8sCertificates(namespaceName string, contextId *string) utils.K8sWorklo
 	for _, certificate := range certificatesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, certificate.ObjectMeta.Namespace) {
 			certificate.Kind = "Certificate"
+			certificate.APIVersion = "cert-manager.io/v1"
 			result = append(result, certificate)
 		}
 	}

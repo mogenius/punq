@@ -28,6 +28,7 @@ func AllDaemonsets(namespaceName string, contextId *string) []v1.DaemonSet {
 	for _, daemonset := range daemonsetList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, daemonset.ObjectMeta.Namespace) {
 			daemonset.Kind = "DaemonSet"
+			daemonset.APIVersion = "apps/v1"
 			result = append(result, daemonset)
 		}
 	}
@@ -50,6 +51,7 @@ func AllK8sDaemonsets(namespaceName string, contextId *string) utils.K8sWorkload
 	for _, daemonset := range daemonsetList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, daemonset.ObjectMeta.Namespace) {
 			daemonset.Kind = "DaemonSet"
+			daemonset.APIVersion = "apps/v1"
 			result = append(result, daemonset)
 		}
 	}

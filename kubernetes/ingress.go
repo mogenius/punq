@@ -31,6 +31,7 @@ func AllIngresses(namespaceName string, contextId *string) []v1.Ingress {
 	for _, ingress := range ingressList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, ingress.ObjectMeta.Namespace) {
 			ingress.Kind = "Ingress"
+			ingress.APIVersion = "networking.k8s.io/v1"
 			result = append(result, ingress)
 		}
 	}
@@ -53,6 +54,7 @@ func AllK8sIngresses(namespaceName string, contextId *string) utils.K8sWorkloadR
 	for _, ingress := range ingressList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, ingress.ObjectMeta.Namespace) {
 			ingress.Kind = "Ingress"
+			ingress.APIVersion = "networking.k8s.io/v1"
 			result = append(result, ingress)
 		}
 	}

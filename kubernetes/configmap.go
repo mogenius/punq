@@ -44,6 +44,7 @@ func AllConfigmaps(namespaceName string, contextId *string) []v1.ConfigMap {
 	for _, configmap := range configmapList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, configmap.ObjectMeta.Namespace) {
 			configmap.Kind = "ConfigMap"
+			configmap.APIVersion = "v1"
 			result = append(result, configmap)
 		}
 	}
@@ -66,6 +67,7 @@ func AllK8sConfigmaps(namespaceName string, contextId *string) utils.K8sWorkload
 	for _, configmap := range configmapList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, configmap.ObjectMeta.Namespace) {
 			configmap.Kind = "ConfigMap"
+			configmap.APIVersion = "v1"
 			result = append(result, configmap)
 		}
 	}

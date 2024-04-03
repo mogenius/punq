@@ -27,6 +27,7 @@ func AllEvents(namespaceName string, contextId *string) []v1Core.Event {
 	for _, event := range eventList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, event.ObjectMeta.Namespace) {
 			event.Kind = "Event"
+			event.APIVersion = "v1"
 			result = append(result, event)
 		}
 	}
@@ -49,6 +50,7 @@ func AllK8sEvents(namespaceName string, contextId *string) utils.K8sWorkloadResu
 	for _, event := range eventList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, event.ObjectMeta.Namespace) {
 			event.Kind = "Event"
+			event.APIVersion = "v1"
 			result = append(result, event)
 		}
 	}

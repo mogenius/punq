@@ -27,6 +27,7 @@ func AllEndpoints(namespaceName string, contextId *string) []corev1.Endpoints {
 	for _, endpoint := range endpointList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, endpoint.ObjectMeta.Namespace) {
 			endpoint.Kind = "Endpoints"
+			endpoint.APIVersion = "v1"
 			result = append(result, endpoint)
 		}
 	}
@@ -49,6 +50,7 @@ func AllK8sEndpoints(namespaceName string, contextId *string) utils.K8sWorkloadR
 	for _, endpoint := range endpointList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, endpoint.ObjectMeta.Namespace) {
 			endpoint.Kind = "Endpoints"
+			endpoint.APIVersion = "v1"
 			result = append(result, endpoint)
 		}
 	}

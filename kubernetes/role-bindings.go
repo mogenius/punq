@@ -28,6 +28,7 @@ func AllRoleBindings(namespaceName string, contextId *string) []v1.RoleBinding {
 	for _, roleBinding := range rolesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, roleBinding.ObjectMeta.Namespace) {
 			roleBinding.Kind = "RoleBinding"
+			roleBinding.APIVersion = "rbac.authorization.k8s.io/v1"
 			result = append(result, roleBinding)
 		}
 	}
@@ -50,6 +51,7 @@ func AllK8sRoleBindings(namespaceName string, contextId *string) utils.K8sWorklo
 	for _, roleBinding := range rolesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, roleBinding.ObjectMeta.Namespace) {
 			roleBinding.Kind = "RoleBinding"
+			roleBinding.APIVersion = "rbac.authorization.k8s.io/v1"
 			result = append(result, roleBinding)
 		}
 	}
