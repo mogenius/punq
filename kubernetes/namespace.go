@@ -50,9 +50,35 @@ func ListAllNamespace(contextId *string) []v1.Namespace {
 		return result
 	}
 
-	result = append(result, namespaceList.Items...)
+	for _, namespace := range namespaceList.Items {
+		namespace.Kind = "Namespace"
+		result = append(result, namespace)
+	}
 
 	return result
+}
+
+func AllK8sNamespace(contextId *string) utils.K8sWorkloadResult {
+	result := []v1.Namespace{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return WorkloadResult(nil, err)
+	}
+	namespaceClient := provider.ClientSet.CoreV1().Namespaces()
+
+	namespaceList, err := namespaceClient.List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("ListAllNamespace ERROR: %s", err.Error())
+		return WorkloadResult(nil, err)
+	}
+
+	for _, namespace := range namespaceList.Items {
+		namespace.Kind = "Namespace"
+		result = append(result, namespace)
+	}
+
+	return WorkloadResult(result, nil)
 }
 
 func GetNamespace(name string, contextId *string) (*v1.Namespace, error) {

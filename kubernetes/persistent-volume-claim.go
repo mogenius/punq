@@ -24,7 +24,11 @@ func AllPersistentVolumeClaims(namespaceName string, contextId *string) []core.P
 		logger.Log.Errorf("AllPersistentVolumeClaims ERROR: %s", err.Error())
 		return result
 	}
-	result = append(result, pvList.Items...)
+
+	for _, v := range pvList.Items {
+		v.Kind = "PersistentVolumeClaim"
+		result = append(result, v)
+	}
 
 	return result
 }
@@ -50,7 +54,10 @@ func AllK8sPersistentVolumeClaims(namespaceName string, contextId *string) utils
 		return WorkloadResult(nil, err)
 	}
 
-	result = append(result, pvList.Items...)
+	for _, v := range pvList.Items {
+		v.Kind = "PersistentVolumeClaim"
+		result = append(result, v)
+	}
 	return WorkloadResult(result, nil)
 }
 

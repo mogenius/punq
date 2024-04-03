@@ -29,6 +29,7 @@ func AllSecrets(namespaceName string, contextId *string) []v1.Secret {
 
 	for _, secret := range secretList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, secret.ObjectMeta.Namespace) {
+			secret.Kind = "Secret"
 			result = append(result, secret)
 		}
 	}
@@ -96,6 +97,7 @@ func AllK8sSecrets(namespaceName string, contextId *string) utils.K8sWorkloadRes
 
 	for _, secret := range secretList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, secret.ObjectMeta.Namespace) {
+			secret.Kind = "Secret"
 			result = append(result, secret)
 		}
 	}

@@ -12,7 +12,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllIssuer(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllIssuer(namespaceName string, contextId *string) []cmapi.Issuer {
+	result := []cmapi.Issuer{}
+
+	provider, err := NewKubeProviderCertManager(contextId)
+	if err != nil {
+		return result
+	}
+	issuersList, err := provider.ClientSet.CertmanagerV1().Issuers(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
+	if err != nil {
+		logger.Log.Errorf("AllIssuer ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, issuer := range issuersList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, issuer.ObjectMeta.Namespace) {
+			issuer.Kind = "Issuer"
+			result = append(result, issuer)
+		}
+	}
+	return result
+}
+
+func AllK8sIssuer(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []cmapi.Issuer{}
 
 	provider, err := NewKubeProviderCertManager(contextId)
@@ -27,6 +49,7 @@ func AllIssuer(namespaceName string, contextId *string) utils.K8sWorkloadResult 
 
 	for _, issuer := range issuersList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, issuer.ObjectMeta.Namespace) {
+			issuer.Kind = "Issuer"
 			result = append(result, issuer)
 		}
 	}

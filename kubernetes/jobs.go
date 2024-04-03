@@ -12,7 +12,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllJobs(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllJobs(namespaceName string, contextId *string) []v1job.Job {
+	result := []v1job.Job{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	jobList, err := provider.ClientSet.BatchV1().Jobs(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
+	if err != nil {
+		logger.Log.Errorf("AllJobs ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, job := range jobList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, job.ObjectMeta.Namespace) {
+			job.Kind = "Job"
+			result = append(result, job)
+		}
+	}
+	return result
+}
+
+func AllK8sJobs(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1job.Job{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -27,6 +49,7 @@ func AllJobs(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 
 	for _, job := range jobList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, job.ObjectMeta.Namespace) {
+			job.Kind = "Job"
 			result = append(result, job)
 		}
 	}

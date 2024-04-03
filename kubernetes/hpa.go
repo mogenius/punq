@@ -12,7 +12,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllHpas(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllHpas(namespaceName string, contextId *string) []v2.HorizontalPodAutoscaler {
+	result := []v2.HorizontalPodAutoscaler{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	hpaList, err := provider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
+	if err != nil {
+		logger.Log.Errorf("AllHpas ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, hpa := range hpaList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, hpa.ObjectMeta.Namespace) {
+			hpa.Kind = "HorizontalPodAutoscaler"
+			result = append(result, hpa)
+		}
+	}
+	return result
+}
+
+func AllK8sHpas(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v2.HorizontalPodAutoscaler{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -27,6 +49,7 @@ func AllHpas(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 
 	for _, hpa := range hpaList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, hpa.ObjectMeta.Namespace) {
+			hpa.Kind = "HorizontalPodAutoscaler"
 			result = append(result, hpa)
 		}
 	}

@@ -13,7 +13,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllPriorityClasses(contextId *string) utils.K8sWorkloadResult {
+func AllPriorityClasses(contextId *string) []v1.PriorityClass {
+	result := []v1.PriorityClass{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	pcList, err := provider.ClientSet.SchedulingV1().PriorityClasses().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllPriorityClasses ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, prioClass := range pcList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, prioClass.ObjectMeta.Namespace) {
+			prioClass.Kind = "PriorityClass"
+			result = append(result, prioClass)
+		}
+	}
+	return result
+}
+
+func AllK8sPriorityClasses(contextId *string) utils.K8sWorkloadResult {
 	result := []v1.PriorityClass{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -26,9 +48,10 @@ func AllPriorityClasses(contextId *string) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 
-	for _, roleBinding := range pcList.Items {
-		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, roleBinding.ObjectMeta.Namespace) {
-			result = append(result, roleBinding)
+	for _, prioClass := range pcList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, prioClass.ObjectMeta.Namespace) {
+			prioClass.Kind = "PriorityClass"
+			result = append(result, prioClass)
 		}
 	}
 	return WorkloadResult(result, nil)

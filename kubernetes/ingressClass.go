@@ -24,7 +24,10 @@ func AllIngressClasses(contextId *string) []v1.IngressClass {
 		return result
 	}
 
-	result = append(result, ingressList.Items...)
+	for _, ingress := range ingressList.Items {
+		ingress.Kind = "IngressClass"
+		result = append(result, ingress)
+	}
 
 	return result
 }
@@ -42,7 +45,10 @@ func AllK8sIngressClasses(contextId *string) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 
-	result = append(result, ingressList.Items...)
+	for _, ingress := range ingressList.Items {
+		ingress.Kind = "IngressClass"
+		result = append(result, ingress)
+	}
 
 	return WorkloadResult(result, nil)
 }

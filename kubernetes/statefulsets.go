@@ -12,6 +12,28 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+func AllK8sStatefulSets(namespaceName string, contextId *string) []v1.StatefulSet {
+	result := []v1.StatefulSet{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	statefulSetList, err := provider.ClientSet.AppsV1().StatefulSets(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
+	if err != nil {
+		logger.Log.Errorf("AllStatefulSets ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, statefulSet := range statefulSetList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, statefulSet.ObjectMeta.Namespace) {
+			statefulSet.Kind = "StatefulSet"
+			result = append(result, statefulSet)
+		}
+	}
+	return result
+}
+
 func AllStatefulSets(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.StatefulSet{}
 
@@ -27,6 +49,7 @@ func AllStatefulSets(namespaceName string, contextId *string) utils.K8sWorkloadR
 
 	for _, statefulSet := range statefulSetList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, statefulSet.ObjectMeta.Namespace) {
+			statefulSet.Kind = "StatefulSet"
 			result = append(result, statefulSet)
 		}
 	}

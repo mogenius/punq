@@ -12,7 +12,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllRoleBindings(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllRoleBindings(namespaceName string, contextId *string) []v1.RoleBinding {
+	result := []v1.RoleBinding{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	rolesList, err := provider.ClientSet.RbacV1().RoleBindings(namespaceName).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllBindings ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, roleBinding := range rolesList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, roleBinding.ObjectMeta.Namespace) {
+			roleBinding.Kind = "RoleBinding"
+			result = append(result, roleBinding)
+		}
+	}
+	return result
+}
+
+func AllK8sRoleBindings(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.RoleBinding{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -27,6 +49,7 @@ func AllRoleBindings(namespaceName string, contextId *string) utils.K8sWorkloadR
 
 	for _, roleBinding := range rolesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, roleBinding.ObjectMeta.Namespace) {
+			roleBinding.Kind = "RoleBinding"
 			result = append(result, roleBinding)
 		}
 	}

@@ -11,22 +11,45 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllEndpoints(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllEndpoints(namespaceName string, contextId *string) []corev1.Endpoints {
+	result := []corev1.Endpoints{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	endpointList, err := provider.ClientSet.CoreV1().Endpoints(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
+	if err != nil {
+		logger.Log.Errorf("AllEndpoints ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, endpoint := range endpointList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, endpoint.ObjectMeta.Namespace) {
+			endpoint.Kind = "Endpoints"
+			result = append(result, endpoint)
+		}
+	}
+	return result
+}
+
+func AllK8sEndpoints(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []corev1.Endpoints{}
 
 	provider, err := NewKubeProvider(contextId)
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	hpaList, err := provider.ClientSet.CoreV1().Endpoints(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
+	endpointList, err := provider.ClientSet.CoreV1().Endpoints(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
-		logger.Log.Errorf("AllHpas ERROR: %s", err.Error())
+		logger.Log.Errorf("AllEndpoints ERROR: %s", err.Error())
 		return WorkloadResult(nil, err)
 	}
 
-	for _, hpa := range hpaList.Items {
-		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, hpa.ObjectMeta.Namespace) {
-			result = append(result, hpa)
+	for _, endpoint := range endpointList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, endpoint.ObjectMeta.Namespace) {
+			endpoint.Kind = "Endpoints"
+			result = append(result, endpoint)
 		}
 	}
 	return WorkloadResult(result, nil)

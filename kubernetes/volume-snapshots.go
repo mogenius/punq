@@ -11,7 +11,27 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllVolumeSnapshots(namespace string, contextId *string) utils.K8sWorkloadResult {
+func AllVolumeSnapshots(namespace string, contextId *string) []snap.VolumeSnapshot {
+	result := []snap.VolumeSnapshot{}
+
+	provider, err := NewKubeProviderSnapshot(contextId)
+	if err != nil {
+		return result
+	}
+	volSnapshotsList, err := provider.ClientSet.SnapshotV1().VolumeSnapshots(namespace).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllVolumeSnapshots ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, v := range volSnapshotsList.Items {
+		v.Kind = "VolumeSnapshot"
+		result = append(result, v)
+	}
+	return result
+}
+
+func AllK8sVolumeSnapshots(namespace string, contextId *string) utils.K8sWorkloadResult {
 	result := []snap.VolumeSnapshot{}
 
 	provider, err := NewKubeProviderSnapshot(contextId)
@@ -24,7 +44,10 @@ func AllVolumeSnapshots(namespace string, contextId *string) utils.K8sWorkloadRe
 		return WorkloadResult(nil, err)
 	}
 
-	result = append(result, volSnapshotsList.Items...)
+	for _, v := range volSnapshotsList.Items {
+		v.Kind = "VolumeSnapshot"
+		result = append(result, v)
+	}
 	return WorkloadResult(result, nil)
 }
 

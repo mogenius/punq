@@ -13,7 +13,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllResourceQuotas(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllResourceQuotas(namespaceName string, contextId *string) []core.ResourceQuota {
+	result := []core.ResourceQuota{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	rqList, err := provider.ClientSet.CoreV1().ResourceQuotas(namespaceName).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllResourceQuotas ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, rq := range rqList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, rq.ObjectMeta.Namespace) {
+			rq.Kind = "ResourceQuota"
+			result = append(result, rq)
+		}
+	}
+	return result
+}
+
+func AllK8sResourceQuotas(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []core.ResourceQuota{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -28,6 +50,7 @@ func AllResourceQuotas(namespaceName string, contextId *string) utils.K8sWorkloa
 
 	for _, rq := range rqList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, rq.ObjectMeta.Namespace) {
+			rq.Kind = "ResourceQuota"
 			result = append(result, rq)
 		}
 	}

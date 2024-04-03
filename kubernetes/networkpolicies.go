@@ -12,7 +12,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllNetworkPolicies(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllNetworkPolicies(namespaceName string, contextId *string) []v1.NetworkPolicy {
+	result := []v1.NetworkPolicy{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	netPolist, err := provider.ClientSet.NetworkingV1().NetworkPolicies(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
+	if err != nil {
+		logger.Log.Errorf("AllNetworkPolicies ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, netpol := range netPolist.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, netpol.ObjectMeta.Namespace) {
+			netpol.Kind = "NetworkPolicy"
+			result = append(result, netpol)
+		}
+	}
+	return result
+}
+
+func AllK8sNetworkPolicies(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.NetworkPolicy{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -27,6 +49,7 @@ func AllNetworkPolicies(namespaceName string, contextId *string) utils.K8sWorklo
 
 	for _, netpol := range netPolist.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, netpol.ObjectMeta.Namespace) {
+			netpol.Kind = "NetworkPolicy"
 			result = append(result, netpol)
 		}
 	}

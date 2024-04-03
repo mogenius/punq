@@ -33,17 +33,23 @@ func AllDeployments(namespaceName string, contextId *string) []v1.Deployment {
 }
 
 func AllDeploymentsIncludeIgnored(namespaceName string, contextId *string) []v1.Deployment {
+	result := []v1.Deployment{}
 	provider, err := NewKubeProvider(contextId)
 	if err != nil {
-		return []v1.Deployment{}
+		return result
 	}
 	deploymentList, err := provider.ClientSet.AppsV1().Deployments(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllDeployments ERROR: %s", err.Error())
-		return deploymentList.Items
+		return result
 	}
 
-	return deploymentList.Items
+	for _, deployment := range deploymentList.Items {
+		deployment.Kind = "Deployment"
+		result = append(result, deployment)
+	}
+
+	return result
 }
 
 func AllK8sDeployments(namespaceName string, contextId *string) utils.K8sWorkloadResult {
@@ -61,6 +67,7 @@ func AllK8sDeployments(namespaceName string, contextId *string) utils.K8sWorkloa
 
 	for _, deployment := range deploymentList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, deployment.ObjectMeta.Namespace) {
+			deployment.Kind = "Deployment"
 			result = append(result, deployment)
 		}
 	}

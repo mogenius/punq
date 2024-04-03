@@ -13,22 +13,45 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllServiceAccounts(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllServiceAccounts(namespaceName string, contextId *string) []v1.ServiceAccount {
+	result := []v1.ServiceAccount{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	srvAccList, err := provider.ClientSet.CoreV1().ServiceAccounts(namespaceName).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllServiceAccounts ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, srvAcc := range srvAccList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, srvAcc.ObjectMeta.Namespace) {
+			srvAcc.Kind = "ServiceAccount"
+			result = append(result, srvAcc)
+		}
+	}
+	return result
+}
+
+func AllK8sServiceAccounts(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.ServiceAccount{}
 
 	provider, err := NewKubeProvider(contextId)
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	rolesList, err := provider.ClientSet.CoreV1().ServiceAccounts(namespaceName).List(context.TODO(), metav1.ListOptions{})
+	srvAccList, err := provider.ClientSet.CoreV1().ServiceAccounts(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllServiceAccounts ERROR: %s", err.Error())
 		return WorkloadResult(nil, err)
 	}
 
-	for _, role := range rolesList.Items {
-		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
-			result = append(result, role)
+	for _, srvAcc := range srvAccList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, srvAcc.ObjectMeta.Namespace) {
+			srvAcc.Kind = "ServiceAccount"
+			result = append(result, srvAcc)
 		}
 	}
 	return WorkloadResult(result, nil)

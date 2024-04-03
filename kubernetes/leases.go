@@ -13,7 +13,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllLeases(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllLeases(namespaceName string, contextId *string) []v1.Lease {
+	result := []v1.Lease{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	rolesList, err := provider.ClientSet.CoordinationV1().Leases(namespaceName).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllLeases ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, role := range rolesList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
+			role.Kind = "Lease"
+			result = append(result, role)
+		}
+	}
+	return result
+}
+
+func AllK8sLeases(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.Lease{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -28,6 +50,7 @@ func AllLeases(namespaceName string, contextId *string) utils.K8sWorkloadResult 
 
 	for _, role := range rolesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
+			role.Kind = "Lease"
 			result = append(result, role)
 		}
 	}

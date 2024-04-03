@@ -12,7 +12,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllClusterIssuers(contextId *string) utils.K8sWorkloadResult {
+func AllClusterIssuers(contextId *string) []cmapi.ClusterIssuer {
+	result := []cmapi.ClusterIssuer{}
+
+	provider, err := NewKubeProviderCertManager(contextId)
+	if err != nil {
+		return result
+	}
+	issuersList, err := provider.ClientSet.CertmanagerV1().ClusterIssuers().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllIssuer ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, issuer := range issuersList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, issuer.ObjectMeta.Namespace) {
+			issuer.Kind = "ClusterIssuer"
+			result = append(result, issuer)
+		}
+	}
+	return result
+}
+
+func AllK8sClusterIssuers(contextId *string) utils.K8sWorkloadResult {
 	result := []cmapi.ClusterIssuer{}
 
 	provider, err := NewKubeProviderCertManager(contextId)
@@ -27,6 +49,7 @@ func AllClusterIssuers(contextId *string) utils.K8sWorkloadResult {
 
 	for _, issuer := range issuersList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, issuer.ObjectMeta.Namespace) {
+			issuer.Kind = "ClusterIssuer"
 			result = append(result, issuer)
 		}
 	}

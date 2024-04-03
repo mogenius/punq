@@ -12,7 +12,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllOrders(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllOrders(namespaceName string, contextId *string) []v1.Order {
+	result := []v1.Order{}
+
+	provider, err := NewKubeProviderCertManager(contextId)
+	if err != nil {
+		return result
+	}
+	orderList, err := provider.ClientSet.AcmeV1().Orders(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
+	if err != nil {
+		logger.Log.Errorf("AllOrders ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, order := range orderList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, order.ObjectMeta.Namespace) {
+			order.Kind = "Order"
+			result = append(result, order)
+		}
+	}
+	return result
+}
+
+func AllK8sOrders(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.Order{}
 
 	provider, err := NewKubeProviderCertManager(contextId)
@@ -21,13 +43,14 @@ func AllOrders(namespaceName string, contextId *string) utils.K8sWorkloadResult 
 	}
 	orderList, err := provider.ClientSet.AcmeV1().Orders(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
 	if err != nil {
-		logger.Log.Errorf("AllCertificateSigningRequests ERROR: %s", err.Error())
+		logger.Log.Errorf("AllK8sOrders ERROR: %s", err.Error())
 		return WorkloadResult(nil, err)
 	}
 
-	for _, certificate := range orderList.Items {
-		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, certificate.ObjectMeta.Namespace) {
-			result = append(result, certificate)
+	for _, order := range orderList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, order.ObjectMeta.Namespace) {
+			order.Kind = "Order"
+			result = append(result, order)
 		}
 	}
 	return WorkloadResult(result, nil)

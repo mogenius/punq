@@ -12,7 +12,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllCronjobs(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllCronjobs(namespaceName string, contextId *string) []v1.CronJob {
+	result := []v1.CronJob{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	cronJobList, err := provider.ClientSet.BatchV1().CronJobs(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
+	if err != nil {
+		logger.Log.Errorf("AllCronjobs ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, cronJob := range cronJobList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, cronJob.ObjectMeta.Namespace) {
+			cronJob.Kind = "CronJob"
+			result = append(result, cronJob)
+		}
+	}
+	return result
+}
+
+func AllK8sCronjobs(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []v1.CronJob{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -27,6 +49,7 @@ func AllCronjobs(namespaceName string, contextId *string) utils.K8sWorkloadResul
 
 	for _, cronJob := range cronJobList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, cronJob.ObjectMeta.Namespace) {
+			cronJob.Kind = "CronJob"
 			result = append(result, cronJob)
 		}
 	}

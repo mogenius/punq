@@ -12,7 +12,27 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllStorageClasses(contextId *string) utils.K8sWorkloadResult {
+func AllStorageClasses(contextId *string) []storage.StorageClass {
+	result := []storage.StorageClass{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	scList, err := provider.ClientSet.StorageV1().StorageClasses().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllStorageClasses ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, v := range scList.Items {
+		v.Kind = "StorageClass"
+		result = append(result, v)
+	}
+	return result
+}
+
+func AllK8sStorageClasses(contextId *string) utils.K8sWorkloadResult {
 	result := []storage.StorageClass{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -25,7 +45,10 @@ func AllStorageClasses(contextId *string) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 
-	result = append(result, scList.Items...)
+	for _, v := range scList.Items {
+		v.Kind = "StorageClass"
+		result = append(result, v)
+	}
 	return WorkloadResult(result, nil)
 }
 

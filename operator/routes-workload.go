@@ -1235,7 +1235,7 @@ func createStatefulSet(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allJobs(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllJobs(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sJobs(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1314,7 +1314,7 @@ func createJob(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allCronJobs(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllCronjobs(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sCronjobs(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1470,7 +1470,7 @@ func createReplicaset(c *gin.Context) {
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allPersistentVolumes(c *gin.Context) {
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllPersistentVolumes(services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sPersistentVolumes(services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1624,7 +1624,7 @@ func createPersistentVolumeClaim(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allHpas(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllHpas(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sHpas(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1703,7 +1703,7 @@ func createHpa(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allEvents(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllEvents(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sEvents(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1810,7 +1810,7 @@ func createCertificate(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allCertificateRequests(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllCertificateSigningRequests(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sCertificateSigningRequests(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1890,7 +1890,7 @@ func createCertificateRequest(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allOrders(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllOrders(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sOrders(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -1969,7 +1969,7 @@ func createOrder(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allIssuers(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllIssuer(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sIssuer(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2047,7 +2047,7 @@ func createIssuer(c *gin.Context) {
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allClusterIssuers(c *gin.Context) {
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllClusterIssuers(services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sClusterIssuers(services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2122,7 +2122,7 @@ func createClusterIssuer(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allServiceAccounts(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllServiceAccounts(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sServiceAccounts(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2201,7 +2201,7 @@ func createServiceAccount(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allRoles(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllRoles(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sRoles(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2280,7 +2280,7 @@ func createRole(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allRoleBindings(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllRoleBindings(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sRoleBindings(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2357,7 +2357,7 @@ func createRoleBinding(c *gin.Context) {
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allClusterRoles(c *gin.Context) {
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllClusterRoles(services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sClusterRoles(services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2431,7 +2431,7 @@ func createClusterRole(c *gin.Context) {
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allClusterRoleBindings(c *gin.Context) {
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllClusterRoleBindings(services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sClusterRoleBindings(services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2504,7 +2504,7 @@ func createClusterRoleBinding(c *gin.Context) {
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allVolumeAttachments(c *gin.Context) {
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllVolumeAttachments(services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sVolumeAttachments(services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2579,7 +2579,7 @@ func createVolumeAttachment(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allNetworkPolicies(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllNetworkPolicies(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sNetworkPolicies(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2656,7 +2656,7 @@ func createNetworkPolicy(c *gin.Context) {
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allStorageClasses(c *gin.Context) {
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllStorageClasses(services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sStorageClasses(services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2805,7 +2805,7 @@ func createCrd(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allEndpoints(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllEndpoints(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sEndpoints(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2884,7 +2884,7 @@ func createEndpoint(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allLeases(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllLeases(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sLeases(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -2961,7 +2961,7 @@ func createLease(c *gin.Context) {
 // @Security Bearer
 // @Param string header string true "X-Context-Id"
 func allPriorityClasses(c *gin.Context) {
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllPriorityClasses(services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sPriorityClasses(services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -3036,7 +3036,7 @@ func createPriorityClass(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allVolumeSnapshots(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllVolumeSnapshots(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sVolumeSnapshots(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads
@@ -3115,7 +3115,7 @@ func createVolumeSnapshot(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allResourceQuotas(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllResourceQuotas(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sResourceQuotas(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads

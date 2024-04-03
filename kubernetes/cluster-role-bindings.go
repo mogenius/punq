@@ -10,7 +10,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllClusterRoleBindings(contextId *string) utils.K8sWorkloadResult {
+func AllClusterRoleBindings(contextId *string) []v1.ClusterRoleBinding {
+	result := []v1.ClusterRoleBinding{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	rolesList, err := provider.ClientSet.RbacV1().ClusterRoleBindings().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllClusterRoleBindings ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, role := range rolesList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
+			role.Kind = "ClusterRoleBinding"
+			result = append(result, role)
+		}
+	}
+	return result
+}
+
+func AllK8sClusterRoleBindings(contextId *string) utils.K8sWorkloadResult {
 	result := []v1.ClusterRoleBinding{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -25,6 +47,7 @@ func AllClusterRoleBindings(contextId *string) utils.K8sWorkloadResult {
 
 	for _, role := range rolesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
+			role.Kind = "ClusterRoleBinding"
 			result = append(result, role)
 		}
 	}

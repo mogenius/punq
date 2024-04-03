@@ -13,7 +13,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllClusterRoles(contextId *string) utils.K8sWorkloadResult {
+func AllClusterRoles(contextId *string) []v1.ClusterRole {
+	result := []v1.ClusterRole{}
+
+	provider, err := NewKubeProvider(contextId)
+	if err != nil {
+		return result
+	}
+	rolesList, err := provider.ClientSet.RbacV1().ClusterRoles().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		logger.Log.Errorf("AllClusterRoles ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, role := range rolesList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
+			role.Kind = "ClusterRole"
+			result = append(result, role)
+		}
+	}
+	return result
+}
+
+func AllK8sClusterRoles(contextId *string) utils.K8sWorkloadResult {
 	result := []v1.ClusterRole{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -28,6 +50,7 @@ func AllClusterRoles(contextId *string) utils.K8sWorkloadResult {
 
 	for _, role := range rolesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
+			role.Kind = "ClusterRole"
 			result = append(result, role)
 		}
 	}

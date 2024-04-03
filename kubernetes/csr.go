@@ -12,7 +12,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AllCertificateSigningRequests(namespaceName string, contextId *string) utils.K8sWorkloadResult {
+func AllCertificateSigningRequests(namespaceName string, contextId *string) []cmapi.CertificateRequest {
+	result := []cmapi.CertificateRequest{}
+
+	provider, err := NewKubeProviderCertManager(contextId)
+	if err != nil {
+		return result
+	}
+	certificatesList, err := provider.ClientSet.CertmanagerV1().CertificateRequests(namespaceName).List(context.TODO(), metav1.ListOptions{FieldSelector: "metadata.namespace!=kube-system"})
+	if err != nil {
+		logger.Log.Errorf("AllCertificateSigningRequests ERROR: %s", err.Error())
+		return result
+	}
+
+	for _, certificate := range certificatesList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, certificate.ObjectMeta.Namespace) {
+			certificate.Kind = "CertificateSigningRequest"
+			result = append(result, certificate)
+		}
+	}
+	return result
+}
+
+func AllK8sCertificateSigningRequests(namespaceName string, contextId *string) utils.K8sWorkloadResult {
 	result := []cmapi.CertificateRequest{}
 
 	provider, err := NewKubeProviderCertManager(contextId)
@@ -27,6 +49,7 @@ func AllCertificateSigningRequests(namespaceName string, contextId *string) util
 
 	for _, certificate := range certificatesList.Items {
 		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, certificate.ObjectMeta.Namespace) {
+			certificate.Kind = "CertificateSigningRequest"
 			result = append(result, certificate)
 		}
 	}

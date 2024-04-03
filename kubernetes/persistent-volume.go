@@ -24,12 +24,15 @@ func AllPersistentVolumesRaw(contextId *string) []core.PersistentVolume {
 		logger.Log.Errorf("AllPersistentVolumesRaw ERROR: %s", err.Error())
 		return result
 	}
-	result = append(result, pvList.Items...)
+	for _, v := range pvList.Items {
+		v.Kind = "PersistentVolume"
+		result = append(result, v)
+	}
 
 	return result
 }
 
-func AllPersistentVolumes(contextId *string) utils.K8sWorkloadResult {
+func AllK8sPersistentVolumes(contextId *string) utils.K8sWorkloadResult {
 	result := []core.PersistentVolume{}
 
 	provider, err := NewKubeProvider(contextId)
@@ -42,7 +45,10 @@ func AllPersistentVolumes(contextId *string) utils.K8sWorkloadResult {
 		return WorkloadResult(nil, err)
 	}
 
-	result = append(result, pvList.Items...)
+	for _, v := range pvList.Items {
+		v.Kind = "PersistentVolume"
+		result = append(result, v)
+	}
 	return WorkloadResult(result, nil)
 }
 
