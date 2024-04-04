@@ -1156,7 +1156,7 @@ func createDaemonSet(c *gin.Context) {
 // @Param string header string true "X-Context-Id"
 func allStatefulSets(c *gin.Context) {
 	namespace := c.Query("namespace")
-	utils.HttpRespondForWorkloadResult(c, kubernetes.AllStatefulSets(namespace, services.GetGinContextId(c)))
+	utils.HttpRespondForWorkloadResult(c, kubernetes.AllK8sStatefulSets(namespace, services.GetGinContextId(c)))
 }
 
 // @Tags Workloads

@@ -13,6 +13,7 @@ type Datagram struct {
 	Id        string      `json:"id" validate:"required"`
 	Pattern   string      `json:"pattern" validate:"required"`
 	Payload   interface{} `json:"payload,omitempty"`
+	Username  string      `json:"username,omitempty"`
 	Err       string      `json:"err,omitempty"`
 	CreatedAt time.Time   `json:"-"`
 }
