@@ -681,7 +681,7 @@ func GuessCluserProviderFromNodeList(nodes *v1.NodeList) (dtos.KubernetesProvide
 			return dtos.ACK, nil
 		} else if LabelsContain(labelsAndAnnotations, "node-role.kubernetes.io/master") && LabelsContain(labelsAndAnnotations, "node.openshift.io/os_id") {
 			return dtos.OPEN_SHIFT, nil
-		} else if LabelsContain(labelsAndAnnotations, "vmware-system-vmware.io/role") {
+		} else if LabelsContain(labelsAndAnnotations, "vmware-system-vmware.io/role") || ImagesContain(node.Status.Images, "vmware.com/tkg/kube-apiserver") {
 			return dtos.VMWARE, nil
 		} else if LabelsContain(labelsAndAnnotations, "io.rancher.os/hostname") {
 			return dtos.RKE, nil
