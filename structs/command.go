@@ -2,30 +2,11 @@ package structs
 
 import (
 	"os/exec"
-	"time"
 
 	"github.com/mogenius/punq/utils"
 
 	"github.com/mogenius/punq/logger"
 )
-
-type Command struct {
-	Id                      string       `json:"id"`
-	JobId                   string       `json:"jobId"`
-	ProjectId               string       `json:"projectId"`
-	NamespaceId             *string      `json:"namespaceId,omitempty"`
-	ServiceId               *string      `json:"serviceId,omitempty"`
-	Title                   string       `json:"title"`
-	Message                 string       `json:"message,omitempty"`
-	StartedAt               string       `json:"startedAt"`
-	State                   JobStateEnum `json:"state"`
-	DurationMs              int64        `json:"durationMs"`
-	MustSucceed             bool         `json:"mustSucceed"`
-	ReportToNotificationSvc bool         `json:"reportToNotificationService"`
-	IgnoreError             bool         `json:"ignoreError"`
-	BuildId                 int          `json:"buildId,omitempty"`
-	Started                 time.Time
-}
 
 func ExecuteShellCommandSilent(title string, shellCmd string) {
 	var err error
