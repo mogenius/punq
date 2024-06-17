@@ -17,6 +17,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/mogenius/punq/version"
+	"k8s.io/client-go/tools/clientcmd/api"
 
 	"github.com/mogenius/punq/utils"
 
@@ -243,13 +244,20 @@ func NewWorkload(name string, yaml string, description string) K8sNewWorkload {
 }
 
 func CurrentContextName() string {
-	var kubeconfig string = utils.GetDefaultKubeConfig()
+	var kubeconfigs []string = utils.GetDefaultKubeConfig()
 
-	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
-		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
-		&clientcmd.ConfigOverrides{
-			CurrentContext: "",
-		}).RawConfig()
+	var config api.Config
+	var err error
+	for _, kubeconfig := range kubeconfigs {
+		config, err = clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+			&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
+			&clientcmd.ConfigOverrides{
+				CurrentContext: "",
+			}).RawConfig()
+		if err == nil {
+			break
+		}
+	}
 
 	if err != nil {
 		return fmt.Sprintf("Error: %v", err)

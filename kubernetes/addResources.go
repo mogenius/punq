@@ -249,7 +249,7 @@ func CreateContextSecretIfNotExist(provider *KubeProvider) (*dtos.PunqContext, e
 }
 
 func writeContextSecret(secretClient v1.SecretInterface, existingSecret *core.Secret, getErr error) (*dtos.PunqContext, error) {
-	kubeconfigEnvVar := utils.GetDefaultKubeConfig()
+	kubeconfigEnvVar := utils.GetDefaultKubeConfig()[0] // get the first kubeconfig this is ok because it will stop fatal if there is no kubeconfig
 
 	kubeconfigData, err := os.ReadFile(kubeconfigEnvVar)
 	if err != nil {
