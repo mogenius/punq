@@ -273,8 +273,20 @@ func GetDefaultKubeConfig() string {
 		}
 	}
 	// check if file exists in kubeconfig
-	if _, err := os.Stat(kubeconfig); os.IsNotExist(err) {
-		logger.Log.Fatalf("Error: $KUBECONFIG is not set, and the default Kubernetes context cannot be loaded. The $KUBECONFIG environment variable specifies the kubeconfig file path, which is essential for connecting to your Kubernetes cluster. To resolve this, please set $KUBECONFIG by using 'kubectx' for easier context switching or by manually specifying the path to your kubeconfig file. For detailed instructions on configuring your kubeconfig, please refer to https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/.")
+	if strings.Contains(kubeconfig, ":") {
+		kubeconfigs := strings.Split(kubeconfig, ":")
+		// at least one kubeconfig file must exist
+		atLeastOneExists := false
+		for _, singleConfig := range kubeconfigs {
+			if _, err := os.Stat(singleConfig); os.IsExist(err) {
+				atLeastOneExists = true
+				break
+			}
+		}
+		if !atLeastOneExists {
+			logger.Log.Fatalf("Error: $KUBECONFIG is not set, and the default Kubernetes context cannot be loaded. The $KUBECONFIG environment variable specifies the kubeconfig file path, which is essential for connecting to your Kubernetes cluster. To resolve this, please set $KUBECONFIG by using 'kubectx' for easier context switching or by manually specifying the path to your kubeconfig file. For detailed instructions on configuring your kubeconfig, please refer to https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/.")
+		}
+
 	}
 	return kubeconfig
 }
