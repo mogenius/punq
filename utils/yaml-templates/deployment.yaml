@@ -39,8 +39,8 @@ spec:
               memory: '256Mi'
               cpu: '300m'
           securityContext:
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
+            # allowPrivilegeEscalation: false
+            # runAsNonRoot: true
           # probes
           # restart after 30 seconds of failures
           livenessProbe:
