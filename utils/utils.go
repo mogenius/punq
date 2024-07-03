@@ -18,6 +18,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/mogenius/punq/version"
 
@@ -450,6 +451,9 @@ func parseIPs(ips []string) ([]net.IP, error) {
 }
 
 func CheckInternetAccess() (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	// Create a custom resolver
 	r := &net.Resolver{
 		PreferGo: true,
@@ -461,8 +465,17 @@ func CheckInternetAccess() (bool, error) {
 
 	// Attempt to resolve a known domain
 	// If it succeeds, it means we have internet access
-	_, err := r.LookupHost(context.Background(), "mogenius.com")
-	return err == nil, err
+	_, err := r.LookupHost(ctx, "mogenius.com")
+	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			return false, ctx.Err()
+		}
+		// Other errors
+		return false, err
+	}
+
+	// success
+	return true, nil
 }
 
 func IsKubectlInstalled() (bool, string, error) {
