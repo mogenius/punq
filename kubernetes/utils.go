@@ -591,7 +591,7 @@ func DetermineIngressControllerType(contextId *string) (IngressType, error) {
 
 	unknownController := ""
 	for _, ingressClass := range ingressClasses {
-		if ingressClass.Spec.Controller == "k8s.io/ingress-nginx" {
+		if ingressClass.Spec.Controller == "k8s.io/ingress-nginx" || ingressClass.Spec.Controller == "nginx.org/ingress-controller" {
 			return NGINX, nil
 		} else if ingressClass.Spec.Controller == "traefik.io/ingress-controller" {
 			return TRAEFIK, nil
