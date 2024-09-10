@@ -89,7 +89,11 @@ func GetNamespace(name string, contextId *string) (*v1.Namespace, error) {
 		return nil, err
 	}
 	namespaceClient := provider.ClientSet.CoreV1().Namespaces()
-	return namespaceClient.Get(context.TODO(), name, metav1.GetOptions{})
+	namespace, err := namespaceClient.Get(context.TODO(), name, metav1.GetOptions{})
+	namespace.Kind = "Namespace"
+	namespace.APIVersion = "v1"
+
+	return namespace, err
 }
 
 func ListK8sNamespaces(namespaceName string, contextId *string) utils.K8sWorkloadResult {
@@ -108,6 +112,9 @@ func ListK8sNamespaces(namespaceName string, contextId *string) utils.K8sWorkloa
 	}
 
 	for _, ns := range namespaceList.Items {
+		ns.Kind = "Namespace"
+		ns.APIVersion = "v1"
+
 		if namespaceName == "" {
 			result = append(result, ns)
 		} else {
