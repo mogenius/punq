@@ -41,6 +41,8 @@ func GetCertificate(namespaceName string, resourceName string, contextId *string
 		return nil, err
 	}
 	certificate, err := provider.ClientSet.CertmanagerV1().Certificates(namespaceName).Get(context.TODO(), resourceName, metav1.GetOptions{})
+	certificate.Kind = "Certificate"
+	certificate.APIVersion = "cert-manager.io/v1"
 	if err != nil {
 		logger.Log.Errorf("GetCertificate ERROR: %s", err.Error())
 		return nil, err

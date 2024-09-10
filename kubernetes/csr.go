@@ -63,7 +63,11 @@ func GetCertificateSigningRequest(namespaceName string, name string, contextId *
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CertmanagerV1().CertificateRequests(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	certificate, err := provider.ClientSet.CertmanagerV1().CertificateRequests(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	certificate.Kind = "CertificateSigningRequest"
+	certificate.APIVersion = "cert-manager.io/v1"
+
+	return certificate, nil
 }
 
 func UpdateK8sCertificateSigningRequest(data cmapi.CertificateRequest, contextId *string) utils.K8sWorkloadResult {

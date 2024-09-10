@@ -25,6 +25,8 @@ func ConfigMapFor(namespace string, configMapName string, showError bool, contex
 		}
 		return nil
 	}
+	configMap.Kind = "ConfigMap"
+	configMap.APIVersion = "v1"
 	return configMap
 }
 
@@ -79,7 +81,11 @@ func GetK8sConfigmap(namespaceName string, name string, contextId *string) (*v1.
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CoreV1().ConfigMaps(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	configmap, err := provider.ClientSet.CoreV1().ConfigMaps(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	configmap.Kind = "ConfigMap"
+	configmap.APIVersion = "v1"
+
+	return configmap, err
 }
 
 func UpdateK8sConfigMap(data v1.ConfigMap, contextId *string) utils.K8sWorkloadResult {

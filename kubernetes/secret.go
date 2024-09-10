@@ -44,6 +44,8 @@ func SecretFor(namespace string, name string, contextId *string) *v1.Secret {
 	}
 	secretClient := provider.ClientSet.CoreV1().Secrets(namespace)
 	secret, err := secretClient.Get(context.TODO(), name, metav1.GetOptions{})
+	secret.Kind = "Secret"
+	secret.APIVersion = "v1"
 	if err != nil {
 		logger.Log.Errorf("SecretFor ERROR: %s", err.Error())
 		return nil
@@ -56,7 +58,11 @@ func GetSecret(namespace string, name string, contextId *string) (*v1.Secret, er
 		return nil, err
 	}
 	secretClient := provider.ClientSet.CoreV1().Secrets(namespace)
-	return secretClient.Get(context.TODO(), name, metav1.GetOptions{})
+	secret, err := secretClient.Get(context.TODO(), name, metav1.GetOptions{})
+	secret.Kind = "Secret"
+	secret.APIVersion = "v1"
+
+	return secret, err
 }
 
 func ListAllContexts() []dtos.PunqContext {

@@ -64,7 +64,11 @@ func GetClusterRole(name string, contextId *string) (*v1.ClusterRole, error) {
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.RbacV1().ClusterRoles().Get(context.TODO(), name, metav1.GetOptions{})
+	role, err := provider.ClientSet.RbacV1().ClusterRoles().Get(context.TODO(), name, metav1.GetOptions{})
+	role.Kind = "ClusterRole"
+	role.APIVersion = "rbac.authorization.k8s.io/v1"
+
+	return role, err
 }
 
 func UpdateK8sClusterRole(data v1.ClusterRole, contextId *string) utils.K8sWorkloadResult {

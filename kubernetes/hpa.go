@@ -63,7 +63,11 @@ func GetHpa(namespaceName string, name string, contextId *string) (*v2.Horizonta
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	hpa, err := provider.ClientSet.AutoscalingV2().HorizontalPodAutoscalers(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	hpa.Kind = "HorizontalPodAutoscaler"
+	hpa.APIVersion = "autoscaling/v2"
+
+	return hpa, err
 }
 
 func UpdateK8sHpa(data v2.HorizontalPodAutoscaler, contextId *string) utils.K8sWorkloadResult {

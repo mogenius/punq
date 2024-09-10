@@ -63,7 +63,11 @@ func GetNetworkPolicy(namespaceName string, name string, contextId *string) (*v1
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.NetworkingV1().NetworkPolicies(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	netpol, err := provider.ClientSet.NetworkingV1().NetworkPolicies(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	netpol.Kind = "NetworkPolicy"
+	netpol.APIVersion = "networking.k8s.io/v1"
+
+	return netpol, err
 }
 
 func UpdateK8sNetworkPolicy(data v1.NetworkPolicy, contextId *string) utils.K8sWorkloadResult {

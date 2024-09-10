@@ -63,7 +63,11 @@ func GetIssuer(namespaceName string, name string, contextId *string) (*cmapi.Iss
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CertmanagerV1().Issuers(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	issuer, err := provider.ClientSet.CertmanagerV1().Issuers(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	issuer.Kind = "Issuer"
+	issuer.APIVersion = "cert-manager.io/v1"
+
+	return issuer, err
 }
 
 func UpdateK8sIssuer(data cmapi.Issuer, contextId *string) utils.K8sWorkloadResult {

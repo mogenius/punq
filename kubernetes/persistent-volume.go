@@ -59,7 +59,11 @@ func GetPersistentVolume(name string, contextId *string) (*core.PersistentVolume
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CoreV1().PersistentVolumes().Get(context.TODO(), name, metav1.GetOptions{})
+	pv, err := provider.ClientSet.CoreV1().PersistentVolumes().Get(context.TODO(), name, metav1.GetOptions{})
+	pv.Kind = "PersistentVolume"
+	pv.APIVersion = "v1"
+
+	return pv, err
 }
 
 func UpdateK8sPersistentVolume(data core.PersistentVolume, contextId *string) utils.K8sWorkloadResult {

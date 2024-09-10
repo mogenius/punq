@@ -63,7 +63,10 @@ func GetClusterIssuer(name string, contextId *string) (*cmapi.ClusterIssuer, err
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CertmanagerV1().ClusterIssuers().Get(context.TODO(), name, metav1.GetOptions{})
+	issuer, err := provider.ClientSet.CertmanagerV1().ClusterIssuers().Get(context.TODO(), name, metav1.GetOptions{})
+	issuer.Kind = "ClusterIssuer"
+	issuer.APIVersion = "cert-manager.io/v1"
+	return issuer, err
 }
 
 func UpdateK8sClusterIssuer(data cmapi.ClusterIssuer, contextId *string) utils.K8sWorkloadResult {

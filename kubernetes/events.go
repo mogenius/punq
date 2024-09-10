@@ -62,7 +62,11 @@ func GetEvent(namespaceName string, name string, contextId *string) (*v1Core.Eve
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CoreV1().Events(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	event, err := provider.ClientSet.CoreV1().Events(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	event.Kind = "Event"
+	event.APIVersion = "v1"
+
+	return event, err
 }
 
 func DescribeK8sEvent(namespace string, name string, contextId *string) utils.K8sWorkloadResult {

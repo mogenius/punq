@@ -58,7 +58,11 @@ func GetVolumeAttachment(name string, contextId *string) (*storage.VolumeAttachm
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.StorageV1().VolumeAttachments().Get(context.TODO(), name, metav1.GetOptions{})
+	vAtt, err := provider.ClientSet.StorageV1().VolumeAttachments().Get(context.TODO(), name, metav1.GetOptions{})
+	vAtt.Kind = "VolumeAttachment"
+	vAtt.APIVersion = "storage.k8s.io/v1"
+
+	return vAtt, err
 }
 
 func UpdateK8sVolumeAttachment(data storage.VolumeAttachment, contextId *string) utils.K8sWorkloadResult {

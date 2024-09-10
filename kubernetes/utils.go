@@ -366,18 +366,27 @@ func listAllPods(contextId *string) []v1.Pod {
 }
 
 func ListNodes(contextId *string) []v1.Node {
+	result := []v1.Node{}
+
 	provider, err := NewKubeProvider(contextId)
 	if provider == nil || err != nil {
 		logger.Log.Errorf("ListNodes ERROR: %s", err.Error())
-		return []v1.Node{}
+		return result
 	}
 
 	nodeMetricsList, err := provider.ClientSet.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("ListNodeMetrics ERROR: %s", err.Error())
-		return []v1.Node{}
+		return result
 	}
-	return nodeMetricsList.Items
+
+	for _, node := range nodeMetricsList.Items {
+		node.Kind = "Node"
+		node.APIVersion = "v1"
+		result = append(result, node)
+	}
+
+	return result
 }
 
 func ListNodeMetricss(contextId *string) []v1beta1.NodeMetrics {

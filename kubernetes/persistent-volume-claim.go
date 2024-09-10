@@ -39,7 +39,11 @@ func GetPersistentVolumeClaim(namespaceName string, name string, contextId *stri
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CoreV1().PersistentVolumeClaims(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	pvc, err := provider.ClientSet.CoreV1().PersistentVolumeClaims(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	pvc.Kind = "PersistentVolumeClaim"
+	pvc.APIVersion = "v1"
+
+	return pvc, err
 }
 
 func AllK8sPersistentVolumeClaims(namespaceName string, contextId *string) utils.K8sWorkloadResult {

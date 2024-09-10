@@ -40,7 +40,11 @@ func GetReplicaset(namespaceName string, name string, contextId *string) (*v1.Re
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.AppsV1().ReplicaSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	replicaSet, err := provider.ClientSet.AppsV1().ReplicaSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	replicaSet.Kind = "ReplicaSet"
+	replicaSet.APIVersion = "apps/v1"
+
+	return replicaSet, err
 }
 
 func AllK8sReplicasets(namespaceName string, contextId *string) utils.K8sWorkloadResult {

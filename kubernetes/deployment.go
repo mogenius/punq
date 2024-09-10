@@ -83,7 +83,11 @@ func GetK8sDeployment(namespaceName string, name string, contextId *string) (*v1
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.AppsV1().Deployments(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	deployment, err := provider.ClientSet.AppsV1().Deployments(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	deployment.Kind = "Deployment"
+	deployment.APIVersion = "apps/v1"
+
+	return deployment, err
 }
 
 func UpdateK8sDeployment(data v1.Deployment, contextId *string) utils.K8sWorkloadResult {

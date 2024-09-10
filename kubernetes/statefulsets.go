@@ -63,7 +63,11 @@ func GetStatefulSet(namespaceName string, name string, contextId *string) (*v1.S
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.AppsV1().StatefulSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	statefulSet, err := provider.ClientSet.AppsV1().StatefulSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	statefulSet.Kind = "StatefulSet"
+	statefulSet.APIVersion = "apps/v1"
+
+	return statefulSet, err
 }
 
 func UpdateK8sStatefulset(data v1.StatefulSet, contextId *string) utils.K8sWorkloadResult {

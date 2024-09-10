@@ -63,7 +63,11 @@ func GetOrder(namespaceName string, name string, contextId *string) (*v1.Order, 
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.AcmeV1().Orders(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	order, err := provider.ClientSet.AcmeV1().Orders(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	order.Kind = "Order"
+	order.APIVersion = "acme.cert-manager.io/v1"
+
+	return order, err
 }
 
 func UpdateK8sOrder(data v1.Order, contextId *string) utils.K8sWorkloadResult {

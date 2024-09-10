@@ -59,7 +59,11 @@ func GetStorageClass(name string, contextId *string) (*storage.StorageClass, err
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.StorageV1().StorageClasses().Get(context.TODO(), name, metav1.GetOptions{})
+	sc, err := provider.ClientSet.StorageV1().StorageClasses().Get(context.TODO(), name, metav1.GetOptions{})
+	sc.Kind = "StorageClass"
+	sc.APIVersion = "storage.k8s.io/v1"
+
+	return sc, err
 }
 
 func UpdateK8sStorageClass(data storage.StorageClass, contextId *string) utils.K8sWorkloadResult {

@@ -63,7 +63,11 @@ func GetRoleBinding(namespaceName string, name string, contextId *string) (*v1.R
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.RbacV1().RoleBindings(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	roleBinding, err := provider.ClientSet.RbacV1().RoleBindings(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	roleBinding.Kind = "RoleBinding"
+	roleBinding.APIVersion = "rbac.authorization.k8s.io/v1"
+
+	return roleBinding, err
 }
 
 func UpdateK8sRoleBinding(data v1.RoleBinding, contextId *string) utils.K8sWorkloadResult {

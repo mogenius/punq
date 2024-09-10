@@ -31,6 +31,8 @@ func ServiceFor(namespace string, serviceName string, contextId *string) *v1.Ser
 	}
 	serviceClient := provider.ClientSet.CoreV1().Services(namespace)
 	service, err := serviceClient.Get(context.TODO(), serviceName, metav1.GetOptions{})
+	service.Kind = "Service"
+	service.APIVersion = "v1"
 	if err != nil {
 		logger.Log.Errorf("ServiceFor ERROR: %s", err.Error())
 		return nil
@@ -44,7 +46,11 @@ func GetService(namespace string, serviceName string, contextId *string) (*v1.Se
 		return nil, err
 	}
 	serviceClient := provider.ClientSet.CoreV1().Services(namespace)
-	return serviceClient.Get(context.TODO(), serviceName, metav1.GetOptions{})
+	service, err := serviceClient.Get(context.TODO(), serviceName, metav1.GetOptions{})
+	service.Kind = "Service"
+	service.APIVersion = "v1"
+
+	return service, err
 }
 
 func AllServices(namespaceName string, contextId *string) []v1.Service {

@@ -63,7 +63,11 @@ func GetJob(namespaceName string, name string, contextId *string) (*v1job.Job, e
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.BatchV1().Jobs(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	job, err := provider.ClientSet.BatchV1().Jobs(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	job.Kind = "Job"
+	job.APIVersion = "batch/v1"
+
+	return job, err
 }
 
 func UpdateK8sJob(data v1job.Job, contextId *string) utils.K8sWorkloadResult {

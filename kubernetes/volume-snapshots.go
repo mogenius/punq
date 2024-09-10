@@ -58,7 +58,11 @@ func GetVolumeSnapshot(namespace string, name string, contextId *string) (*snap.
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.SnapshotV1().VolumeSnapshots(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+	vSnap, err := provider.ClientSet.SnapshotV1().VolumeSnapshots(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+	vSnap.Kind = "VolumeSnapshot"
+	vSnap.APIVersion = "snapshot.storage.k8s.io/v1"
+
+	return vSnap, err
 }
 
 func UpdateK8sVolumeSnapshot(data snap.VolumeSnapshot) utils.K8sWorkloadResult {

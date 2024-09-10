@@ -64,7 +64,11 @@ func GetServiceAccount(namespaceName string, name string, contextId *string) (*v
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CoreV1().ServiceAccounts(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	srvAcc, err := provider.ClientSet.CoreV1().ServiceAccounts(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	srvAcc.Kind = "ServiceAccount"
+	srvAcc.APIVersion = "v1"
+
+	return srvAcc, err
 }
 
 func UpdateK8sServiceAccount(data v1.ServiceAccount, contextId *string) utils.K8sWorkloadResult {

@@ -64,7 +64,11 @@ func GetResourceQuota(namespaceName string, name string, contextId *string) (*co
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CoreV1().ResourceQuotas(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	rq, err := provider.ClientSet.CoreV1().ResourceQuotas(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	rq.Kind = "ResourceQuota"
+	rq.APIVersion = "v1"
+
+	return rq, err
 }
 
 func UpdateK8sResourceQuota(data core.ResourceQuota, contextId *string) utils.K8sWorkloadResult {

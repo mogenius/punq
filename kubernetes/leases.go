@@ -20,17 +20,17 @@ func AllLeases(namespaceName string, contextId *string) []v1.Lease {
 	if err != nil {
 		return result
 	}
-	rolesList, err := provider.ClientSet.CoordinationV1().Leases(namespaceName).List(context.TODO(), metav1.ListOptions{})
+	leaseList, err := provider.ClientSet.CoordinationV1().Leases(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllLeases ERROR: %s", err.Error())
 		return result
 	}
 
-	for _, role := range rolesList.Items {
-		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
-			role.Kind = "Lease"
-			role.APIVersion = "coordination.k8s.io/v1"
-			result = append(result, role)
+	for _, lease := range leaseList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, lease.ObjectMeta.Namespace) {
+			lease.Kind = "Lease"
+			lease.APIVersion = "coordination.k8s.io/v1"
+			result = append(result, lease)
 		}
 	}
 	return result
@@ -43,17 +43,17 @@ func AllK8sLeases(namespaceName string, contextId *string) utils.K8sWorkloadResu
 	if err != nil {
 		return WorkloadResult(nil, err)
 	}
-	rolesList, err := provider.ClientSet.CoordinationV1().Leases(namespaceName).List(context.TODO(), metav1.ListOptions{})
+	leaseList, err := provider.ClientSet.CoordinationV1().Leases(namespaceName).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logger.Log.Errorf("AllLeases ERROR: %s", err.Error())
 		return WorkloadResult(nil, err)
 	}
 
-	for _, role := range rolesList.Items {
-		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, role.ObjectMeta.Namespace) {
-			role.Kind = "Lease"
-			role.APIVersion = "coordination.k8s.io/v1"
-			result = append(result, role)
+	for _, lease := range leaseList.Items {
+		if !utils.Contains(utils.CONFIG.Misc.IgnoreNamespaces, lease.ObjectMeta.Namespace) {
+			lease.Kind = "Lease"
+			lease.APIVersion = "coordination.k8s.io/v1"
+			result = append(result, lease)
 		}
 	}
 	return WorkloadResult(result, nil)
@@ -64,7 +64,11 @@ func GetLeas(namespaceName string, name string, contextId *string) (*v1.Lease, e
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CoordinationV1().Leases(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	lease, err := provider.ClientSet.CoordinationV1().Leases(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	lease.Kind = "Lease"
+	lease.APIVersion = "coordination.k8s.io/v1"
+
+	return lease, err
 }
 
 func UpdateK8sLease(data v1.Lease, contextId *string) utils.K8sWorkloadResult {

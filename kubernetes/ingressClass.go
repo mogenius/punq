@@ -60,7 +60,11 @@ func GetK8sIngressClass(name string, contextId *string) (*v1.IngressClass, error
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.NetworkingV1().IngressClasses().Get(context.TODO(), name, metav1.GetOptions{})
+	ingress, err := provider.ClientSet.NetworkingV1().IngressClasses().Get(context.TODO(), name, metav1.GetOptions{})
+	ingress.Kind = "IngressClass"
+	ingress.APIVersion = "networking.k8s.io/v1"
+
+	return ingress, err
 }
 
 func UpdateK8sIngressClass(data v1.IngressClass, contextId *string) utils.K8sWorkloadResult {

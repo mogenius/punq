@@ -63,7 +63,11 @@ func GetK8sDaemonset(namespaceName string, name string, contextId *string) (*v1.
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.AppsV1().DaemonSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	daemonset, err := provider.ClientSet.AppsV1().DaemonSets(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	daemonset.Kind = "DaemonSet"
+	daemonset.APIVersion = "apps/v1"
+
+	return daemonset, err
 }
 
 func UpdateK8sDaemonSet(data v1.DaemonSet, contextId *string) utils.K8sWorkloadResult {

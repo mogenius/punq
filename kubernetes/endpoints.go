@@ -62,7 +62,11 @@ func GetEndpoint(namespaceName string, name string, contextId *string) (*corev1.
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CoreV1().Endpoints(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	endpoint, err := provider.ClientSet.CoreV1().Endpoints(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	endpoint.Kind = "Endpoints"
+	endpoint.APIVersion = "v1"
+
+	return endpoint, err
 }
 
 func UpdateK8sEndpoint(data corev1.Endpoints, contextId *string) utils.K8sWorkloadResult {

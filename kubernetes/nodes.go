@@ -125,6 +125,8 @@ func SumCpuResources(pods []v1.Pod) (request float64, limit float64) {
 }
 
 func ListK8sNodes(contextId *string) utils.K8sWorkloadResult {
+	result := []v1.Node{}
+
 	provider, err := NewKubeProvider(contextId)
 	if provider == nil || err != nil {
 		err := fmt.Errorf("failed to load provider")
@@ -137,7 +139,13 @@ func ListK8sNodes(contextId *string) utils.K8sWorkloadResult {
 		logger.Log.Errorf("ListNodeMetrics ERROR: %s", err.Error())
 		return WorkloadResult(nil, err)
 	}
-	return WorkloadResult(nodeMetricsList.Items, nil)
+	for _, v := range nodeMetricsList.Items {
+		v.Kind = "Node"
+		v.APIVersion = "v1"
+		result = append(result, v)
+	}
+
+	return WorkloadResult(result, nil)
 }
 
 func GetK8sNode(name string, contextId *string) (*v1.Node, error) {
@@ -145,7 +153,10 @@ func GetK8sNode(name string, contextId *string) (*v1.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.CoreV1().Nodes().Get(context.TODO(), name, metav1.GetOptions{})
+	node, err := provider.ClientSet.CoreV1().Nodes().Get(context.TODO(), name, metav1.GetOptions{})
+	node.Kind = "Node"
+	node.APIVersion = "v1"
+	return node, err
 }
 
 func DeleteK8sNode(name string, contextId *string) error {

@@ -64,7 +64,11 @@ func GetPriorityClass(name string, contextId *string) (*v1.PriorityClass, error)
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.SchedulingV1().PriorityClasses().Get(context.TODO(), name, metav1.GetOptions{})
+	prioClass, err := provider.ClientSet.SchedulingV1().PriorityClasses().Get(context.TODO(), name, metav1.GetOptions{})
+	prioClass.Kind = "PriorityClass"
+	prioClass.APIVersion = "scheduling.k8s.io/v1"
+
+	return prioClass, err
 }
 
 func UpdateK8sPriorityClass(data v1.PriorityClass, contextId *string) utils.K8sWorkloadResult {

@@ -63,7 +63,11 @@ func GetCronjob(namespaceName string, name string, contextId *string) (*v1.CronJ
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.BatchV1().CronJobs(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	cronjob, err := provider.ClientSet.BatchV1().CronJobs(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	cronjob.Kind = "CronJob"
+	cronjob.APIVersion = "batch/v1"
+
+	return cronjob, err
 }
 
 func UpdateK8sCronJob(data v1.CronJob, contextId *string) utils.K8sWorkloadResult {

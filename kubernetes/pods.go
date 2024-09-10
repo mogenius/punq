@@ -33,6 +33,8 @@ func PodStatus(namespace string, name string, statusOnly bool, contextId *string
 	podClient := provider.ClientSet.CoreV1().Pods(namespace)
 
 	pod, err := podClient.Get(context.TODO(), name, getOptions)
+	pod.Kind = "Pod"
+	pod.APIVersion = "v1"
 	if err != nil {
 		logger.Log.Errorf("PodStatus Error: %s", err.Error())
 		return nil
@@ -105,6 +107,8 @@ func ServicePodStatus(namespace string, serviceName string, contextId *string) [
 		if strings.Contains(pod.Name, serviceName) {
 			pod.ManagedFields = nil
 			pod.Spec = v1.PodSpec{}
+			pod.Kind = "Pod"
+			pod.APIVersion = "v1"
 			result = append(result, pod)
 		}
 	}
@@ -122,6 +126,8 @@ func GetFirstPodForLabelName(namespace string, labelName string, contextId *stri
 	pods, err := provider.ClientSet.CoreV1().Pods(namespace).List(context.TODO(), metav1.ListOptions{LabelSelector: labelName})
 
 	for _, pod := range pods.Items {
+		pod.Kind = "Pod"
+		pod.APIVersion = "v1"
 		return &pod
 	}
 
@@ -142,6 +148,8 @@ func GetPod(namespace string, podName string, contextId *string) *v1.Pod {
 
 	client := provider.ClientSet.CoreV1().Pods(namespace)
 	pod, err := client.Get(context.TODO(), podName, metav1.GetOptions{})
+	pod.Kind = "Pod"
+	pod.APIVersion = "v1"
 	if err != nil {
 		logger.Log.Errorf("GetPod Error: %s", err.Error())
 		return nil
@@ -155,7 +163,11 @@ func GetPodBy(namespace string, podName string, contextId *string) (*v1.Pod, err
 		return nil, err
 	}
 	client := provider.ClientSet.CoreV1().Pods(namespace)
-	return client.Get(context.TODO(), podName, metav1.GetOptions{})
+	pod, err := client.Get(context.TODO(), podName, metav1.GetOptions{})
+	pod.Kind = "Pod"
+	pod.APIVersion = "v1"
+
+	return pod, err
 }
 
 func PodExists(namespace string, name string, contextId *string) ServicePodExistsResult {
@@ -191,7 +203,11 @@ func AllPodsOnNode(nodeName string, contextId *string) []v1.Pod {
 		logger.Log.Errorf("AllPodsOnNode ERROR: %s", err.Error())
 		return result
 	}
-	result = append(result, podsList.Items...)
+	for _, pod := range podsList.Items {
+		pod.Kind = "Pod"
+		pod.APIVersion = "v1"
+		result = append(result, pod)
+	}
 
 	return result
 }
@@ -220,7 +236,14 @@ func AllPods(namespaceName string, contextId *string) []v1.Pod {
 }
 
 func AllK8sPods(namespaceName string, contextId *string) utils.K8sWorkloadResult {
-	result := AllPods(namespaceName, contextId)
+	result := []v1.Pod{}
+	pods := AllPods(namespaceName, contextId)
+	for _, pod := range pods {
+		pod.Kind = "Pod"
+		pod.APIVersion = "v1"
+		result = append(result, pod)
+	}
+
 	return WorkloadResult(result, nil)
 }
 

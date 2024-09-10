@@ -63,7 +63,11 @@ func GetRole(namespaceName string, name string, contextId *string) (*v1.Role, er
 	if err != nil {
 		return nil, err
 	}
-	return provider.ClientSet.RbacV1().Roles(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	role, err := provider.ClientSet.RbacV1().Roles(namespaceName).Get(context.TODO(), name, metav1.GetOptions{})
+	role.Kind = "Role"
+	role.APIVersion = "rbac.authorization.k8s.io/v1"
+
+	return role, err
 }
 
 func UpdateK8sRole(data v1.Role, contextId *string) utils.K8sWorkloadResult {
